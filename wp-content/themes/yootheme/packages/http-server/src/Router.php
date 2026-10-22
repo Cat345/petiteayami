@@ -30,7 +30,7 @@ class Router
 
                 foreach ($matches as $key => $value) {
                     if (is_string($key)) {
-                        $params[$key] = urldecode($value);
+                        $params[$key] = rawurldecode($value);
                     }
                 }
 
@@ -55,7 +55,7 @@ class Router
     {
         return '#^' .
             preg_replace_callback(
-                '#\{(\w+)(?::([^}]+?))?}#',
+                '#{(\w+)(?::([^}]+?))?}#',
                 fn($matches) => '(?P<' . $matches[1] . '>' . ($matches[2] ?? '[^/]+') . ')',
                 $route->getPath(),
             ) .

@@ -138,7 +138,7 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 					'automation_event'        => ! is_null( $event_instance ) ? $event_instance->get_name() : __( 'Data unavailable. Contact Support.', 'wp-marketing-automations' ),
 					'task_integration'        => esc_html__( 'Not Found', 'wp-marketing-automations' ),
 					'task_integration_action' => esc_html__( 'Not Found', 'wp-marketing-automations' ),
-					'task_date'               => BWFAN_Common::get_human_readable_time( $task['date'], get_date_from_gmt( date( 'Y-m-d H:i:s', $task['date'] ), BWFAN_Common::bwfan_get_date_format() ) ),
+					'task_date'               => BWFAN_Common::get_human_readable_time( $task['date'], get_date_from_gmt( gmdate( 'Y-m-d H:i:s', $task['date'] ), BWFAN_Common::bwfan_get_date_format() ) ),
 					'status'                  => $status,
 					'gif'                     => $gif,
 					'task_message'            => $message,
@@ -246,7 +246,7 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 
 		public function get_abandoned_time( $time ) {
 			$timestamp = strtotime( $time );
-			$date      = BWFAN_Common::get_human_readable_time( $timestamp, get_date_from_gmt( date( 'Y-m-d H:i:s', $timestamp ), get_option( 'date_format' ) ) );
+			$date      = BWFAN_Common::get_human_readable_time( $timestamp, get_date_from_gmt( date( 'Y-m-d H:i:s', $timestamp ), get_option( 'date_format' ) ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Round-trips strtotime(DB datetime string); gmdate would shift under non-UTC tz
 
 			return $date;
 		}
@@ -277,7 +277,8 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 			if ( ! is_email( $contact_email ) ) {
 				return array();
 			}
-			$where         = ' where email="' . $contact_email . '"';
+			global $wpdb;
+			$where         = $wpdb->prepare( ' where email=%s', $contact_email );
 			$contact_carts = BWFAN_Model_Abandonedcarts::get_abandoned_data( $where, '', '', 'last_modified' );
 
 			return $contact_carts;
@@ -293,7 +294,8 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 				return array();
 			}
 
-			$where              = 'where email="' . $contact_email . '" And status=2';
+			global $wpdb;
+			$where              = $wpdb->prepare( 'where email=%s And status=2', $contact_email );
 			$contact_lost_carts = BWFAN_Model_Abandonedcarts::get_abandoned_data( $where, '', '', 'last_modified' );
 
 			return $contact_lost_carts;
@@ -308,7 +310,8 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 			if ( ! is_email( $contact_email ) ) {
 				return array();
 			}
-			$where                   = 'WHERE status IN (0,1,3,4) and email="' . $contact_email . '"';
+			global $wpdb;
+			$where                   = $wpdb->prepare( 'WHERE status IN (0,1,3,4) and email=%s', $contact_email );
 			$contact_abandoned_carts = BWFAN_Model_Abandonedcarts::get_abandoned_data( $where, '', '', 'last_modified' );
 
 			return $contact_abandoned_carts;
@@ -329,13 +332,12 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 			/** Only genuine automation-attributed recoveries (meta_value > 0), matching Cart Analytics and the Recovered Carts list */
 			$where         .= ' AND m2.meta_value > 0';
 			$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array( 'wc-pending', 'wc-failed', 'wc-cancelled', 'wc-refunded', 'trash', 'draft' ) );
-			$post_status   = '(';
-			foreach ( $post_statuses as $status ) {
-				$post_status .= "'" . $status . "',";
-			}
-			$post_status         .= "'')";
-			$prepare_query       = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->prefix}posts p, {$wpdb->prefix}postmeta m1, {$wpdb->prefix}postmeta m2 WHERE p.ID = m1.post_id and p.ID = m2.post_id AND m2.meta_key = '%s' AND p.post_type = '%s' AND p.post_status NOT IN $post_status $where ORDER BY p.post_modified DESC", '_bwfan_ab_cart_recovered_a_id', 'shop_order', $contact_email );
-			$recovered_carts_ids = $wpdb->get_results( $prepare_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			/** Trailing '' keeps NOT IN () valid when the filter returns an empty list */
+			$post_statuses  = array_merge( array_map( 'strval', (array) $post_statuses ), array( '' ) );
+			$status_holders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
+			$query_args     = array_merge( array( '_bwfan_ab_cart_recovered_a_id', 'shop_order' ), $post_statuses, array( $contact_email ) );
+			$prepare_query  = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->prefix}posts p, {$wpdb->prefix}postmeta m1, {$wpdb->prefix}postmeta m2 WHERE p.ID = m1.post_id and p.ID = m2.post_id AND m2.meta_key = %s AND p.post_type = %s AND p.post_status NOT IN ($status_holders) $where ORDER BY p.post_modified DESC", ...$query_args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholder count matches spread args; filter output bound via %s
+			$recovered_carts_ids = $wpdb->get_results( $prepare_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- query built with $wpdb->prepare() above
 
 			if ( empty( $recovered_carts_ids ) ) {
 				return array();
@@ -358,7 +360,10 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 			if ( ! is_email( $contact_email ) ) {
 				return $abandoned_data;
 			}
-			$contact_abandoned_carts = BWFAN_Model_Automations::get_last_abandoned_cart( $contact_email );
+			global $wpdb;
+			/** Was passing the bare email as the WHERE clause (invalid SQL); same clause as BWFAN_Abandoned_Cart::get_last_abandoned_cart() */
+			$where                   = $wpdb->prepare( 'WHERE status IN (1,3,4) and email = %s', $contact_email );
+			$contact_abandoned_carts = BWFAN_Model_Automations::get_last_abandoned_cart( $where );
 
 			if ( empty( $contact_abandoned_carts ) ) {
 				return $abandoned_data;
@@ -409,6 +414,7 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 			global $wpdb;
 			$where         = '';
 			$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array( 'wc-pending', 'wc-failed', 'wc-cancelled', 'wc-refunded', 'trash', 'draft' ) );
+			$post_statuses = is_array( $post_statuses ) ? esc_sql( $post_statuses ) : $post_statuses; // filter output is placed inside quoted SQL literals
 			$post_status   = '(';
 			foreach ( $post_statuses as $status ) {
 				$post_status .= "'" . $status . "',";
@@ -416,8 +422,8 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 			$post_status     .= "'')";
 			/** Only count genuine automation-attributed recoveries (meta_value > 0), matching Cart Analytics and the Recovered Carts list */
 			$where           .= ' AND m.meta_value > 0 ';
-			$query           = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) );
-			$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query           = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
+			$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 			if ( empty( $recovered_carts ) ) {
 				return array();
 			}
@@ -434,7 +440,7 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			$found_posts['items']        = $items;
-			$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.ID) as total FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.ID) as total FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 
 			return $found_posts;
 		}
@@ -456,6 +462,9 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 		 */
 		public static function get_split_preview_data( $automation_id, $split_id, $automation_obj = null ) {
 			$automation_obj   = ! $automation_obj instanceof BWFAN_Automation_V2 ? BWFAN_Automation_V2::get_instance( $automation_id ) : $automation_obj;
+			if ( ! $automation_obj instanceof BWFAN_Automation_V2 ) {
+				return [];
+			}
 			$automation_steps = $automation_obj->get_steps();
 
 			if ( empty($automation_steps ) || ! isset( $automation_steps[ $split_id ] ) ) {

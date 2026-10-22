@@ -1,11 +1,132 @@
 # Changelog
 
+## 5.0.53 (October 21, 2026)
+
+### Security
+
+- CVE-2026-102785: Fix unauthenticated remote code execution via image handler
+
+## 5.0.52 (October 14, 2026)
+
+### Fixed
+
+- Fix customizer previews after a Joomla trailing-slash redirect
+- Fix restoring customizer session after reconnecting an expired login (WordPress)
+
+## 5.0.51 (October 8, 2026)
+
+### Fixed
+
+- Keep the frontend customizer session alive while previewing as an administrator (Joomla)
+- Fix flushing incomplete rewrite rules during installation requests (WordPress)
+- Fix switching between Visual and Code editors in the block editor (WordPress)
+- Fix readable fallback typography when theme styles are enabled in block editor (WordPress)
+- Fix opening the Builder article edit view when SEF routing removes the frontend root slash (Joomla)
+- Fix normalizing whitespace in consent service IDs
+- Fix invalid element CSS prefixes in keyframes and descriptor at-rules, including comment braces
+
+## 5.0.50 (October 2, 2026)
+
+### Fixed
+
+- Fix Google Analytics consent event handler syntax
+
+## 5.0.49 (October 2, 2026)
+
+### Changed
+
+- Use the native WordPress modal for switching posts back to the editor (WordPress)
+
+### Fixed
+
+- Fix builder layout content being modified when opening the block editor (WordPress)
+
+## 5.0.48 (October 1, 2026)
+
+### Fixed
+
+- Fix active states for menu items with Polylang enabled (WordPress)
+
+## 5.0.47 (September 30, 2026)
+
+### Fixed
+
+- Fix hiding hover videos in Panel Slider items
+- Fix Google Analytics tracking when consent management is disabled
+- Fix customizer requests without query parameters
+
+## 5.0.46 (September 24, 2026)
+
+### Added
+
+- Allow extensions to register font picker groups in customizer data
+
+### Fixed
+
+- Fix regression where closing a lightbox leaves the page unresponsive
+- Fix missing accessible names for dialog offcanvas and modal panels
+- Fix active state for Polylang language menu items (WordPress)
+- Fix regression in theme settings import
+- Fix selecting Unlimited for Regular Labs related fields (Joomla)
+- Fix breadcrumb structured-data URLs with SEF URLs (Joomla)
+
+## 5.0.45 (September 22, 2026)
+
+### Fixed
+
+- Fix accessibility for menu items with hidden title by adding aria label
+- Fix functional consent categories being set to denied on save
+- Fix return URL handling in the customizer (Joomla)
+- Fix template overrides to match upstream changes (Joomla)
+
+## 5.0.44 (September 16, 2026)
+
+### Added
+
+- Add Google Analytics consent mode setting
+
+### Fixed
+
+- Fix scripts loading more than once in live search results
+- Remove obsolete system message layout override (Joomla)
+- Fix rendering an empty menu size class (Joomla)
+- Fix stale errors being shown when loading photos
+- Fix errors saving Joomla modules with malformed data
+- Fix duplicate flex utility classes in Grid, Panel, and Slider items
+- Fix translating consent content in Map and Video elements
+- Fix component-only page rendering when Cassiopeia is unavailable or YOOtheme Pro is inactive (Joomla)
+- Fix Joomla article-source event listeners remaining registered
+- Fix duplicate aliased selections in dynamic-content source queries
+- Fix compatibility with 3rd party plugin adding controls in link picker (WordPress)
+
+## 5.0.43 (August 26, 2026)
+
+### Added
+
+- Add child categories page source to Category Blog (Joomla)
+- Add sorting options to child categories source (Joomla)
+
+### Changed
+
+- Improve accessibility in consent manager accordion layout
+
+### Fixed
+
+- Fix `calc()` expressions in style variables
+
+## 5.0.42 (August 24, 2026)
+
+### Security
+
+- CVE-2026-77996: Fix escaping location custom field value (Joomla)
+- CVE-2026-77997: Fix missing authorization check in module controller (Joomla)
+
 ## 5.0.41 (August 21, 2026)
 
 ### Security
 
-- [CVE-2026-75115](https://www.cve.org/CVERecord?id=CVE-2026-75115): Fix arbitrary file read exploitable by any contributor-level user
-- [CVE-2026-76613](https://www.cve.org/CVERecord?id=CVE-2026-76613): Fix SQL injection exploitable by any contributor-level user
+- CVE-2026-75115: Fix arbitrary file read exploitable by any contributor-level user
+- CVE-2026-76613: Fix SQL injection exploitable by any contributor-level user
 
 ### Fixed
 

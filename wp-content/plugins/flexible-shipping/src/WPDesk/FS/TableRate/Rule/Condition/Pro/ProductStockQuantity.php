@@ -8,8 +8,6 @@ class ProductStockQuantity extends AbstractCondition {
 
 	private const CONDITION_ID = 'product_stock_quantity';
 
-	private const MIN = 'min';
-	private const MAX = 'max';
 
 	public function __construct( int $priority = 10 ) {
 		$this->condition_id = self::CONDITION_ID;

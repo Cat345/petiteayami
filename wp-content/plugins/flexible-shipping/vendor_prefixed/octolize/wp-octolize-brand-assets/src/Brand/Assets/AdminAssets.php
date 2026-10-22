@@ -16,7 +16,7 @@ class AdminAssets implements Hookable
      *
      * @var string
      */
-    private $scripts_version = '2';
+    private string $scripts_version = '4';
     /**
      * Assets URL.
      *

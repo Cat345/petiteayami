@@ -25,7 +25,10 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\FreeDomains;
+use MailPoet\Util\Helpers;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -70,6 +73,12 @@ class SendingQueue extends APIEndpoint {
   /** @var TimeZoneCampaignScheduler */
   private $timeZoneCampaignScheduler;
 
+  /** @var AuthorizedEmailsController */
+  private $authorizedEmailsController;
+
+  /** @var FreeDomains */
+  private $freeDomains;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
@@ -82,7 +91,9 @@ class SendingQueue extends APIEndpoint {
     NewsletterValidator $newsletterValidator,
     SendingQueuesResponseBuilder $sendingQueuesResponseBuilder,
     CronHelper $cronHelper,
-    TimeZoneCampaignScheduler $timeZoneCampaignScheduler
+    TimeZoneCampaignScheduler $timeZoneCampaignScheduler,
+    AuthorizedEmailsController $authorizedEmailsController,
+    FreeDomains $freeDomains
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -96,6 +107,8 @@ class SendingQueue extends APIEndpoint {
     $this->sendingQueuesResponseBuilder = $sendingQueuesResponseBuilder;
     $this->cronHelper = $cronHelper;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
+    $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->freeDomains = $freeDomains;
   }
 
   public function add($data = []) {
@@ -276,12 +289,30 @@ class SendingQueue extends APIEndpoint {
 
     if ($newsletter instanceof NewsletterEntity) {
       $queue = $newsletter->getLastUpdatedQueue();
-
       if (!$queue instanceof SendingQueueEntity) {
         return $this->errorResponse([
           APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet'),
         ]);
       } else {
+        $isPausedForSenderDomain = $this->isPausedForSenderDomain($queue);
+        // Post notification copies can't be edited, so an unmarked copy with a bad sender takes the parent's sender too.
+        $isSenderValid = null;
+        if (!$isPausedForSenderDomain && $this->hasParentSender($newsletter)) {
+          $isSenderValid = $this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume', false);
+        }
+        if ($isPausedForSenderDomain || $isSenderValid === false) {
+          $this->syncSenderFromParent($newsletter);
+          $isSenderValid = null;
+        }
+        if ($isSenderValid === null) {
+          $isSenderValid = $this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume', $isPausedForSenderDomain);
+        }
+        if (!$isSenderValid) {
+          return $this->errorResponse([
+            APIError::FORBIDDEN => $this->getSenderDomainNotReadyMessage($newsletter),
+          ], [], Response::STATUS_FORBIDDEN);
+        }
+
         if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
           $this->timeZoneCampaignScheduler->resumeCampaign($queue);
         } else {
@@ -311,6 +342,54 @@ class SendingQueue extends APIEndpoint {
       ]);
     }
     return $this->successResponse();
+  }
+
+  private function isPausedForSenderDomain(SendingQueueEntity $queue): bool {
+    $queues = $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)
+      ? $this->timeZoneCampaignScheduler->getCampaignQueues($queue)
+      : [$queue];
+    foreach ($queues as $campaignQueue) {
+      $task = $campaignQueue->getTask();
+      if ($task instanceof ScheduledTaskEntity && $task->getPauseReason() === ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Notification history emails are copies made at schedule time, so they keep the parent's old sender.
+   */
+  private function hasParentSender(NewsletterEntity $newsletter): bool {
+    return $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY && $newsletter->getParent() instanceof NewsletterEntity;
+  }
+
+  private function syncSenderFromParent(NewsletterEntity $newsletter): void {
+    $parent = $newsletter->getParent();
+    if (!$parent instanceof NewsletterEntity || !$this->hasParentSender($newsletter)) {
+      return;
+    }
+    $newsletter->setSenderAddress($parent->getSenderAddress());
+    $newsletter->setSenderName($parent->getSenderName());
+    $this->newsletterRepository->flush();
+  }
+
+  /**
+   * Plain text: the client escapes API errors when rendering them.
+   */
+  private function getSenderDomainNotReadyMessage(NewsletterEntity $newsletter): string {
+    $sender = (string)$newsletter->getSenderAddress();
+    $domain = Helpers::extractEmailDomain($sender);
+
+    if ($domain === '') {
+      return __('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an authenticated sender domain, then click Resume again.', 'mailpoet');
+    }
+    if ($this->freeDomains->isEmailOnFreeDomain($sender)) {
+      // translators: %s is a domain such as gmail.com.
+      return sprintf(__('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an address on your own authenticated domain instead of %s, then click Resume again.', 'mailpoet'), $domain);
+    }
+    // translators: %s is a domain such as example.com.
+    return sprintf(__('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, authenticate %s or switch to another authenticated sender domain, then click Resume again.', 'mailpoet'), $domain);
   }
 
   /**

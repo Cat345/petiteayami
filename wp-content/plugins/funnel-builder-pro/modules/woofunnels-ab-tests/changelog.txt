@@ -1,6 +1,10 @@
 === A/B Experiments for FunnelKit ===
 
 == Change log ==
+= 1.7.1 =
+* Improved: Landing page revenue now reports the full checkout + bump + upsell breakdown for A/B test variants.
+* Deprecated: `bwfabt_conversion_revenue_column` filter no longer affects landing-type experiments (still active for optin-type experiments).
+
 = 1.7.0 (24/01/2024) =
 * Added: Compatibility with Funnelkit Funnel Builder v3.0.0
 * Added: Feature to A/B test upsell single offer.

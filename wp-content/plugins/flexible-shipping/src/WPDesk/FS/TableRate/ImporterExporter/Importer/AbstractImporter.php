@@ -77,7 +77,7 @@ abstract class AbstractImporter implements Importer {
 				$new_method_title = sprintf( '%s (%s %d)', $method_title, __( 'import', 'flexible-shipping' ), $count );
 			}
 
-			$count ++;
+			++$count;
 		}
 
 		return $new_method_title;

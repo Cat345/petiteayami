@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 final class BWFAN_WC_Comment_Post extends BWFAN_Event {

@@ -902,7 +902,7 @@ msgstr "Interdiction"
 msgid "Disallowed Customer User Role"
 msgstr "Le client n'a pas un rôle interdit"
 
-#: Models/Store_Credits/Checkout.php:953
+#: Models/Store_Credits/Checkout.php:989
 msgid "Discount (Store Credit)"
 msgstr "Réduction (crédit boutique)"
 
@@ -1463,7 +1463,7 @@ msgstr "Installé"
 #: Models/BOGO/Admin.php:362
 #: Models/Cart_Conditions.php:642
 #: Models/Emails.php:270
-#: Models/Store_Credits/Checkout.php:1309
+#: Models/Store_Credits/Checkout.php:1366
 msgid "Invalid AJAX call"
 msgstr "Appel AJAX invalide"
 
@@ -1628,7 +1628,7 @@ msgstr "Message qui sera affiché lorsqu'un code promo a été appliquée avec s
 #: Models/BOGO/Admin.php:305
 #: Models/BOGO/Admin.php:372
 #: Models/Cart_Conditions.php:652
-#: Models/Store_Credits/Checkout.php:1327
+#: Models/Store_Credits/Checkout.php:1384
 msgid "Missing required post data"
 msgstr "Manque des données post"
 
@@ -1944,8 +1944,8 @@ msgstr "Payé le %1$s via %2$s"
 msgid "Paid via Store Credits"
 msgstr "Payé via Crédit Boutique"
 
-#: Models/Store_Credits/Checkout.php:1004
-#: Models/Store_Credits/Checkout.php:1042
+#: Models/Store_Credits/Checkout.php:1040
+#: Models/Store_Credits/Checkout.php:1078
 msgid "Paid with Store Credits"
 msgstr "Payé avec du Crédit Boutique"
 
@@ -1971,7 +1971,7 @@ msgstr "Restriction des modes de paiement"
 msgid "Payment Methods Restriction (Premium)"
 msgstr "Restriction des modes de paiement (Premium)"
 
-#: Models/Store_Credits/Checkout.php:1051
+#: Models/Store_Credits/Checkout.php:1087
 msgid "Pending Amount"
 msgstr "Montant en attente"
 
@@ -2190,7 +2190,7 @@ msgstr "URL de redirection si un code promo invalide est accédé"
 msgid "Refresh the page and try again."
 msgstr "Rafraîchissez la page et réessayez."
 
-#: Models/Store_Credits/Checkout.php:1097
+#: Models/Store_Credits/Checkout.php:1133
 msgid "Refund (Store Credits):"
 msgstr "Remboursement (Crédit Boutique):"
 
@@ -2569,11 +2569,11 @@ msgstr "Solde de crédit boutique"
 msgid "Store credit can be used to purchase items on this store."
 msgstr "Le crédit boutique peut être utilisé pour vos achats dans cette boutique."
 
-#: Models/Store_Credits/Checkout.php:1342
+#: Models/Store_Credits/Checkout.php:1399
 msgid "Store credit discount has been removed."
 msgstr "La réduction en crédit boutique a été supprimée."
 
-#: Models/Store_Credits/Checkout.php:1341
+#: Models/Store_Credits/Checkout.php:1398
 msgid "Store credit discount was applied successfully."
 msgstr "La réduction en crédit boutique a été appliquée avec succès."
 
@@ -3189,7 +3189,7 @@ msgstr "Vous utilisez actuellement Advanced Coupons for WooCommerce Free sous li
 msgid "You are not allowed to do this"
 msgstr "Vous n'êtes pas autorisé à le faire"
 
-#: Models/Store_Credits/Checkout.php:1322
+#: Models/Store_Credits/Checkout.php:1379
 msgid "You are not allowed to do this."
 msgstr "Vous n’êtes pas autorisé à faire cela."
 
@@ -3531,7 +3531,7 @@ msgstr ""
 msgid "If the quantity of all products in the cart is met, they will be eligible for \"Get\" portion of the BOGO deal."
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:380
+#: Models/Store_Credits/Checkout.php:405
 msgid "Store Credit Discount"
 msgstr ""
 
@@ -5491,7 +5491,7 @@ msgstr ""
 msgid "decreased"
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:1314
+#: Models/Store_Credits/Checkout.php:1371
 msgid "You must be logged in to redeem store credits."
 msgstr ""
 
@@ -5904,7 +5904,7 @@ msgid "Adjust store credit balances in bulk for groups of customers based on fil
 msgstr ""
 
 #. Translators: 1: residual unpaid amount, 2: customer's available store credit balance, 3: order total after tax recalculation
-#: Models/Store_Credits/Checkout.php:1161
+#: Models/Store_Credits/Checkout.php:1197
 #, php-format
 msgid "Store credit balance (%2$s) is insufficient to fully cover the order total (%3$s) after tax recalculation. Residual unpaid amount: %1$s — please collect via another payment method or top up the customer's store credit balance."
 msgstr ""
@@ -6243,7 +6243,7 @@ msgid "Applies to Processing, Completed and Refunded orders that have a payment 
 msgstr ""
 
 #. translators: %1$s: opening link tag, %2$s: closing link tag.
-#: Models/Store_Credits/Checkout.php:511
+#: Models/Store_Credits/Checkout.php:539
 #, php-format
 msgid "The total of your order changed, please click here to %1$sreapply the store credit discount%2$s."
 msgstr ""
@@ -6262,4 +6262,8 @@ msgstr ""
 
 #: Models/Upsell.php:529
 msgid "Category Subtotal (Premium)"
+msgstr ""
+
+#: Models/Store_Credits/Checkout.php:1572
+msgid "Order resumed after a failed payment. Status reset to pending payment to apply the store credit again."
 msgstr ""

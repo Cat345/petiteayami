@@ -18,7 +18,7 @@ class BWFCRM_Dashboard extends BWFCRM_Base_React_Page {
 	}
 
 	public function __construct() {
-		if ( isset( $_GET['page'] ) && 'autonami' === $_GET['page'] ) {
+		if ( isset( $_GET['page'] ) && 'autonami' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ), 100 );
 			add_filter( 'user_can_richedit', '__return_true' );
 			add_action( 'in_admin_header', array( $this, 'remove_admin_notice' ), - 1 );

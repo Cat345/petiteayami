@@ -1,7 +1,7 @@
 <?php
 
 // Add elements inline css above the content to ensure css is present when rendered
-if (!empty($props['css'])) {
+if ($props['root'] && !empty($props['css'])) {
     echo $this->el('style', [
         'class' => 'uk-margin-remove-adjacent',
         'data-id' => !empty($attrs['data-id']) ? "{$attrs['data-id']}-style" : false,

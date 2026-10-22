@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 // include the required file
 require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader-skin.php';
 

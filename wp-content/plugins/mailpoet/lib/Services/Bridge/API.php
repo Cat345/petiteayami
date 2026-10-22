@@ -5,6 +5,7 @@ namespace MailPoet\Services\Bridge;
 if (!defined('ABSPATH')) exit;
 
 
+use MailPoet\Config\Env;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Error;
@@ -500,6 +501,7 @@ class API {
       'headers' => [
         'Content-Type' => 'application/json',
         'Authorization' => $this->auth(),
+        'X-MailPoet-Plugin-Version' => (string)Env::$version,
       ],
       'body' => $body !== null ? json_encode($body) : null,
     ];

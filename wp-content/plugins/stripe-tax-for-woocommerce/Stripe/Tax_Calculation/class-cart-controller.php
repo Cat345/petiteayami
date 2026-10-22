@@ -36,6 +36,10 @@ abstract class Cart_Controller {
 
 		$tax_calculation_result = Calculator::calculate( $tax_calculation_input, 'cart' );
 
+		if ( function_exists( 'WC' ) && WC()->session ) {
+			WC()->session->set( 'stripe_tax_show_zero_rated_tax_line', ! empty( $tax_calculation_result->show_zero_rated_tax_line ) );
+		}
+
 		$currency = $tax_calculation_result->currency;
 
 		$cart_contents_total = 0;

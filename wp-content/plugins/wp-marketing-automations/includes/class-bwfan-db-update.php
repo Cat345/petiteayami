@@ -250,6 +250,7 @@ class BWFAN_DB_Update {
 			'trash',
 			'draft'
 		) );
+		$post_statuses = is_array( $post_statuses ) ? esc_sql( $post_statuses ) : $post_statuses; // filter output is placed inside quoted SQL literals
 		$post_statuses = implode( "','", $post_statuses );
 
 		/** Get if conversion table is empty */
@@ -269,7 +270,7 @@ class BWFAN_DB_Update {
 				$query = "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = 'shop_order' AND p.post_status NOT IN ('$post_statuses') AND m.meta_key = '_bwfan_ab_cart_recovered_a_id' $last_order ORDER BY p.`id` ASC LIMIT 10";
 			}
 
-			$order_ids = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$order_ids = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 			if ( ! is_array( $order_ids ) || 0 === count( $order_ids ) ) {
 				bwf_options_delete( 'last_index_order' );
 				bwf_options_delete( 'is_conversion_empty' );
@@ -362,7 +363,7 @@ class BWFAN_DB_Update {
 				$last_id = intval( $last_processed_id ) > 0 ? " AND `ID` > " . intval( $last_processed_id ) . " " : "";
 				$query   = "SELECT `ID`, `wctotal` AS total, `wcid` FROM `{$wpdb->prefix}bwfan_conversions` WHERE 1=1 $last_id ORDER BY `ID` ASC LIMIT 0,30";
 
-				$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$result = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- prefix table; last id intval()ed; rest hardcoded
 				if ( is_array( $result ) && count( $result ) > 0 ) {
 					$last_id = 0;
 					foreach ( $result as $data ) {
@@ -402,7 +403,7 @@ class BWFAN_DB_Update {
 			$last_id = intval( $last_processed_id ) > 0 ? " AND `ID` > " . intval( $last_processed_id ) . " " : "";
 			$query   = "SELECT `ID`, `total`, `currency` FROM `{$wpdb->prefix}bwfan_abandonedcarts` WHERE 1=1 $last_id ORDER BY `ID` ASC LIMIT 0,30";
 
-			$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- prefix table; last id intval()ed; rest hardcoded
 			if ( is_array( $result ) && count( $result ) > 0 ) {
 				$last_id = 0;
 				foreach ( $result as $data ) {
@@ -445,12 +446,12 @@ class BWFAN_DB_Update {
 		$table_name = $wpdb->prefix . 'bwfan_templates';
 
 		/** Check if column already exists */
-		$column_exists = $wpdb->get_row( "SHOW COLUMNS FROM {$table_name} LIKE 'template_hash'", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$column_exists = $wpdb->get_row( "SHOW COLUMNS FROM {$table_name} LIKE 'template_hash'", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; hardcoded DDL
 
 		if ( empty( $column_exists ) ) {
 			/** Add template_hash column */
 			$query = "ALTER TABLE {$table_name} ADD COLUMN `template_hash` varchar(40) default NULL, ADD KEY `template_hash` (`template_hash`)";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; hardcoded DDL
 
 			if ( ! empty( $wpdb->last_error ) ) {
 				BWFAN_Common::log_test_data ( 'Error adding template_hash column: ' . $wpdb->last_error, 'db_update_3_6_5', true );
@@ -467,11 +468,11 @@ class BWFAN_DB_Update {
 			$last_id = intval( $last_id );
 
 			if ( $last_id > 0 ) {
-				$query = $wpdb->prepare( "SELECT `ID`, `template` FROM {$table_name} WHERE (`template_hash` IS NULL OR `template_hash` = '') AND `template` IS NOT NULL AND `template` != '' AND `ID` > %d ORDER BY `ID` ASC LIMIT 50", $last_id ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$query = $wpdb->prepare( "SELECT `ID`, `template` FROM {$table_name} WHERE (`template_hash` IS NULL OR `template_hash` = '') AND `template` IS NOT NULL AND `template` != '' AND `ID` > %d ORDER BY `ID` ASC LIMIT 50", $last_id ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- prefix table; id bound via prepare() or literal query
 			} else {
 				$query = "SELECT `ID`, `template` FROM {$table_name} WHERE (`template_hash` IS NULL OR `template_hash` = '') AND `template` IS NOT NULL AND `template` != '' ORDER BY `ID` ASC LIMIT 50"; //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			}
-			$templates = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$templates = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- prefix table; id bound via prepare() or literal query
 
 			if ( ! is_array( $templates ) || 0 === count( $templates ) ) {
 				bwf_options_delete( 'last_template_hash_id' );
@@ -488,7 +489,7 @@ class BWFAN_DB_Update {
 			$last_processed_id = 0;
 			foreach ( $templates as $template ) {
 				$template_hash = sha1( $template['template'] );
-				$wpdb->update(
+				$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off DB upgrade on the plugin templates table; not cacheable
 					$table_name,
 					[ 'template_hash' => $template_hash ],
 					[ 'ID' => $template['ID'] ],

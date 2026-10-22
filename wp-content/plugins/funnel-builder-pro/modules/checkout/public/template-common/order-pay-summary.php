@@ -83,7 +83,8 @@ $totals = $order->get_order_item_totals();
 								if ( $_product instanceof WC_Product && apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 									$hideImageCls = 'wfacp_summary_img_true';
 									$thumbnail    = WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key );
-									$thumbnail    = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
+									// Note: on this pay-for-order screen $cart_item is a WC_Order_Item (from $order->get_items()), not the cart-item array wfacp_cart_image receives elsewhere.
+									$thumbnail    = apply_filters( 'wfacp_cart_image', $thumbnail, $_product, $cart_item, $cart_item_key );
 									?>
 									<div class="product-image">
 										<div class="wfacp-pro-thumb">

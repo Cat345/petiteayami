@@ -212,5 +212,4 @@ class FreeShippingNoticeData implements \JsonSerializable {
 			is_array( $data[ self::META_DATA ] ?? null ) ? $data[ self::META_DATA ] : []
 		);
 	}
-
 }

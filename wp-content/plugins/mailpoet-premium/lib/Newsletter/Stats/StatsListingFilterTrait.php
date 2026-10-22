@@ -5,7 +5,6 @@ namespace MailPoet\Premium\Newsletter\Stats;
 if (!defined('ABSPATH')) exit;
 
 
-use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Entities\SubscriberEntity;
 
 /**
@@ -141,23 +140,25 @@ trait StatsListingFilterTrait {
   }
 
   /**
-   * The clicked-links / opened listings replace known shortcode URLs with human
-   * labels (e.g. "Unsubscribe link"), so a search against the visible text never
-   * matches the stored `[link:...]` shortcode. Map the search term back to the
-   * shortcode URLs whose label contains it, so callers can match those rows too.
+   * The clicked-links / opened listings replace known stored URLs (legacy
+   * `[link:...]` shortcodes, personalization tag tokens) with human labels
+   * (e.g. "Unsubscribe link"), so a search against the visible text never
+   * matches the stored URL. Map the search term back to the URLs whose label
+   * contains it, so callers can match those rows too.
    *
-   * The returned URLs are fixed plugin constants (no user input), so callers may
-   * inline them safely.
+   * The returned URLs are plugin-defined shortcodes and tag tokens (no user
+   * input), so callers may inline them when quoted.
    *
+   * @param array<string, string> $labels stored URL => label
    * @return string[]
    */
-  private function matchShortcodeLinkUrls(?string $search): array {
+  private function matchLabeledLinkUrls(?string $search, array $labels): array {
     $search = $search === null ? '' : trim($search);
     if ($search === '') {
       return [];
     }
     $urls = [];
-    foreach (Worker::getShortcodeLinksMapping() as $url => $label) {
+    foreach ($labels as $url => $label) {
       if (stripos($label, $search) !== false) {
         $urls[] = $url;
       }

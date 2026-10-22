@@ -52,12 +52,10 @@ class CaptchaRenderer {
     $width = self::DEFAULT_WIDTH;
     $height = self::DEFAULT_HEIGHT;
 
-    $fontNumbers = array_merge(range(0, 3), [5]); // skip font #4
+    $fontNumbers = array_merge(range(0, 3), [5]); // MailPoet ships captcha0–3 and captcha5 in assets/fonts/captcha
     $fontNumber = $fontNumbers[mt_rand(0, count($fontNumbers) - 1)];
 
-    $reflector = new \ReflectionClass(CaptchaBuilder::class);
-    $captchaDirectory = dirname((string)$reflector->getFileName());
-    $font = $captchaDirectory . '/Font/captcha' . $fontNumber . '.ttf';
+    $font = Env::$assetsPath . '/fonts/captcha/captcha' . $fontNumber . '.ttf';
 
     $phrase = $this->phrase->getPhrase($sessionId);
     if (!$phrase) {

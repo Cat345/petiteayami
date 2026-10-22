@@ -86,6 +86,7 @@ abstract class BWFAN_API_Controller extends BWFAN_API_Base {
 					? '__return_true'
 					: array( $this, 'rest_permission_callback' ),
 				'args'                => $args,
+				'show_in_index'       => false,
 			);
 		}
 

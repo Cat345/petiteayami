@@ -133,9 +133,9 @@ class ProductButton extends AbstractBlock {
 			 *
 			 * @since 8.5.0
 			 * @since 11.0.0 Added the `$variation_id` parameter.
-			 * @param number $default_quantity The default quantity.
-			 * @param number $product_id The product id.
-			 * @param number $variation_id     The variation ID. Always 0 in this context.
+			 * @param int|float $default_quantity The default quantity.
+			 * @param int       $product_id The product id.
+			 * @param int       $variation_id The variation ID. Always 0 in this context.
 			 */
 			$default_quantity = apply_filters( 'woocommerce_add_to_cart_quantity', $default_quantity, $product->get_id(), 0 );
 		}
@@ -165,10 +165,15 @@ class ProductButton extends AbstractBlock {
 		);
 
 		if ( 'a' === $html_element ) {
-			$attributes = array(
-				'href' => esc_url( $product->add_to_cart_url() ),
-				'rel'  => 'nofollow',
+			$add_to_cart_url = $product->add_to_cart_url();
+			$attributes      = array(
+				'href' => esc_url( $add_to_cart_url ),
+				'rel'  => '',
 			);
+
+			if ( $product->get_permalink() !== $add_to_cart_url ) {
+				$attributes['rel'] = 'nofollow';
+			}
 
 			if ( $product->is_type( ProductType::EXTERNAL ) ) {
 				$attributes['target'] = '_blank';
@@ -206,6 +211,9 @@ class ProductButton extends AbstractBlock {
 		 * Allow filtering of the add to cart button arguments.
 		 *
 		 * @since 9.7.0
+		 *
+		 * @param array       $args    Button arguments, with a `class` string and an `attributes` array.
+		 * @param \WC_Product $product Product the button is rendered for.
 		 */
 		$args = apply_filters(
 			'woocommerce_loop_add_to_cart_args',

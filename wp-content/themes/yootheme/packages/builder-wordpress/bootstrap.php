@@ -18,6 +18,7 @@ return [
     ],
 
     'actions' => [
+        'rest_api_init' => [Listener\EscapeLayoutContent::class => 'register'],
         'wp_body_open' => [Listener\RenderBuilder::class => '@handle'],
         'wp_footer' => [
             LoadLeafletScript::class => ['@body', 10],

@@ -26,6 +26,12 @@ class Router
 
     public static function rewrite(): void
     {
+        // Avoid persisting incomplete rewrite rules when active plugins are not loaded.
+        if (wp_installing()) {
+            return;
+        }
+
+        /** @var \WP_Rewrite $wp_rewrite */
         global $wp_rewrite;
 
         $rules = get_option('rewrite_rules', []);

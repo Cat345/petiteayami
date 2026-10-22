@@ -53,6 +53,6 @@ abstract class Links extends Metabox {
 	 * @return array[]
 	 */
 	protected function get_links() {
-		return array();
+		return [];
 	}
 }

@@ -166,7 +166,7 @@ class BWFAN_DB {
 
 		do_action( 'bwfan_db_1_0_tables_created' );
 
-		update_option( 'bwfan_ver_1_0', date( 'Y-m-d' ), true );
+		update_option( 'bwfan_ver_1_0', gmdate( 'Y-m-d' ), true );
 		update_option( 'bwfan_new_user', 'yes', true );
 
 		/** Unique key to share in rest calls */
@@ -201,8 +201,8 @@ class BWFAN_DB {
 
 		/** Need to set default value of sent to today */
 		$executed_last = array(
-			'weekly'  => date( 'c' ),
-			'monthly' => date( 'c' ),
+			'weekly'  => gmdate( 'c' ),
+			'monthly' => gmdate( 'c' ),
 		);
 		update_option( 'bwfan_email_notification_updated', $executed_last, false );
 
@@ -371,7 +371,7 @@ class BWFAN_DB {
 				ADD COLUMN `v` tinyint(1) UNSIGNED NOT NULL default 1,
 				ADD COLUMN `benchmark` varchar(150) NOT NULL,
 				ADD COLUMN `title` varchar(255) NULL;";
-				$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = 'bwfan_automations alter table - ' . $wpdb->last_error;
 				}
@@ -547,7 +547,7 @@ class BWFAN_DB {
 		if ( $column_exists ) {
 			/** Drop next column */
 			$drop_col = "ALTER TABLE {$wpdb->prefix}bwfan_automation_contact DROP COLUMN `next`";
-			$wpdb->query( $drop_col ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $drop_col ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 			if ( ! empty( $wpdb->last_error ) ) {
 				$db_errors[] = 'bwfan_automation_contact drop call - ' . $wpdb->last_error;
 			}
@@ -600,7 +600,7 @@ class BWFAN_DB {
 				$query = "ALTER TABLE {$wpdb->prefix}bwfan_automation_complete_contact
     			CHANGE `trail` `trail` VARCHAR(40) NULL COMMENT 'Trail ID',
 		    	ADD COLUMN `event` varchar(120) NOT NULL;";
-				$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = 'bwfan_automation_complete_contact alter table - ' . $wpdb->last_error;
 				}
@@ -612,7 +612,7 @@ class BWFAN_DB {
 				$query = "ALTER TABLE {$wpdb->prefix}bwfan_automation_contact
     			CHANGE `trail` `trail` VARCHAR(40) NULL COMMENT 'Trail ID',
 		    	ADD COLUMN `last_time` bigint(12) UNSIGNED NOT NULL;";
-				$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = 'bwfan_automation_contact alter table - ' . $wpdb->last_error;
 				}
@@ -678,7 +678,7 @@ class BWFAN_DB {
 		/** Automation complete contact */
 		$query = "SELECT MAX(`ID`) FROM `{$wpdb->prefix}bwfan_automation_complete_contact`";
 
-		$max_completed_aid = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$max_completed_aid = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 		if ( intval( $max_completed_aid ) > 0 ) {
 			update_option( 'bwfan_max_automation_completed', $max_completed_aid );
 			if ( ! bwf_has_action_scheduled( 'bwfan_store_automation_completed_ids' ) ) {
@@ -689,7 +689,7 @@ class BWFAN_DB {
 		/** Automation contact */
 		$query = "SELECT MAX(`ID`) FROM `{$wpdb->prefix}bwfan_automation_contact`";
 
-		$max_active_aid = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$max_active_aid = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 		if ( intval( $max_active_aid ) > 0 ) {
 			update_option( 'bwfan_max_active_automation', $max_active_aid );
 			if ( ! bwf_has_action_scheduled( 'bwfan_store_automation_active_ids' ) ) {
@@ -720,7 +720,7 @@ class BWFAN_DB {
 		/** Automation contact */
 		$query = $wpdb->prepare( "SELECT MIN(`ID`) FROM `{$wpdb->prefix}bwfan_automations` WHERE `v` = %d", 1 );
 
-		$automation_v1 = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$automation_v1 = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above; table from $wpdb->prefix
 		$automation_v1 = ( 0 === intval( $automation_v1 ) ) ? '0' : '1';
 		update_option( 'bwfan_automation_v1', $automation_v1, true );
 
@@ -802,7 +802,7 @@ class BWFAN_DB {
 
 		/** Automation steps meta data normalize */
 		$query  = "SELECT MIN(`ID`) as `ID` FROM `{$wpdb->prefix}bwfan_automations` WHERE `v` = 2 LIMIT 0, 1";
-		$min_id = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$min_id = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 		if ( $min_id > 0 ) {
 			/** schedule recurring event */
 			bwf_schedule_recurring_action( time(), ( 5 * MINUTE_IN_SECONDS ), 'bwfan_update_meta_automations_v2' );
@@ -812,11 +812,14 @@ class BWFAN_DB {
 
 		/** Delete some repetitive actions to delete duplicated actions */
 		$query  = "SELECT count(*) AS `count` FROM `{$wpdb->prefix}bwf_actions` WHERE `hook` IN ('bwfan_run_midnight_cron', 'bwfan_5_minute_worker', 'bwfan_run_midnight_connectors_sync')";
-		$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		if ( ! empty( $result ) ) {
 			/** Delete the rows */
 			$query = "DELETE FROM `{$wpdb->prefix}bwf_actions` WHERE `hook` IN ('bwfan_run_midnight_cron', 'bwfan_5_minute_worker', 'bwfan_run_midnight_connectors_sync')";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+
+			/** The rows above are gone for good, so put the ones we own back instead of leaving them unscheduled */
+			BWFAN_Common::validate_scheduled_recurring_actions();
 		}
 
 		$this->method_run[] = $version_key;
@@ -868,7 +871,7 @@ class BWFAN_DB {
 
 		global $wpdb;
 		$query = "TRUNCATE TABLE `{$wpdb->prefix}bwf_actions`";
-		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 
 		/** Scheduling Broadcast action */
 		if ( true === bwfan_is_autonami_pro_active() && ! bwf_has_action_scheduled( 'bwfcrm_broadcast_run_queue' ) ) {
@@ -876,6 +879,12 @@ class BWFAN_DB {
 
 			BWFAN_PRO_Common::run_midnight_cron();
 		}
+
+		/**
+		 * The TRUNCATE above wiped every hook, not just the broadcast queue. Runs after the block above so
+		 * that block still sees an unscheduled broadcast queue and its run_midnight_cron() call still fires.
+		 */
+		BWFAN_Common::validate_scheduled_recurring_actions();
 
 		/** Updating version key */
 		update_option( 'bwfan_db', $version_key, true );
@@ -894,10 +903,10 @@ class BWFAN_DB {
 		$column_exists = $wpdb->get_row( "SHOW COLUMNS FROM {$wpdb->prefix}bwfan_automations LIKE 'benchmark'", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( ! empty( $column_exists ) && 'longtext' !== $column_exists['Type'] ) {
 			$query = "ALTER TABLE {$wpdb->prefix}bwfan_automations CHANGE `benchmark` `benchmark` longtext;";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 		} elseif ( empty( $column_exists ) ) {
 			$query = "ALTER TABLE {$wpdb->prefix}bwfan_automations ADD COLUMN `benchmark` longtext;";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 		}
 
 		if ( ! empty( $wpdb->last_error ) ) {
@@ -929,7 +938,7 @@ class BWFAN_DB {
 		global $wpdb;
 		$query = "SELECT COUNT(ct.ID) FROM `{$wpdb->prefix}bwfan_automation_contact_trail` AS ct JOIN `{$wpdb->prefix}bwfan_automation_complete_contact` AS cc ON ct.tid = cc.trail WHERE ct.status = 2 LIMIT 0,1";
 
-		if ( intval( $wpdb->get_var( $query ) > 0 ) ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( intval( $wpdb->get_var( $query ) > 0 ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 			/** Scheduling recurring action */
 			bwf_schedule_recurring_action( time(), 300, 'bwfan_update_contact_trail', array(), 'bwfan' );
 		}
@@ -1028,7 +1037,7 @@ class BWFAN_DB {
 	 */
 	public function update_user_contact_preference_data() {
 		$args = array(
-			'meta_key' => '_bwfan_contact_columns_v2',
+			'meta_key' => '_bwfan_contact_columns_v2', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- one-time DB upgrade: finds users with saved contact columns
 		);
 
 		$user_query = new WP_User_Query( $args );
@@ -1130,7 +1139,7 @@ class BWFAN_DB {
 		$column_exists = $wpdb->query( "SHOW COLUMNS FROM {$wpdb->prefix}bwfan_message LIKE 'data'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( empty( $column_exists ) ) {
 			$query = "ALTER TABLE {$wpdb->prefix}bwfan_message ADD data longtext;";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 			if ( ! empty( $wpdb->last_error ) ) {
 				$db_errors[] = 'bwfan_message alter table - ' . $wpdb->last_error;
 			}
@@ -1140,7 +1149,7 @@ class BWFAN_DB {
 		$index_queries = [];
 		foreach ( $columns as $column ) {
 			$query      = "SHOW COLUMNS FROM `{$wpdb->prefix}bwfan_engagement_tracking` LIKE '$column'";
-			$sid_exists = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$sid_exists = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- column from hardcoded list; table from $wpdb->prefix
 			if ( empty( $sid_exists['Key'] ) ) {
 				$index_queries[] = "ADD KEY `$column`(`$column`)";
 			}
@@ -1148,7 +1157,7 @@ class BWFAN_DB {
 
 		if ( ! empty( $index_queries ) ) {
 			$index_queries = implode( ', ', $index_queries );
-			$wpdb->query( "ALTER TABLE `{$wpdb->prefix}bwfan_engagement_tracking` $index_queries" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+			$wpdb->query( "ALTER TABLE `{$wpdb->prefix}bwfan_engagement_tracking` $index_queries" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- index clauses built from hardcoded column list; table from $wpdb->prefix
 			if ( ! empty( $wpdb->last_error ) ) {
 				$db_errors[] = 'bwfan_engagement_tracking alter table - ' . $wpdb->last_error;
 			}
@@ -1219,7 +1228,7 @@ class BWFAN_DB {
 			if ( empty( $id ) ) {
 				return;
 			}
-			$query = $wpdb->prepare( "SELECT `meta_value` FROM `{table_name}` WHERE `eid` < %d AND `meta_key` LIKE 'merge_tags' AND `meta_value` LIKE '%{{business_name}}%' LIMIT 0,100;", $id );
+			$query = $wpdb->prepare( "SELECT `meta_value` FROM `{table_name}` WHERE `eid` < %d AND `meta_key` = %s AND `meta_value` LIKE %s LIMIT 0,100;", $id, 'merge_tags', '%' . $wpdb->esc_like( '{{business_name}}' ) . '%' );
 			$rows  = BWFAN_Model_Engagement_Trackingmeta::get_results( $query );
 			if ( empty( $rows ) || ! is_array( $rows ) || 0 === count( $rows ) ) {
 				return;
@@ -1479,7 +1488,7 @@ class BWFAN_DB {
 		}
 
 		/** Parse the URL to get just the path component */
-		$path = parse_url( $url, PHP_URL_PATH );
+		$path = wp_parse_url( $url, PHP_URL_PATH );
 
 		/** Remove leading and trailing slashes */
 		$slug = trim( $path, '/' );
@@ -1533,12 +1542,12 @@ class BWFAN_DB {
 
 		// Check if index already exists
 		$query        = "SHOW INDEX FROM {$wpdb->prefix}bwfan_abandonedcarts WHERE Key_name = 'cookie_key'";
-		$index_exists = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$index_exists = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 
 		if ( empty( $index_exists ) ) {
 			// Add the cookie_key index
 			$query = "ALTER TABLE {$wpdb->prefix}bwfan_abandonedcarts ADD KEY `cookie_key` (`cookie_key`)";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 
 			if ( ! empty( $wpdb->last_error ) ) {
 				$db_errors[] = 'bwfan_abandonedcarts add cookie_key index - ' . $wpdb->last_error;
@@ -1590,7 +1599,7 @@ class BWFAN_DB {
 	public function check_for_old_visual_builder() {
 		global $wpdb;
 		$query   = "SELECT ID FROM {$wpdb->prefix}bwfan_templates WHERE `mode`=4 ORDER BY ID DESC LIMIT 1 ";
-		$is_used = ! empty( $wpdb->get_var( $query ) ) ? 1 : 0; //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$is_used = ! empty( $wpdb->get_var( $query ) ) ? 1 : 0; // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 		bwf_options_update( 'fk_legacy_builder', $is_used );
 	}
 
@@ -1617,7 +1626,7 @@ class BWFAN_DB {
 			$query = "ALTER TABLE {$wpdb->prefix}bwfan_abandonedcarts CHANGE `email` `email` varchar(100) NOT NULL";
 		}
 
-		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 		if ( ! empty( $wpdb->last_error ) ) {
 			$db_errors[] = 'bwfan_abandonedcarts alter table - ' . $wpdb->last_error;
 		}
@@ -1682,19 +1691,19 @@ class BWFAN_DB {
 
 		/** Alter Contact table */
 		$contact_table = $wpdb->prefix . 'bwf_contact';
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '$contact_table'" ) === $contact_table ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$contact_table'" ) === $contact_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 
 			/** Alter status column */
-			$column_info = $wpdb->get_row( "DESCRIBE {$contact_table} `status`", ARRAY_A );
+			$column_info = $wpdb->get_row( "DESCRIBE {$contact_table} `status`", ARRAY_A ); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 			if ( false === strpos( $column_info['Type'], 'tinyint' ) ) {
-				$wpdb->query( "ALTER TABLE $contact_table MODIFY `status` tinyint unsigned NOT NULL DEFAULT 1;" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( "ALTER TABLE $contact_table MODIFY `status` tinyint unsigned NOT NULL DEFAULT 1;" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 			}
 			if ( ! empty( $wpdb->last_error ) ) {
 				$db_errors[] = 'bwf_contact modify status column - ' . $wpdb->last_error;
 			}
 
 			/** Get indexed columns */
-			$table_cols = $wpdb->get_results( "SHOW INDEX FROM $contact_table" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$table_cols = $wpdb->get_results( "SHOW INDEX FROM $contact_table" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 			$index_cols = [];
 			foreach ( $table_cols as $index ) {
 				$index_cols[] = $index->Column_name;
@@ -1702,25 +1711,25 @@ class BWFAN_DB {
 
 			/** Add indexes if not exists */
 			if ( ! in_array( 'status', $index_cols ) ) {
-				$wpdb->query( "ALTER TABLE $contact_table ADD INDEX `status` (`status`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( "ALTER TABLE $contact_table ADD INDEX `status` (`status`);" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = 'bwf_contact add index `status` - ' . $wpdb->last_error;
 				}
 			}
 			if ( ! in_array( 'contact_no', $index_cols ) ) {
-				$wpdb->query( "ALTER TABLE $contact_table ADD INDEX `contact_no` (`contact_no`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( "ALTER TABLE $contact_table ADD INDEX `contact_no` (`contact_no`);" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = 'bwf_contact add index `contact_no` - ' . $wpdb->last_error;
 				}
 			}
 			if ( ! in_array( 'last_modified', $index_cols ) ) {
-				$wpdb->query( "ALTER TABLE $contact_table ADD INDEX `last_modified` (`last_modified`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( "ALTER TABLE $contact_table ADD INDEX `last_modified` (`last_modified`);" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = 'bwf_contact add index `last_modified` - ' . $wpdb->last_error;
 				}
 			}
 			if ( ! in_array( 'creation_date', $index_cols ) ) {
-				$wpdb->query( "ALTER TABLE $contact_table ADD INDEX `creation_date` (`creation_date`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( "ALTER TABLE $contact_table ADD INDEX `creation_date` (`creation_date`);" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = 'bwf_contact add index `creation_date` - ' . $wpdb->last_error;
 				}
@@ -1729,14 +1738,14 @@ class BWFAN_DB {
 
 		/** Alter Customer table */
 		$customer_table = $wpdb->prefix . 'bwf_wc_customers';
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '$customer_table'" ) === $customer_table ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$customer_col = $wpdb->get_row( "SHOW COLUMNS FROM $customer_table LIKE 'total_order_count'", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$customer_table'" ) === $customer_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
+			$customer_col = $wpdb->get_row( "SHOW COLUMNS FROM $customer_table LIKE 'total_order_count'", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 
 			if ( $customer_col ) {
 				/** Check if column already has type int(7) unsigned NOT NULL */
 				if ( false === strpos( $customer_col['Type'], 'unsigned' ) || $customer_col['Null'] !== 'NO' || $customer_col['Default'] !== 'NULL' ) {
 					do {
-						//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 						$count = $wpdb->query( "UPDATE $customer_table SET total_order_count = 0 WHERE total_order_count < 0 OR total_order_count > 9999999 LIMIT 500" );
 					} while ( $count > 0 );
 
@@ -1745,7 +1754,7 @@ class BWFAN_DB {
 					}
 
 					/** Alter column */
-					$wpdb->query( "ALTER TABLE $customer_table MODIFY `total_order_count` int(7) unsigned NOT NULL;" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+					$wpdb->query( "ALTER TABLE $customer_table MODIFY `total_order_count` int(7) unsigned NOT NULL;" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 
 					if ( ! empty( $wpdb->last_error ) ) {
 						$db_errors[] = 'bwf_wc_customers modify total_order_count column - ' . $wpdb->last_error;
@@ -1786,10 +1795,10 @@ class BWFAN_DB {
 		$conversions_table = $wpdb->prefix . 'bwfan_conversions';
 
 		/** Add tid index to engagement tracking table if not exists */
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '$engagement_table'" ) === $engagement_table ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$tid_index_exists = $wpdb->get_var( "SHOW INDEX FROM $engagement_table WHERE Key_name = 'tid'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$engagement_table'" ) === $engagement_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
+			$tid_index_exists = $wpdb->get_var( "SHOW INDEX FROM $engagement_table WHERE Key_name = 'tid'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 			if ( ! $tid_index_exists ) {
-				$wpdb->query( "ALTER TABLE $engagement_table ADD INDEX `tid` (`tid`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( "ALTER TABLE $engagement_table ADD INDEX `tid` (`tid`);" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = 'bwfan_engagement_tracking add index `tid` - ' . $wpdb->last_error;
 				}
@@ -1797,10 +1806,10 @@ class BWFAN_DB {
 		}
 
 		/** Add trackid index to conversions table if not exists */
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '$conversions_table'" ) === $conversions_table ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$trackid_index_exists = $wpdb->get_var( "SHOW INDEX FROM $conversions_table WHERE Key_name = 'trackid'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$conversions_table'" ) === $conversions_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
+			$trackid_index_exists = $wpdb->get_var( "SHOW INDEX FROM $conversions_table WHERE Key_name = 'trackid'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 			if ( ! $trackid_index_exists ) {
-				$wpdb->query( "ALTER TABLE $conversions_table ADD INDEX `trackid` (`trackid`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( "ALTER TABLE $conversions_table ADD INDEX `trackid` (`trackid`);" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = 'bwfan_conversions add index `trackid` - ' . $wpdb->last_error;
 				}
@@ -1871,9 +1880,9 @@ class BWFAN_DB {
 			$column_name = 'meta';
 
 			// Query to get the column type
-			$query = $wpdb->prepare( "DESCRIBE {$table_name} %s", $column_name );
+			$query = $wpdb->prepare( "DESCRIBE {$table_name} %s", $column_name ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix + class constant; column bound via %s
 
-			$column_info = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$column_info = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 
 			// Check if the column exists
 			if ( ! empty( $column_info ) ) {
@@ -1885,7 +1894,7 @@ class BWFAN_DB {
 					$alter_query = "ALTER TABLE {$table_name} MODIFY {$column_name} LONGTEXT";
 
 					// Execute the query
-					$wpdb->query( $alter_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+					$wpdb->query( $alter_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; column name hardcoded
 
 				}
 			}
@@ -1945,9 +1954,9 @@ class BWFAN_DB {
 		global $wpdb;
 		$db_errors = [];
 		$table = $wpdb->prefix . 'bwfan_automation_contact_trail';
-		$index_exists = $wpdb->get_var( "SHOW INDEX FROM `{$table}` WHERE Key_name = 'c_time'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$index_exists = $wpdb->get_var( "SHOW INDEX FROM `{$table}` WHERE Key_name = 'c_time'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 		if ( ! $index_exists ) {
-			$wpdb->query( "ALTER TABLE `{$table}` ADD INDEX `c_time` (`c_time`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+			$wpdb->query( "ALTER TABLE `{$table}` ADD INDEX `c_time` (`c_time`);" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 			if ( ! empty( $wpdb->last_error ) ) {
 				$db_errors[] = 'bwfan_automation_contact_trail add index `c_time` - ' . $wpdb->last_error;
 			}

@@ -36,6 +36,7 @@ class HandleActionLabels implements HandleActionStrategyInterface {
 	 * @return string
 	 */
 	public function handle( string $redirect_to, array $post_ids ): string {
+		$labels = [];
 		try {
 			$labels_bulk_actions_handler = LabelsBulkActionHandler::get_labels_bulk_actions_handler();
 			$labels_bulk_actions_handler->bulk_process_orders( $post_ids );
@@ -71,5 +72,4 @@ class HandleActionLabels implements HandleActionStrategyInterface {
 
 		return add_query_arg( 'bulk_flexible_shipping_labels', count( $post_ids ), $redirect_to );
 	}
-
 }

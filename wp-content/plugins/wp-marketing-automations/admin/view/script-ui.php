@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 $text_start_when       = __( 'START WHEN?', 'wp-marketing-automations' );
 $text_select_trigger   = __( 'Select An Event', 'wp-marketing-automations' );
 $text_select_condition = __( 'Select Conditions', 'wp-marketing-automations' );

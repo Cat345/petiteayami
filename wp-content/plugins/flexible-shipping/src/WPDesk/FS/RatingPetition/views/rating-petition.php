@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<p><?php esc_html_e( 'Rate us by tapping a star', 'flexible-shipping' ); ?></p>
 		<div class="fs-rating-petition__stars" role="group" aria-label="<?php esc_attr_e( 'Your rating', 'flexible-shipping' ); ?>">
 			<?php for ( $rating = 1; $rating <= 5; $rating++ ) : ?>
-				<button type="button" data-rating="<?php echo esc_attr( $rating ); ?>" aria-pressed="false" aria-label="<?php /* translators: %d: number of stars. */ echo esc_attr( sprintf( __( '%d out of 5 stars', 'flexible-shipping' ), $rating ) ); ?>">
+				<button type="button" data-rating="<?php echo esc_attr( (string) $rating ); ?>" aria-pressed="false" aria-label="<?php /* translators: %d: number of stars. */ echo esc_attr( sprintf( __( '%d out of 5 stars', 'flexible-shipping' ), $rating ) ); ?>">
 					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.7 5.7 6.2.6-4.6 4.3 1.3 6.2L12 16.6l-5.6 3 1.3-6.2-4.6-4.3 6.2-.6z"/></svg>
 				</button>
 			<?php endfor; ?>

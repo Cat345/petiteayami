@@ -109,7 +109,7 @@ class BWFAN_AS_V2_Action_Store extends ActionScheduler_Store {
 		/** Code is not going to this level as when clean function ran we get only top 4 statuses */
 		$sql = $this->get_query_actions_sql( $query, $query_type );
 
-		return ( 'count' === $query_type ) ? $wpdb->get_var( $sql ) : $wpdb->get_col( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return ( 'count' === $query_type ) ? $wpdb->get_var( $sql ) : $wpdb->get_col( $sql ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- get_query_actions_sql() binds every value through $wpdb->prepare(); comparators and ORDER BY are whitelisted
 	}
 
 	/**
@@ -206,7 +206,7 @@ class BWFAN_AS_V2_Action_Store extends ActionScheduler_Store {
 		}
 
 		if ( ! empty( $sql_params ) ) {
-			$sql = $wpdb->prepare( $sql, $sql_params ); // WPCS: unprepared SQL OK
+			$sql = $wpdb->prepare( $sql, $sql_params ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- query assembled from fixed fragments; every value is bound through $sql_params
 		}
 
 		return $sql;
@@ -387,10 +387,7 @@ class BWFAN_AS_V2_Action_Store extends ActionScheduler_Store {
 			return $cache_available;
 		}
 
-		$sql = "SELECT `ID` FROM {$wpdb->bwfan_automation_contact} WHERE `claim_id` = %d ORDER BY `e_time` ASC, `ID` DESC";
-		$sql = $wpdb->prepare( $sql, $claim_id ); // WPCS: unprepared SQL OK
-
-		$action_ids = $wpdb->get_col( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$action_ids = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM {$wpdb->bwfan_automation_contact} WHERE `claim_id` = %d ORDER BY `e_time` ASC, `ID` DESC", $claim_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$action_ids = array_map( 'intval', $action_ids );
 
 		$this->log( 'found ' . count( $action_ids ) . ' automation contacts (' . implode( ',', $action_ids ) . ') against claim id ' . $claim_id );
@@ -410,9 +407,7 @@ class BWFAN_AS_V2_Action_Store extends ActionScheduler_Store {
 		global $wpdb;
 
 		/** passing status 1 & 6 as those actions needs to execute */
-		$sql = "SELECT COUNT(DISTINCT claim_id) FROM {$wpdb->bwfan_automation_contact} WHERE claim_id != 0 AND status IN (1, 6)";
-
-		return (int) $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (int) $wpdb->get_var( "SELECT COUNT(DISTINCT claim_id) FROM {$wpdb->bwfan_automation_contact} WHERE claim_id != 0 AND status IN (1, 6)" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	/**
@@ -427,10 +422,7 @@ class BWFAN_AS_V2_Action_Store extends ActionScheduler_Store {
 
 		global $wpdb;
 
-		$sql = "SELECT claim_id FROM {$wpdb->bwfan_automation_contact} WHERE ID=%d";
-		$sql = $wpdb->prepare( $sql, $action_id ); // WPCS: unprepared SQL OK
-
-		return (int) $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT claim_id FROM {$wpdb->bwfan_automation_contact} WHERE ID=%d", $action_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	/**
@@ -517,9 +509,7 @@ class BWFAN_AS_V2_Action_Store extends ActionScheduler_Store {
 		$this->log( __FUNCTION__ );
 
 		global $wpdb;
-		$sql    = "SELECT status FROM {$wpdb->bwfan_automation_contact} WHERE ID=%d";
-		$sql    = $wpdb->prepare( $sql, $action_id ); // WPCS: unprepared SQL OK
-		$status = $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM {$wpdb->bwfan_automation_contact} WHERE ID=%d", $action_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( $status === null ) {
 			throw new InvalidArgumentException( esc_html__( 'Invalid action ID. No status found.', 'action-scheduler' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		} else {

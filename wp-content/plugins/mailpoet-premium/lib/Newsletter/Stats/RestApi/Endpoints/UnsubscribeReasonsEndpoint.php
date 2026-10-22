@@ -9,7 +9,7 @@ use MailPoet\API\REST\Request;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Premium\Newsletter\Stats\UnsubscribeReasons;
-use MailPoet\Util\License\Features\CapabilitiesManager;
+use MailPoet\Premium\Util\License\DetailedAnalyticsGuard;
 use MailPoet\WP\Functions as WPFunctions;
 
 class UnsubscribeReasonsEndpoint extends AbstractNewsletterStatsListingEndpoint {
@@ -18,11 +18,11 @@ class UnsubscribeReasonsEndpoint extends AbstractNewsletterStatsListingEndpoint 
 
   public function __construct(
     NewslettersRepository $newslettersRepository,
-    CapabilitiesManager $capabilitiesManager,
+    DetailedAnalyticsGuard $detailedAnalyticsGuard,
     WPFunctions $wp,
     UnsubscribeReasons $unsubscribeReasons
   ) {
-    parent::__construct($newslettersRepository, $capabilitiesManager, $wp);
+    parent::__construct($newslettersRepository, $detailedAnalyticsGuard, $wp);
     $this->unsubscribeReasons = $unsubscribeReasons;
   }
 

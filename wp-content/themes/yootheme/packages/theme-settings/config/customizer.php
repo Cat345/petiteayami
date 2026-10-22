@@ -262,6 +262,9 @@ return [
                 'service' => [
                     'label' => 'Consent Service ID',
                     'description' => 'Optionally, allow this service to be individually accepted in the consent manager by setting a unique name for the service, e.g. <code>my-service</code>.',
+                    'attrs' => [
+                        'pattern' => '\S*',
+                    ],
                 ],
                 'status' => [
                     'label' => 'Status',

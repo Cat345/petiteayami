@@ -60,7 +60,7 @@ abstract class SystemCheck
             );
         }
 
-        if (version_compare('8.1', PHP_VERSION, '>')) {
+        if (version_compare('8.2', PHP_VERSION, '>')) {
             $res[] = trans(
                 'The current PHP version %version% is outdated. Upgrade the installation, preferably to the <a href="https://php.net" target="_blank">latest PHP version</a>.',
                 ['%version%' => PHP_VERSION],

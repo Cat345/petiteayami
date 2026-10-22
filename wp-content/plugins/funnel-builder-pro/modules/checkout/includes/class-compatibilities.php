@@ -56,6 +56,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'plugins/class-chronopost-by-adexos.php'   => function_exists( 'run_chronopost' ),
 				'plugins/class-complianz-gdpr-ccpa-cookie-consent.php' => class_exists( 'COMPLIANZ' ),
 				'plugins/class-cornerstone.php'            => defined( 'CS_VERSION' ),
+				'plugins/class-envia-shipping.php'         => class_exists( 'Enviacom' ),
 				'plugins/class-woocommerce-dpdfrance.php'  => class_exists( 'OS_dpdfrance_shipping_wrapper' ),
 				'plugins/class-conditional-discounts-for-wc-by-orion.php' => function_exists( 'run_wad' ),
 				'plugins/class-customer-reviews-woocommerce.php' => ( class_exists( 'CR_Reviews' ) || defined( 'IVOLE_CONTENT_DIR' ) ) && defined( 'ELEMENTOR_VERSION' ),
@@ -140,6 +141,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'gateways/class-borica-payments.php'       => defined( 'BORICA_PLUGIN_DIR' ),
 				'gateways/class-publicsquare-payments.php' => defined( 'PUBLICSQUARE_VERSION' ),
 				'plugins/class-cookie-law-info.php'        => defined( 'CLI_VERSION' ),
+				'plugins/class-fibofilters.php'            => class_exists( 'FiboFilters\\Config\\Initializer' ),
 			);
 			self::add_files( $files );
 		}
@@ -320,6 +322,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'template-found/class-checkout-wc.php'     => class_exists( 'Objectiv\Plugins\Checkout\Main' ),
 				'template-found/class-wp-content-copy-protector.php' => function_exists( 'wccp_main_settings' ),
 				'template-found/class-currency-per-product.php' => class_exists( 'Alg_WC_CPP' ),
+				'template-found/class-departamentos-ciudades-colombia.php' => class_exists( 'WC_States_Places_Colombia' ),
 				'template-found/class-dhl-wc.php'          => class_exists( 'PR_DHL_Front_End_Paket' ),
 				'template-found/class-donation-for-wc.php' => class_exists( 'WcDonation' ),
 				'template-found/class-ebanx.php'           => class_exists( 'WC_EBANX' ),
@@ -414,6 +417,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'template-found/class-storeapps-coupons.php' => class_exists( 'WC_SC_Coupon_Actions' ),
 				'template-found/innosend.php'              => class_exists( '\App\APS_Instance' ),
 				'template-found/class-shipping-pickup-point-order-review.php' => class_exists( 'WC_Ps' ) || class_exists( 'Speedy' ),
+				'template-found/class-sdek-edostavka-pickup-point.php' => function_exists( 'wc_edostavka_shipping' ) && class_exists( 'WC_Edostavka_Checkout' ),
 			);
 			self::add_files( $files );
 		}

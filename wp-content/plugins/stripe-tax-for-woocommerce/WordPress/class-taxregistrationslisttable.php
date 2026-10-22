@@ -195,19 +195,10 @@ class TaxRegistrationsListTable extends WP_List_Table {
 			$tax_type             = '';
 			$type_of_registration = '';
 			if ( 'us' === $country ) {
-				$state = $tax_registration_us_states[ $item->country_options->$country->state ] ?? '—';
-				if ( 'state_communications_tax' === $item->country_options->$country->type ) {
-					$tax_registration_us_tax = $tax_registration_us_tax_names[ StripeTaxPluginHelper::DISPLAY_STATE_COMMUNICATIONS_TAX ];
-					$state                  .= ' - ' . $tax_registration_us_tax;
-				} elseif ( 'local_amusement_tax' === $item->country_options->$country->type ) {
-					$jurisdiction            = $item->country_options->$country->local_amusement_tax->jurisdiction;
-					$tax_registration_us_tax = $tax_registration_us_tax_names[ StripeTaxPluginHelper::DISPLAY_LOCAL_AMUSEMENT_TAX_PREFIX . $jurisdiction ] ?? '';
-					$state                  .= ' - ' . $tax_registration_us_tax;
-				} elseif ( 'local_lease_tax' === $item->country_options->$country->type ) {
-					$jurisdiction            = $item->country_options->$country->local_lease_tax->jurisdiction;
-					$tax_registration_us_tax = $tax_registration_us_tax_names[ StripeTaxPluginHelper::DISPLAY_LOCAL_LEASE_TAX_PREFIX . $jurisdiction ] ?? '';
-					$state                  .= ' - ' . $tax_registration_us_tax;
-				}
+				$state_name   = $tax_registration_us_states[ $item->country_options->$country->state ?? '' ] ?? '';
+				$us_type      = $item->country_options->$country->type;
+				$jurisdiction = $item->country_options->$country->$us_type->jurisdiction ?? '';
+				$state        = StripeTaxPluginHelper::get_tax_registration_us_state_label( $state_name, $us_type, $jurisdiction );
 				if ( array_key_exists( $item->country_options->$country->type, $tax_registration_us_tax_types ) ) {
 					$tax_type = $tax_registration_us_tax_types[ $item->country_options->$country->type ];
 				}

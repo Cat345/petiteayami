@@ -1272,6 +1272,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 					'single_step' => __( 'Step 1', 'woofunnels-aero-checkout' ),
 					'two_step'    => __( 'Step 2', 'woofunnels-aero-checkout' ),
 					'third_step'  => __( 'Step 3', 'woofunnels-aero-checkout' ),
+					'fourth_step' => __( 'Step 4', 'woofunnels-aero-checkout' ),
 				),
 				'empty_step_error'                      => __( 'can\'t be blank. Add a few fields or remove the step and save again.', 'woofunnels-aero-checkout' ),
 				'input_field_error'                     => array(
@@ -1416,6 +1417,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 				'single_step' => __( 'One Step', 'wordpress' ),
 				'two_step'    => __( 'Two Step', 'wordpress' ),
 				'third_step'  => __( 'Three Step', 'wordpress' ),
+				'fourth_step' => __( 'Four Step', 'woofunnels-aero-checkout' ),
 			);
 			$data['design']['section']        = array();
 			$data['design']['settings']       = array();
@@ -2555,6 +2557,19 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 				$data                               = apply_filters( 'wfacp_default_form_fieldset', $data );
 			}
 
+			/**
+			 * Forms saved before a fourth step existed carry three steps. Offer the fourth, switched
+			 * off, where the site unlocks it, so the form builder has a step to add.
+			 */
+			if ( is_array( $data ) && isset( $data['steps'] ) && is_array( $data['steps'] ) && ! isset( $data['steps']['fourth_step'] ) && 4 === self::get_max_steps( $page_id ) ) {
+				$data['steps']['fourth_step'] = array(
+					'name'          => __( 'Step 4', 'woofunnels-aero-checkout' ),
+					'slug'          => 'fourth_step',
+					'friendly_name' => __( 'Four Step Checkout', 'woofunnels-aero-checkout' ),
+					'active'        => 'no',
+				);
+			}
+
 			return $data;
 		}
 
@@ -2711,6 +2726,92 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 					'active'        => true === $active_steps ? 'yes' : 'no',
 				),
 			);
+		}
+
+		/**
+		 * Every step a checkout form can have, in order. Navigation, counting and the step bar
+		 * all read the order from here, so a step's neighbours are never spelled out by hand.
+		 *
+		 * @return string[]
+		 */
+		public static function get_all_step_slugs() {
+			return array( 'single_step', 'two_step', 'third_step', 'fourth_step' );
+		}
+
+		/**
+		 * How many steps a checkout form may have.
+		 *
+		 * Three, unless a site unlocks a fourth for every checkout:
+		 *
+		 *     add_filter( 'wfacp_enable_fourth_step', '__return_true' );
+		 *
+		 * The fourth is honoured only for a checkout designed with Elementor. The other builders
+		 * render at most three steps, so they never get the chance to save a form they cannot show.
+		 *
+		 * @param int $page_id Checkout page id; the current checkout when empty.
+		 *
+		 * @return int 3 or 4
+		 */
+		public static function get_max_steps( $page_id = 0 ) {
+			if ( true !== apply_filters( 'wfacp_enable_fourth_step', false ) ) {
+				return 3;
+			}
+
+			$page_id = absint( $page_id );
+			if ( 0 === $page_id ) {
+				$page_id = absint( WFACP_Common::get_id() );
+			}
+			if ( 0 === $page_id ) {
+				return 3;
+			}
+
+			$design = WFACP_Common::get_page_design( $page_id );
+			if ( ! is_array( $design ) || ! isset( $design['selected_type'] ) || 'elementor' !== $design['selected_type'] ) {
+				return 3;
+			}
+
+			return 4;
+		}
+
+		/**
+		 * The step after this one, or '' when it is the last one there can be.
+		 *
+		 * @param string $step
+		 *
+		 * @return string
+		 */
+		public static function get_next_step_slug( $step ) {
+			$steps = self::get_all_step_slugs();
+			$index = array_search( $step, $steps, true );
+
+			return ( false !== $index && isset( $steps[ $index + 1 ] ) ) ? $steps[ $index + 1 ] : '';
+		}
+
+		/**
+		 * The step before this one, or 'single_step' for the first.
+		 *
+		 * @param string $step
+		 *
+		 * @return string
+		 */
+		public static function get_previous_step_slug( $step ) {
+			$steps = self::get_all_step_slugs();
+			$index = array_search( $step, $steps, true );
+
+			return ( false !== $index && $index > 0 ) ? $steps[ $index - 1 ] : 'single_step';
+		}
+
+		/**
+		 * The 1-based position of a step, 1 for anything unknown.
+		 *
+		 * @param string $step
+		 *
+		 * @return int
+		 */
+		public static function get_step_number( $step ) {
+			$index = array_search( $step, self::get_all_step_slugs(), true );
+
+			return false === $index ? 1 : $index + 1;
 		}
 
 		public static function get_advanced_fields() {
@@ -3184,11 +3285,16 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
   <path fill-rule="evenodd" clip-rule="evenodd" d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" fill="currentColor"/>
 </svg>';
 
-				$product_id = $cart_item['product_id'];
+				$product_id   = $cart_item['product_id'];
+				$remove_label = __( 'Remove item from cart', 'woofunnels-aero-checkout' );
+				if ( isset( $cart_item['data'] ) && $cart_item['data'] instanceof WC_Product ) {
+					/* translators: %s: product name */
+					$remove_label = sprintf( __( 'Remove %s from cart', 'woofunnels-aero-checkout' ), wp_strip_all_tags( $cart_item['data']->get_name() ) );
+				}
 
 				?>
 				<div class="wfacp_order_summary_item_delete wfacp_delete_item_wrap">
-					<a href="javascript:void(0)" class="wfacp_remove_item_from_order_summary" data-cart_key="<?php echo esc_attr( $cart_item_key ); ?>" data-product_id="<?php echo esc_attr( $product_id ); ?>"><?php echo $item_icon; ?></a>
+					<a href="javascript:void(0)" role="button" aria-label="<?php echo esc_attr( $remove_label ); ?>" class="wfacp_remove_item_from_order_summary" data-cart_key="<?php echo esc_attr( $cart_item_key ); ?>" data-product_id="<?php echo esc_attr( $product_id ); ?>"><?php echo $item_icon; ?></a>
 				</div>
 				<?php
 			}
@@ -3499,17 +3605,29 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 		/**
 		 * Return subscription version if woocommerce payment or Main Subscription
 		 *
+		 * WooCommerce Subscriptions bundles the subscriptions-core library, so
+		 * WC_Subscriptions_Core_Plugin exists alongside the plugin and its
+		 * get_plugin_version() reports the *library* version (8.x) rather than the plugin
+		 * version (9.x). Reading it first made every WC Subscriptions 9.0+ site look like
+		 * 8.x, so version gates such as the 9.0.0 subscription-string check silently
+		 * flipped back on. Only subscriptions-core on its own (WooPayments) lacks
+		 * WC_Subscriptions, so that class is what tells the two apart.
+		 *
 		 * @return string
 		 */
 		public static function get_subscription_version() {
 
+			if ( class_exists( 'WC_Subscriptions' ) && isset( WC_Subscriptions::$version ) ) {
+				return WC_Subscriptions::$version;
+			}
+
 			if ( class_exists( 'WC_Subscriptions_Core_Plugin' ) ) {
 				$instance = WC_Subscriptions_Core_Plugin::instance();
 
-				return $instance->get_plugin_version();
+				return method_exists( $instance, 'get_library_version' ) ? $instance->get_library_version() : $instance->get_plugin_version();
 			}
 
-			return WC_Subscriptions::$version;
+			return '0';
 		}
 
 		/**

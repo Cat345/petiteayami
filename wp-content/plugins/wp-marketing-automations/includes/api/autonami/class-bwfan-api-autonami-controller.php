@@ -472,14 +472,16 @@ class BWFAN_API_Autonami_Controller extends BWFAN_API_Controller {
 			if ( intval( $automation_id ) > 0 ) {
 				global $wpdb;
 				$metatable = $wpdb->prefix . 'bwfan_automationmeta';
-				//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; automation_id is absint() insert_id
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; automation_id is absint() insert_id
 				$wpdb->query( "INSERT INTO $metatable ( bwfan_automation_id, meta_key, meta_value ) VALUES
 					( $automation_id, 'steps', '' ),
 					( $automation_id, 'links', '' ),
 					( $automation_id, 'count', 0 ),
                    	( $automation_id, 'requires_update', 0 ),
                    	( $automation_id, 'step_iteration_array', '' ),
-                   	( $automation_id, 'merger_points', '' )" );
+                   	( $automation_id, 'merger_points', '' )" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; automation_id is absint() insert_id
+				// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 		} else {
 			$automation_id = BWFAN_Core()->automations->create_automation( $title );
@@ -994,7 +996,7 @@ class BWFAN_API_Autonami_Controller extends BWFAN_API_Controller {
 
 			$tasks_table = "{$wpdb->prefix}bwfan_tasks";
 			$tasks_query = "SELECT `automation_id`, count(`ID`) AS `total_scheduled`, `status` FROM $tasks_table WHERE `automation_id` IN ($ids) GROUP BY `automation_id`, `status`";
-			$tasks       = $wpdb->get_results( $tasks_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$tasks       = $wpdb->get_results( $tasks_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; ids absint()ed and imploded
 			$total_tasks = array();
 			foreach ( $tasks as $automation_tasks ) {
 				$status = absint( $automation_tasks['status'] ) === 1 ? 'paused' : 'scheduled';
@@ -1006,7 +1008,7 @@ class BWFAN_API_Autonami_Controller extends BWFAN_API_Controller {
 			/** Get completed and failed task count */
 			$logs_table = "{$wpdb->prefix}bwfan_logs";
 			$logs_query = "SELECT `automation_id`, count(`ID`) AS `total_logs`, `status` FROM $logs_table WHERE `automation_id` IN ($ids) AND `status` IN (0, 1) GROUP BY `automation_id`, `status`";
-			$logs       = $wpdb->get_results( $logs_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$logs       = $wpdb->get_results( $logs_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; ids absint()ed and imploded
 			$total_logs = array();
 			foreach ( $logs as $automation_logs ) {
 				$status = absint( $automation_logs['status'] ) === 1 ? 'completed' : 'failed';

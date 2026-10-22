@@ -288,11 +288,11 @@ class CommonMethodSettings implements MethodSettings {
 	}
 
 	/**
-	 * @param array        $settings   .
-	 * @param string       $field_name .
-	 * @param string|array $default    .
+	 * @param array  $settings   .
+	 * @param string $field_name .
+	 * @param mixed  $default    .
 	 *
-	 * @return string
+	 * @return mixed
 	 */
 	private function get_value_from_settings( array $settings, $field_name, $default = '' ) {
 		return isset( $settings[ $field_name ] ) ? $settings[ $field_name ] : $default;

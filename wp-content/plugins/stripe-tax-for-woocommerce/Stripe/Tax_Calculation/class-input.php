@@ -88,12 +88,21 @@ class Input extends Data {
 	 * @param array  $tax_location_override The location provided by WC.
 	 */
 	protected static function get_customer_tax_location( $customer_or_order, $tax_location_override = null ) {
-		if ( ! StripeTax_Options::get_option( StripeTax_Options::IGNORE_WC_TAX_BASED_ON ) ) {
-			$tax_based_on = get_option( 'woocommerce_tax_based_on' );
-		} elseif ( $tax_location_override && static::is_address_partially_filled_in( $tax_location_override ) ) { // Raw POST data from admin.
+		if ( is_array( $tax_location_override ) && isset( $tax_location_override['_tax_based_on'] ) ) {
+			$forced = strtolower( trim( (string) $tax_location_override['_tax_based_on'] ) );
+			if ( in_array( $forced, array( 'shipping', 'billing', 'base' ), true ) ) {
+				$tax_based_on = $forced;
+			}
+		}
+
+		if ( ! isset( $tax_based_on ) ) {
+			if ( ! StripeTax_Options::get_option( StripeTax_Options::IGNORE_WC_TAX_BASED_ON ) ) {
+				$tax_based_on = get_option( 'woocommerce_tax_based_on' );
+			} elseif ( $tax_location_override && static::is_address_partially_filled_in( $tax_location_override ) ) { // Raw POST data from admin.
 				$tax_based_on = 'shipping';
-		} else {
+			} else {
 				$tax_based_on = static::detect_tax_based_on_option( $customer_or_order );
+			}
 		}
 
 		return static::build_customer_tax_location( $customer_or_order, $tax_based_on, $tax_location_override );
@@ -226,21 +235,25 @@ class Input extends Data {
 					$tax_location['line2'] = $customer_or_order->get_shipping_address_2();
 				}
 
-					$tax_location['source'] = static::ADDRESS_SOURCE_SHIPPING;
+				$tax_location['source'] = static::ADDRESS_SOURCE_SHIPPING;
 
 				break;
 
 			case 'billing':
-				$tax_location['country']  = $customer_or_order->get_billing_country();
-				$tax_location['state']    = $customer_or_order->get_billing_state();
-				$tax_location['postcode'] = $customer_or_order->get_billing_postcode();
-				$tax_location['city']     = $customer_or_order->get_billing_city();
-				$tax_location['line1']    = isset( $tax_location['line1'] )
-					? (string) $tax_location['line1']
-					: $customer_or_order->get_billing_address_1();
-				$tax_location['line2']    = isset( $tax_location['line2'] )
-					? (string) $tax_location['line2']
-					: $customer_or_order->get_billing_address_2();
+				if ( ! $tax_location ) {
+					$tax_location['country']  = $customer_or_order->get_billing_country();
+					$tax_location['state']    = $customer_or_order->get_billing_state();
+					$tax_location['postcode'] = $customer_or_order->get_billing_postcode();
+					$tax_location['city']     = $customer_or_order->get_billing_city();
+				}
+
+				if ( ! isset( $tax_location['line1'] ) || '' === trim( (string) $tax_location['line1'] ) ) {
+					$tax_location['line1'] = $customer_or_order->get_billing_address_1();
+				}
+
+				if ( ! isset( $tax_location['line2'] ) || '' === trim( (string) $tax_location['line2'] ) ) {
+					$tax_location['line2'] = $customer_or_order->get_billing_address_2();
+				}
 
 				$tax_location['source'] = static::ADDRESS_SOURCE_BILLING;
 

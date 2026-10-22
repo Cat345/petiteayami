@@ -95,7 +95,7 @@ $prepared_items = $instance->get_prepared_cart_items();
 
 									if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 										$hideImageCls = 'wfacp_summary_img_true';
-										$thumbnail    = $item_data ? $item_data['thumbnail'] : apply_filters( 'wfacp_cart_image', WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key ), $_product );
+										$thumbnail    = $item_data ? $item_data['thumbnail'] : apply_filters( 'wfacp_cart_image', WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key ), $_product, $cart_item, $cart_item_key );
 										?>
 										<div class="product-image">
 											<div class="wfacp-pro-thumb">

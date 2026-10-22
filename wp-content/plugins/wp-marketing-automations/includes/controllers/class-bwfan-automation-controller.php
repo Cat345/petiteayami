@@ -17,6 +17,7 @@ class BWFAN_Automation_Controller {
 	public static $TYPE_EXIT = 5;
 	public static $TYPE_JUMP = 6;
 	public static $TYPE_SPLIT = 7;
+	public static $TYPE_BRANCHES = 8;
 	/** Automation DB Row */
 	public $automation = array();
 	/** Automation Contact DB Row */
@@ -403,7 +404,7 @@ class BWFAN_Automation_Controller {
 		 * Instead of parking the contact on "This is a pro feature", skip the step and
 		 * advance to the next node — identical fast-forward to a disabled step.
 		 */
-		if ( ! bwfan_is_autonami_pro_active() && in_array( absint( $this->type ), [ self::$TYPE_CONDITIONAL, self::$TYPE_SPLIT, self::$TYPE_GOAL, self::$TYPE_JUMP, self::$TYPE_EXIT ], true ) ) {
+		if ( ! bwfan_is_autonami_pro_active() && in_array( absint( $this->type ), [ self::$TYPE_CONDITIONAL, self::$TYPE_SPLIT, self::$TYPE_BRANCHES, self::$TYPE_GOAL, self::$TYPE_JUMP, self::$TYPE_EXIT ], true ) ) {
 			$this->process_disabled_step( __( 'This is a pro feature', 'wp-marketing-automations' ) );
 
 			return;
@@ -428,6 +429,9 @@ class BWFAN_Automation_Controller {
 				break;
 			case self::$TYPE_SPLIT:
 				$this->process_split_path();
+				break;
+			case self::$TYPE_BRANCHES:
+				$this->process_branches();
 				break;
 			case self::$TYPE_EXIT:
 				$this->process_exit();
@@ -524,6 +528,7 @@ class BWFAN_Automation_Controller {
 		switch ( absint( $this->type ) ) {
 			case self::$TYPE_CONDITIONAL:
 			case self::$TYPE_SPLIT:
+			case self::$TYPE_BRANCHES:
 				/** Branching — jump to where the branches converge (or end). */
 				return $this->traverse_ins->get_merger_or_end( $this->step_id );
 
@@ -829,6 +834,60 @@ class BWFAN_Automation_Controller {
 		$this->e_time = current_time( 'timestamp', 1 );
 
 		$this->end_current_process = true;
+	}
+
+	/**
+	 * Process multi conditional (branches) step
+	 *
+	 * @return void
+	 */
+	public function process_branches() {
+		/** Lite sites never reach here — the pro-only fast-forward before the type switch skips this step to its merger. */
+		$current_step = $this->traverse_ins->get_current_step();
+
+		BWFAN_Core()->rules->load_rules_classes();
+
+		$ins                = new BWFAN_Branches_Controller();
+		$ins->contact_id    = $this->automation_contact['cid'];
+		$ins->automation_id = $this->automation_contact['aid'];
+		$ins->step_id       = absint( $current_step['stepId'] );
+
+		$ins->populate_step_data( $this->current_step );
+		$ins->populate_automation_contact_data( $this->automation_contact );
+
+		$eval_errors = [];
+		$branch      = $ins->get_matched_branch( $eval_errors );
+
+		$this->traverse_ins->conditional_result_node_id = $current_step['id'] . '-branch-' . $branch;
+		$this->update_conditional_step_result( $this->traverse_ins->conditional_result_node_id );
+
+		$trail_data = [ 'branch' => $branch ];
+		if ( ! empty( $eval_errors ) ) {
+			/**
+			 * Trail `data` column is varchar(255): cap entries and trim messages
+			 * so the stored JSON always decodes (wpdb would otherwise truncate
+			 * it mid-string and the journey card loses the branch entirely).
+			 * `branch` stays the first key - the analytics LIKE is anchored to it.
+			 */
+			$errors = array_slice( $eval_errors, 0, 2 );
+			foreach ( $errors as $i => $err ) {
+				if ( isset( $err['msg'] ) && is_string( $err['msg'] ) && strlen( $err['msg'] ) > 40 ) {
+					$errors[ $i ]['msg'] = substr( $err['msg'], 0, 40 );
+				}
+			}
+			$trail_data['errors'] = $errors;
+			if ( count( $eval_errors ) > 2 ) {
+				$trail_data['errors_count'] = count( $eval_errors );
+			}
+			/** Belt: routing info is the critical bit - drop errors before risking truncation */
+			if ( strlen( (string) json_encode( $trail_data ) ) > 255 ) {
+				unset( $trail_data['errors'] );
+			}
+		}
+		$this->set_trail_item( $trail_data );
+
+		$this->status   = BWFAN_Automation_Controller::$STATUS_ACTIVE;
+		$this->attempts = 0;
 	}
 
 	/**

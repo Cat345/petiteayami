@@ -9,7 +9,10 @@ $mobile = '~theme.mobile';
 // Link
 $attrs_link = [];
 $attrs_link['href'] = $config('~theme.site_url');
-$attrs_link['aria-label'] = __('Back to home', 'yootheme');
+$attrs_link['aria-label'] = sprintf(
+    __('Back to home', 'yootheme'),
+    $config('~theme.site_title', '')
+);
 $attrs_link['class'][] = $class ?? '';
 $attrs_link['class'][] = 'uk-logo';
 

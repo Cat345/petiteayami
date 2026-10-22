@@ -78,7 +78,7 @@ class ModifyOrderTable implements Hookable {
 
 	/**
 	 * @param string                $column .
-	 * @param int|\WP_Post|WC_Order $post   .
+	 * @param int|\WP_Post|WC_Order $post_id .
 	 *
 	 * @return void
 	 */
@@ -119,7 +119,7 @@ class ModifyOrderTable implements Hookable {
 	 */
 	private function get_shippings( WC_Order $order ): array {
 		$shippings = [];
-		/** @var WPDesk_Flexible_Shipping_Shipment[]|WPDesk_Flexible_Shipping_Shipment_Interface[] $shipments */
+		/** @var array<WPDesk_Flexible_Shipping_Shipment&WPDesk_Flexible_Shipping_Shipment_Interface> $shipments */
 		$shipments = fs_get_order_shipments( $order->get_id() );
 
 		foreach ( $shipments as $shipment ) {

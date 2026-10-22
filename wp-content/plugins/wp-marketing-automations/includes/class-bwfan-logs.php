@@ -55,8 +55,8 @@ class BWFAN_Logs {
 	public function insert_logmeta( $log_id, $key, $value ) {
 		$meta_data = array(
 			'bwfan_log_id' => $log_id,
-			'meta_key'     => $key,
-			'meta_value'   => maybe_serialize( $value ),
+			'meta_key'     => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+			'meta_value'   => maybe_serialize( $value ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		);
 		BWFAN_Model_Logmeta::insert( $meta_data );
 	}
@@ -131,6 +131,7 @@ class BWFAN_Logs {
 			$stringPlaceholders     = array_fill( 0, $automationCount, '%s' );
 			$placeholdersautomation = implode( ', ', $stringPlaceholders );
 			$sql_query              = "Select ID FROM {table_name} WHERE automation_id IN ($placeholdersautomation)";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via prepare(); {table_name} model table
 			$sql_query              = $wpdb->prepare( $sql_query, $automation_ids ); // WPCS: unprepared SQL OK
 			$tasks                  = BWFAN_Model_Logs::get_results( $sql_query );
 			if ( is_array( $tasks ) && count( $tasks ) > 0 ) {
@@ -147,11 +148,13 @@ class BWFAN_Logs {
 			$stringPlaceholders     = array_fill( 0, $automationCount, '%s' );
 			$placeholdersautomation = implode( ', ', $stringPlaceholders );
 			$sql_query              = "Delete FROM {table_name} WHERE ID IN ($placeholdersautomation)";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via prepare(); {table_name} model table
 			$sql_query              = $wpdb->prepare( $sql_query, $log_ids ); // WPCS: unprepared SQL OK
 			BWFAN_Model_Logs::delete_multiple( $sql_query );
 
 			/** Delete Logs Meta */
 			$sql_query = "Delete FROM {table_name} WHERE bwfan_log_id IN ($placeholdersautomation)";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via prepare(); {table_name} model table
 			$sql_query = $wpdb->prepare( $sql_query, $log_ids ); // WPCS: unprepared SQL OK
 			BWFAN_Model_Logmeta::delete_multiple( $sql_query );
 		}
@@ -171,16 +174,16 @@ class BWFAN_Logs {
 		BWFAN_Core()->automations->return_all = false;
 
 		/* Filter option - Automation handling */
-		$automation_id = ( isset( $_GET['filter_aid'] ) && ! empty( $_GET['filter_aid'] ) ) ? sanitize_text_field( $_GET['filter_aid'] ) : null; //phpcs:ignore WordPress.Security.NonceVerification
+		$automation_id = ( isset( $_GET['filter_aid'] ) && ! empty( $_GET['filter_aid'] ) ) ? sanitize_text_field( wp_unslash( $_GET['filter_aid'] ) ) : null; //phpcs:ignore WordPress.Security.NonceVerification
 		if ( is_null( $automation_id ) && isset( $_GET['edit'] ) && ! empty( $_GET['edit'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification
-			$automation_id = sanitize_text_field( $_GET['edit'] ); //phpcs:ignore WordPress.Security.NonceVerification
+			$automation_id = sanitize_text_field( wp_unslash( $_GET['edit'] ) ); //phpcs:ignore WordPress.Security.NonceVerification
 		}
 
 		/* Filter option - Action handling */
-		$log_action = ( isset( $_GET['filter_action'] ) && ! empty( $_GET['filter_action'] ) ) ? sanitize_text_field( $_GET['filter_action'] ) : null; //phpcs:ignore WordPress.Security.NonceVerification
+		$log_action = ( isset( $_GET['filter_action'] ) && ! empty( $_GET['filter_action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['filter_action'] ) ) : null; //phpcs:ignore WordPress.Security.NonceVerification
 
 		/* Filter option - Status handling */
-		$log_status = ( isset( $_GET['status'] ) && '' !== $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : 'l_1'; //phpcs:ignore WordPress.Security.NonceVerification
+		$log_status = ( isset( $_GET['status'] ) && '' !== $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : 'l_1'; //phpcs:ignore WordPress.Security.NonceVerification
 		if ( strpos( $log_status, '_' ) !== false ) {
 			$log_status = explode( '_', $log_status );
 			$log_status = intval( $log_status[1] );
@@ -198,14 +201,14 @@ class BWFAN_Logs {
 
 		/** Filter option - Search */
 		$search = false;
-		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) { // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) { // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			$search                         = true;
 			$query_select                   = 'SELECT l.ID, l.integration_slug, l.integration_action, l.automation_id, l.status, l.e_date ';
 			$query_from                     .= ' as l';
 			$query_from                     .= ' LEFT JOIN ' . $wpdb->prefix . 'bwfan_logmeta as m';
 			$query_from                     .= ' ON l.ID = m.bwfan_log_id';
 			$query_where                    .= ' AND m.meta_value LIKE %s';
-			$params[]                       = '%' . sanitize_text_field( $_GET['s'] ) . '%'; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
+			$params[]                       = '%' . $wpdb->esc_like( sanitize_text_field( wp_unslash( $_GET['s'] ) ) ) . '%'; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			$query_order                    = ' ORDER BY l.e_date DESC, l.ID DESC';
 			$this->show_filtered_logs_count = true;
 		}
@@ -272,6 +275,7 @@ class BWFAN_Logs {
 			$placeholdersautomation = implode( ', ', $stringPlaceholders );
 			$metakey                = sanitize_key( $metakey );
 			$log_ids                = array_map( 'absint', $log_ids );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders generated in code; array arg supplies 2+N values for 2+N slots
 			$sql_query              = $wpdb->prepare( "Update {table_name} SET meta_value = %s WHERE meta_key = %s AND bwfan_log_id IN ($placeholdersautomation)", array_merge( array( $metavalue, $metakey ), $log_ids ) ); // WPCS: unprepared SQL OK
 			BWFAN_Model_Logmeta::update_multiple( $sql_query );
 		}
@@ -340,19 +344,21 @@ class BWFAN_Logs {
 	public function fetch_logs_count( $status ) {
 		global $wpdb;
 		$query         = 'SELECT count(ID) as logs_count FROM {table_name} WHERE status = %d';
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- hardcoded query; values bound via prepare() %d
 		$query         = $wpdb->prepare( $query, $status ); // WPCS: unprepared SQL OK
 		$automation_id = null;
 
 		if ( isset( $_GET['filter_aid'] ) && ! empty( $_GET['filter_aid'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification
-			$automation_id = sanitize_text_field( $_GET['filter_aid'] ); //phpcs:ignore WordPress.Security.NonceVerification
+			$automation_id = sanitize_text_field( wp_unslash( $_GET['filter_aid'] ) ); //phpcs:ignore WordPress.Security.NonceVerification
 		}
 
 		if ( isset( $_GET['automations'] ) && ! empty( $_GET['automations'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification
-			$automation_id = sanitize_text_field( $_GET['automations'] ); //phpcs:ignore WordPress.Security.NonceVerification
+			$automation_id = sanitize_text_field( wp_unslash( $_GET['automations'] ) ); //phpcs:ignore WordPress.Security.NonceVerification
 		}
 
 		if ( ! is_null( $automation_id ) ) {
 			$query = 'SELECT count(ID) as logs_count FROM {table_name} WHERE status = %d and automation_id = %d';
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- hardcoded query; values bound via prepare() %d
 			$query = $wpdb->prepare( $query, $status, $automation_id ); // WPCS: unprepared SQL OK
 		}
 		$logs_count = BWFAN_Model_Logs::get_results( $query );
@@ -374,6 +380,7 @@ class BWFAN_Logs {
 		$prepare_placeholders = array_fill( 0, $t_to_delete_count, '%s' );
 		$prepare_placeholders = implode( ', ', $prepare_placeholders );
 		$sql_query            = "Select bwfan_log_id FROM {table_name} WHERE meta_key = %s AND meta_value IN ($prepare_placeholders)";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via prepare()
 		$sql_query            = $wpdb->prepare( $sql_query, array_merge( array( $meta_key ), $t_to_delete ) ); // WPCS: unprepared SQL OK
 		$log_ids              = BWFAN_Model_Logmeta::get_results( $sql_query );
 
@@ -388,6 +395,7 @@ class BWFAN_Logs {
 		$prepare_placeholders = array_fill( 0, $log_ids_count, '%s' );
 		$prepare_placeholders = implode( ', ', $prepare_placeholders );
 		$sql_query            = "Select ID FROM {table_name} WHERE automation_id = %d AND status = %d AND ID IN ($prepare_placeholders)";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via prepare()
 		$sql_query            = $wpdb->prepare( $sql_query, array_merge( array( intval( $automation_id ), 0 ), $log_ids ) ); // WPCS: unprepared SQL OK
 		$log_ids              = BWFAN_Model_Logs::get_results( $sql_query );
 
@@ -562,7 +570,7 @@ class BWFAN_Logs {
 				'automation_event'        => ! is_null( $event_instance ) ? $event_instance->get_name() : __( 'Data unavailable. Contact Support.', 'wp-marketing-automations' ),
 				'task_integration'        => esc_html__( 'Not Found', 'wp-marketing-automations' ),
 				'task_integration_action' => esc_html__( 'Not Found', 'wp-marketing-automations' ),
-				'task_date'               => BWFAN_Common::get_human_readable_time( $task['e_date'], get_date_from_gmt( date( 'Y-m-d H:i:s', $task['e_date'] ), BWFAN_Common::get_date_format() ) ),
+				'task_date'               => BWFAN_Common::get_human_readable_time( $task['e_date'], get_date_from_gmt( gmdate( 'Y-m-d H:i:s', $task['e_date'] ), BWFAN_Common::get_date_format() ) ),
 				'status'                  => $status,
 				'gif'                     => $gif,
 				'task_message'            => $message,

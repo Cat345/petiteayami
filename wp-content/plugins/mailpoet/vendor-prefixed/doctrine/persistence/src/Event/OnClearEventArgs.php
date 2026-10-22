@@ -6,13 +6,13 @@ use MailPoetVendor\Doctrine\Common\EventArgs;
 use MailPoetVendor\Doctrine\Persistence\ObjectManager;
 class OnClearEventArgs extends EventArgs
 {
- private $objectManager;
- public function __construct(ObjectManager $objectManager)
- {
- $this->objectManager = $objectManager;
- }
- public function getObjectManager()
- {
- return $this->objectManager;
- }
+private $objectManager;
+public function __construct(ObjectManager $objectManager)
+{
+$this->objectManager = $objectManager;
+}
+public function getObjectManager()
+{
+return $this->objectManager;
+}
 }

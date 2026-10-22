@@ -123,6 +123,8 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 			$pro_settings                                 = array();
 			$track_utms                                   = $this->get_setting( 'track_utms', false );
 			$pro_settings['first_party_tracking_enabled'] = $this->is_enabled( $track_utms );
+			// Default '1' so a fresh install with no saved row still reports enabled.
+			$pro_settings['journey_tracking_enabled'] = $this->is_enabled( $this->get_setting( 'track_journey', '1' ) );
 			if ( ! empty( $pro_settings ) ) {
 				$data['pro_settings'] = $pro_settings;
 			}

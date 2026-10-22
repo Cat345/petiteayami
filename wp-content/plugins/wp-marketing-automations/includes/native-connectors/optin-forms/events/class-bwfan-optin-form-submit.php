@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! bwfan_is_autonami_pro_active() && ! class_exists( 'BWFAN_Funnel_Optin_Form_Submit' ) ) {
 	#[AllowDynamicProperties]
@@ -164,7 +165,7 @@ if ( ! bwfan_is_autonami_pro_active() && ! class_exists( 'BWFAN_Funnel_Optin_For
 					$fieldname      = str_replace( 'wfop_', '', $field );
 					$data[ $field ] = isset( $posted_data[ $fieldname ] ) ? $posted_data[ $fieldname ] : '';
 				} else {
-					$data[ $field ] = isset( $_REQUEST[ $field ] ) ? $_REQUEST[ $field ] : '';
+					$data[ $field ] = isset( $_REQUEST[ $field ] ) ? map_deep( wp_unslash( $_REQUEST[ $field ] ), 'sanitize_textarea_field' ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public opt-in form submission; the form carries no nonce by design
 				}
 			}
 

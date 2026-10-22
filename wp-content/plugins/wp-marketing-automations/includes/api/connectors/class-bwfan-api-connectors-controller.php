@@ -236,8 +236,8 @@ class BWFAN_API_Connectors_Controller extends BWFAN_API_Controller {
 		}, $connector_details );
 		$placeholder = implode( ',', array_fill( 0, count( $connector_ids ), '%d' ) );
 
-		$connector_sql      = $wpdb->prepare( "DELETE from {table_name} where ID IN ($placeholder)", $connector_ids );
-		$connector_meta_sql = $wpdb->prepare( "DELETE from {table_name} where connector_id IN ($placeholder)", $connector_ids );
+		$connector_sql      = $wpdb->prepare( "DELETE from {table_name} where ID IN ($placeholder)", $connector_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated as %d list; ids absint()ed; array passed to prepare
+		$connector_meta_sql = $wpdb->prepare( "DELETE from {table_name} where connector_id IN ($placeholder)", $connector_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated as %d list; ids absint()ed; array passed to prepare
 		WFCO_Model_ConnectorMeta::delete_multiple( $connector_meta_sql );
 		WFCO_Model_Connectors::delete_multiple( $connector_sql );
 		do_action( 'bwfan_connector_disconnected', $slug );

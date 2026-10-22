@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 	#[\AllowDynamicProperties]
 	class BWFAN_Recoverable_Carts {
@@ -17,7 +18,7 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 				$allowed_search_by = array( 'email' );
 				$search_by         = in_array( (string) $search_by, $allowed_search_by, true ) ? (string) $search_by : 'email';
 				$search_col        = '`' . str_replace( '`', '``', $search_by ) . '`';
-				$where       .= $wpdb->prepare( " AND {$search_col} LIKE %s", '%' . $wpdb->esc_like( $search_term ) . '%' );
+				$where       .= $wpdb->prepare( " AND {$search_col} LIKE %s", '%' . $wpdb->esc_like( $search_term ) . '%' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- column whitelisted via in_array strict; term bound via %s
 			}
 			$result = [];
 			if ( $count === false ) {
@@ -25,7 +26,7 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 				$result   = BWFAN_Model_Abandonedcarts::get_abandoned_data( $where, $offset, $limit, $order_by );
 			}
 			$query                 = "SELECT COUNT(*) FROM {$wpdb->prefix}bwfan_abandonedcarts $where";
-			$result['total_count'] = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result['total_count'] = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- status absint()ed; search fragment built with prepare()
 
 			return $result;
 		}
@@ -103,6 +104,7 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 				'trash',
 				'draft'
 			) );
+			$post_statuses = is_array( $post_statuses ) ? esc_sql( $post_statuses ) : $post_statuses; // filter output is placed inside quoted SQL literals
 			$post_status   = "('" . implode( "','", array_filter( $post_statuses ) ) . "')";
 			$found_posts   = array();
 			if ( $only_count === false ) {
@@ -114,7 +116,7 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 					}
 					$args[] = absint( $offset );
 					$args[] = absint( $limit );
-					$query  = $wpdb->prepare( "SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $hpos_where ORDER BY p.date_created_gmt DESC LIMIT %d,%d", $args );
+					$query  = $wpdb->prepare( "SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $hpos_where ORDER BY p.date_created_gmt DESC LIMIT %d,%d", $args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 				} else {
 					$args = array( 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
 					if ( '' !== $where ) {
@@ -122,9 +124,9 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 					}
 					$args[] = absint( $offset );
 					$args[] = absint( $limit );
-					$query  = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $where ORDER BY p.post_modified DESC LIMIT %d,%d", $args );
+					$query  = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $where ORDER BY p.post_modified DESC LIMIT %d,%d", $args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 				}
-				$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+				$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 
 				if ( empty( $recovered_carts ) ) {
 					return array();
@@ -149,8 +151,8 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 				if ( '' !== $hpos_where ) {
 					$count_args[] = $search_like;
 				}
-				$count_query                = $wpdb->prepare( "SELECT DISTINCT COUNT(p.id) FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $hpos_where ", $count_args );
-				$found_posts['total_count'] = $wpdb->get_var( $count_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+				$count_query                = $wpdb->prepare( "SELECT DISTINCT COUNT(p.id) FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $hpos_where ", $count_args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
+				$found_posts['total_count'] = $wpdb->get_var( $count_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 
 				return $found_posts;
 			}
@@ -159,8 +161,8 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			if ( '' !== $where ) {
 				$count_args[] = $search_like;
 			}
-			$count_query                = $wpdb->prepare( "SELECT COUNT(p.ID) FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $where ", $count_args );
-			$found_posts['total_count'] = $wpdb->get_var( $count_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$count_query                = $wpdb->prepare( "SELECT COUNT(p.ID) FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $where ", $count_args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
+			$found_posts['total_count'] = $wpdb->get_var( $count_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 
 			return $found_posts;
 		}
@@ -311,8 +313,8 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			}
 
 			$placeholders = implode( ',', array_fill( 0, count( $emails ), '%s' ) );
-			$sql       = $wpdb->prepare( "SELECT id, email, f_name, l_name from $table WHERE email IN ($placeholders)", ...$emails ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$db_result = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$sql       = $wpdb->prepare( "SELECT id, email, f_name, l_name from $table WHERE email IN ($placeholders)", ...$emails ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated via array_fill; emails bound via %s
+			$db_result = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 			$contacts  = [];
 
 			if ( is_array( $db_result ) && ! empty( $db_result ) ) {
@@ -412,15 +414,15 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 				return;
 			}
 			$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-			$query        = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}postmeta WHERE `post_id` IN($placeholders) AND `meta_key` = '_bwfan_ab_cart_recovered_a_id'", $ids );
+			$query        = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}postmeta WHERE `post_id` IN($placeholders) AND `meta_key` = '_bwfan_ab_cart_recovered_a_id'", $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- ids absint()ed; placeholders generated via array_fill
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-				$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE `order_id` IN($placeholders) AND `meta_key` = '_bwfan_ab_cart_recovered_a_id'", $ids );
+				$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE `order_id` IN($placeholders) AND `meta_key` = '_bwfan_ab_cart_recovered_a_id'", $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- ids absint()ed; placeholders generated via array_fill
 			}
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 
 			/** Delete from conversion table */
-			$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwfan_conversions WHERE `wcid` IN($placeholders) ", $ids );
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwfan_conversions WHERE `wcid` IN($placeholders) ", $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- ids absint()ed; placeholders generated via array_fill
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		}
 
 		/**

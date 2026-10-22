@@ -38,15 +38,17 @@ class SectionHelper
             return $default;
         }
 
-        return array_reduce($this->sections[$name], function ($result, $content) {
+        $result = '';
+
+        foreach ($this->sections[$name] as $content) {
             if (is_callable($content)) {
                 $result = $content($result);
             } elseif (is_string($content)) {
                 $result .= $content;
             }
+        }
 
-            return $result;
-        });
+        return $result;
     }
 
     /**

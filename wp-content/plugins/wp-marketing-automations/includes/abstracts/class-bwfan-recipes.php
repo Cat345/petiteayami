@@ -363,11 +363,11 @@ abstract class BWFAN_Recipes {
 						}
 						$meta                        = array();
 						$meta['bwfan_automation_id'] = $automation_id;
-						$meta['meta_key']            = $key;
+						$meta['meta_key']            = $key; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 						if ( $key == 'title' && ! empty( $title ) ) {
-							$meta['meta_value'] = $title;
+							$meta['meta_value'] = $title; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 						} else {
-							$meta['meta_value'] = $auto_meta;
+							$meta['meta_value'] = $auto_meta; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 						}
 						BWFAN_Model_Automationmeta::insert( $meta );
 						BWFAN_Core()->automations->set_automation_data( $key, $meta['meta_value'] );
@@ -377,15 +377,15 @@ abstract class BWFAN_Recipes {
 
 				$meta                        = array();
 				$meta['bwfan_automation_id'] = $automation_id;
-				$meta['meta_key']            = 'c_date';
-				$meta['meta_value']          = current_time( 'mysql', 1 );
+				$meta['meta_key']            = 'c_date'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+				$meta['meta_value']          = current_time( 'mysql', 1 ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 				BWFAN_Model_Automationmeta::insert( $meta );
 				BWFAN_Core()->automations->set_automation_data( 'c_date', $meta['meta_value'] );
 
 				$meta                        = array();
 				$meta['bwfan_automation_id'] = $automation_id;
-				$meta['meta_key']            = 'm_date';
-				$meta['meta_value']          = current_time( 'mysql', 1 );
+				$meta['meta_key']            = 'm_date'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+				$meta['meta_value']          = current_time( 'mysql', 1 ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 				BWFAN_Model_Automationmeta::insert( $meta );
 				BWFAN_Core()->automations->set_automation_data( 'm_date', $meta['meta_value'] );
 

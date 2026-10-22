@@ -17,7 +17,7 @@ class BlockEditing implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_action( 'flexible_shipping_method_script', array( $this, 'block_shipping_method_script' ), 10, 2 );
+		add_action( 'flexible_shipping_method_script', [ $this, 'block_shipping_method_script' ], 10, 2 );
 	}
 
 	/**

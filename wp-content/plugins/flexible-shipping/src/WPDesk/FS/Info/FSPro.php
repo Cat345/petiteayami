@@ -39,5 +39,4 @@ class FSPro extends Metabox {
 
 		return '<a class="oct-metabox-btn" href="' . esc_url( $url ) . '" target="_blank">' . __( 'Upgrade Now', 'flexible-shipping' ) . '</a>';
 	}
-
 }

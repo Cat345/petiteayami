@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 class BWFAN_API_Schedule_Db_Update extends BWFAN_API_Base {

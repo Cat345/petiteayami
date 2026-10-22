@@ -4,7 +4,7 @@ Tags: woocommerce checkout, checkout, funnel builder, order bump, upsell
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.17.0
+Stable tag: 3.17.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -406,6 +406,11 @@ Reach our [Support Team](https://funnelkit.com/support/). We answer questions on
 
 == Change log ==
 
+= 3.17.0.1 =
+* Improved: Funnel: Improved compatibility with Bricks Builder. (#9665)
+* Improved: Funnel: Improved compatibility with Elementor Pro. (#9662)
+* Improved: Funnel: Improved compatibility with FunnelKit Stripe. (#9678)
+* Fixed: Funnel: Resolved PHP 8.3 undefined warnings for some cases where WP_Post object is stdClass instead of post. (#9667)
 
 = 3.17.0 =
 * Added: Checkout: Added an Email typo suggestion option under Checkout Optimisation to catch common email domain mistakes. (#9605)
@@ -2156,4 +2161,4 @@ Reach our [Support Team](https://funnelkit.com/support/). We answer questions on
 * Fixed: Checkout- Savoy and Boagiotti Theme compatibility updated
 
 = 1.0.0 (Nov 26, 2020) =
-* Public Release Launch Date 
+* Public Release Launch Date

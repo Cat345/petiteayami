@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) exit;
 
 
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Form\Util\Styles;
 use MailPoet\Services\Validator;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -191,7 +192,7 @@ class BlockRendererHelper {
 
   public function renderFontStyle(array $formSettings, array $styles = []) {
     $rules = [];
-    if (isset($formSettings['fontSize'])) {
+    if (isset($formSettings['fontSize']) && Styles::isSizeValue($formSettings['fontSize'])) {
       $rules[] = 'font-size: ' . $formSettings['fontSize'] . (is_numeric($formSettings['fontSize']) ? "px;" : ";");
       $rules[] = 'line-height: 1.2;';
     }

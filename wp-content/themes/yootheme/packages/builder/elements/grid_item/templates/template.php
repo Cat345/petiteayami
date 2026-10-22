@@ -142,10 +142,11 @@ if ($props['image'] && in_array($element['image_align'], ['left', 'right'])) {
             // Order
             'uk-flex-last[@{image_grid_breakpoint}] {@image_align: right}',
             // Center vertically and keep text align
-            'uk-flex uk-flex-middle[@{image_grid_breakpoint}] uk-flex-{text_align} {@image_vertical_align} {@content_expand} {@!image_expand}',
+            'uk-flex' => $element['image_expand'] || ($element['image_vertical_align'] && $element['content_expand']),
+            'uk-flex-middle[@{image_grid_breakpoint}] {@image_vertical_align} {@content_expand} {@!image_expand}',
             'uk-flex-{text_align}[@{text_align_breakpoint} [uk-flex-{text_align_fallback}]] {@content_expand} {@!image_expand}',
             // Expand, also when stacking
-            'uk-flex uk-flex-column {@image_expand} [uk-flex-1 uk-flex-initial@{image_grid_breakpoint}]',
+            'uk-flex-column {@image_expand} [uk-flex-1 uk-flex-initial@{image_grid_breakpoint}]',
             'uk-flex-{flex_column_align}[@{text_align_breakpoint} [uk-flex-{flex_column_align_fallback}]] {@image_expand}',
         ],
 
@@ -156,9 +157,9 @@ if ($props['image'] && in_array($element['image_align'], ['left', 'right'])) {
         'class' => [
             'uk-width-expand',
             // Center vertically
-            'uk-flex uk-flex-column uk-flex-center[@{image_grid_breakpoint}] {@image_vertical_align} {@image_expand} {@!content_expand}',
+            'uk-flex uk-flex-column' => $element['content_expand'] || ($element['image_vertical_align'] && $element['image_expand']),
+            'uk-flex-center[@{image_grid_breakpoint}] {@image_vertical_align} {@image_expand} {@!content_expand}',
             // Expand, also when stacking but only for `content`
-            'uk-flex uk-flex-column {@content_expand}',
             'uk-flex-1 {@image_grid_breakpoint} {@content_expand} {@!image_expand}',
             'uk-flex-1[@{image_grid_breakpoint} uk-flex-none] {@content_expand} {@image_expand}',
             'uk-flex-none uk-flex-1@{image_grid_breakpoint} {@image_expand} {@!content_expand}',

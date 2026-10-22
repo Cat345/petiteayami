@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 /**
- * Plugin : MailerLite - WooCommerce integration by MailerLite (v.2.1.29)
+ * Plugin : MailerLite - WooCommerce integration by MailerLite (v.2.1.29, v.3.x)
  * Plugin URI:  https://wordpress.org/plugins/woo-mailerlite/
  * WFACP_Compatibility_WC_MailerLite
  */
@@ -32,6 +32,14 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 			 *  Remove Plugin's Hook on the funnelkit checkout page Except review_order_before_submit Hook
 			 */
 			add_action( 'wfacp_after_checkout_page_found', array( $this, 'actions' ) );
+
+			/*
+			 *  MailerLite v3: render before the submit button when the field is not placed in the form.
+			 *  Registered here because update_order_review re-renders the payment box without firing wfacp_after_checkout_page_found.
+			 */
+			if ( $this->is_mailerlite_v3() ) {
+				add_action( 'wfacp_woocommerce_review_order_before_submit', array( $this, 'render_subscribe_checkbox' ), PHP_INT_MAX );
+			}
 
 			/*
 			 *  Process Custom field According to plugin functionality
@@ -67,8 +75,29 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 		public function actions() {
 			try {
 
+				if ( $this->is_mailerlite_v3() ) {
+					$checkout_position = WooMailerLiteOptions::get( 'settings.selectedCheckoutPosition', 'checkout_billing' );
+
+					add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
+
+					if ( ! $this->is_field_placed() ) {
+						$this->display_dragable_field = false;
+						add_action( 'wfacp_internal_css', array( $this, 'preserve_checkbox_state_js' ) );
+					}
+
+					if ( in_array( $checkout_position, $this->position_show, true ) ) {
+						$this->display_dragable_field = false;
+
+						return;
+					}
+
+					$this->position = $checkout_position;
+					remove_action( 'woocommerce_' . $checkout_position, array( WooMailerLitePluginController::instance(), 'addMlSubscribeCheckbox' ), PHP_INT_MAX );
+
+					return;
+				}
+
 				if ( class_exists( 'WooMailerLitePluginController' ) ) {
-					add_action( 'wfacp_woocommerce_review_order_before_submit', array( WooMailerLitePluginController::instance(), 'addMlSubscribeCheckbox' ), PHP_INT_MAX );
 
 					if ( ! function_exists( 'woo_ml_get_option' ) ) {
 						return;
@@ -92,6 +121,78 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 			}
 		}
 
+		/**
+		 * Render the MailerLite v3 checkbox before the submit button, unless the "Woo MailerLite" field renders it in the form.
+		 *
+		 * Aero strips the native woocommerce_review_order_before_submit callbacks only on full page load, so on
+		 * update_order_review MailerLite's own callback has already rendered the checkbox for the "Before submit button" position.
+		 *
+		 * @return void
+		 */
+		public function render_subscribe_checkbox() {
+			$controller = WooMailerLitePluginController::instance();
+			if ( false !== has_action( 'woocommerce_review_order_before_submit', array( $controller, 'addMlSubscribeCheckbox' ) ) ) {
+				return;
+			}
+			if ( $this->is_field_placed() ) {
+				return;
+			}
+			$controller->addMlSubscribeCheckbox();
+		}
+
+		/**
+		 * @return bool
+		 */
+		private function is_mailerlite_v3() {
+			return class_exists( 'WooMailerLitePluginController' ) && class_exists( 'WooMailerLiteOptions' );
+		}
+
+		/**
+		 * Whether the "Woo MailerLite" field is placed in the form and renders the checkbox for the configured position.
+		 *
+		 * @return bool
+		 */
+		private function is_field_placed() {
+			$checkout_position = WooMailerLiteOptions::get( 'settings.selectedCheckoutPosition', 'checkout_billing' );
+			if ( in_array( $checkout_position, $this->position_show, true ) ) {
+				return false;
+			}
+
+			$instance = wfacp_template();
+			if ( ! $instance instanceof WFACP_Template_Common ) {
+				return false;
+			}
+			$fields = $instance->get_checkout_fields();
+
+			return isset( $fields['advanced']['woo_ml_subscribe_html'] );
+		}
+
+		/**
+		 * The before-submit checkbox sits in the payment fragment, which WooCommerce replaces on update_order_review
+		 * with the preselect default; MailerLite's script reads the checkbox when it syncs the cart, so keep the shopper's choice.
+		 *
+		 * @return void
+		 */
+		public function preserve_checkbox_state_js() {
+			?>
+			<script>
+				window.addEventListener('load', function () {
+					(function ($) {
+						var wfacp_ml_subscribe = null;
+						$(document.body).on('change', '#woo_ml_subscribe', function () {
+							wfacp_ml_subscribe = this.checked;
+						});
+						$(document.body).on('updated_checkout', function () {
+							if (null !== wfacp_ml_subscribe) {
+								$('#woo_ml_subscribe[type="checkbox"]').prop('checked', wfacp_ml_subscribe);
+							}
+						});
+					})(jQuery);
+				});
+			</script>
+			<?php
+		}
+
 		public function call_fields_hook( $field, $key, $args ) {
 
 			if ( ( ! empty( $key ) && ( 'woo_ml_subscribe_html' === $key ) ) ) {
@@ -105,6 +206,11 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 		public function mailer_lite_html() {
 
 			if ( false == $this->display_dragable_field ) {
+				return;
+			}
+			if ( $this->is_mailerlite_v3() ) {
+				WooMailerLitePluginController::instance()->addMlSubscribeCheckbox();
+
 				return;
 			}
 			if ( function_exists( 'woo_ml_checkout_label' ) ) {
@@ -129,10 +235,10 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 			}
 
 			echo '<style>';
-			echo $bodyClass . '.wfacp_main_form.woocommerce #woo_ml_subscribe_field{text-align:left;}';
-			echo $bodyClass . '.wfacp_main_form.woocommerce #billing_email_field .woocommerce-input-wrapper {position: relative;}';
-			echo $bodyClass . '.wfacp_main_form.woocommerce #billing_email_field #woo_ml_subscribe { top: auto; left: 0; margin: 10px 0 0  !important;}';
-			echo $bodyClass . '.wfacp_main_form.woocommerce #billing_email_field #woo_ml_subscribe + label{     padding-left: 26px !important;position: relative;display: inline-block !important;padding-top: 10px;}';
+			echo esc_html( $bodyClass ) . '.wfacp_main_form.woocommerce #woo_ml_subscribe_field{text-align:left;padding:0;}';
+			echo esc_html( $bodyClass ) . '.wfacp_main_form.woocommerce #billing_email_field .woocommerce-input-wrapper {position: relative;}';
+			echo esc_html( $bodyClass ) . '.wfacp_main_form.woocommerce #billing_email_field #woo_ml_subscribe { top: auto; left: 0; margin: 10px 0 0  !important;}'; // fk-check:ignore css-important -- pre-existing rule for legacy MailerLite markup inside #billing_email_field (not rendered by v2.1.29 or v3.x), left unchanged
+			echo esc_html( $bodyClass ) . '.wfacp_main_form.woocommerce #billing_email_field #woo_ml_subscribe + label{     padding-left: 26px !important;position: relative;display: inline-block !important;padding-top: 10px;}'; // fk-check:ignore css-important -- pre-existing rule for legacy MailerLite markup inside #billing_email_field (not rendered by v2.1.29 or v3.x), left unchanged
 			echo '</style>';
 		}
 

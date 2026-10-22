@@ -23,6 +23,7 @@ class Options {
 	const OPTION_WOOCOMMERCE_CONNECT_LAST_ERROR   = 'woocommerce_connect_last_error';
 	const OPTION_WOOCOMMERCE_CONNECT_LAST_STATE   = 'woocommerce_connect_last_state';
 	const OPTION_MODE_TYPE                        = 'mode_type';
+	const OPTION_SANDBOX_NOTICE_TOKEN             = 'sandbox_notice_token';
 	const OPTION_TAX_CODE                         = 'tax_code';
 	const OPTION_FEE_TAX_CODE                     = 'fee_tax_code';
 	const OPTION_NON_TAXABLE_FEE_TAX_CODE         = 'non_taxable_fee_tax_code';
@@ -38,6 +39,7 @@ class Options {
 	const DEFAULT_OPTION_NON_TAXABLE_FEE_TAX_CODE = 'txcd_00000000';
 	const DEFAULT_OPTION_SHIPPING_TAX_CODE        = 'txcd_92010001';
 	const DEFAULT_OPTION_TAX_CODE                 = 'txcd_99999999';
+	const OPTION_SKIP_CART_TAX_CALCULATION        = 'skip_cart_tax_calculation';
 
 	/**
 	 * Initializes the cache.
@@ -64,7 +66,7 @@ class Options {
 			),
 			OBJECT_K
 		);
-		wp_cache_set( static::CACHE_KEY, $cached, static::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
+		wp_cache_set( static::CACHE_KEY, is_array( $cached ) ? $cached : array(), static::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -76,6 +78,10 @@ class Options {
 	protected static function get_from_cache( string $option_name, bool $force_update_from_db = false ): string {
 		static::init_cache( $force_update_from_db );
 		$cached = wp_cache_get( static::CACHE_KEY, static::CACHE_GROUP );
+
+		if ( ! is_array( $cached ) ) {
+			return '';
+		}
 
 		return (string) ( array_key_exists( $option_name, $cached ) && isset( $cached[ $option_name ]->option_value ) ? $cached[ $option_name ]->option_value : '' );
 	}
@@ -89,7 +95,10 @@ class Options {
 	 */
 	protected static function update_into_cache( string $option_name, string $option_value, bool $force_update_from_db = false ) {
 		static::init_cache( $force_update_from_db );
-		$cached                               = wp_cache_get( static::CACHE_KEY, static::CACHE_GROUP );
+		$cached = wp_cache_get( static::CACHE_KEY, static::CACHE_GROUP );
+		if ( ! is_array( $cached ) ) {
+			$cached = array();
+		}
 		$cached[ $option_name ]               = new stdClass();
 		$cached[ $option_name ]->option_name  = $option_name;
 		$cached[ $option_name ]->option_value = $option_value;
@@ -105,6 +114,9 @@ class Options {
 	protected static function delete_from_cache( string $option_name, bool $force_update_from_db = false ) {
 		static::init_cache( $force_update_from_db );
 		$cached = wp_cache_get( static::CACHE_KEY, static::CACHE_GROUP );
+		if ( ! is_array( $cached ) ) {
+			$cached = array();
+		}
 		unset( $cached[ $option_name ] );
 		wp_cache_set( static::CACHE_KEY, $cached, static::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 	}
@@ -298,6 +310,15 @@ class Options {
 			return;
 		}
 		static::update_option( static::OPTION_LIVE_MODE_ENABLED, '0' );
+	}
+
+	/**
+	 * Checks if cart tax calculation should be skipped.
+	 *
+	 * @return bool True if cart tax calculation should be skipped.
+	 */
+	public static function is_skip_cart_tax_calculation(): bool {
+		return ( static::get_option( static::OPTION_SKIP_CART_TAX_CALCULATION ) === '1' );
 	}
 
 	/**

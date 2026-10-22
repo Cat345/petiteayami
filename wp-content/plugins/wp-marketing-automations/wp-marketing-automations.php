@@ -3,13 +3,14 @@
  * Plugin Name: FunnelKit Automations
  * Plugin URI: https://funnelkit.com/wordpress-marketing-automation-autonami/
  * Description: Recover lost revenue with Abandoned Cart Recovery for WooCommerce. Increase retention with Post Purchase Follow-Up Emails. Send beautiful Newsletters.
- * Version: 3.8.5.2
+ * Version: 3.8.6
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: wp-marketing-automations
- * Requires at least: 5.0
+ * Requires at least: 6.5
+ * Requires PHP: 7.4
  * Tested up to: 7.1
  * WooFunnels: true
  *
@@ -214,12 +215,12 @@ final class BWFAN_Core {
 	 * Defining constants
 	 */
 	public function define_plugin_properties() {
-		define( 'BWFAN_VERSION', '3.8.5.2' );
-		define( 'BWFAN_MIN_PRO_VERSION', '3.8.5' );
+		define( 'BWFAN_VERSION', '3.8.6' );
+		define( 'BWFAN_MIN_PRO_VERSION', '3.8.6' );
 		define( 'BWFAN_MIN_WC_VERSION', '5.0' );
 		define( 'BWFAN_SLUG', 'bwfan' );
 		define( 'BWFAN_FULL_NAME', 'FunnelKit Automations' );
-		define( 'BWFAN_BWF_VERSION', '1.10.12.83' );
+		define( 'BWFAN_BWF_VERSION', '1.10.12.87' );
 		define( 'BWFAN_PLUGIN_FILE', __FILE__ );
 		define( 'BWFAN_PLUGIN_DIR', __DIR__ );
 		define( 'BWFAN_TEMPLATE_DIR', plugin_dir_path( BWFAN_PLUGIN_FILE ) . 'templates' );
@@ -457,8 +458,9 @@ final class BWFAN_Core {
 	 */
 	public function bwfan_load_apis() {
 		$rest_route = isset( $_GET['rest_route'] ) ? $_GET['rest_route'] : ''; // phpcs:ignore
-		if ( empty( $rest_route ) ) {
-			$rest_route = $_SERVER['REQUEST_URI']; // phpcs:ignore
+		if ( empty( $rest_route ) && isset( $_SERVER['REQUEST_URI'] ) ) {
+			/** Path only: a namespace in the query string (/wp-json/?x=autonami-app/...) must not load admin routes */
+			$rest_route = explode( '?', $_SERVER['REQUEST_URI'], 2 )[0]; // phpcs:ignore
 		}
 		if ( empty( $rest_route ) ) {
 			return;
@@ -539,7 +541,7 @@ final class BWFAN_Core {
 	public function localization() {
 		// Load text domain only if not already loaded (WordPress 6.7.0+ requirement: must load on init or later)
 		if ( ! is_textdomain_loaded( 'wp-marketing-automations' ) ) {
-			load_plugin_textdomain( 'wp-marketing-automations', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
+			load_plugin_textdomain( 'wp-marketing-automations', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' ); // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- lets translation files placed in the plugin /languages folder load
 		}
 	}
 

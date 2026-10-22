@@ -342,10 +342,10 @@ class BWFAN_API_Carts_Controller extends BWFAN_API_Controller {
 		if ( 'recovered' === $type ) {
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 				$query    = $wpdb->prepare( "SELECT `order_id` FROM {$wpdb->prefix}wc_orders_meta WHERE `meta_key` = %s AND `meta_value`= %d", '_bwfan_recovered_ab_id', $abandoned_id );
-				$order_id = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$order_id = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above; table from $wpdb->prefix
 			} else {
 				$query    = $wpdb->prepare( "SELECT `post_id` FROM {$wpdb->prefix}postmeta WHERE `meta_key` = %s AND `meta_value`= %d", '_bwfan_recovered_ab_id', $abandoned_id );
-				$order_id = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$order_id = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above; table from $wpdb->prefix
 			}
 			if ( empty( $order_id ) ) {
 				return $this->error_response( __( 'Abandoned cart data is missing', 'wp-marketing-automations' ) );
@@ -395,10 +395,10 @@ class BWFAN_API_Carts_Controller extends BWFAN_API_Controller {
 		$like_email = '%email":"' . $wpdb->esc_like( $cart_email ) . '"%';
 
 		$query1  = $wpdb->prepare( "SELECT * FROM $table1 WHERE `event` LIKE %s AND `data` LIKE %s AND data LIKE %s", 'ab_cart_abandoned', $like_aid, $like_email ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$result1 = $wpdb->get_results( $query1, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result1 = $wpdb->get_results( $query1, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- prepared above; tables from $wpdb->prefix; LIKE values esc_like()d + %s
 
 		$query2  = $wpdb->prepare( "SELECT * FROM $table2 WHERE `event` LIKE %s AND `data` LIKE %s AND data LIKE %s", 'ab_cart_abandoned', $like_aid, $like_email ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$result2 = $wpdb->get_results( $query2, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result2 = $wpdb->get_results( $query2, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- prepared above; tables from $wpdb->prefix; LIKE values esc_like()d + %s
 
 		if ( ! empty( $result1 ) ) {
 			foreach ( $result1 as $a_contact ) {
@@ -410,8 +410,8 @@ class BWFAN_API_Carts_Controller extends BWFAN_API_Controller {
 				unset( $a_contact['data'] );
 				$a_contact['event']            = $event_name;
 				$a_contact['automation_title'] = $automation_data['title'];
-				$a_contact['e_time']           = isset( $a_contact['e_time'] ) ? date( 'Y-m-d H:i:s', $a_contact['e_time'] ) : '';
-				$a_contact['last_time']        = isset( $a_contact['last_time'] ) ? date( 'Y-m-d H:i:s', $a_contact['last_time'] ) : '';
+				$a_contact['e_time']           = isset( $a_contact['e_time'] ) ? gmdate( 'Y-m-d H:i:s', $a_contact['e_time'] ) : '';
+				$a_contact['last_time']        = isset( $a_contact['last_time'] ) ? gmdate( 'Y-m-d H:i:s', $a_contact['last_time'] ) : '';
 				$cart_automations[]            = array_merge( $a_contact, $basic_details );
 			}
 		}
@@ -612,6 +612,10 @@ class BWFAN_API_Carts_Controller extends BWFAN_API_Controller {
 						$shipping[ $key ] = $value;
 						continue;
 					}
+					if ( 'bwfan_user_consent' === $key && isset( $nice_names[ $key ] ) ) {
+						$others[ $nice_names[ $key ] ] = ( 1 === absint( $value ) ) ? __( 'Yes', 'wp-marketing-automations' ) : __( 'No', 'wp-marketing-automations' );
+						continue;
+					}
 					if ( 'payment_method' === $key ) {
 						if ( isset( $available_gateways[ $value ] ) && 'yes' === $available_gateways[ $value ]->enabled ) {
 							$value = $available_gateways[ $value ]->method_title;
@@ -731,27 +735,7 @@ class BWFAN_API_Carts_Controller extends BWFAN_API_Controller {
 	}
 
 	public function get_items_recoverable( $item ) {
-		$items = maybe_unserialize( $item->items );
-		if ( empty( $items ) || ! is_array( $items ) ) {
-			return [];
-		}
-
-		$hide_free_products = BWFAN_Common::hide_free_products_cart_order_items();
-		$names              = [];
-		foreach ( $items as $value ) {
-			if ( ! is_array( $value ) ) {
-				continue;
-			}
-			if ( true === $hide_free_products && empty( $value['line_total'] ) ) {
-				continue;
-			}
-			if ( ! isset( $value['data'] ) || ! ( $value['data'] instanceof WC_Product ) ) {
-				continue;
-			}
-			$names[ $value['data']->get_id() ] = wp_strip_all_tags( $value['data']->get_name() );
-		}
-
-		return $names;
+		return BWFAN_Common::cart_item_names( $item->items, BWFAN_Common::hide_free_products_cart_order_items() );
 	}
 
 	function get_order_name_recoverable( $item ) {
@@ -990,6 +974,10 @@ class BWFAN_API_Carts_Controller extends BWFAN_API_Controller {
 					if ( false !== strpos( $key, 'shipping' ) && isset( $nice_names[ $key ] ) ) {
 						$key              = str_replace( 'shipping_', '', $key );
 						$shipping[ $key ] = $value;
+						continue;
+					}
+					if ( 'bwfan_user_consent' === $key && isset( $nice_names[ $key ] ) ) {
+						$others[ $nice_names[ $key ] ] = ( 1 === absint( $value ) ) ? __( 'Yes', 'wp-marketing-automations' ) : __( 'No', 'wp-marketing-automations' );
 						continue;
 					}
 					if ( 'payment_method' === $key ) {

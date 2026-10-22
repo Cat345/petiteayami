@@ -229,7 +229,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				);
 				$cartTitle          = __( 'Title', 'woofunnels-aero-checkout' );
 				$progresscartTitle  = __( 'Cart title', 'woofunnels-aero-checkout' );
-				$settingDescription = __( 'Note: Cart settings will work for Global Checkout when user navigates from Product > Cart > Checkout', 'woofunnels-aero-checkout' );
+				$settingDescription = __( 'Note: The cart step is added only on the Store Checkout, when the shopper reaches checkout from the cart page (Product > Cart > Checkout). It is not shown on funnel checkouts, on direct checkout links or in the builder preview.', 'woofunnels-aero-checkout' );
 				$cartText           = __( 'Cart', 'woocommerce' );
 				$options            = array(
 					'yes' => __( 'Yes', 'woofunnels-aero-checkout' ),
@@ -237,8 +237,9 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				);
 				$this->add_heading( $tab_id, 'Cart', 'none', $bredcrumb_controls );
 				$this->add_select( $tab_id, 'step_cart_link_enable', __( 'Add to Breadcrumb', 'woofunnels-aero-checkout' ), $options, 'yes', $condtion_control );
-				$this->add_text( $tab_id, 'step_cart_progress_bar_link', $progresscartTitle, $cartText, $progress_controls, $settingDescription );
-				$this->add_text( $tab_id, 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls, $settingDescription );
+				$this->modules_fields['step_cart_link_enable']['description'] = $settingDescription;
+				$this->add_text( $tab_id, 'step_cart_progress_bar_link', $progresscartTitle, $cartText, $progress_controls );
+				$this->add_text( $tab_id, 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls );
 			}
 		}
 

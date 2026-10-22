@@ -30,12 +30,12 @@ class DebugTracker implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_filter( 'flexible_shipping_process_admin_options', array( $this, 'update_settings_option_if_not_set_and_debug_enabled' ) );
+		add_filter( 'flexible_shipping_process_admin_options', [ $this, 'update_settings_option_if_not_set_and_debug_enabled' ] );
 
-		add_action( 'flexible_shipping_debug_notice_added', array( $this, 'update_notice_option_if_not_set' ) );
+		add_action( 'flexible_shipping_debug_notice_added', [ $this, 'update_notice_option_if_not_set' ] );
 
-		add_filter( 'wpdesk_tracker_data', array( $this, 'append_debug_notice_data_to_tracker' ), self::PRIORITY_AFTER_FS_TRACKER );
-		add_filter( 'wpdesk_tracker_deactivation_data', array( $this, 'append_debug_notice_data_to_deactivation_tracker' ) );
+		add_filter( 'wpdesk_tracker_data', [ $this, 'append_debug_notice_data_to_tracker' ], self::PRIORITY_AFTER_FS_TRACKER );
+		add_filter( 'wpdesk_tracker_deactivation_data', [ $this, 'append_debug_notice_data_to_deactivation_tracker' ] );
 	}
 
 	/**
@@ -76,7 +76,7 @@ class DebugTracker implements Hookable {
 	 */
 	public function append_debug_notice_data_to_tracker( $data ) {
 		$data['flexible_shipping']['debug_notice_was_enabled'] = self::SETTINGS_OPTION_VALUE === (int) get_option( self::SETTINGS_OPTION_NAME, 0 ) ? 'yes' : 'no';
-		$data['flexible_shipping']['debug_notice_displayed'] = self::NOTICE_OPTION_VALUE === (int) get_option( self::NOTICE_OPTION_NAME, 0 ) ? 'yes' : 'no';
+		$data['flexible_shipping']['debug_notice_displayed']   = self::NOTICE_OPTION_VALUE === (int) get_option( self::NOTICE_OPTION_NAME, 0 ) ? 'yes' : 'no';
 
 		return $data;
 	}
@@ -92,12 +92,11 @@ class DebugTracker implements Hookable {
 	 */
 	public function append_debug_notice_data_to_deactivation_tracker( array $data ) {
 		if ( empty( $data[ self::ADDITIONAL_DATA ] ) || ! is_array( $data[ self::ADDITIONAL_DATA ] ) ) {
-			$data[ self::ADDITIONAL_DATA ] = array();
+			$data[ self::ADDITIONAL_DATA ] = [];
 		}
 		$data[ self::ADDITIONAL_DATA ]['fs_debug_notice_was_enabled'] = self::SETTINGS_OPTION_VALUE === (int) get_option( self::SETTINGS_OPTION_NAME, 0 ) ? 'yes' : 'no';
-		$data[ self::ADDITIONAL_DATA ]['fs_debug_notice_displayed'] = self::NOTICE_OPTION_VALUE === (int) get_option( self::NOTICE_OPTION_NAME, 0 ) ? 'yes' : 'no';
+		$data[ self::ADDITIONAL_DATA ]['fs_debug_notice_displayed']   = self::NOTICE_OPTION_VALUE === (int) get_option( self::NOTICE_OPTION_NAME, 0 ) ? 'yes' : 'no';
 
 		return $data;
 	}
-
 }

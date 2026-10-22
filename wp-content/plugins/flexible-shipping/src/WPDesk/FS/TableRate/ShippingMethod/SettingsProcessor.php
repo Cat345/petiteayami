@@ -45,8 +45,8 @@ class SettingsProcessor {
 	 *
 	 * @param string $id .
 	 * @param string $instance_id .
-	 * @param array  $shipping_methods_option .
-	 * @param array  $shipping_method_order_option .
+	 * @param string $shipping_methods_option .
+	 * @param string $shipping_method_order_option .
 	 */
 	public function __construct( $id, $instance_id, $shipping_methods_option, $shipping_method_order_option ) {
 		$this->id                           = $id;
@@ -75,11 +75,11 @@ class SettingsProcessor {
 	 * @param array  $shipping_methods .
 	 * @param array  $posted_data      .
 	 *
-	 * @return string
+	 * @return int|string
 	 */
 	private function get_method_id( $action, $shipping_methods, $posted_data ) {
 		if ( 'new' === $action ) {
-			$method_id = get_option( 'flexible_shipping_method_id', 0 );
+			$method_id = (int) get_option( 'flexible_shipping_method_id', 0 );
 
 			foreach ( $shipping_methods as $shipping_method ) {
 				if ( intval( $shipping_method['id'] ) > $method_id ) {
@@ -182,8 +182,8 @@ class SettingsProcessor {
 
 
 	/**
-	 * @param int   $method_id .
-	 * @param int   $method_id_for_shipping .
+	 * @param int|string $method_id .
+	 * @param string $method_id_for_shipping .
 	 * @param array $posted_data .
 	 *
 	 * @return array

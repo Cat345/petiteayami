@@ -40,6 +40,7 @@ var BWFAN_Public;
             if (raw === 'email' || raw === 'contact_email' || raw === 'contact-email') return 'billing_email';
             if (raw.indexOf('billing-') === 0)  return 'billing_'  + raw.substring(8).replace(/-/g, '_');
             if (raw.indexOf('shipping-') === 0) return 'shipping_' + raw.substring(9).replace(/-/g, '_');
+            if (raw.indexOf('marketing-consent') !== -1) return 'bwfan_user_consent';
             return raw;
         },
 
@@ -80,6 +81,7 @@ var BWFAN_Public;
                 'bwfan_birthday_date_mm',
                 'bwfan_birthday_date_dd',
                 'bwfan_birthday_date_yy',
+                'bwfan_user_consent',
             ];
 
             if (bwfanParamspublic.bwfan_custom_checkout_field != undefined && bwfanParamspublic.bwfan_custom_checkout_field != null) {
@@ -199,9 +201,16 @@ var BWFAN_Public;
                         $this = $('#billing-' + field_name.substring(8).replace(/_/g, '-'));
                     } else if (field_name.indexOf('shipping_') === 0) {
                         $this = $('#shipping-' + field_name.substring(9).replace(/_/g, '-'));
+                    } else if (field_name === 'bwfan_user_consent') {
+                        $this = $('input[name*="marketing-consent"], input[id*="marketing-consent"]');
                     }
                 }
-                BWFAN_Public.checkout_fields_data[field_name] = $this.val();
+                /** Checkbox .val() is the static value attr (always "1"); read checked state so unchecked captures as 0. */
+                if ($this.attr('type') === 'checkbox') {
+                    BWFAN_Public.checkout_fields_data[field_name] = $this.prop('checked') ? 1 : 0;
+                } else {
+                    BWFAN_Public.checkout_fields_data[field_name] = $this.val();
+                }
             });
         },
         bwfanUpdateOnAddressCheckbox: function ( field_name, field_value ) {
@@ -313,7 +322,9 @@ var BWFAN_Public;
                 }
             }
 
-            BWFAN_Public.checkout_fields_data[field] = field_value;
+            if (field !== '') {
+                BWFAN_Public.checkout_fields_data[field] = field_value;
+            }
         },
         bwfan_process_email: async function (email) {
             if ('undefined' === typeof email) {
@@ -373,7 +384,7 @@ var BWFAN_Public;
              * (React-controlled inputs sometimes swallow them).
              */
             if (BWFAN_Public.is_block_checkout) {
-                $('#email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"]').each(function () {
+                $('#email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"], input[name*="marketing-consent"], input[id*="marketing-consent"]').each(function () {
                     var raw = $(this).attr('name') || $(this).attr('id');
                     var key = BWFAN_Public.bwfan_normalize_field_name(raw);
                     if (!key) return;
@@ -1195,7 +1206,7 @@ var BWFAN_Public;
          * React-controlled text inputs fire 'input' reliably; 'change'/'blur' may be missed.
          */
         if (BWFAN_Public.is_block_checkout) {
-            var blockInputs = '#email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"], .wc-block-checkout__use-address-for-billing input[type=checkbox]';
+            var blockInputs = '#email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"], input[name*="marketing-consent"], input[id*="marketing-consent"], .wc-block-checkout__use-address-for-billing input[type=checkbox]';
             $(document).on('change input blur focusout', blockInputs, BWFAN_Public.bwfan_captureCheckoutField);
 
             /**
@@ -1265,7 +1276,7 @@ var BWFAN_Public;
         var globalSel = '#billing_email,.input-text,.input-checkbox, select';
         var globalEvents = 'blur change';
         if (BWFAN_Public.is_block_checkout) {
-            globalSel += ', #email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"]';
+            globalSel += ', #email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"], input[name*="marketing-consent"], input[id*="marketing-consent"]';
             /** React-controlled inputs fire 'input' reliably; blur often missed via delegation. */
             globalEvents = 'blur change input';
         }

@@ -230,7 +230,7 @@
 /**!
 
  @license
- handlebars v4.7.9
+ handlebars v4.7.10
 
 Copyright (C) 2011-2019 by Yehuda Katz
 
@@ -265,7 +265,5 @@ THE SOFTWARE.
 //! moment-timezone.js
 
 //! moment.js
-
-//! moment.js locale configuration
 
 //! version : 0.5.48

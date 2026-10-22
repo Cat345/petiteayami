@@ -70,6 +70,12 @@ require_once DGWT_WCAS_DIR . 'partials/admin/debug/active-integrations.php';
 			$group.closest('.js-dgwt-wcas-settings-body').attr('data-dgwt-wcas-active', name)
 		}
 
+		// A tab href reaches jQuery's $(); only allow "#id" selectors so a forged tab
+		// (e.g. injected into an admin notice) cannot smuggle an HTML string into $().
+		function dgwtWcasIsSafeTabHref(href) {
+			return typeof href === 'string' && /^#[A-Za-z0-9_-]+$/.test(href);
+		}
+
 		// Switches option sections
 		$('.<?php 
 echo $prefix;
@@ -87,7 +93,7 @@ echo $prefix;
 echo $prefix;
 ?>nav-tab-wrapper a:not(.js-nav-tab-minor)').each(function () {
 
-					if ($(this).attr('href') === maybe_active) {
+					if ($(this).attr('href') === maybe_active && dgwtWcasIsSafeTabHref(maybe_active)) {
 						activetab = maybe_active;
 					}
 				});
@@ -130,6 +136,11 @@ echo $prefix;
 		$('.<?php 
 echo $prefix;
 ?>nav-tab-wrapper a:not(.js-nav-tab-minor)').on('click', function (evt) {
+
+			if (!dgwtWcasIsSafeTabHref($(this).attr('href'))) {
+				evt.preventDefault();
+				return;
+			}
 
 			if (typeof (localStorage) != 'undefined') {
 				localStorage.setItem('<?php 

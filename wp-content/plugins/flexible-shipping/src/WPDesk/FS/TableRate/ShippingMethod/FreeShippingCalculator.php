@@ -31,7 +31,7 @@ class FreeShippingCalculator {
 		 */
 		$free_shipping_calculation_callback = apply_filters(
 			'flexible-shipping/shipping-method/free-shipping-callback',
-			array( $this, 'is_free_shipping_callback' ),
+			[ $this, 'is_free_shipping_callback' ],
 			$shipping_method->get_raw_settings()
 		);
 
@@ -39,7 +39,7 @@ class FreeShippingCalculator {
 
 		$is_free_shipping = apply_filters_deprecated(
 			'flexible_shipping_is_free_shipping',
-			array( $is_free_shipping, $shipping_method->get_raw_settings(), $cart_contents_cost ),
+			[ $is_free_shipping, $shipping_method->get_raw_settings(), $cart_contents_cost ],
 			'4.0.0',
 			'flexible-shipping/shipping-method/is-free-shipping'
 		);
@@ -70,14 +70,11 @@ class FreeShippingCalculator {
 		$free_shipping    = $shipping_method->get_free_shipping();
 		if ( isset( $free_shipping ) && '' !== $free_shipping ) {
 			$free_shipping = (float) trim( $free_shipping );
-			if ( is_numeric( $free_shipping ) ) {
-				if ( (float) apply_filters( 'flexible_shipping_value_in_currency', $free_shipping ) <= (float) $cart_contents_cost ) {
-					$is_free_shipping = true;
-				}
+			if ( (float) apply_filters( 'flexible_shipping_value_in_currency', $free_shipping ) <= (float) $cart_contents_cost ) {
+				$is_free_shipping = true;
 			}
 		}
 
 		return $is_free_shipping;
 	}
-
 }

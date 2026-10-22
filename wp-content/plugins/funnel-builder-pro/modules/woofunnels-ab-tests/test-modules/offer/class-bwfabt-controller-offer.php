@@ -272,9 +272,8 @@ if ( ! class_exists( 'BWFABT_Controller_Offer' ) ) {
 						}
 					}
 
-					if ( $content !== '' ) {
-						WFOCU_Common::maybe_elementor_template( $winner_variant_id, $control_id );
-					}
+					// Elementor data is already copied raw via $wpdb in the loop above.
+					// maybe_elementor_template() re-runs validate_elementor_content() which strips <script>/<style> tags.
 					do_action( 'wfocu_offer_duplicated', $control_id, $winner_variant_id );
 					update_post_meta( $winner_variant_id, '_bwf_ab_variation_of', $control_id );
 

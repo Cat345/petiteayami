@@ -7,7 +7,7 @@
 
 namespace WPDesk\FS\Shipment;
 
-use FSVendor\WPDesk\FS\Shipment\CustomPostType;
+use FSVendor\WPDesk\FS\Shipment\Checkout\ShipmentCreator;
 use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
 
 /**
@@ -16,17 +16,17 @@ use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
 class SubscriptionsIntegration implements Hookable {
 
 	/**
-	 * @var CustomPostType
+	 * @var ShipmentCreator
 	 */
-	private $shipment_cpt;
+	private ShipmentCreator $shipment_creator;
 
 	/**
 	 * SubscriptionsIntegration constructor.
 	 *
-	 * @param CustomPostType $shipment_cpt .
+	 * @param ShipmentCreator $shipment_creator .
 	 */
-	public function __construct( CustomPostType $shipment_cpt ) {
-		$this->shipment_cpt = $shipment_cpt;
+	public function __construct( ShipmentCreator $shipment_creator ) {
+		$this->shipment_creator = $shipment_creator;
 	}
 
 	/**
@@ -39,17 +39,17 @@ class SubscriptionsIntegration implements Hookable {
 	}
 
 	/**
-	 * @param \WC_Subscription $subscription .
+	 * @param \WC_Order        $subscription .
 	 * @param \WC_Order        $order .
 	 * @param \WC_Cart         $recurring_cart .
 	 */
 	public function create_shipping_for_subscription( $subscription, $order, $recurring_cart ) {
-		$this->shipment_cpt->create_shipping_for_order_and_cart( $subscription, $recurring_cart );
+		$this->shipment_creator->create_shipping_for_order_and_cart( $subscription, $recurring_cart );
 	}
 
 	/**
 	 * @param \WC_Order        $order .
-	 * @param \WC_Subscription $subscription .
+	 * @param \WC_Order        $subscription .
 	 */
 	public function create_shipping_for_order_from_subscription( $order, $subscription ) {
 		$subscription_shipments = fs_get_order_shipments( $subscription->get_id() );
@@ -66,7 +66,8 @@ class SubscriptionsIntegration implements Hookable {
 	 */
 	private function create_single_shipment( \WPDesk_Flexible_Shipping_Shipment $shipment, \WC_Order $order ) {
 		$meta_data      = $shipment->get_meta_data();
-		$fs_method      = $shipment->get_meta( '_fs_method', [ 'method_integration' => $shipment->get_integration() ] );
+		$fs_method      = $shipment->get_meta( '_fs_method' );
+		$fs_method      = is_array( $fs_method ) ? $fs_method : [ 'method_integration' => $shipment->get_integration() ];
 		$order_shipment = fs_create_shipment( $order, $fs_method );
 		$integration    = $order_shipment->get_integration();
 		$this->setup_shipment_meta_data( $meta_data, $integration, $shipment, $order_shipment );
@@ -93,6 +94,4 @@ class SubscriptionsIntegration implements Hookable {
 			$order_shipment->set_meta( $meta_key, $order_shipment_meta_value );
 		}
 	}
-
-
 }

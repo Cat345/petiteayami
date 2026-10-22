@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFCRM_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 	#[\AllowDynamicProperties]
@@ -537,7 +538,7 @@ if ( ! class_exists( 'BWFCRM_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 				'vmode'      => $vmode,
 				'view'       => $view,
 				'search'     => $search,
-				'created_at' => date( 'Y-m-d H:i:s' ),
+				'created_at' => gmdate( 'Y-m-d H:i:s' ),
 			);
 
 			BWFAN_Model_Fields::insert( $data );
@@ -764,7 +765,7 @@ if ( ! class_exists( 'BWFCRM_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 			$cols        = array_values( $cols );
 			$cols_string = implode( ',', $cols );
 
-			$fields = $wpdb->get_results( "SELECT ID FROM {$wpdb->prefix}bwfan_fields WHERE ID in ($cols_string)" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$fields = $wpdb->get_results( "SELECT ID FROM {$wpdb->prefix}bwfan_fields WHERE ID in ($cols_string)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- ids absint()ed before implode; table from $wpdb->prefix
 			if ( empty( $fields ) ) {
 				return;
 			}

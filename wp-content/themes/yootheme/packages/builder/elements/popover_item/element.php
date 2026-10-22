@@ -69,6 +69,7 @@ return [
             'description' => 'Enter the horizontal position of the marker in percent.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 0,
                 'max' => 100,
                 'step' => 1,
@@ -80,6 +81,7 @@ return [
             'description' => 'Enter the vertical position of the marker in percent.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 0,
                 'max' => 100,
                 'step' => 1,

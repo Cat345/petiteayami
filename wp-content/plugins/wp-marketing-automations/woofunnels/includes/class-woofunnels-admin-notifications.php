@@ -44,11 +44,11 @@ if ( ! class_exists( 'WooFunnels_Admin_Notifications' ) ) {
 		public static function hide_notices() {
 			if ( isset( $_GET['woofunnels-hide-notice'] ) && isset( $_GET['_woofunnels_notice_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_woofunnels_notice_nonce'] ) ), 'woofunnels_hide_notices_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'wp-marketing-automations' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				if ( ! current_user_can( 'manage_options' ) ) {
-					wp_die( esc_html__( 'Cheating huh?', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Cheating huh?', 'wp-marketing-automations' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				$hide_notice = sanitize_text_field( wp_unslash( $_GET['woofunnels-hide-notice'] ) );

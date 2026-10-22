@@ -15,6 +15,7 @@ use WPDesk_Flexible_Shipping;
  * @package WPDesk\FS\TableRate\Importer
  */
 class ImporterFactory {
+
 	/**
 	 * @var array
 	 */
@@ -45,8 +46,6 @@ class ImporterFactory {
 
 	/**
 	 * @return AbstractImporter
-	 *
-	 * @throws UnsupportedFileFormat .
 	 */
 	public function get_importer() {
 		switch ( $this->file['type'] ) {

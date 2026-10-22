@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 $n        = 1;
 $currency = is_array( $data ) && isset( $data['currency'] ) ? $data['currency'] : '';
 

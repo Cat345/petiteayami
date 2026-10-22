@@ -52,8 +52,7 @@ if ( ! class_exists( 'WooFunnels_Background_Updater' ) ) {
 			// Adds every 5 minutes to the existing schedules.
 			$schedules[ $this->identifier . '_cron_interval' ] = array(
 				'interval' => MINUTE_IN_SECONDS * $interval,
-				/* translators: %d: interval */
-				'display'  => sprintf( __( 'Every %d minutes', 'woocommerce' ), $interval ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'display'  => sprintf( 'Every %d minutes', $interval ), // not translated: cron_schedules can run before init, see class-woofunnels-as-ds.php
 			);
 
 			return $schedules;

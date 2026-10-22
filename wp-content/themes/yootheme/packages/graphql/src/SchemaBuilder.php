@@ -138,7 +138,7 @@ class SchemaBuilder
     /**
      * @param string $name
      *
-     * @return Directive
+     * @return ?Directive
      */
     public function getDirective($name)
     {
@@ -296,18 +296,20 @@ class SchemaBuilder
      */
     public function resolveField($value, $args, $context, ResolveInfo $info)
     {
-        $resolver = new Middleware([Executor::class, 'defaultFieldResolver']);
+        $defaultResolver = [Executor::class, 'defaultFieldResolver'];
+        $resolver = null;
 
         foreach ($this->resolveDirectives($info) as ['name' => $name, 'args' => $arguments]) {
-            if (
-                is_callable($directiveDef = $this->getDirective($name)) &&
-                is_callable($directive = $directiveDef($arguments, $resolver))
-            ) {
-                $resolver->push($directive);
+            if (is_callable($directiveDef = $this->getDirective($name))) {
+                $resolver ??= new Middleware($defaultResolver);
+
+                if (is_callable($directive = $directiveDef($arguments, $resolver))) {
+                    $resolver->push($directive);
+                }
             }
         }
 
-        return $resolver($value, $args, $context, $info);
+        return ($resolver ?? $defaultResolver)($value, $args, $context, $info);
     }
 
     /**

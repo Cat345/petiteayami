@@ -179,6 +179,7 @@ return [
                 'The parallax animation moves single grid columns at different speeds while scrolling. Define the vertical parallax offset in pixels. Alternatively, move columns with different heights until they justify at the bottom.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 0,
                 'max' => 600,
                 'step' => 10,
@@ -806,6 +807,7 @@ return [
                 'Use an optional minimum height to prevent images from becoming smaller than the content on small devices.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 200,
                 'max' => 500,
                 'step' => 20,

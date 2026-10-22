@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFCRM_Group' ) && BWFAN_Common::is_pro_3_0() ) {
 	#[\AllowDynamicProperties]
@@ -29,7 +30,7 @@ if ( ! class_exists( 'BWFCRM_Group' ) && BWFAN_Common::is_pro_3_0() ) {
 			if ( ! empty( $group_ids ) ) {
 				$group_ids   = array_map( 'absint', $group_ids );
 				$placeholder = implode( ' ,', array_fill( 0, count( $group_ids ), '%d' ) );
-				$query      .= $wpdb->prepare( " WHERE ID NOT IN ($placeholder)", $group_ids );
+				$query      .= $wpdb->prepare( " WHERE ID NOT IN ($placeholder)", $group_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated in code; ids absint()ed
 			}
 
 			$groups = BWFAN_Model_Field_Groups::get_results( $query );
@@ -59,7 +60,7 @@ if ( ! class_exists( 'BWFCRM_Group' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			$data = array(
 				'name'       => $group_name,
-				'created_at' => date( 'Y-m-d H:i:s' ),
+				'created_at' => gmdate( 'Y-m-d H:i:s' ),
 			);
 
 			BWFAN_Model_Field_Groups::insert( $data );

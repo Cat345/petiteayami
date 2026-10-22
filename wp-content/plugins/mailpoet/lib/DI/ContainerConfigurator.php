@@ -476,6 +476,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Util\Notices\PermanentNotices::class);
     $container->autowire(\MailPoet\Util\Notices\PendingApprovalNotice::class)->setPublic(true);
     $container->autowire(\MailPoet\Util\Notices\SenderDomainAuthenticationNotices::class)->setPublic(true);
+    $container->autowire(\MailPoet\Util\Notices\SenderDomainPausedCampaignsNotice::class)->setPublic(true);
     //Referrals
     $container->autowire(\MailPoet\Referrals\ReferralDetector::class);
     // Router
@@ -514,6 +515,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Mailer\MetaInfo::class);
     $container->autowire(\MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper::class)->setPublic(true);
     // Subscribers
+    $container->autowire(\MailPoet\Subscribers\ApiSourcePluginResolver::class);
+    $container->autowire(\MailPoet\Subscribers\SourceUrlResolver::class);
     $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationEvaluator::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationMailer::class)->setPublic(true);

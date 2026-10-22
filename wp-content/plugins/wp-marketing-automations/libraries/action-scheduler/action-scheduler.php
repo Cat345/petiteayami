@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'action_scheduler_register_3_dot_9_dot_2' ) && function_exists( 'add_action' ) ) { // WRCS: DEFINED_VERSION.
 

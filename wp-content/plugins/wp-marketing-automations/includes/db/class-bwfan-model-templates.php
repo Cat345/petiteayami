@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 
@@ -33,7 +34,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				$id = array_filter( array_map( 'intval', $id ) );
 				if ( ! empty( $id ) ) {
 					$placeholders = array_fill( 0, count( $id ), '%d' );
-					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", $id );
+					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", $id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders from array_fill('%d'); ids intval()ed
 				}
 			}
 			if ( ! empty( $mode ) ) {
@@ -97,7 +98,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				$id = array_filter( array_map( 'intval', $id ) );
 				if ( ! empty( $id ) ) {
 					$placeholders = array_fill( 0, count( $id ), '%d' );
-					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", $id );
+					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", $id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders from array_fill('%d'); ids intval()ed
 				}
 			}
 			if ( ! empty( $search ) ) {
@@ -135,7 +136,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				$id = array_filter( array_map( 'intval', $id ) );
 				if ( ! empty( $id ) ) {
 					$placeholders = array_fill( 0, count( $id ), '%d' );
-					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", ...$id );
+					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", ...$id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders from array_fill('%d'); ids intval()ed
 				}
 			}
 			if ( ! empty( $mode ) ) {
@@ -158,7 +159,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				}
 			}
 
-			$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- each appended fragment built with $wpdb->prepare()
 
 			return $result ? intval( $result ) : 0;
 		}
@@ -181,14 +182,14 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				$id = array_filter( array_map( 'intval', $id ) );
 				if ( ! empty( $id ) ) {
 					$placeholders = array_fill( 0, count( $id ), '%d' );
-					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", $id );
+					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", $id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders from array_fill('%d'); ids intval()ed
 				}
 			}
 			if ( ! empty( $search ) ) {
 				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . $wpdb->esc_like( $search ) . "%" );
 			}
 
-			$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- each appended fragment built with $wpdb->prepare()
 
 			return $result ? intval( $result ) : 0;
 		}
@@ -209,9 +210,9 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			$allowed_fields   = array( 'ID', 'title', 'subject', 'template_hash', 'type', 'mode', 'category', 'canned' );
 			$field            = in_array( $field, $allowed_fields, true ) ? $field : 'title';
 			$field            = '`' . str_replace( '`', '``', $field ) . '`';
-			$query            .= $wpdb->prepare( " WHERE ( {$field} = %s OR {$field} LIKE %s ) AND canned = %d LIMIT 0,1", $data, $string_with_dash, 1 );
+			$query            .= $wpdb->prepare( " WHERE ( {$field} = %s OR {$field} LIKE %s ) AND canned = %d LIMIT 0,1", $data, $string_with_dash, 1 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- field whitelisted and backtick-quoted; values via $wpdb->prepare()
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare(); field whitelisted
 		}
 
 		/**
@@ -230,9 +231,9 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			$allowed_fields   = array( 'ID', 'title', 'subject', 'template_hash', 'type', 'mode', 'category', 'canned' );
 			$field            = in_array( $field, $allowed_fields, true ) ? $field : 'title';
 			$field            = '`' . str_replace( '`', '``', $field ) . '`';
-			$query            .= $wpdb->prepare( " WHERE ( {$field} = %s OR {$field} LIKE %s ) AND canned = %d LIMIT 0,1", $data, $string_with_dash, 0 );
+			$query            .= $wpdb->prepare( " WHERE ( {$field} = %s OR {$field} LIKE %s ) AND canned = %d LIMIT 0,1", $data, $string_with_dash, 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- field whitelisted and backtick-quoted; values via $wpdb->prepare()
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare(); field whitelisted
 		}
 
 		/**
@@ -283,7 +284,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				$id = array_filter( array_map( 'intval', $id ) );
 				if ( ! empty( $id ) ) {
 					$placeholders = array_fill( 0, count( $id ), '%d' );
-					$query        = $wpdb->prepare( "UPDATE $table_name SET `canned` = 0 WHERE ID in ( " . implode( ',', $placeholders ) . " )", $id );
+					$query        = $wpdb->prepare( "UPDATE $table_name SET `canned` = 0 WHERE ID in ( " . implode( ',', $placeholders ) . " )", $id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- table from _table(); placeholders array_fill; ids intval()ed
 					self::update_multiple( $query );
 				}
 			} else {
@@ -372,7 +373,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			$table = "{$wpdb->prefix}bwfan_templates";
 			$query = " SELECT MIN(`id`) FROM $table WHERE `type` = 1 AND `canned` = 1 ";
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table from $wpdb->prefix
 		}
 
 		/**
@@ -383,9 +384,10 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 		 * @return array
 		 */
 		public static function clone_template( $template_id ) {
-			$status   = 404;
-			$message  = __( 'Unable to find template with the given id.', 'wp-marketing-automations' );
-			$template = self::get_specific_rows( 'id', $template_id );
+			$status          = 404;
+			$message         = __( 'Unable to find template with the given id.', 'wp-marketing-automations' );
+			$new_template_id = 0;
+			$template        = self::get_specific_rows( 'id', $template_id );
 			if ( ! empty( $template ) ) {
 				$create_time = current_time( 'mysql', 1 );
 				$template    = $template[0];
@@ -412,8 +414,9 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			return array(
-				'status'  => $status,
-				'message' => $message,
+				'status'      => $status,
+				'message'     => $message,
+				'template_id' => absint( $new_template_id ),
 			);
 		}
 
@@ -467,7 +470,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			$query = "SELECT * FROM {$wpdb->prefix}bwfan_templates $where";
 
-			return $wpdb->get_results( $wpdb->prepare( $query, $args ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_results( $wpdb->prepare( $query, $args ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- where clause hardcoded; offset intval()ed and bound via %d
 		}
 
 		/**

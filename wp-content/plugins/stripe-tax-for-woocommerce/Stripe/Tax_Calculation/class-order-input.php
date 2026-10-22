@@ -194,8 +194,15 @@ class Order_Input extends Input {
 			if ( $method_id ) {
 				$instance_id = $item->get_instance_id();
 
-				$shipping_method_settings   = get_option( 'woocommerce_' . $method_id . '_' . $instance_id . '_settings' );
-				$shipping_method_is_taxable = isset( $shipping_method_settings['tax_status'] ) && 'taxable' === $shipping_method_settings['tax_status'];
+				$shipping_method_settings = get_option( 'woocommerce_' . $method_id . '_' . $instance_id . '_settings' );
+
+				if ( is_array( $shipping_method_settings ) && isset( $shipping_method_settings['tax_status'] ) ) {
+					$shipping_method_is_taxable = 'taxable' === $shipping_method_settings['tax_status'];
+				} elseif ( is_callable( array( $item, 'get_tax_status' ) ) ) {
+					$shipping_method_is_taxable = 'taxable' === $item->get_tax_status();
+				} else {
+					$shipping_method_is_taxable = false;
+				}
 			} else {
 				$shipping_method_is_taxable = 'taxable' === $item->get_tax_status();
 			}
@@ -289,6 +296,7 @@ class Order_Input extends Input {
 		$item_name                 = '';
 		$item_variation_attributes = array();
 		$item_variation_id         = 0;
+		$reference_identity        = null;
 
 		$order_item_id = $item->get_id();
 
@@ -300,6 +308,8 @@ class Order_Input extends Input {
 		switch ( $item_type ) {
 			case 'fee':
 				$item_name = $item->get_name();
+				// Keep fee reference aligned with cart reference generation (name-based).
+				$reference_identity = null;
 
 				break;
 
@@ -320,7 +330,8 @@ class Order_Input extends Input {
 					}
 				}
 
-				$item_name = $item->get_name();
+				$item_name          = $item->get_name();
+				$reference_identity = $is_refund ? null : $order_item_id;
 
 				break;
 
@@ -331,7 +342,7 @@ class Order_Input extends Input {
 				return 'shipping_cost';
 		}
 
-		$reference = static::build_item_reference( $item_type, $item_id, $item_variation_id, $item_name, $item_variation_attributes, $is_refund ? null : $order_item_id );
+			$reference = static::build_item_reference( $item_type, $item_id, $item_variation_id, $item_name, $item_variation_attributes, $reference_identity );
 
 		return $reference;
 	}

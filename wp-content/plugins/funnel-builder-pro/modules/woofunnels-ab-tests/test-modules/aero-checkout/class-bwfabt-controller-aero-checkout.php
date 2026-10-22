@@ -415,9 +415,8 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				update_post_meta( $winner_variant_id, '_bwf_ab_variation_of', $control_id );
 				update_option( 'wfacp_c_' . $control_id, get_option( 'wfacp_c_' . $winner_variant_id, array() ) );
 
-				if ( $content !== '' && class_exists( 'WFFN_Common' ) ) {
-					WFFN_Common::maybe_elementor_template( $winner_variant_id, $control_id );
-				}
+				// Elementor data is already copied raw via $wpdb in the loop above.
+				// maybe_elementor_template() re-runs validate_elementor_content() which strips <script>/<style> tags.
 
 				if ( true === $is_oxy ) {
 					$this->replace_oxygen_page_css_with_winner( $winner_variant_id, $control_id );

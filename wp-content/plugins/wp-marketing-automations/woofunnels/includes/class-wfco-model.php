@@ -11,7 +11,7 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 		static function get( $value ) {
 			global $wpdb;
 
-			return $wpdb->get_row( self::_fetch_sql( $value ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_row( self::_fetch_sql( $value ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepared by _fetch_sql; table/pk from class; value bound via %s
 		}
 
 		private static function _fetch_sql( $value ) {
@@ -44,7 +44,7 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 			global $wpdb;
 			$sql = sprintf( 'DELETE FROM %s WHERE %s = %%s', self::_table(), static::$primary_key );
 
-			return $wpdb->query( $wpdb->prepare( $sql, $value ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->query( $wpdb->prepare( $sql, $value ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/pk from class; value bound via %s
 		}
 
 		static function insert_id() {
@@ -88,7 +88,7 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 				}
 			}
 
-			return $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- public raw SQL wrapper, no callers in any plugin; callers must pass prepared SQL
 		}
 
 		static function get_specific_rows( $where_key, $where_value ) {
@@ -101,7 +101,7 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 				return array();
 			}
 
-			$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table_name from self::_table() (trusted); $where_key whitelisted above; $where_value bound via %s.
+			$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $table_name from self::_table() (trusted); $where_key whitelisted above; $where_value bound via %s.; table from class; column whitelisted; value bound via %s
 
 			return $results;
 		}
@@ -112,7 +112,7 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 			if ( ! empty( $params ) ) {
 				$query = $wpdb->prepare( $query, ...$params ); //phpcs:ignore WordPress.DB.PreparedSQL
 			}
-			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- raw sink; every traced caller passes static, prepared or escaped SQL
 
 			return $results;
 		}
@@ -120,13 +120,13 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 		static function delete_multiple( $query ) {
 			global $wpdb;
 			$query = str_replace( '{table_name}', self::_table(), $query );
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- raw sink; every traced caller passes prepared or int-cast SQL
 		}
 
 		static function update_multiple( $query ) {
 			global $wpdb;
 			$query = str_replace( '{table_name}', self::_table(), $query );
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- raw sink with no callers in the 5 plugins; caller must prepare
 		}
 	}
 }

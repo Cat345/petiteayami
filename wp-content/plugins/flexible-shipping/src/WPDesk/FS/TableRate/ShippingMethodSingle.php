@@ -8,6 +8,7 @@
 namespace WPDesk\FS\TableRate;
 
 use FSVendor\Psr\Log\LoggerInterface;
+use FSVendor\Psr\Log\NullLogger;
 use FSVendor\WPDesk\FS\TableRate\Logger\NoticeLogger;
 use FSVendor\WPDesk\FS\TableRate\Logger\ShippingMethodLogger;
 use FSVendor\WPDesk\FS\TableRate\Settings\MethodSettingsFactory;
@@ -38,11 +39,6 @@ class ShippingMethodSingle extends WC_Shipping_Method {
 	 * @var LoggerInterface
 	 */
 	protected static $fs_logger;
-
-	/**
-	 * @var bool
-	 */
-	private $is_html_ads_loaded = false;
 
 	/**
 	 * @var string[]
@@ -98,11 +94,7 @@ class ShippingMethodSingle extends WC_Shipping_Method {
 	public function generate_settings_html( $form_fields = [], $echo = true ) {
 		$this->init_instance_form_fields( true );
 		$form_fields = $this->get_instance_form_fields();
-		if ( $echo ) {
-			parent::generate_settings_html( $form_fields, $echo );
-		} else {
-			return parent::generate_settings_html( $form_fields, $echo );
-		}
+		return parent::generate_settings_html( $form_fields, $echo );
 	}
 
 
@@ -422,7 +414,7 @@ class ShippingMethodSingle extends WC_Shipping_Method {
 
 	/**
 	 * @param string $key   .
-	 * @param string $value .
+	 * @param mixed  $value .
 	 *
 	 * @return bool
 	 */
@@ -433,7 +425,7 @@ class ShippingMethodSingle extends WC_Shipping_Method {
 
 		$this->instance_settings[ $key ] = $value;
 
-		return update_option( $this->get_instance_option_key(), apply_filters( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', $this->instance_settings, $this ), 'yes' );
+		return update_option( $this->get_instance_option_key(), apply_filters( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', $this->instance_settings, $this ), true );
 	}
 
 	/**
@@ -479,18 +471,18 @@ class ShippingMethodSingle extends WC_Shipping_Method {
 	/**
 	 * @param \FSVendor\WPDesk\FS\TableRate\Settings\MethodSettings $shipping_method_settings .
 	 *
-	 * @return Logger\ShippingMethodLogger
+	 * @return ShippingMethodLogger
 	 */
 	private function prepare_shipping_method_calculation_logger( $shipping_method_settings ) {
 		$method_debug_mode     = $shipping_method_settings->get_debug_mode();
 		$shipping_method_title = $shipping_method_settings->get_title();
 		$shipping_method_url   = admin_url(
-			'admin.php?page=wc-settings&tab=shipping&instance_id=' . sanitize_key( $this->instance_id ) . '&action=edit&method_id=' . sanitize_key( $shipping_method_settings->get_id() )
+			'admin.php?page=wc-settings&tab=shipping&instance_id=' . sanitize_key( (string) $this->instance_id ) . '&action=edit&method_id=' . sanitize_key( $shipping_method_settings->get_id() )
 		);
 		if ( null !== static::$fs_logger ) {
 			$fs_logger = static::$fs_logger;
 		} else {
-			$fs_logger = NullLogger();
+			$fs_logger = new NullLogger();
 		}
 
 		return new ShippingMethodLogger(

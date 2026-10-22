@@ -51,6 +51,8 @@ class BWFAN_API_Loader {
 		'v3/tags'           => array( 'tags' ),
 		'v3/email-activity' => array( 'email-activity' ),
 		'v3/automation'     => array( 'automation' ),
+		'v1/fetch-announcements' => array( 'announcement' ),
+		'v1/announcement_action' => array( 'announcement' ),
 
 		// Single-level prefixes
 		'automation'        => array( 'automation', 'recipe' ),
@@ -76,6 +78,7 @@ class BWFAN_API_Loader {
 		'engagement'        => array( 'email-activity' ),
 		'export'            => array( 'exporter' ),
 		'plugin'            => array( 'plugin_status' ),
+		'plugin-connect-link' => array( 'plugin_status' ),
 		'send-test-notification' => array( 'notification' ),
 		'settings'          => array( 'settings' ),
 		'block-migrator'    => array( 'settings' ),
@@ -152,6 +155,12 @@ class BWFAN_API_Loader {
 			return null;
 		}
 
+		// Strip query string first, so a namespace inside a query parameter cannot match
+		$qpos = strpos( $rest_route, '?' );
+		if ( false !== $qpos ) {
+			$rest_route = substr( $rest_route, 0, $qpos );
+		}
+
 		// Strip namespace prefix to get the API path
 		$ns  = BWFAN_API_NAMESPACE;
 		$pos = strpos( $rest_route, $ns );
@@ -161,12 +170,6 @@ class BWFAN_API_Loader {
 
 		$api_path = substr( $rest_route, $pos + strlen( $ns ) );
 		$api_path = ltrim( $api_path, '/' );
-
-		// Strip query string
-		$qpos = strpos( $api_path, '?' );
-		if ( false !== $qpos ) {
-			$api_path = substr( $api_path, 0, $qpos );
-		}
 
 		if ( empty( $api_path ) ) {
 			return null; // Root/bare-namespace request — no dirs matched, nothing loaded
@@ -257,7 +260,8 @@ class BWFAN_API_Loader {
 				$route_args = array(
 					'methods'             => $api->method,
 					'callback'            => array( $api, 'api_call' ),
-					'permission_callback' => '__return_true'
+					'permission_callback' => '__return_true',
+					'show_in_index'       => false,
 				);
 
 				if ( false === $api->public_api ) {

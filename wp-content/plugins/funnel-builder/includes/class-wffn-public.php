@@ -798,7 +798,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 
 			global $post;
 
-			if ( ! is_null( $post ) ) {
+			if ( $post instanceof WP_Post ) {
 				WFFN_Core()->logger->log( 'Order #' . $order_id . ': Thankyou page #' . $post->ID . ' viewed successfully', 'wffn', true );
 				if ( isset( $_GET['wfty_source'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					WFFN_Core()->logger->log( 'Order #' . $order_id . ': wfty thankyou page id #' . $_GET['wfty_source'], 'wffn', true ); // phpcs:ignore

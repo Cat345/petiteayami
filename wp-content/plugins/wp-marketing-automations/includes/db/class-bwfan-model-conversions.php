@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() ) {
 
@@ -19,14 +20,14 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 			 * conversion rows directly and use the HPOS-aware wc_get_order() check below to flag rows whose
 			 * order was deleted (the UI renders them as "Order Deleted") instead of dropping them.
 			 */
-			$query       = $wpdb->prepare( "SELECT bwc.* FROM $table as bwc WHERE bwc.oid = %d AND bwc.otype=%d ORDER BY bwc.wcid DESC LIMIT %d OFFSET %d", ...[ $source_id, $source_type, $limit, $offset ] );
-			$conversions = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query       = $wpdb->prepare( "SELECT bwc.* FROM $table as bwc WHERE bwc.oid = %d AND bwc.otype=%d ORDER BY bwc.wcid DESC LIMIT %d OFFSET %d", ...[ $source_id, $source_type, $limit, $offset ] ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- table from $wpdb->prefix; spread args match placeholders
+			$conversions = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; spread args match placeholders
 			if ( empty( $conversions ) ) {
 				return [ 'conversions' => array(), 'total' => 0 ];
 			}
 
-			$total_query = $wpdb->prepare( "SELECT COUNT(*) FROM $table as bwc WHERE bwc.oid = %d AND bwc.otype=%d", ...[ $source_id, $source_type ] );
-			$total       = absint( $wpdb->get_var( $total_query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$total_query = $wpdb->prepare( "SELECT COUNT(*) FROM $table as bwc WHERE bwc.oid = %d AND bwc.otype=%d", ...[ $source_id, $source_type ] ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- table from $wpdb->prefix; spread args match placeholders
+			$total       = absint( $wpdb->get_var( $total_query ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; spread args match placeholders
 			foreach ( $conversions as $key => $conv ) {
 				$order = wc_get_order( absint( $conv['wcid'] ) );
 
@@ -80,14 +81,14 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 			$oid        = absint( $oid );
 			$contact_id = absint( $contact_id );
 			$type       = absint( $type );
-			$query      = $wpdb->prepare( "SELECT wcid,date,wctotal FROM $table WHERE otype=%d AND oid=%d AND cid=%d", $type, $oid, $contact_id );
+			$query      = $wpdb->prepare( "SELECT wcid,date,wctotal FROM $table WHERE otype=%d AND oid=%d AND cid=%d", $type, $oid, $contact_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- query built with $wpdb->prepare(); ids absint()ed
 			if ( ! empty( $engagements_ids ) ) {
 				$engagements_ids = array_map( 'absint', $engagements_ids );
 				$placeholder     = implode( ', ', array_fill( 0, count( $engagements_ids ), '%d' ) );
-				$query          .= $wpdb->prepare( " AND trackid IN($placeholder)", $engagements_ids );
+				$query          .= $wpdb->prepare( " AND trackid IN($placeholder)", $engagements_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- query built with $wpdb->prepare(); ids absint()ed
 			}
 
-			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare(); ids absint()ed
 		}
 
 		public static function get_conversions_for_check_validity( $saved_last_conversion_id ) {
@@ -105,7 +106,7 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 
 			$query = "SELECT ID,wcid FROM $table WHERE 1=1 $and ORDER BY ID DESC";
 
-			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		}
 
 		public static function get_last_conversion_id() {
@@ -113,7 +114,7 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 			$table = self::_table();
 			$query = "SELECT MAX(`ID`) FROM $table";
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; hardcoded SQL
 		}
 
 		public static function delete_conversions_by_track_id( $ids ) {
@@ -127,9 +128,9 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 			$placeholders = array_fill( 0, count( $ids ), '%d' );
 			$placeholders = implode( ', ', $placeholders );
 
-			$query = $wpdb->prepare( "DELETE FROM {$table} WHERE trackid IN ($placeholders)", $ids );
+			$query = $wpdb->prepare( "DELETE FROM {$table} WHERE trackid IN ($placeholders)", $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated in code; ids bound as %d
 
-			return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; ids bound as %d
 		}
 
 		public static function get_automation_revenue( $aid, $start_date, $end_date, $is_interval, $interval ) {
@@ -148,9 +149,9 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 				$group_by       = "GROUP BY " . $interval_group;
 				$order_by       = ' time_interval ';
 			}
-			$base_query = "SELECT  count(ID) as conversions, SUM(wctotal) as revenue $interval_query FROM `" . $table . "` WHERE 1=1 AND oid = " . absint( $aid ) . " AND otype = 1 AND " . $wpdb->prepare( "`$date_col` >= %s AND `$date_col` <= %s", $start_date, $end_date ) . $group_by . " ORDER BY " . $order_by . " ASC";
+			$base_query = "SELECT  count(ID) as conversions, SUM(wctotal) as revenue $interval_query FROM `" . $table . "` WHERE 1=1 AND oid = " . absint( $aid ) . " AND otype = 1 AND " . $wpdb->prepare( "`$date_col` >= %s AND `$date_col` <= %s", $start_date, $end_date ) . $group_by . " ORDER BY " . $order_by . " ASC"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- interval SQL comes from Pro BWFCRM_Dashboards helper; other values absint()ed
 
-			return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval SQL comes from Pro BWFCRM_Dashboards helper; other values absint()ed
 		}
 	}
 }

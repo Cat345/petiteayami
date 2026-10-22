@@ -130,6 +130,11 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 		 * @param $posted_data
 		 */
 		public function update_reporting_data_in_meta( $order, $posted_data ) {
+			/** Funnel Builder withholds funnel analytics for this visitor (wffn_allow_funnel_analytics) */
+			if ( 'yes' === $order->get_meta( '_wffn_analytics_withheld' ) ) {
+				return;
+			}
+
 			$wfacp_id = isset( $posted_data['wfacp_post_id'] ) ? $posted_data['wfacp_post_id'] : apply_filters( 'wfacp_mark_conversion_post_id', 0, $posted_data );
 
 			$funnel_id = 0;

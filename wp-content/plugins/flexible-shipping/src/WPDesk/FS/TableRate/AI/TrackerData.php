@@ -23,7 +23,7 @@ class TrackerData implements Hookable {
 	 * @return array
 	 */
 	public function append_ai_data( $data, array $instance_settings ) {
-		if ( ! is_array( $data ) || ! is_array( $instance_settings ) ) {
+		if ( ! is_array( $data ) ) {
 			return $data;
 		}
 

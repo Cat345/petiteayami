@@ -11,11 +11,6 @@ const scriptEntries = [
 		output: 'js/rating-petition.js',
 	},
 	{
-		input: 'assets-src/admin/js/dashboard.js',
-		name: 'FlexibleShippingDashboard',
-		output: 'js/dashboard.js',
-	},
-	{
 		input: 'assets-src/rules-settings/js/index.jsx',
 		name: 'FlexibleShippingRulesSettings',
 		output: 'js/rules-settings.js',

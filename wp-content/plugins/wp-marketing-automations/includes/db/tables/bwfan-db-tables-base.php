@@ -18,7 +18,7 @@ abstract class BWFAN_DB_Tables_Base {
 		global $wpdb;
 
 		$safe_table_name = esc_sql( $wpdb->prefix . $this->table_name );
-		return ! empty( $wpdb->query( "SHOW TABLES LIKE '{$safe_table_name}'" ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return ! empty( $wpdb->query( "SHOW TABLES LIKE '{$safe_table_name}'" ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix + hardcoded class property
 	}
 
 	/**
@@ -33,7 +33,7 @@ abstract class BWFAN_DB_Tables_Base {
 		$columns = $this->get_columns();
 		/** Get columns from db */
 		$safe_table_name = esc_sql( $wpdb->prefix . $this->table_name );
-		$db_columns = $wpdb->get_results( "DESCRIBE `{$safe_table_name}`", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$db_columns = $wpdb->get_results( "DESCRIBE `{$safe_table_name}`", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix + hardcoded class property
 
 		$result = array_diff( $columns, array_column( $db_columns, 'Field' ) );
 		sort( $result );
@@ -122,7 +122,7 @@ abstract class BWFAN_DB_Tables_Base {
 		$convert_success  = false;
 
 		if ( $needs_convert ) {
-			$wpdb->query( $wpdb->prepare( "ALTER TABLE `{$safe_table_name}` CONVERT TO CHARACTER SET %s COLLATE %s", $target_charset, $target_collate ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+			$wpdb->query( $wpdb->prepare( "ALTER TABLE `{$safe_table_name}` CONVERT TO CHARACTER SET %s COLLATE %s", $target_charset, $target_collate ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.SchemaChange -- table from $wpdb->prefix + hardcoded class property; DB upgrade: converts plugin tables to the site charset/collation
 			if ( ! empty( $wpdb->last_error ) ) {
 				$db_errors[] = "Error converting `{$table_name}` to {$target_collate}: " . $wpdb->last_error;
 			} else {
@@ -140,7 +140,7 @@ abstract class BWFAN_DB_Tables_Base {
 			return true;
 		}
 
-		$columns = $wpdb->get_results( "SHOW FULL COLUMNS FROM `{$safe_table_name}`", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$columns = $wpdb->get_results( "SHOW FULL COLUMNS FROM `{$safe_table_name}`", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix + hardcoded class property
 		if ( ! is_array( $columns ) ) {
 			$db_errors[] = ! empty( $wpdb->last_error )
 				? "Error fetching column metadata for `{$table_name}`: " . $wpdb->last_error
@@ -203,8 +203,8 @@ abstract class BWFAN_DB_Tables_Base {
 				$comment_clause = " COMMENT '" . esc_sql( (string) $column['Comment'] ) . "'";
 			}
 
-			$query = $wpdb->prepare( "ALTER TABLE `{$safe_table_name}` MODIFY COLUMN `{$safe_field}` {$safe_column_type} CHARACTER SET %s COLLATE %s{$null_clause}{$default_clause}{$comment_clause}", $target_charset, $target_collate ); //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query = $wpdb->prepare( "ALTER TABLE `{$safe_table_name}` MODIFY COLUMN `{$safe_field}` {$safe_column_type} CHARACTER SET %s COLLATE %s{$null_clause}{$default_clause}{$comment_clause}", $target_charset, $target_collate ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- schema metadata from SHOW COLUMNS; literals esc_sql()d; charset via %s
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- schema metadata from SHOW COLUMNS; literals esc_sql()d; charset via %s
 			if ( ! empty( $wpdb->last_error ) ) {
 				$db_errors[] = "Error altering `{$table_name}`.`{$field}` to {$target_collate}: " . $wpdb->last_error;
 			}
@@ -231,7 +231,7 @@ abstract class BWFAN_DB_Tables_Base {
 		$safe_table_name = esc_sql( $table_name );
 
 		/** Get current table structure */
-		$columns = $wpdb->get_results( "SHOW COLUMNS FROM {$safe_table_name}", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$columns = $wpdb->get_results( "SHOW COLUMNS FROM {$safe_table_name}", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix + hardcoded class property
 		if ( empty( $columns ) ) {
 			return false;
 		}
@@ -243,7 +243,7 @@ abstract class BWFAN_DB_Tables_Base {
 		}
 
 		/** Get all existing keys from database */
-		$existing_keys = $wpdb->get_results( "SHOW KEYS FROM {$safe_table_name}", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$existing_keys = $wpdb->get_results( "SHOW KEYS FROM {$safe_table_name}", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix + hardcoded class property
 		$existing_key_names = array();
 		$existing_primary_key = null;
 		foreach ( $existing_keys as $key ) {
@@ -273,7 +273,7 @@ abstract class BWFAN_DB_Tables_Base {
 
 					/** Add primary key after cleaning duplicates */
 					$query = "ALTER TABLE `{$safe_table_name}` ADD PRIMARY KEY (`{$safe_pk_column}`)"; //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-					$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+					$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.NotPrepared -- table/pk column hardcoded in class definition
 					if ( ! empty( $wpdb->last_error ) ) {
 						$db_errors[] = "Error adding primary key to {$this->table_name}: " . $wpdb->last_error;
 					} else {
@@ -288,7 +288,7 @@ abstract class BWFAN_DB_Tables_Base {
 			/** Check if primary key column has AUTO_INCREMENT */
 			/** Refresh column data if primary key was just added */
 			if ( $pk_was_added ) {
-				$pk_column = $wpdb->get_row( $wpdb->prepare( "SHOW COLUMNS FROM `{$safe_table_name}` WHERE Field = %s", $existing_primary_key ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$pk_column = $wpdb->get_row( $wpdb->prepare( "SHOW COLUMNS FROM `{$safe_table_name}` WHERE Field = %s", $existing_primary_key ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix + hardcoded class property
 				if ( ! empty( $pk_column ) ) {
 					$column_lookup[ $existing_primary_key ] = $pk_column;
 				}
@@ -322,7 +322,7 @@ abstract class BWFAN_DB_Tables_Base {
 
 					$query = "ALTER TABLE `{$safe_table_name}` MODIFY COLUMN `{$safe_pk_column}` " . implode( ' ', $modify_parts ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 
-					$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+					$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded table/pk; type from SHOW COLUMNS; default esc_sql()d
 					if ( ! empty( $wpdb->last_error ) ) {
 						$db_errors[] = "Error adding AUTO_INCREMENT to primary key column '{$existing_primary_key}' in table {$this->table_name}: " . $wpdb->last_error;
 					}
@@ -351,12 +351,12 @@ abstract class BWFAN_DB_Tables_Base {
 		$db_errors = array();
 
 		/** Check for NULL values first */
-		$null_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$safe_table_name}` WHERE `{$safe_pk_column}` IS NULL" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$null_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$safe_table_name}` WHERE `{$safe_pk_column}` IS NULL" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table/pk from class definition; values bound via prepare
 		if ( $null_count > 1 ) {
 			/** Delete all but one NULL entry */
 			$delete_count = $null_count - 1;
-			$delete_null_query = $wpdb->prepare( "DELETE FROM `{$safe_table_name}` WHERE `{$safe_pk_column}` IS NULL LIMIT %d", $delete_count ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $delete_null_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$delete_null_query = $wpdb->prepare( "DELETE FROM `{$safe_table_name}` WHERE `{$safe_pk_column}` IS NULL LIMIT %d", $delete_count ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table/pk from class definition; values bound via prepare
+			$wpdb->query( $delete_null_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table/pk from class definition; values bound via prepare
 			if ( ! empty( $wpdb->last_error ) ) {
 				$db_errors[] = "Error deleting NULL entries from table {$this->table_name}: " . $wpdb->last_error;
 			}
@@ -364,7 +364,7 @@ abstract class BWFAN_DB_Tables_Base {
 
 		/** Check for duplicate non-NULL values and delete them */
 		$duplicates_query = "SELECT `{$safe_pk_column}`, COUNT(*) as count FROM `{$safe_table_name}` WHERE `{$safe_pk_column}` IS NOT NULL GROUP BY `{$safe_pk_column}` HAVING count > 1"; //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$duplicates = $wpdb->get_results( $duplicates_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$duplicates = $wpdb->get_results( $duplicates_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table/pk from class definition; values bound via prepare
 
 		if ( ! empty( $duplicates ) ) {
 			/** Delete duplicate entries, keeping the first one (lowest value) */
@@ -374,8 +374,8 @@ abstract class BWFAN_DB_Tables_Base {
 				$delete_count = $duplicate_count - 1;
 
 				/** Delete all but one duplicate entry */
-				$delete_query = $wpdb->prepare( "DELETE FROM `{$safe_table_name}` WHERE `{$safe_pk_column}` = %s LIMIT %d", $duplicate_value, $delete_count ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->query( $delete_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$delete_query = $wpdb->prepare( "DELETE FROM `{$safe_table_name}` WHERE `{$safe_pk_column}` = %s LIMIT %d", $duplicate_value, $delete_count ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table/pk from class definition; values bound via prepare
+				$wpdb->query( $delete_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table/pk from class definition; values bound via prepare
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = "Error deleting duplicate entries with {$pk_column_name} = '{$duplicate_value}' from table {$this->table_name}: " . $wpdb->last_error;
 				}
@@ -436,7 +436,7 @@ abstract class BWFAN_DB_Tables_Base {
 				$key_sql = $is_unique ? 'UNIQUE KEY' : 'INDEX';
 				$query = "ALTER TABLE `{$safe_table_name}` ADD {$key_sql} `{$safe_key_name}` ({$columns_str})"; //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 
-				$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- key/column names from class definition, esc_sql()d
 				if ( ! empty( $wpdb->last_error ) ) {
 					$db_errors[] = "Error adding {$key_type} '{$key_name}' to table {$this->table_name}: " . $wpdb->last_error;
 				}

@@ -193,12 +193,12 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 					return '';
 				}
 
-				$post = get_post( $this->wfacp_id );
+				$temp_post = get_post( $this->wfacp_id );
 
-				if ( is_null( $post ) ) {
+				if ( is_null( $temp_post ) ) {
 					return '';
 				}
-				if ( ! is_super_admin() && ( 'publish' !== $post->post_status || $post->post_type !== WFACP_Common::get_post_type_slug() ) ) {
+				if ( ! is_super_admin() && ( 'publish' !== $temp_post->post_status || $temp_post->post_type !== WFACP_Common::get_post_type_slug() ) ) {
 					return '';
 				}
 

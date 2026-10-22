@@ -515,6 +515,17 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 				);
 
+				// A fourth step (wfacp_enable_fourth_step) goes in front, so Payment stays the last one.
+				if ( 4 === absint( $num_of_steps ) ) {
+					array_unshift(
+						$labels,
+						array(
+							'heading'     => __( 'Information', 'woofunnels-aero-checkout' ),
+							'sub-heading' => __( 'Tell us about you', 'woofunnels-aero-checkout' ),
+						)
+					);
+				}
+
 				for ( $bi = 0; $bi < $num_of_steps; $bi++ ) {
 					$heading    = $labels[ $bi ]['heading'];
 					$subheading = $labels[ $bi ]['sub-heading'];
@@ -564,7 +575,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 					$cartTitle          = __( 'Title', 'woofunnels-aero-checkout' );
 					$progresscartTitle  = __( 'Cart title', 'woofunnels-aero-checkout' );
-					$settingDescription = __( 'Note: Cart settings will work for Global Checkout when user navigates from Product > Cart > Checkout', 'woofunnels-aero-checkout' );
+					$settingDescription = __( 'Note: The cart step is added only on the Store Checkout, when the shopper reaches checkout from the cart page (Product > Cart > Checkout). It is not shown on funnel checkouts, on direct checkout links or in the builder preview.', 'woofunnels-aero-checkout' );
 					$cartText           = __( 'Cart', 'woocommerce' );
 
 					$options = array(
@@ -574,9 +585,9 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 					);
 					$this->add_heading( 'Cart', 'none', $bredcrumb_controls );
 
-					$this->add_select( 'step_cart_link_enable', 'Add to Breadcrumb', $options, 'yes', $condtion_control );
+					$this->add_select( 'step_cart_link_enable', 'Add to Breadcrumb', $options, 'yes', $condtion_control, $settingDescription );
 					$this->add_text( 'step_cart_progress_bar_link', $progresscartTitle, $cartText, $progress_controls );
-					$this->add_text( 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls, '', $settingDescription );
+					$this->add_text( 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls );
 
 				}
 
@@ -1841,13 +1852,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 		public function set_breadcrumb( $active, $instance ) {
 			if ( ! empty( $this->current_step ) && 'single_step' !== $this->current_step ) {
-				if ( 'two_step' == $this->current_step ) {
-					$active = 1;
-				} elseif ( 'third_step' == $this->current_step ) {
-					$active = 2;
-				} else {
-					$active = 0;
-				}
+				$active = WFACP_Common::get_step_number( $this->current_step ) - 1;
 			}
 
 			return $active;

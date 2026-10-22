@@ -84,7 +84,7 @@ class BWFAN_CF7_Form_Field extends BWFAN_Merge_Tag {
 		BWFAN_Common::check_nonce();
 
 		$finalarr     = [];
-		$automationId = absint( sanitize_text_field( $_POST['automationId'] ) );
+		$automationId = isset( $_POST['automationId'] ) ? absint( sanitize_text_field( wp_unslash( $_POST['automationId'] ) ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified by BWFAN_Common::check_nonce() above
 
 		/** Check Automation */
 		$automation_obj = BWFAN_Automation_V2::get_instance( $automationId );

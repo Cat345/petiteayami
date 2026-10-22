@@ -161,7 +161,7 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 				$product_count_data     = wp_count_posts( 'product' );
 				$product_count['total'] = property_exists( $product_count_data, 'publish' ) ? $product_count_data->publish : 0;
 
-				$product_statuses = get_terms( 'product_type', array( 'hide_empty' => 0 ) );
+				$product_statuses = get_terms( array( 'taxonomy' => 'product_type', 'hide_empty' => 0 ) );
 				if ( is_array( $product_statuses ) && count( $product_statuses ) > 0 ) {
 					foreach ( $product_statuses as $product_status ) {
 						$product_count[ $product_status->name ] = $product_status->count;
@@ -696,7 +696,7 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 		public static function register_weekly_schedule( $schedules ) {
 			$schedules['weekly_bwf'] = array(
 				'interval' => WEEK_IN_SECONDS,
-				'display'  => __( 'Weekly BWF', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'display'  => 'Weekly BWF', // not translated: cron_schedules can run before init, see class-woofunnels-as-ds.php
 			);
 
 			return $schedules;

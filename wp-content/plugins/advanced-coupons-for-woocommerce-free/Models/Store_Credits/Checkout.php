@@ -279,9 +279,12 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * Apply store credit discount on cart total calculation.
      *
      * @since 4.5.2
+     * @since 4.7.7 Remove a stale store credit coupon before applying.
      * @access public
      */
     public function apply_store_credits_as_coupon() {
+        $this->remove_stale_store_credit_coupon();
+
         $sc_data         = \WC()->session->get( Plugin_Constants::STORE_CREDITS_COUPON_SESSION, null );
         $applied_coupons = \WC()->cart->get_applied_coupons();
         $coupon_code     = $this->get_store_credit_coupon_code();
@@ -320,6 +323,28 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
 
         // Silently apply the store credit discount to prevent the "coupon applied successfully" notice to show up.
         \WC()->cart->set_applied_coupons( $applied_coupons );
+    }
+
+    /**
+     * Silently remove the store credit coupon from the cart when its session data is cleared.
+     *
+     * The coupon stays in the cart after a declined payment, but the order processing already cleared its session.
+     * Without the session data the coupon is not valid, and WC blocks the checkout with a coupon error.
+     *
+     * @since 4.7.7
+     * @access public
+     */
+    public function remove_stale_store_credit_coupon() {
+        if ( ! \WC()->cart || ! is_object( \WC()->session ) || \WC()->session->get( Plugin_Constants::STORE_CREDITS_COUPON_SESSION, null ) ) {
+            return;
+        }
+
+        $applied_coupons = \WC()->cart->get_applied_coupons();
+        $coupon_code     = $this->get_store_credit_coupon_code();
+
+        if ( in_array( $coupon_code, $applied_coupons, true ) ) {
+            \WC()->cart->set_applied_coupons( array_values( array_diff( $applied_coupons, array( $coupon_code ) ) ) );
+        }
     }
 
     /**
@@ -418,6 +443,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * Process order that has a store credit coupon discount applied.
      *
      * @since 4.5.2
+     * @since 4.7.7 Reset a resumed failed order to pending so the store credit is applied again.
      * @access public
      *
      * @param int       $order_id    Order ID.
@@ -440,6 +466,8 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         if ( ! $coupon_item instanceof \WC_Order_Item_Coupon ) {
             return;
         }
+
+        $this->_maybe_reset_resumed_failed_order( $order );
 
         // don't proceed creating store credit entry when order status is failed/cancelled.
         if ( $order->has_status( array( 'failed', 'cancelled' ) ) ) {
@@ -757,6 +785,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      *
      * @since 4.0
      * @since 4.2 Add hook to trigger actions based on user's new balance after an order was paid with store credits.
+     * @since 4.7.7 Reset a resumed failed order to pending so the store credit is deducted again.
      * @access public
      *
      * @param int       $order_id    Order ID.
@@ -766,8 +795,15 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
     public function deduct_store_credits_discount_from_balance( $order_id, $posted_data, $order ) {
         $sc_data = \WC()->session->get( Plugin_Constants::STORE_CREDITS_SESSION, null );
 
-        // don't proceed when store credit session data is not available or when the order status is failed/cancelled.
-        if ( ! $sc_data || $order->has_status( array( 'failed', 'cancelled' ) ) ) {
+        // don't proceed when store credit session data is not available.
+        if ( ! $sc_data ) {
+            return;
+        }
+
+        $this->_maybe_reset_resumed_failed_order( $order );
+
+        // don't proceed when the order status is failed/cancelled.
+        if ( $order->has_status( array( 'failed', 'cancelled' ) ) ) {
             return;
         }
 
@@ -1183,6 +1219,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * Re-add the customer's store credits when the order status has been changed to failed or cancelled.
      *
      * @since 4.5.2
+     * @since 4.7.7 Return the store credit coupon amount of the current attempt only.
      * @access public
      *
      * @param int       $order_id    Order ID.
@@ -1207,6 +1244,12 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
 
         if ( $coupon_item instanceof \WC_Order_Item_Coupon ) {
             $this->_coupon_override_data = $coupon_item->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_COUPON_META, true );
+
+            // use the store credit coupon data for the returned amount, so a resumed order does not return the credit of earlier attempts again.
+            if ( ! is_array( $sc_paid ) || empty( $sc_paid ) ) {
+                $sc_paid = $this->_coupon_override_data;
+            }
+
             $order->remove_coupon( $this->get_store_credit_coupon_code() );
             $is_updated = true;
         }
@@ -1232,6 +1275,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * Allow order to be placed when the order total is zero due to store credits payment (after tax store credits type).
      *
      * @since 4.5.9.1
+     * @since 4.7.7 Compare the store credit amount against the session cart total instead of the order total, for the current cart order only.
      * @access public
      *
      * @param bool      $value True if allowed, false otherwise.
@@ -1240,9 +1284,22 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      */
     public function allow_placing_order_on_zero_total_with_store_credits( $value, $order ) {
 
-        // Set the 'needs_payment' filter as `false` when the order total deducted with the store credits payment is equal or less than zero.
+        // Only change the value for the order created from the current cart, and not on the order pay page.
+        if ( is_checkout_pay_page() || ! \WC()->cart || ! $order->has_cart_hash( \WC()->cart->get_cart_hash() ) ) {
+            return $value;
+        }
+
+        /**
+         * Set the 'needs_payment' filter as `false` only when the store credits fully cover the cart total.
+         * Compare against the cart total saved in the session (before the store credit discount), because the
+         * order total can already have the store credit deducted (e.g. a resumed order).
+         */
         $sc_data = \WC()->session ? \WC()->session->get( Plugin_Constants::STORE_CREDITS_SESSION, null ) : null;
-        if ( $sc_data && isset( $sc_data['amount'] ) && 0 >= $order->get_total() - $sc_data['amount'] ) {
+        if (
+            $sc_data
+            && isset( $sc_data['amount'], $sc_data['cart_total'] )
+            && 0 >= wc_add_number_precision( (float) $sc_data['cart_total'] ) - wc_add_number_precision( (float) $sc_data['amount'] )
+        ) {
             return false;
         }
 
@@ -1493,6 +1550,30 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
     }
 
     /**
+     * Reset a resumed failed order back to pending payment.
+     *
+     * Classic checkout resumes a failed order without changing its status. The store credit handlers skip failed
+     * orders, so the store credit would not be deducted again after a declined payment. A pending status lets the
+     * store credit be deducted, and lets a next declined payment return it via the order status changed hook.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @param \WC_Order $order Order object.
+     */
+    private function _maybe_reset_resumed_failed_order( \WC_Order $order ) {
+        // Only reset an order that classic checkout resumed in this request.
+        if ( ! did_action( 'woocommerce_resume_order' ) || ! $order->has_status( 'failed' ) ) {
+            return;
+        }
+
+        $order->update_status(
+            'pending',
+            __( 'Order resumed after a failed payment. Status reset to pending payment to apply the store credit again.', 'advanced-coupons-for-woocommerce-free' )
+        );
+    }
+
+    /**
      * Get store credit session name.
      *
      * @since 4.6.0
@@ -1550,6 +1631,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
 
         // store credit as coupon (before tax).
         add_action( 'woocommerce_before_calculate_totals', array( $this, 'apply_store_credits_as_coupon' ) );
+        add_action( 'woocommerce_check_cart_items', array( $this, 'remove_stale_store_credit_coupon' ), 0 );
         add_filter( 'woocommerce_get_shop_coupon_data', array( $this, 'override_store_credit_coupon_data' ), 10, 3 );
         add_action( 'woocommerce_removed_coupon', array( $this, 'store_credit_coupon_discount_removed' ) );
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'process_order_with_store_credit_coupon' ), 10, 3 );

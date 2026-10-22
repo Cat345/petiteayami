@@ -58,17 +58,24 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Weight_Based_Shipping' ) ) {
 					continue;
 				}
 
-				$fieldset_skipped_by_wc = ( 'shipping' === $fieldset_key && $wc_skips_shipping );
+				// Mirror WooCommerce: when the shopper hasn't opted into a separate shipping
+				// address, WC copies billing into shipping and skips shipping validation
+				// entirely. Enforcing shipping fields here raises false "required" errors for
+				// shipping fields the single-address checkout never rendered (e.g. plugin-added
+				// shipping-section duplicates). Skip the shipping fieldset to match WC.
+				if ( 'shipping' === $fieldset_key && $wc_skips_shipping ) {
+					continue;
+				}
 
 				foreach ( $fields as $field_key => $field ) {
 					if ( empty( $field['required'] ) || ! wc_string_to_bool( $field['required'] ) ) {
 						continue;
 					}
 
-					// If WC marks this field required AND its fieldset isn't skipped, WC will
-					// enforce it — skip here to avoid a duplicate notice.
+					// If WC marks this field required it will enforce it — skip here to avoid a
+					// duplicate notice. (Shipping fields WC skips are handled above.)
 					$wc_field_required = ! empty( $wc_fields[ $fieldset_key ][ $field_key ]['required'] );
-					if ( $wc_field_required && ! $fieldset_skipped_by_wc ) {
+					if ( $wc_field_required ) {
 						continue;
 					}
 

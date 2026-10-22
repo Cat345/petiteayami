@@ -16,7 +16,7 @@ class PreconfiguredScenariosFactory {
 	 * @return array
 	 */
 	public function get_scenarios() {
-		$scenarios = array();
+		$scenarios = [];
 
 		$scenarios = $this->add_weight_scenarios( $scenarios );
 		$scenarios = $this->add_value_scenarios( $scenarios );
@@ -30,8 +30,8 @@ class PreconfiguredScenariosFactory {
 	 * @return PredefinedScenario[]
 	 */
 	private function add_weight_scenarios( array $scenarios ) {
-		$pl = get_locale() === 'pl_PL';
-		$url = $pl ? 'https://octol.io/fs-weight-pl' : 'https://octol.io/fs-weight';
+		$pl                         = get_locale() === 'pl_PL';
+		$url                        = $pl ? 'https://octol.io/fs-weight-pl' : 'https://octol.io/fs-weight';
 		$scenarios['simple_weight'] = new PredefinedScenario(
 			__( 'Weight', 'flexible-shipping' ),
 			__( 'Weight-based shipping', 'flexible-shipping' ),
@@ -49,8 +49,8 @@ class PreconfiguredScenariosFactory {
 	 * @return PredefinedScenario[]
 	 */
 	private function add_value_scenarios( array $scenarios ) {
-		$pl = get_locale() === 'pl_PL';
-		$url = $pl ? 'https://octol.io/fs-price-based-pl' : 'https://octol.io/fs-price-based';
+		$pl                        = get_locale() === 'pl_PL';
+		$url                       = $pl ? 'https://octol.io/fs-price-based-pl' : 'https://octol.io/fs-price-based';
 		$scenarios['simple_value'] = new PredefinedScenario(
 			__( 'Price', 'flexible-shipping' ),
 			__( 'Price-based shipping', 'flexible-shipping' ),
@@ -61,5 +61,4 @@ class PreconfiguredScenariosFactory {
 
 		return $scenarios;
 	}
-
 }

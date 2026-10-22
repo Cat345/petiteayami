@@ -2,6 +2,8 @@
 
 namespace BWFAN\Importers;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 
 /**
@@ -166,7 +168,7 @@ class CSV_Importer extends Importer {
 			return;
 		}
 
-		$handle = fopen( $real_path, 'r' );
+		$handle = fopen( $real_path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reads the uploaded CSV line by line; WP_Filesystem has no streaming API
 
 		if ( ! $handle ) {
 			return;
@@ -349,7 +351,7 @@ class CSV_Importer extends Importer {
 			return __( 'File not found or not readable', 'wp-marketing-automations' );
 		}
 
-		$handle = fopen( $real_path, 'r' );
+		$handle = fopen( $real_path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reads the uploaded CSV line by line; WP_Filesystem has no streaming API
 
 		/** Fetching CSV header */
 		$headers = false !== $handle ? fgetcsv( $handle, 0, $delimiter, '"', '\\' ) : false;
@@ -414,7 +416,7 @@ class CSV_Importer extends Importer {
 			return 0;
 		}
 
-		$handle = fopen( $real_path, 'r' );
+		$handle = fopen( $real_path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reads the uploaded CSV line by line; WP_Filesystem has no streaming API
 		if ( $handle === false ) {
 			return 0;
 		}
@@ -426,7 +428,7 @@ class CSV_Importer extends Importer {
 			$row_count ++;
 		}
 
-		fclose( $handle );
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the stream opened above
 
 		return $row_count;
 	}

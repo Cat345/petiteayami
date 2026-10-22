@@ -290,7 +290,7 @@ class HtmlElement implements HtmlElementInterface
 
         // match all parameters
         preg_match_all(
-            '/\{\s*(@?)(!?)(\w+)\s*(?::\s*([^{}]*(?:\{(?-1)\}[^{}]*)*))?}/',
+            '/{\s*(@?)(!?)(\w+)\s*(?::\s*([^{}]*(?:{(?-1)}[^{}]*)*))?}/',
             $output,
             $parameters,
             PREG_SET_ORDER,

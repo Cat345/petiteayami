@@ -32,13 +32,13 @@ class CustomDataSubject implements Subject {
     return Builder::object([
       'hook' => Builder::string()->required(),
       'data' => Builder::array(),
+      'depth' => Builder::integer()->minimum(0),
     ]);
   }
 
   public function getPayload(SubjectData $subjectData): Payload {
-    $hook = $subjectData->getArgs()['hook'];
-    $data = $subjectData->getArgs()['data'];
-    return new CustomDataPayload($hook, $data);
+    $args = $subjectData->getArgs();
+    return new CustomDataPayload($args['hook'], $args['data'], (int)($args['depth'] ?? 0));
   }
 
   public function getFields(): array {

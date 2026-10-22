@@ -224,10 +224,13 @@ abstract class Order_Controller {
 		$shipping_result_line = $tax_calculation['shipping_cost'];
 		$is_inclusive         = $shipping_result_line
 			&& Result::TAX_BEHAVIOR_INCLUSIVE === $shipping_result_line->tax_behavior;
+		$should_sync_total    = is_admin() ? $order->get_prices_include_tax() : $is_inclusive;
 
-		if ( $is_inclusive && self::has_matching_line_items( $order, $tax_calculation ) ) {
+		if ( $should_sync_total && self::has_matching_line_items( $order, $tax_calculation ) ) {
 				$order->set_total( $tax_calculation->amount_total );
+			if ( $shipping_result_line ) {
 				$order->set_shipping_total( $shipping_result_line->amount );
+			}
 		}
 	}
 

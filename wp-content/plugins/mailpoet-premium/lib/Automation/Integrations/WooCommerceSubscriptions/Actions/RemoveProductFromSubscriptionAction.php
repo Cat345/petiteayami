@@ -45,9 +45,11 @@ class RemoveProductFromSubscriptionAction extends AbstractSubscriptionAction imp
     $this->validateWooCommerceSubscriptionsActive();
     $stepArgs = $args->getStep()->getArgs();
     $this->resolveProduct($this->getIntArg($stepArgs, 'product_id'), $this->normalizeOptionalId($stepArgs['variation_id'] ?? null), 'product_id');
+    $this->authorizeSave($args->getAutomation());
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
+    $this->authorizeRun($args->getAutomation());
     $this->runtimeWooCommerceSubscriptionsActive();
     $stepArgs = $args->getStep()->getArgs();
     $productId = $this->getIntArg($stepArgs, 'product_id');

@@ -287,11 +287,16 @@ class Helper
         }
 
         $name = Str::snakeCase($type->name);
+
         if ($name === 'user') {
             return \Toolset_Element_Domain::USERS;
-        } elseif (post_type_exists($name)) {
+        }
+
+        if (post_type_exists($name)) {
             return \Toolset_Element_Domain::POSTS;
-        } elseif (taxonomy_exists($name)) {
+        }
+
+        if (taxonomy_exists($name)) {
             return \Toolset_Element_Domain::TERMS;
         }
 

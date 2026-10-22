@@ -11,6 +11,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -23,6 +24,7 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -102,6 +104,9 @@ class SendingQueue {
   /** @var TimeZoneCampaignScheduler|null */
   private $timeZoneCampaignScheduler;
 
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -121,7 +126,8 @@ class SendingQueue {
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     AuthorizedEmailsController $authorizedEmailsController,
     ?TimeZoneCampaignScheduler $timeZoneCampaignScheduler = null,
-    $newsletterTask = false
+    $newsletterTask = false,
+    ?NewsletterUrl $newsletterUrl = null
   ) {
     $this->errorHandler = $errorHandler;
     $this->throttlingHandler = $throttlingHandler;
@@ -143,6 +149,7 @@ class SendingQueue {
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
+    $this->newsletterUrl = $newsletterUrl ?? ContainerWrapper::getInstance()->get(NewsletterUrl::class);
   }
 
   public function process($timer = false) {
@@ -234,13 +241,18 @@ class SendingQueue {
       return;
     }
 
-    // Pause task if sender domain requirements are not met
-    if (!$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'sending')) {
+    // Pause task if sender domain requirements are not met.
+    // The fresh check runs only when the cached one fails, so stale cached data can't pause the task.
+    if (
+      !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'sending')
+      && !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'recheck')
+    ) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
         'pause task in sending queue due to sender domain requirements',
         ['task_id' => $task->getId()]
       );
       $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
       $this->scheduledTasksRepository->flush();
       return;
     }
@@ -439,6 +451,8 @@ class SendingQueue {
 
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];
     $campaignId = $sendingQueueMeta['campaignId'] ?? null;
+    // Anonymous (subscriber-less) link to the sent email, identical for all recipients
+    $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, null, $sendingQueueEntity, false);
 
     foreach ($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
@@ -462,6 +476,7 @@ class SendingQueue {
         $metasForSubscriber['campaign_id'] = $campaignId;
       }
       $metasForSubscriber['tracking_consent'] = $subscriber->getTrackingConsent();
+      $metasForSubscriber['preview_url'] = $previewUrl;
       $metas[] = $metasForSubscriber;
 
       // keep track of values for statistics purposes

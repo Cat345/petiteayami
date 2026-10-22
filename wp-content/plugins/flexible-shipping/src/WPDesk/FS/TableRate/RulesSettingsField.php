@@ -51,7 +51,7 @@ class RulesSettingsField {
 	private $settings;
 
 	/**
-	 * @var array
+	 * @var array|null
 	 */
 	private $value;
 
@@ -67,7 +67,7 @@ class RulesSettingsField {
 	 * @param string $settings_field_name      .
 	 * @param string $settings_field_title     .
 	 * @param array  $settings                 .
-	 * @param array  $value                    .
+	 * @param array|null $value                    .
 	 * @param array  $shipping_method_settings .
 	 */
 	public function __construct( $settings_field_id, $settings_field_name, $settings_field_title, $settings, $value = null, $shipping_method_settings = [] ) {

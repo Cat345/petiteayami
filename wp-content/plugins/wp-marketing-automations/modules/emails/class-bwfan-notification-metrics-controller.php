@@ -20,10 +20,10 @@ class BWFAN_Notification_Metrics_Controller {
 	 */
 	public function __construct( $date_params = array(), $frequency = 'weekly' ) {
 		$this->date_params = wp_parse_args( $date_params, array(
-			'from_date'          => date( 'Y-m-d 00:00:00', strtotime( '-1 day' ) ),
-			'to_date'            => date( 'Y-m-d 23:59:59', strtotime( '-1 day' ) ),
-			'from_date_previous' => date( 'Y-m-d 00:00:00', strtotime( '-2 day' ) ),
-			'to_date_previous'   => date( 'Y-m-d 23:59:59', strtotime( '-2 day' ) ),
+			'from_date'          => gmdate( 'Y-m-d 00:00:00', strtotime( '-1 day' ) ),
+			'to_date'            => gmdate( 'Y-m-d 23:59:59', strtotime( '-1 day' ) ),
+			'from_date_previous' => gmdate( 'Y-m-d 00:00:00', strtotime( '-2 day' ) ),
+			'to_date_previous'   => gmdate( 'Y-m-d 23:59:59', strtotime( '-2 day' ) ),
 		) );
 
 		$this->frequency = $frequency;

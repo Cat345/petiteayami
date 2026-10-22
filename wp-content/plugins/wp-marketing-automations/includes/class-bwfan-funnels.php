@@ -82,7 +82,7 @@ class BWFAN_Funnels {
 			$query .= " ORDER BY aero.date DESC";
 		}
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; contact_id absint()ed
 	}
 
 	public static function get_contact_bumps( $contact_id ) {
@@ -91,7 +91,7 @@ class BWFAN_Funnels {
 
 		$query = "SELECT bump.fid as fid, SUM(bump.total) as 'bump_revenue', SUM(bump.total) as 'total_revenue' FROM " . $wpdb->prefix . 'wfob_stats' . " AS bump WHERE bump.cid=$contact_id AND (bump.fid != 0 OR bump.fid IS NOT NULL) GROUP BY bump.fid";
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; contact_id absint()ed
 	}
 
 	public function get_contact_upsells( $contact_id ) {
@@ -100,7 +100,7 @@ class BWFAN_Funnels {
 
 		$query = "SELECT session.fid as fid, SUM((CASE WHEN action_type_id = 4 THEN `value` END)) AS `upsell_revenue`, SUM((CASE WHEN action_type_id = 4 THEN `value` END)) AS `total_revenue`, session.id as session_id, event.action_type_id FROM " . $wpdb->prefix . 'wfocu_session' . " AS session LEFT JOIN " . $wpdb->prefix . 'wfocu_event' . " AS event ON session.id=event.sess_id WHERE session.cid=$contact_id AND (session.fid != 0 OR session.fid IS NOT NULL) GROUP BY fid";
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; contact_id absint()ed
 	}
 
 	public function get_contact_optins( $contact_id ) {
@@ -112,7 +112,7 @@ class BWFAN_Funnels {
 			$query .= " ORDER BY optin.date DESC";
 		}
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; contact_id absint()ed
 	}
 
 	/**
@@ -200,7 +200,7 @@ class BWFAN_Funnels {
 				  LEFT JOIN " . $wpdb->prefix . 'bwf_funnels' . " as funnel ON aero.fid=funnel.id
 				  WHERE aero . cid = $contact_id AND ( aero.fid != 0 OR aero.fid IS NOT NULL ) order by aero . fid asc";
 
-		return $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; contact_id absint()ed
 	}
 
 	public function get_contact_bump( $contact_id ) {
@@ -213,7 +213,7 @@ class BWFAN_Funnels {
 				  LEFT JOIN " . $wpdb->prefix . 'bwf_funnels' . " as funnel ON bump . fid = funnel . id
 				  WHERE bump . cid = $contact_id AND ( bump.fid != 0 OR bump.fid IS NOT NULL ) order by bump . fid asc";
 
-		return $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; contact_id absint()ed
 	}
 
 	public function get_contact_optin( $contact_id ) {
@@ -225,7 +225,7 @@ class BWFAN_Funnels {
 					LEFT JOIN " . $wpdb->prefix . 'bwf_funnels' . " as funnel ON optin.funnel_id = funnel.id
 					WHERE optin . cid = $contact_id AND ( optin.funnel_id != 0 OR optin.funnel_id IS NOT NULL ) order by optin . funnel_id asc";
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; contact_id absint()ed
 	}
 
 	public function get_contact_upsell( $contact_id ) {
@@ -241,7 +241,7 @@ class BWFAN_Funnels {
 				  WHERE( event . action_type_id = 4 or event . action_type_id = 6 or event . action_type_id = 7 or event . action_type_id = 9 or event . action_type_id = 10 ) and session . cid = $contact_id
 				  AND ( session . fid != 0 OR session . fid IS NOT NULL ) order by session . timestamp asc";
 
-		return $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; contact_id absint()ed
 	}
 
 }

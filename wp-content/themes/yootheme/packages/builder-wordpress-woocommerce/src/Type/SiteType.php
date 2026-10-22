@@ -101,26 +101,33 @@ class SiteType
 
             if ($request->getQueryParam('reset-link-sent')) {
                 return ['reset_link_sent' => true];
-            } elseif (
+            }
+
+            if (
                 $request->getQueryParam('show-reset-form') &&
                 str_contains($request->getCookieParam('wp-resetpass-' . COOKIEHASH, ''), ':')
             ) {
                 return ['lost_password_confirmation' => true];
-            } else {
-                return ['lost_password' => true];
             }
-        } elseif (is_account_page()) {
+
+            return ['lost_password' => true];
+        }
+        if (is_account_page()) {
             if (!is_user_logged_in()) {
                 return ['login' => true];
             }
+
             return ['my_account' => true];
         }
 
         if (is_order_received_page()) {
             return ['order_received' => true];
-        } elseif (is_checkout()) {
+        }
+
+        if (is_checkout()) {
             return ['checkout' => true];
         }
+
         return null;
     }
 }

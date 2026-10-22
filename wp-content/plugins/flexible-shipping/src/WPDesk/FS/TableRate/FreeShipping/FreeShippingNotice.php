@@ -73,7 +73,7 @@ class FreeShippingNotice implements Hookable {
 			return;
 		}
 
-		$notice = '';
+		$notice                    = '';
 		$free_shipping_notice_data = $this->get_free_shipping_notice_data();
 		if ( $free_shipping_notice_data instanceof FreeShippingNoticeData ) {
 			$notice_message = $this->get_notice_message( $free_shipping_notice_data );
@@ -211,5 +211,4 @@ class FreeShippingNotice implements Hookable {
 
 		return is_string( $notice_text ) ? $notice_text : '';
 	}
-
 }

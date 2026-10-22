@@ -44,14 +44,14 @@ class BWFAN_Model_Export_Import extends BWFAN_Model {
 					// Create placeholders for each status value
 					$placeholders = implode( ',', array_fill( 0, count( $exclude_status ), '%d' ) );
 					// Use spread operator to pass array values as individual arguments
-					$status_query = $wpdb->prepare( " AND status NOT IN ({$placeholders}) ", ...$exclude_status );
+					$status_query = $wpdb->prepare( " AND status NOT IN ({$placeholders}) ", ...$exclude_status ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders via array_fill; statuses absint()ed
 				}
 			} else if ( is_numeric( $exclude_status ) ) {
 				$status_query = $wpdb->prepare( " AND status != %d ", absint( $exclude_status ) );
 			}
 		}
 
-		$query = $wpdb->prepare( "SELECT * FROM {table_name} WHERE type = %d $status_query ORDER BY id DESC LIMIT %d OFFSET %d", $type, $limit, $offset );
+		$query = $wpdb->prepare( "SELECT * FROM {table_name} WHERE type = %d $status_query ORDER BY id DESC LIMIT %d OFFSET %d", $type, $limit, $offset ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $status_query built with $wpdb->prepare() above
 
 		return self::get_results( $query );
 	}

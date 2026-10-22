@@ -346,9 +346,12 @@
         }
 
         get_event_id() {
+            /* Second-resolution timestamps collide across concurrent visitors and Meta dedupes by
+             * event name + event_id, silently dropping real events. The ID is generated once per
+             * event and reused for both the pixel and the CAPI copy, so uniqueness is safe. */
             let d = new Date();
             let time = d.getTime();
-            return parseInt(time / 1000);
+            return parseInt(time / 1000) + '_' + Math.random().toString(36).substring(2, 8);
         }
 
         custom_event(event, data) {
@@ -457,6 +460,10 @@
         fbq(event, data, isCustom) {
 
             let event_id = this.get_event_id();
+            // The server falls back to HTTP_REFERER without it, which a Referrer-Policy cuts down to the homepage.
+            if (data && typeof data === 'object' && !data.event_url) {
+                data.event_url = window.location.href;
+            }
             if ('true' == wfacp_analytics_data.conversion_api) {
                 this.send_data(event, data, event_id);
             }

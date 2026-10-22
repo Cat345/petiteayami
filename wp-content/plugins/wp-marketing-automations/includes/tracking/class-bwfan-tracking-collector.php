@@ -232,7 +232,7 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
             GROUP_CONCAT(CASE WHEN status = 1 AND  benchmark != '' THEN benchmark ELSE NULL END SEPARATOR '<>' ) as benchmark
 	        FROM {$automations_table}";
 
-			$result = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 
 			if ( ! is_array( $result ) || empty( $result ) ) {
 				return [
@@ -278,7 +278,7 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
 			SUM(CASE WHEN s.status = 1 THEN 1 ELSE 0 END) as active_count,
 			GROUP_CONCAT(CASE WHEN s.action != '' THEN s.action ELSE NULL END SEPARATOR '<>' ) as actions
 			FROM {$steps_table} as s JOIN {$automations_table} as a ON s.aid = a.ID WHERE a.status = 1 AND s.type = 2 AND s.status = 1";
-			$result = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 
 			if( ! is_array( $result ) || empty( $result ) ) {
 				return [
@@ -322,7 +322,7 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
 			$conversions_table = $wpdb->prefix . 'bwfan_conversions';
 
 			// Check if table exists (Pro feature)
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '{$conversions_table}'" ) !== $conversions_table ) {
 				return [
 					'order_count'              => 0,
@@ -334,13 +334,13 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
 			$total_query = "SELECT COUNT(DISTINCT wcid) as order_count FROM {$conversions_table}
 			WHERE otype = 1 AND wcid != 0";
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 			$total_result = $wpdb->get_row( $total_query, ARRAY_A );
 
 			// Last 30 days order count and revenue from automation conversions where otype (object type) is 1 (Automation) and wcid (order ID) is not 0
 			$last_30_days_query = "SELECT COUNT(DISTINCT wcid) as order_count FROM {$conversions_table} WHERE otype = 1 AND wcid != 0 AND date >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 			$last_30_days_result = $wpdb->get_row( $last_30_days_query, ARRAY_A );
 
 			return [
@@ -367,7 +367,7 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
 				$query .= " AND NOT EXISTS (SELECT 1 FROM {$wpdb->prefix}bwfan_message_unsubscribe AS unsub1 WHERE unsub1.recipient = c.contact_no )";
 			}
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 			return intval( $wpdb->get_var( $query ) );
 		}
 
@@ -424,7 +424,7 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
 			$engagement_table = $wpdb->prefix . 'bwfan_engagement_tracking';
 
 			// Check if table exists (Pro feature)
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '{$engagement_table}'" ) !== $engagement_table ) {
 				return 0;
 			}
@@ -432,7 +432,7 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
 			// Total count of emails sent where mode is 1 (Email) and c_status is 2 (Sent)
 			$query = "SELECT COUNT(ID) FROM {$engagement_table} WHERE mode = 1 AND c_status = 2";
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 			return intval( $wpdb->get_var( $query ) );
 		}
 
@@ -448,7 +448,7 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
 
 			$query = "SELECT COALESCE(SUM(total_order_count), 0) as total_orders, COALESCE(SUM(total_order_value), 0) as revenue FROM {$customers_table}";
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 			$result = $wpdb->get_row( $query, ARRAY_A );
 
 			if ( ! is_array( $result ) ) {
@@ -475,14 +475,14 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
 			// Total count of all captured carts
 			$total_query = "SELECT COUNT(ID) FROM {$carts_table}";
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 			$total_count = intval( $wpdb->get_var( $total_query ) );
 
 			// Count of carts captured in last 30 days with status 0 = pending, 1 = in-progress, 3 = skipped
 			$last_30_days_query = "SELECT COUNT(ID) FROM {$carts_table}
 			WHERE created_time >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; tables from $wpdb->prefix
 			$last_30_days_count = intval( $wpdb->get_var( $last_30_days_query ) );
 
 			return [

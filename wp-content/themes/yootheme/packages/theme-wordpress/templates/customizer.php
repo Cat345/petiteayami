@@ -36,6 +36,9 @@ if (is_network_admin()) {
 $admin_title = sprintf(__('%1$s &lsaquo; %2$s &#8212; WordPress'), $title, $admin_title);
 $admin_title = apply_filters('admin_title', $admin_title, $title);
 
+// Required for the REST API nonce in wpApiSettings.
+wp_enqueue_script('wp-api-request');
+
 wp_enqueue_media();
 wp_enqueue_style('common');
 

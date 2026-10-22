@@ -23,6 +23,24 @@ class RelationshipType
         $intermediary = isset($relationship['roles']['intermediary'])
             ? Helper::fieldsGroups('posts', $relationship['roles']['intermediary']['types'])
             : [];
+        $fields = [];
+
+        foreach ($intermediary as $field) {
+            $fields += Helper::loadFields($field, [
+                'type' => 'String',
+                'name' => Str::snakeCase($field['slug']),
+                'metadata' => [
+                    'label' => $field['name'],
+                    'group' => $field['group'],
+                ],
+                'extensions' => [
+                    'call' => [
+                        'func' => __CLASS__ . '::resolveIntermediaryField',
+                        'args' => ['slug' => $field['slug']],
+                    ],
+                ],
+            ]);
+        }
 
         return [
             'fields' => array_merge(
@@ -37,27 +55,7 @@ class RelationshipType
                         ],
                     ],
                 ],
-                array_filter(
-                    array_reduce(
-                        $intermediary,
-                        fn($fields, $field) => $fields +
-                            Helper::loadFields($field, [
-                                'type' => 'String',
-                                'name' => Str::snakeCase($field['slug']),
-                                'metadata' => [
-                                    'label' => $field['name'],
-                                    'group' => $field['group'],
-                                ],
-                                'extensions' => [
-                                    'call' => [
-                                        'func' => __CLASS__ . '::resolveIntermediaryField',
-                                        'args' => ['slug' => $field['slug']],
-                                    ],
-                                ],
-                            ]),
-                        [],
-                    ),
-                ),
+                $fields,
             ),
         ];
     }

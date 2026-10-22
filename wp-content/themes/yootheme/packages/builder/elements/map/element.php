@@ -39,7 +39,7 @@ return [
     'placeholder' => [
         'children' => [
             [
-                'type' => 'list_item',
+                'type' => 'map_item',
             ],
         ],
     ],
@@ -233,6 +233,7 @@ return [
                 'Set the initial resolution at which to display the map. 0 is fully zoomed out and 18 is at the highest resolution zoomed in. Alternatively, set the viewport to contain the given markers.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 0,
                 'max' => 18,
                 'step' => 1,
@@ -268,6 +269,7 @@ return [
             'description' => 'Minimum zoom level of the map.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 0,
                 'max' => 18,
                 'step' => 1,
@@ -279,6 +281,7 @@ return [
             'description' => 'Maximum zoom level of the map.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 0,
                 'max' => 18,
                 'step' => 1,
@@ -311,6 +314,7 @@ return [
             'description' => 'Set percentage change in lightness (Between -100 and 100).',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => -100,
                 'max' => 100,
                 'step' => 1,
@@ -327,6 +331,7 @@ return [
             'description' => 'Set percentage change in saturation (Between -100 and 100).',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => -100,
                 'max' => 100,
                 'step' => 1,
@@ -339,6 +344,7 @@ return [
                 'Set percentage change in the amount of gamma correction (Between 0.01 and 10.0, where 1.0 applies no correction).',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 0.01,
                 'max' => 10,
                 'step' => 0.1,

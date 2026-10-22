@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 final class BWFAN_CF7_Source extends BWFAN_Source {

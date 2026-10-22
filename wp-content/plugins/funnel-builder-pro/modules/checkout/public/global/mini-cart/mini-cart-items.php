@@ -107,7 +107,9 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 										$cart_item,
 										$cart_item_key
 									),
-									$_product
+									$_product,
+									$cart_item,
+									$cart_item_key
 								);
 
 
@@ -137,7 +139,8 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 </svg>';
 
 									$product_id = $_product->get_ID();
-									$html       = sprintf( '<span class="wfacp_delete_item_wrap"><a href="javascript:void(0)" class="%s" data-cart_key="%s" data-item-key="%s" data-product_id="%s">%s</a></span>', $item_class, $cart_item_key, $aero_item_key, $product_id, $item_icon );
+									/* translators: %s: product name */
+									$html       = sprintf( '<span class="wfacp_delete_item_wrap"><a href="javascript:void(0)" role="button" aria-label="%s" class="%s" data-cart_key="%s" data-item-key="%s" data-product_id="%s">%s</a></span>', esc_attr( sprintf( __( 'Remove %s from cart', 'woofunnels-aero-checkout' ), wp_strip_all_tags( $_product->get_name() ) ) ), $item_class, $cart_item_key, $aero_item_key, $product_id, $item_icon );
 								}
 
 								echo "<div class='wfacp_cart_title_sec'>";
@@ -238,7 +241,7 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 											<div class="product-quantity">
 												<div class="wfacp_quantity_selector" style="<?php echo ( true == $hide_quantity_switcher ) ? 'display:none;pointer-events:none;' : ''; ?>">
 													<div class="value-button wfacp_decrease_item" onclick="decreaseItmQty(this,'<?php echo esc_attr( $aero_item_key ); ?>')" value="Decrease Value">-</div>
-													<input type="number" step="<?php echo esc_attr( $minMax['step'] ); ?>" min="<?php echo esc_attr( $minMax['min'] ); ?>" max="<?php echo esc_attr( $minMax['max'] ); ?>" value="<?php echo esc_attr( $item_quantity ); ?>" data-value="<?php echo esc_attr( $item_quantity ); ?>" class="wfacp_mini_cart_update_qty wfacp_product_quantity_number_field" cart_key="<?php echo esc_attr( $cart_item_key ); ?>">
+													<input type="number" step="<?php echo esc_attr( $minMax['step'] ); ?>" min="<?php echo esc_attr( $minMax['min'] ); ?>" max="<?php echo esc_attr( $minMax['max'] ); ?>" value="<?php echo esc_attr( $item_quantity ); ?>" data-value="<?php echo esc_attr( $item_quantity ); ?>" class="wfacp_mini_cart_update_qty wfacp_product_quantity_number_field" aria-label="<?php /* translators: %s: product name */ echo esc_attr( sprintf( __( 'Quantity for %s', 'woofunnels-aero-checkout' ), wp_strip_all_tags( $_product->get_name() ) ) ); ?>" cart_key="<?php echo esc_attr( $cart_item_key ); ?>">
 													<div class="value-button wfacp_increase_item" onclick="increaseItmQty(this,'<?php echo esc_attr( $aero_item_key ); ?>')" value="Increase Value">+</div>
 												</div>
 											</div>

@@ -53,7 +53,6 @@ return [
             'after_setup_theme' => [ThemeLoader::class => 'setupTheme'],
             'after_switch_theme' => [Listener\CopyThemeConfig::class => 'handle'],
             'get_header' => [Listener\LoadThemeHead::class => '@handle'],
-            'init' => [Listener\LoadChildTheme::class => '@handle'],
             'template_include' => [Listener\AddPageLayout::class => '@handle'],
             'wp_head' => [
                 Listener\LoadIconMetaTags::class => 'handle',
@@ -85,6 +84,7 @@ return [
     'filters' =>
         [
             'theme_mod_config' => [Listener\LoadCustomizerSession::class => ['@handle', -10]],
+            'wp_refresh_nonces' => [Listener\RefreshCustomizerTokens::class => ['@handle', 10, 2]],
             'upload_mimes' => [Listener\AddSvgMimeType::class => 'handle'],
             'wp_check_filetype_and_ext' => [Listener\AddSvgFileType::class => ['handle', 10, 4]],
             'wp_prepare_themes_for_js' => [Listener\DisableAutoUpdate::class => 'handle'],

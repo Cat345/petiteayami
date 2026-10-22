@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 class BWFAN_Manage_Profile {
@@ -122,6 +123,7 @@ class BWFAN_Manage_Profile {
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
             <meta name="robots" content="noindex, nofollow">
             <title><?php echo esc_html( $page_title ); ?></title>
+<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- standalone page prints its own head without wp_head(), so an enqueued style would never print ?>
             <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
             <?php
             wp_print_styles();
@@ -993,7 +995,7 @@ class BWFAN_Manage_Profile {
                                     $field_value = '';
                                 }
                                 echo '<input type="text" id="' . esc_attr( "bwfan-field-{$field_id}" ) . '" data-type="date" placeholder="' . esc_attr( $placeholder ) . '" data-slug="' . esc_attr( $slug ) . '" value="' . esc_attr( $field_value ) . '" />';
-                                echo '<p class="bwfan-country-add-notice">' . esc_html__( 'Enter value in Y-m-d format. eg:', 'wp-marketing-automations' ) . ' ' . esc_html( date( 'Y-m-d' ) ) . '</p>';
+                                echo '<p class="bwfan-country-add-notice">' . esc_html__( 'Enter value in Y-m-d format. eg:', 'wp-marketing-automations' ) . ' ' . esc_html( gmdate( 'Y-m-d' ) ) . '</p>';
                             }
                             break;
                         case BWFCRM_Fields::$TYPE_DATETIME:
@@ -1002,7 +1004,7 @@ class BWFAN_Manage_Profile {
                                 $field_value = '';
                             }
                             echo '<input type="text" id="' . esc_attr( "bwfan-field-{$field_id}" ) . '" data-type="date-time" placeholder="' . esc_attr( $placeholder ) . '" data-slug="' . esc_attr( $slug ) . '" value="' . esc_attr( $field_value ) . '" />';
-                            echo '<p class="bwfan-country-add-notice">' . esc_html__( 'Enter value in Y-m-d H:i:s format. eg:', 'wp-marketing-automations' ) . ' ' . esc_html( date( 'Y-m-d H:i:s' ) ) . '</p>';
+                            echo '<p class="bwfan-country-add-notice">' . esc_html__( 'Enter value in Y-m-d H:i:s format. eg:', 'wp-marketing-automations' ) . ' ' . esc_html( gmdate( 'Y-m-d H:i:s' ) ) . '</p>';
                             break;
                         case BWFCRM_Fields::$TYPE_TIME:
                             $placeholder = '00:00:00';
@@ -1010,7 +1012,7 @@ class BWFAN_Manage_Profile {
                                 $field_value = '';
                             }
                             echo '<input type="text" id="' . esc_attr( "bwfan-field-{$field_id}" ) . '" data-type="time" data-slug="' . esc_attr( $slug ) . '" placeholder="' . esc_attr( $placeholder ) . '" value="' . esc_attr( $field_value ) . '" />';
-                            echo '<p class="bwfan-country-add-notice">' . esc_html__( 'Enter value in H:i:s (24H) format. eg:', 'wp-marketing-automations' ) . ' ' . esc_html( date( 'H:i:s' ) ) . '</p>';
+                            echo '<p class="bwfan-country-add-notice">' . esc_html__( 'Enter value in H:i:s (24H) format. eg:', 'wp-marketing-automations' ) . ' ' . esc_html( gmdate( 'H:i:s' ) ) . '</p>';
                             break;
                         default:
                             break;

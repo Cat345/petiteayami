@@ -487,7 +487,7 @@ if ( ! class_exists( 'BWFABT_Controller_Landing' ) ) {
 			}
 			WFFN_Core()->logger->log( "Updating AB landing id: $landing_id visited, running AB test id: $running_ab_test_id" );
 			if ( $landing_id > 0 && $running_ab_test_id > 0 && class_exists( 'WFCO_Model_Report_views' ) ) {
-				WFCO_Model_Report_views::update_data( date( 'Y-m-d', current_time( 'timestamp' ) ), $landing_id, 13 );
+				WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $landing_id, 13 );
 				WFFN_Core()->logger->log( 'Updated AB landing id: ' . $landing_id . ' visited (13) @: ' . current_time( 'mysql' ) );
 			}
 		}
@@ -499,7 +499,7 @@ if ( ! class_exists( 'BWFABT_Controller_Landing' ) ) {
 			$running_ab_test_id = $this->get_running_test_id_on_step( $landing_id );
 			WFFN_Core()->logger->log( "Updating AB landing id: $landing_id converted, running AB test id: $running_ab_test_id" );
 			if ( $landing_id > 0 && $running_ab_test_id > 0 && class_exists( 'WFCO_Model_Report_views' ) ) {
-				WFCO_Model_Report_views::update_data( date( 'Y-m-d', current_time( 'timestamp' ) ), $landing_id, 14 );
+				WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $landing_id, 14 );
 				WFFN_Core()->logger->log( 'Updated AB landing id: ' . $landing_id . ' converted (14) @: ' . current_time( 'mysql' ) );
 			}
 		}
@@ -540,6 +540,9 @@ if ( ! class_exists( 'BWFABT_Controller_Landing' ) ) {
 					'object_id'         => $step_id,
 					'object_name'       => html_entity_decode( get_the_title( $step_id ), ENT_QUOTES, get_bloginfo( 'charset' ) ),
 					'revenue'           => 0,
+					'checkout_revenue'  => 0,
+					'bump_revenue'      => 0,
+					'upsell_revenue'    => 0,
 					'revenue_per_visit' => 0,
 					'conversions'       => 0,
 					'views'             => 0,
@@ -583,7 +586,30 @@ if ( ! class_exists( 'BWFABT_Controller_Landing' ) ) {
 
 			$get_data = $wpdb->get_results( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-			$sql_query = "SELECT conv.step_id AS 'id', count( conv.source_id ) AS 'order_count', conv.source_id AS 'source_id', SUM(conv.checkout_total) AS 'amount', COUNT(conv.id) AS 'conversions',  conv.timestamp AS 'date', 'wc_checkout' AS 'type' 
+			/**
+			 * Attributed Revenue breakdown (established 2026-09, replaces the
+			 * single filterable $revenue_column below): 'revenue' is now always
+			 * checkout_revenue + bump_revenue + upsell_revenue -- the complete
+			 * per-variant attribution, matching the same fix already applied to
+			 * the Funnel Analytics tab and Canvas/Steps-Listing endpoints. All
+			 * three components already live on bwf_conversion_tracking's row
+			 * (checkout_total/bump_total/offer_total), same source_id grouping
+			 * already used below -- zero new queries, zero new joins.
+			 *
+			 * BREAKING: this removes the `bwfabt_conversion_revenue_column`
+			 * filter for 'landing'-type experiments specifically -- it is a
+			 * documented, public filter (still present, unchanged, for
+			 * 'optin'-type experiments in class-bwfabt-controller-optin.php)
+			 * that used to let integrators choose checkout_total-only vs. the
+			 * blended `value` column. A landing-type callback for it is now
+			 * silently never invoked; notify via _deprecated_hook() so that's
+			 * visible rather than silent.
+			 */
+			if ( has_filter( 'bwfabt_conversion_revenue_column' ) ) {
+				_deprecated_hook( 'bwfabt_conversion_revenue_column (for landing-type experiments)', '1.7.1', null, __( 'Landing-page revenue now always reports the full checkout + bump + upsell breakdown; this filter no longer affects it (still active for optin-type experiments).', 'funnel-builder' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $message is logged via _doing_it_wrong()/error_log when WP_DEBUG is on, never rendered as HTML.
+			}
+
+			$sql_query = "SELECT conv.step_id AS 'id', count( conv.source_id ) AS 'order_count', conv.source_id AS 'source_id', SUM(conv.checkout_total) AS 'checkout_revenue', SUM(conv.bump_total) AS 'bump_revenue', SUM(conv.offer_total) AS 'upsell_revenue', COUNT(conv.id) AS 'conversions',  conv.timestamp AS 'date', 'wc_checkout' AS 'type'
 		FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . ' AS conv WHERE conv.type = %d AND conv.step_id != 0 ' . $conv_query . ' GROUP BY conv.source_id ORDER BY conv.step_id ASC';
 
 			// $sql_query: conv.type bound %d, $conv_query dates esc_sql'd, table is $wpdb->prefix + literal.
@@ -604,12 +630,17 @@ if ( ! class_exists( 'BWFABT_Controller_Landing' ) ) {
 
 			if ( is_array( $aero_result ) && count( $aero_result ) > 0 ) {
 				foreach ( $aero_result as $entry ) {
-					$revenue     = (float) $entry['amount'];
-					$source_id   = (int) $entry['source_id'];
-					$order_count = (int) $entry['order_count'];
+					$checkout_revenue = (float) $entry['checkout_revenue'];
+					$bump_revenue     = (float) $entry['bump_revenue'];
+					$upsell_revenue   = (float) $entry['upsell_revenue'];
+					$source_id        = (int) $entry['source_id'];
+					$order_count      = (int) $entry['order_count'];
 					if ( isset( $data[ $source_id ] ) ) {
-						$data[ $source_id ]['order_count'] = $order_count;
-						$data[ $source_id ]['revenue']     = $revenue;
+						$data[ $source_id ]['order_count']      = $order_count;
+						$data[ $source_id ]['checkout_revenue'] = $checkout_revenue;
+						$data[ $source_id ]['bump_revenue']     = $bump_revenue;
+						$data[ $source_id ]['upsell_revenue']   = $upsell_revenue;
+						$data[ $source_id ]['revenue']          = $checkout_revenue + $bump_revenue + $upsell_revenue;
 
 					}
 				}

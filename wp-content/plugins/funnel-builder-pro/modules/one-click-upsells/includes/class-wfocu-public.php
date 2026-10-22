@@ -67,6 +67,16 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			 */
 			add_action( 'woocommerce_checkout_order_processed', array( $this, 'maybe_decide_funnel_on_order' ), 99, 2 );
 
+			/**
+			 * Same fallback for orders created through the Store API (the Checkout block and the
+			 * express-checkout flows that place orders through it, e.g. WooPayments' Google
+			 * Pay/Apple Pay buttons). Those never fire `woocommerce_checkout_order_processed`, so
+			 * without this the funnel is only ever decided when the session already holds one from
+			 * browsing a checkout page — product-page express purchases end with "No Upsells in
+			 * Funnel". Fires after order creation and before payment, mirroring the classic hook.
+			 */
+			add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'maybe_decide_funnel_on_order' ), 99, 1 );
+
 			add_action( 'woocommerce_thankyou', array( $this, 'maybe_destroy_session' ) );
 			add_action( 'woocommerce_thankyou', array( $this, 'maybe_log_thankyou_visited' ), 999, 1 );
 			add_action( 'wp_footer', array( $this, 'print_session_data_js' ) );
@@ -1390,7 +1400,15 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 				$order            = wc_get_order( $get_parent_order );
 				$payment_method   = $order->get_payment_method();
 				if ( empty( $payment_method ) || in_array( $payment_method, array( 'stripe', 'stripe_cc', 'stripe_applepay', 'stripe_googlepay', 'cpsw_stripe' ), true ) ) {
-					$order->add_order_note( __( sprintf( 'Upsell offer failed which would have been recoverable if <a href="%s">FunnelKit Stripe</a> was active and used.', self::funnelkit_stripe_link() ) ), 'woocommerce-upstroke-one-click-upsell' ); //phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+					$order->add_order_note(
+						sprintf(
+						/* translators: %s: FunnelKit Stripe plugin URL */
+							__( 'Upsell offer failed which would have been recoverable if <a href="%s">FunnelKit Stripe</a> was active and used.', 'woocommerce-upstroke-one-click-upsell' ),
+							self::funnelkit_stripe_link()
+						),
+						false,
+						false
+					);
 					$order->save();
 				}
 			} catch ( Exception $e ) {

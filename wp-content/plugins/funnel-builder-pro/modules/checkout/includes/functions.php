@@ -115,6 +115,19 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 		$key  = apply_filters( 'wfacp_form_field_key', $key, $args, $value );
 		$args = apply_filters( 'woocommerce_form_field_args', $args, $key, $value );
 
+		// Phone fields saved without a type render as type="text", so the intl flag padding (scoped to
+		// input[type="tel"]) is lost and the number paints under the flag; 'phone' is not a valid autocomplete token.
+		// Correct only those broken values: a type or autocomplete set on purpose (e.g. 'hidden', 'tel-national')
+		// by a filter or plugin is left alone.
+		if ( in_array( $key, array( 'billing_phone', 'shipping_phone' ), true ) ) {
+			if ( empty( $args['type'] ) || 'text' === $args['type'] ) {
+				$args['type'] = 'tel';
+			}
+			if ( empty( $args['autocomplete'] ) || 'phone' === $args['autocomplete'] ) {
+				$args['autocomplete'] = 'tel';
+			}
+		}
+
 		$args['class'] = (array) ( $args['class'] ?? array() );
 		if ( $args['required'] ) {
 			$args['class'][] = 'validate-required';

@@ -17,9 +17,9 @@ class BWFAN_Model_Message_Unsubscribe extends BWFAN_Model {
 			return '';
 		}
 		if ( true === $single_row ) {
-			return $wpdb->get_row( self::prepare_message_unsubscribe_sql( $where ) . ' LIMIT 0, 1', ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_row( self::prepare_message_unsubscribe_sql( $where ) . ' LIMIT 0, 1', ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- columns quoted identifiers; values bound via prepare()
 		} else {
-			return $wpdb->get_results( self::prepare_message_unsubscribe_sql( $where ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( self::prepare_message_unsubscribe_sql( $where ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- columns quoted identifiers; values bound via prepare()
 		}
 	}
 
@@ -91,7 +91,7 @@ class BWFAN_Model_Message_Unsubscribe extends BWFAN_Model {
 
 		$query = 'DELETE FROM ' . $table_name . ' WHERE ' . implode( ' AND ', $where );
 
-		return $wpdb->query( $wpdb->prepare( $query, ...$args ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		return $wpdb->query( $wpdb->prepare( $query, ...$args ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- columns quoted identifiers; values bound via prepare()
 	}
 
 	/**
@@ -120,8 +120,8 @@ class BWFAN_Model_Message_Unsubscribe extends BWFAN_Model {
 
 		$placeholders = implode( ',', $placeholders );
 		$table        = self::_table();
-		$sql          = $wpdb->prepare( "DELETE FROM $table WHERE `recipient` IN ($placeholders)", $where_args );
-		$wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$sql          = $wpdb->prepare( "DELETE FROM $table WHERE `recipient` IN ($placeholders)", $where_args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated per value; bound via prepare()
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated per value; bound via prepare()
 
 		return true;
 	}
@@ -177,9 +177,9 @@ class BWFAN_Model_Message_Unsubscribe extends BWFAN_Model {
 		}
 		$placeholders = implode( ',', array_fill( 0, count( $recipients ), '%s' ) );
 		$table        = self::_table();
-		$sql          = $wpdb->prepare( "SELECT * FROM {$table} WHERE `recipient` IN ({$placeholders}) ORDER BY `ID` DESC LIMIT 1", $recipients ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$sql          = $wpdb->prepare( "SELECT * FROM {$table} WHERE `recipient` IN ({$placeholders}) ORDER BY `ID` DESC LIMIT 1", $recipients ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated; values bound via prepare()
 
-		return $wpdb->get_row( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_row( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; values bound via prepare()
 	}
 
 }

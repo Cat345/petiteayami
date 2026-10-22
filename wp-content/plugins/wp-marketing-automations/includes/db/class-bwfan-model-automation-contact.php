@@ -95,9 +95,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		global $wpdb;
 
 		$table = self::_table();
-		$query = $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE `ID` = %d', $id );
+		$query = $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE `ID` = %d', $id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; ids bound via prepare()
 
-		return $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; ids bound via prepare()
 	}
 
 	/**
@@ -115,9 +115,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		global $wpdb;
 
 		$table = self::_table();
-		$query = $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE `aid` = %d AND `cid` = %d ORDER BY `ID` DESC LIMIT 0,1', $automation_id, $contact_id );
+		$query = $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE `aid` = %d AND `cid` = %d ORDER BY `ID` DESC LIMIT 0,1', $automation_id, $contact_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; ids bound via prepare()
 
-		return $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; ids bound via prepare()
 	}
 
 	/**
@@ -128,10 +128,48 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		global $wpdb;
 
 		$table        = self::_table();
-		$abandoned_id = '%"cart_abandoned_id":"' . $ab_id . '"%';
-		$query        = $wpdb->prepare( "SELECT * FROM $table WHERE `cid` = %d AND `data` LIKE '$abandoned_id'", $cid );
+		$abandoned_id = '%' . $wpdb->esc_like( '"cart_abandoned_id":"' . intval( $ab_id ) . '"' ) . '%';
+		$query        = $wpdb->prepare( "SELECT * FROM $table WHERE `cid` = %d AND `data` LIKE %s", $cid, $abandoned_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- id intval()ed and LIKE value bound via %s with esc_like()
 
-		return $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query prepared above
+	}
+
+	/**
+	 * Resolve the automation id (aid) that ran for an abandoned cart.
+	 *
+	 * The abandoned cart table has no automation_id column, so the id is read
+	 * from the automation contact row whose `data` JSON references the cart's
+	 * `cart_abandoned_id`. The contact may still be active or already completed
+	 * (moved to the complete table), so both tables are checked. Returns 0 when
+	 * no automation ran for this cart.
+	 *
+	 * The lookup is limited to the given contacts so it stays on the `cid` index:
+	 * the complete table grows without bound and `data` cannot be indexed.
+	 *
+	 * @param int|string $ab_id Abandoned cart row id.
+	 * @param int[] $cids Contact ids the cart can belong to.
+	 *
+	 * @return int
+	 */
+	public static function get_automation_id_by_ab_id( $ab_id, $cids ) {
+		global $wpdb;
+
+		$ab_id = absint( $ab_id );
+		$cids  = array_values( array_unique( array_filter( array_map( 'absint', (array) $cids ) ) ) );
+		if ( 0 === $ab_id || empty( $cids ) ) {
+			return 0;
+		}
+
+		$placeholders = implode( ', ', array_fill( 0, count( $cids ), '%d' ) );
+		$args         = array_merge( $cids, [ '%' . $wpdb->esc_like( '"cart_abandoned_id":"' . $ab_id . '"' ) . '%' ] );
+		foreach ( [ self::_table(), $wpdb->prefix . 'bwfan_automation_complete_contact' ] as $table ) {
+			$aid = $wpdb->get_var( $wpdb->prepare( "SELECT `aid` FROM $table WHERE `cid` IN ($placeholders) AND `data` LIKE %s ORDER BY `ID` DESC LIMIT 0,1", ...$args ) ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders -- $table is one of two fixed plugin tables and $placeholders is a run of %d, one per cid
+			if ( ! empty( $aid ) ) {
+				return absint( $aid );
+			}
+		}
+
+		return 0;
 	}
 
 	/**
@@ -143,8 +181,8 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		global $wpdb;
 		$time  = current_time( 'timestamp', 1 );
 		$table = self::_table();
-		$query = $wpdb->prepare( "SELECT MAX(`ID`) FROM {$table} WHERE `e_time` < %s AND `status` IN (1,6)", $time );
-		$count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query = $wpdb->prepare( "SELECT MAX(`ID`) FROM {$table} WHERE `e_time` < %s AND `status` IN (1,6)", $time ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; values bound via prepare()
+		$count = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; values bound via prepare()
 		if ( empty( $count ) ) {
 			return false;
 		}
@@ -163,8 +201,8 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 	public static function maybe_contact_in_automation( $cid, $aid ) {
 		global $wpdb;
 		$table = self::_table();
-		$query = $wpdb->prepare( "SELECT MAX(`ID`) FROM {$table} WHERE `cid` = %d AND `aid` = %d AND `status` IN (%d,%d,%d) ", $cid, $aid, 1, 4, 6 );
-		$count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query = $wpdb->prepare( "SELECT MAX(`ID`) FROM {$table} WHERE `cid` = %d AND `aid` = %d AND `status` IN (%d,%d,%d) ", $cid, $aid, 1, 4, 6 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; values bound via prepare()
+		$count = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; values bound via prepare()
 		if ( empty( $count ) ) {
 			return false;
 		}
@@ -255,7 +293,7 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		if ( true === $only_total ) {
 			$query = "SELECT  COUNT(cc.ID) FROM $table_name as cc JOIN {$wpdb->prefix}bwf_contact AS c ON cc.cid = c.ID WHERE 1=1 $where  ORDER BY cc.c_date DESC ";
 
-			return intval( $wpdb->get_var( $query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return intval( $wpdb->get_var( $query ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- where parts absint()ed/hardcoded/prepared; limit absint()ed
 		}
 
 		$more_columns = '';
@@ -265,7 +303,7 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$order_by = ! empty( $order_by ) ? $order_by : "ORDER BY cc.c_date DESC";
 
 		$query    = "SELECT  cc.ID,cc.cid, cc.aid, cc.trail, cc.c_date, c.email, c.f_name, c.l_name, c.contact_no, c.creation_date as date $more_columns FROM $table_name as cc JOIN {$wpdb->prefix}bwf_contact AS c ON cc.cid = c.ID WHERE 1=1 $where  $order_by $limit";
-		$contacts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$contacts = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- where parts absint()ed/hardcoded/prepared; limit absint()ed
 
 		if ( empty( $contacts ) ) {
 			return $contacts;
@@ -287,7 +325,7 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		}
 
 		return array_map( function ( $contact ) use ( $more_data, $status, $fail_data_map, $step_data_map ) {
-			$contact['e_time'] = isset( $contact['e_time'] ) ? date( 'Y-m-d H:i:s', $contact['e_time'] ) : '';
+			$contact['e_time'] = isset( $contact['e_time'] ) ? gmdate( 'Y-m-d H:i:s', $contact['e_time'] ) : '';
 
 			if ( 2 === intval( $status ) && isset( $contact['trail'] ) && isset( $fail_data_map[ $contact['trail'] ] ) ) {
 				$contact['error_msg'] = $fail_data_map[ $contact['trail'] ];
@@ -347,12 +385,12 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$automation_status = 'inactive' === $status ? " AND am.status = 2" : " AND am.status = 1";
 		$where             .= " AND (EXISTS ( SELECT 1 FROM {$wpdb->prefix}bwfan_automations AS am WHERE am.ID = cc.aid $automation_status ) )";
 		$where             .= is_array( $aid ) ? " GROUP BY cc.aid " : '';
-		$query             = $wpdb->prepare( "SELECT $columns COUNT(cc.ID) AS `count` FROM {$table_name} AS cc $join WHERE 1 = 1 $where ", $args );
+		$query             = $wpdb->prepare( "SELECT $columns COUNT(cc.ID) AS `count` FROM {$table_name} AS cc $join WHERE 1 = 1 $where ", $args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- fragments hardcoded/absint()ed; values bound via prepare()
 		if ( is_array( $aid ) ) {
-			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- fragments hardcoded/absint()ed; values bound via prepare()
 		}
 
-		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- fragments hardcoded/absint()ed; values bound via prepare()
 	}
 
 	/**
@@ -374,6 +412,7 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$aids         = array_map( 'absint', $aids );
 		$placeholders = implode( ',', array_fill( 0, count( $aids ), '%d' ) );
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders generated in code; ids absint()ed
 		$query = $wpdb->prepare(
 			"SELECT cc.aid,
 				SUM( CASE WHEN cc.status IN (1, 4, 6) THEN 1 ELSE 0 END ) AS active,
@@ -382,11 +421,12 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 			FROM {$table_name} AS cc
 			WHERE cc.aid IN ({$placeholders})
 			AND EXISTS ( SELECT 1 FROM {$wpdb->prefix}bwfan_automations AS am WHERE am.ID = cc.aid AND am.status = 1 )
-			GROUP BY cc.aid",
+			GROUP BY cc.aid", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated in code; ids absint()ed
 			...$aids
 		); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$results    = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$results    = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; ids absint()ed
 		if ( empty( $results ) || ! is_array( $results ) ) {
 			return [];
 		}
@@ -404,9 +444,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$aids        = array_map( 'absint', $aids );
 		$placeholder = implode( ',', array_fill( 0, count( $aids ), '%d' ) );
 
-		$query = $wpdb->prepare( "SELECT aid, count(aid) as count FROM $table_name WHERE aid IN ($placeholder) GROUP BY aid", $aids );
+		$query = $wpdb->prepare( "SELECT aid, count(aid) as count FROM $table_name WHERE aid IN ($placeholder) GROUP BY aid", $aids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated in code; ids absint()ed
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; ids absint()ed
 	}
 
 	public static function get_automation_contacts( $cid, $search = '', $limit = 10, $offset = 0, $more_data = false, $only_total = false ) {
@@ -427,21 +467,21 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 				return 0;
 			}
 			$placeholder = implode( ',', array_fill( 0, count( $aid ), '%d' ) );
-			$query       = $wpdb->prepare( "DELETE FROM $table_name WHERE aid IN ($placeholder)", $aid );
+			$query       = $wpdb->prepare( "DELETE FROM $table_name WHERE aid IN ($placeholder)", $aid ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated in code; ids absint()ed
 		} else {
-			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE aid = %d", intval( $aid ) );
+			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE aid = %d", intval( $aid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders generated in code; ids absint()ed
 		}
 
-		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; ids absint()ed
 	}
 
 	public static function get_row_by_trail_id( $trail_id ) {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$query = $wpdb->prepare( "SELECT * FROM $table_name WHERE trail = %s LIMIT 0,1", $trail_id );
+		$query = $wpdb->prepare( "SELECT * FROM $table_name WHERE trail = %s LIMIT 0,1", $trail_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; value bound via prepare()
 
-		return $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; value bound via prepare()
 	}
 
 	/** Get all the contacts where automations already ran for the given automation range */
@@ -461,9 +501,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 			$args[] = $end_date;
 		}
 
-		$query = $wpdb->prepare( "SELECT DISTINCT `cid` AS contact_id FROM {$table_name} WHERE `aid` = %d $where", $args );
+		$query = $wpdb->prepare( "SELECT DISTINCT `cid` AS contact_id FROM {$table_name} WHERE `aid` = %d $where", $args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- where fragment hardcoded; values bound via prepare()
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- where fragment hardcoded; values bound via prepare()
 	}
 
 	/**
@@ -490,9 +530,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 			$order_by       = ' time_interval ';
 		}
 
-		$base_query = "SELECT  count(ID) as contact_counts" . $interval_query . "  FROM `" . $table . "` WHERE 1=1 AND aid = " . absint( $aid ) . " AND " . $wpdb->prepare( "`$date_col` >= %s AND `$date_col` <= %s", $start_date, $end_date ) . " AND aid = " . absint( $aid ) . " " . $group_by . " ORDER BY " . $order_by . " ASC";
+		$base_query = "SELECT  count(ID) as contact_counts" . $interval_query . "  FROM `" . $table . "` WHERE 1=1 AND aid = " . absint( $aid ) . " AND " . $wpdb->prepare( "`$date_col` >= %s AND `$date_col` <= %s", $start_date, $end_date ) . " AND aid = " . absint( $aid ) . " " . $group_by . " ORDER BY " . $order_by . " ASC"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- interval SQL comes from Pro BWFCRM_Dashboards helper; other values absint()ed
 
-		$contact_counts = $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$contact_counts = $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval SQL comes from Pro BWFCRM_Dashboards helper; other values absint()ed
 
 		return $contact_counts;
 	}
@@ -517,18 +557,18 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		// }
 
 		$query = "SELECT ID FROM {$table} WHERE `last` = %d $where";
-		$query = $wpdb->prepare( $query, $sid );
+		$query = $wpdb->prepare( $query, $sid ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- status hardcoded at all callers; sid bound via prepare()
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- status hardcoded at all callers; sid bound via prepare()
 	}
 
 	public static function get_automation_count_by_cid( $cid, $aid ) {
 		global $wpdb;
 
 		$table = self::_table();
-		$query = $wpdb->prepare( 'SELECT COUNT(`aid`) as `count` FROM ' . $table . ' WHERE `cid` = %d AND `aid` = %d ORDER BY `ID` DESC', $cid, $aid );
+		$query = $wpdb->prepare( 'SELECT COUNT(`aid`) as `count` FROM ' . $table . ' WHERE `cid` = %d AND `aid` = %d ORDER BY `ID` DESC', $cid, $aid ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; ids bound via prepare()
 
-		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; ids bound via prepare()
 	}
 
 	public static function update_status_by_multiple_ids( $ac_ids, $status = 1, $e_time = '', $last = false ) {
@@ -557,9 +597,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$args                  = array_merge( $args, $ac_ids );
 
 		$query = "UPDATE {$table_name} SET `status`= $status $set_e_time $set_last WHERE `ID` IN ($prepared_placeholders) ";
-		$query = $wpdb->prepare( $query, $args );
+		$query = $wpdb->prepare( $query, $args ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- status hardcoded at all callers; values bound via prepare()
 
-		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- status hardcoded at all callers; values bound via prepare()
 	}
 
 	public static function get_multiple_automation_contact( $aids, $contact_id ) {
@@ -576,9 +616,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$args[]       = $contact_id;
 
 		$table = self::_table();
-		$query = $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE `aid` IN (' . $placeholders . ') AND `cid` = %d  ORDER BY `ID` DESC', $args );
+		$query = $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE `aid` IN (' . $placeholders . ') AND `cid` = %d  ORDER BY `ID` DESC', $args ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; values bound via prepare()
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; values bound via prepare()
 	}
 
 	/**
@@ -592,7 +632,7 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		global $wpdb;
 		$table = self::_table();
 
-		return $wpdb->get_var( $wpdb->prepare( "SELECT `e_time` FROM {$table} WHERE `trail` = %s ", $trail ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_var( $wpdb->prepare( "SELECT `e_time` FROM {$table} WHERE `trail` = %s ", $trail ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; value bound via prepare()
 	}
 
 	/**
@@ -618,9 +658,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 			$args[] = $last;
 		}
 
-		$query = $wpdb->prepare( "SELECT COUNT(*) AS `count` FROM {$table_name}  WHERE 1 = 1 AND `status` = %d  $where", $args );
+		$query = $wpdb->prepare( "SELECT COUNT(*) AS `count` FROM {$table_name}  WHERE 1 = 1 AND `status` = %d  $where", $args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- where fragment hardcoded; values bound via prepare()
 
-		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- where fragment hardcoded; values bound via prepare()
 	}
 
 	/**
@@ -645,14 +685,14 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 			return true;
 		}
 
-		$datetime = new DateTime( date( 'Y-m-d H:i:s', strtotime( $data['c_date'] ) ) );
+		$datetime = new DateTime( date( 'Y-m-d H:i:s', strtotime( $data['c_date'] ) ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- strtotime($string) round-trip into tz-less DateTime; gmdate would shift c_date
 		$c_date   = $datetime->modify( "-$wait_time mins" )->format( 'Y-m-d H:i:s' );
 
 		global $wpdb;
 
 		$query = "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_contact` WHERE `cid` = %d AND `aid` = %d AND `event` = %s  AND `data` = %s AND `c_date` >= %s LIMIT 1";
 
-		return intval( $wpdb->get_var( $wpdb->prepare( $query, $data['cid'], $data['aid'], $data['event'], $data['data'], $c_date ) ) ) > 0; //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return intval( $wpdb->get_var( $wpdb->prepare( $query, $data['cid'], $data['aid'], $data['event'], $data['data'], $c_date ) ) ) > 0; // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare()
 	}
 
 	/**
@@ -668,6 +708,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 	 */
 	public static function is_contact_with_same_order( $aid, $cid, $order_id, $single_item = 0, $event = 'wc_new_order' ) {
 		global $wpdb;
+		/** Both ids are placed inside LIKE literals below */
+		$order_id    = intval( $order_id );
+		$single_item = intval( $single_item );
 
 		$like1 = '%"order_id":"' . $order_id . '"%';
 		$like2 = '%"order_id":' . $order_id . '%';
@@ -679,7 +722,7 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		}
 
 		$query = "SELECT `ID`, `data` FROM `{$wpdb->prefix}bwfan_automation_contact` WHERE `cid` = %d AND `aid` = %d AND `event` = %s  AND $data ORDER BY `ID` DESC LIMIT 0,1";
-		$res   = $wpdb->get_row( $wpdb->prepare( $query, $cid, $aid, $event ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$res   = $wpdb->get_row( $wpdb->prepare( $query, $cid, $aid, $event ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- order and item ids intval()ed above; remaining values prepared
 		$data  = isset( $res['data'] ) ? json_decode( $res['data'], true ) : [];
 		if ( empty( $data ) ) {
 			return false;
@@ -723,9 +766,9 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$args                  = array_merge( $args, $ids );
 
 		$query = "UPDATE {$table_name} SET `e_time` = %d WHERE `ID` IN ($prepared_placeholders) ";
-		$query = $wpdb->prepare( $query, $args );
+		$query = $wpdb->prepare( $query, $args ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; values bound via prepare()
 
-		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; values bound via prepare()
 	}
 
 
@@ -764,17 +807,20 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		 * Get the latest trail row per (tid, sid) pair in a single query.
 		 * Uses a subquery to find MAX(ID) per group, then joins back for full row.
 		 */
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- where built from hardcoded placeholders; values spread into prepare()
 		$query = $wpdb->prepare(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- where built from hardcoded placeholders; values spread into prepare()
 			"SELECT t.tid, t.data FROM {$trail_table} AS t
 			INNER JOIN (
 				SELECT tid, sid, MAX(ID) AS max_id FROM {$trail_table} AS t2
 				WHERE {$where_clause}
 				GROUP BY tid, sid
-			) AS latest ON t.ID = latest.max_id",
+			) AS latest ON t.ID = latest.max_id", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- where built from hardcoded placeholders; values spread into prepare()
 			...$args
 		); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- where built from hardcoded placeholders; values spread into prepare()
 
 		foreach ( $results as $row ) {
 			if ( empty( $row['data'] ) ) {
@@ -808,6 +854,7 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		 * Get the latest trail+step row per trail_id in a single query.
 		 * Replicates the logic of BWFAN_Model_Automation_Step::get_step_by_trail() in batch.
 		 */
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders generated in code; values spread into prepare()
 		$query = $wpdb->prepare(
 			"SELECT ct.tid, ct.c_time AS run_time, st.action, st.type
 			FROM {$trail_table} AS ct
@@ -816,11 +863,12 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 				SELECT tid, MAX(ID) AS max_id FROM {$trail_table}
 				WHERE tid IN ({$placeholders})
 				GROUP BY tid
-			) AS latest ON ct.ID = latest.max_id",
+			) AS latest ON ct.ID = latest.max_id", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated in code; values spread into prepare()
 			...$trail_ids
 		); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; values spread into prepare()
 
 		foreach ( $results as $row ) {
 			$tid              = $row['tid'];

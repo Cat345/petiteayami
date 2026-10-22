@@ -4,6 +4,26 @@
 
 For the latest changes, see the Changelog section in the [readme.txt file](https://plugins.svn.wordpress.org/flexible-shipping/trunk/readme.txt).
 
+= 6.13.3 - 2026-10-13 =
+* Improved the contrast of the Flexible Shipping PRO purchase link on the Plugins screen.
+
+= 6.13.2 - 2026-10-12 =
+* Fixed repeated label download attempts after running subsequent bulk actions on the WooCommerce orders screen.
+
+= 6.13.1 - 2026-09-30 =
+* Updates to Flexible Shipping Info tab in Settings
+
+= 6.13.0 - 2026-09-28 =
+* Added support for WooCommerce 11.2
+* Replaced the Flexible Shipping PRO upsell box in shipping method settings.
+
+= 6.12.4 - 2026-09-15 =
+* Fixed the redirect to the Flexible Shipping Info page after the first plugin activation.
+* Fixed a PHP 8.4 deprecation warning in logger settings.
+* Improved the rating popup with a non-blocking layout, larger stars, clearer feedback questions, and reminder postponement options.
+* Fixed shipping method logo metadata appearing in the admin order view.
+* Fixed WordPress Playground startup by using the latest stable WordPress version.
+
 = 6.12.3 - 2026-09-04 =
 * Added support for WooCommerce 11.2
 

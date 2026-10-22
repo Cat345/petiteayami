@@ -133,6 +133,8 @@ class BWFAN_Common {
 
 		add_action( 'admin_notices', array( __CLASS__, 'bwfan_run_cron_test' ) );
 		add_action( 'rest_api_init', array( __CLASS__, 'add_plugin_endpoint' ) );
+		add_filter( 'woocommerce_rest_product_cat_query', array( __CLASS__, 'normalize_term_rest_search' ), 10, 2 );
+		add_filter( 'woocommerce_rest_product_tag_query', array( __CLASS__, 'normalize_term_rest_search' ), 10, 2 );
 
 		/** showing consent text on checkout page */
 		add_action( 'wp', array( __CLASS__, 'display_marketing_optin_checkbox' ) );
@@ -232,6 +234,9 @@ class BWFAN_Common {
 		add_filter( 'cron_schedules', [ __CLASS__, 'add_schedules' ], 100 );
 		add_action( 'fka_clear_duplicate_actions', array( __CLASS__, 'remove_duplicate_actions' ) );
 
+		/** Re-arm our own recurring hooks from the worker, the only path that runs on stores where nobody opens wp-admin */
+		add_action( 'bwf_worker_before_as_run', array( __CLASS__, 'validate_recurring_actions_on_worker' ) );
+
 		add_action( 'wffn_optin_form_submit', array( __CLASS__, 'set_uid_in_cookies' ), 10, 3 );
 		add_action( 'bwfan_run_event_queue', [ __CLASS__, 'bwfan_run_event_queue' ] );
 		add_action( 'bwfan_conversions_index', [ __CLASS__, 'bwfan_conversions_index' ] );
@@ -266,10 +271,31 @@ class BWFAN_Common {
 
 		// Hook for allowing whitelisted endpoints.
 		add_filter( 'rest_authentication_errors', [ __CLASS__, 'bwfan_allow_whitelisted_endpoints' ], PHP_INT_MAX );
+
+		/** Keep our routes out of the public REST index and OPTIONS schema; dispatch is unchanged */
+		add_filter( 'rest_endpoints', [ __CLASS__, 'hide_rest_routes_from_index' ] );
+		add_filter( 'rest_index', [ __CLASS__, 'hide_rest_namespaces_from_index' ] );
 	}
 
 	/**
-	 * Allow Autonami and WooFunnels endpoints in rest calls
+	 * Clear a third-party plugin's REST authentication block for Autonami and
+	 * WooFunnels endpoints, so security/cache plugins that deny all REST do not
+	 * stop our loopback worker, webhooks and events.
+	 *
+	 * Two things keep this from becoming an authentication bypass:
+	 *  - It reads the route WordPress actually dispatched, from
+	 *    $GLOBALS['wp']->query_vars['rest_route'], not the request URL. A POST
+	 *    body rest_route overrides the permalink in WP::parse_request(), so the
+	 *    URL path is attacker-controlled and can address a whitelisted path
+	 *    while core executes an arbitrary route such as /wp/v2/users.
+	 *  - It never clears WordPress core's own cookie/nonce failure. On an
+	 *    invalid (non-empty) nonce core keeps the logged-in user set, so nulling
+	 *    rest_cookie_invalid_nonce would let a cross-site request act as that
+	 *    user (CSRF). Those errors are left untouched; only another plugin's
+	 *    block is cleared.
+	 *  - When it does clear a block, it runs core's cookie/nonce check itself.
+	 *    An earlier block makes rest_cookie_check_errors() return early, so
+	 *    without this a cookie request with no nonce would keep the user set.
 	 *
 	 * @param WP_Error|null|true $result Authentication result
 	 *
@@ -280,13 +306,19 @@ class BWFAN_Common {
 			return $result;
 		}
 
-		$route = self::get_rest_route_url();
-
-		if ( empty( $route ) ) {
+		if ( 0 === strpos( (string) $result->get_error_code(), 'rest_cookie' ) ) {
 			return $result;
 		}
 
-		// Build complete whitelist including dynamic endpoints (namespace only, without prefix).
+		$route = isset( $GLOBALS['wp']->query_vars['rest_route'] ) ? (string) $GLOBALS['wp']->query_vars['rest_route'] : '';
+		if ( '' === $route ) {
+			return $result;
+		}
+
+		if ( '/' !== substr( $route, 0, 1 ) ) {
+			$route = '/' . $route;
+		}
+
 		$allowed_namespaces = [
 			'/woofunnels/',
 			'/autonami/',
@@ -298,49 +330,82 @@ class BWFAN_Common {
 			'/woofunnel_customer/',
 		];
 
-		// Get REST API prefix dynamically to support custom prefixes and permalink changes.
-		$rest_prefix = function_exists( 'rest_get_url_prefix' ) ? rest_get_url_prefix() : 'wp-json';
-
-		// Check if route contains the REST prefix (PHP 7.4+ compatible).
-		if ( false !== strpos( $route, $rest_prefix ) ) {
-			$split = explode( $rest_prefix, $route, 2 );
-			if ( isset( $split[1] ) ) {
-				$route = $split[1];
-			}
-		}
-
-		// Ensure route starts with '/' for proper matching.
-		if ( '/' !== substr( $route, 0, 1 ) ) {
-			$route = '/' . $route;
-		}
-
-		// Check if the current request matches any whitelisted endpoint.
 		foreach ( $allowed_namespaces as $namespace ) {
-			// Check if route starts with the namespace to ensure exact namespace matching.
-			if ( strpos( $route, $namespace ) === 0 ) {
-				// Allow public access - return null to bypass authentication.
-				return null;
+			if ( 0 === strpos( $route, $namespace ) ) {
+				return rest_cookie_check_errors( null );
 			}
 		}
 
-		// Otherwise, let other filters handle it.
 		return $result;
 	}
 
 	/**
-	 * Get the current REST route URL
+	 * REST namespaces dropped from the /wp-json/ namespaces list, root route included
 	 *
-	 * @return string
+	 * @return array
 	 */
-	public static function get_rest_route_url() {
-		$rest_route = filter_input( INPUT_GET, 'rest_route' );
-		if ( ! empty( $rest_route ) ) {
-			$rest_route = esc_url_raw( $rest_route );
-		} else {
-			$rest_route = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
+	public static function get_hidden_rest_prefixes() {
+		$prefixes = array( 'autonami/v1', 'autonami/v2', 'autonami-webhook', 'autonami-app', 'woofunnels/v1', 'woofunnel_customer/v1' );
+		if ( defined( 'BWFAN_API_NAMESPACE' ) ) {
+			$prefixes[] = BWFAN_API_NAMESPACE;
 		}
 
-		return $rest_route;
+		return array_unique( array_filter( (array) apply_filters( 'bwfan_hidden_rest_prefixes', $prefixes ), 'is_string' ) );
+	}
+
+	/**
+	 * Hide the routes no register_rest_route() call of ours can flag: the namespace
+	 * root routes WordPress registers itself, and the woofunnels core routes.
+	 * Every other route in these namespaces passes 'show_in_index' => false where it is registered.
+	 *
+	 * @param array $endpoints
+	 *
+	 * @return array
+	 */
+	public static function hide_rest_routes_from_index( $endpoints ) {
+		if ( ! is_array( $endpoints ) ) {
+			return $endpoints;
+		}
+
+		$routes = array( '/woofunnels/v1/worker', '/woofunnel_customer/v1/offer_accepted', '/woofunnel_customer/v1/order_status_changed' );
+		foreach ( self::get_hidden_rest_prefixes() as $prefix ) {
+			$routes[] = '/' . $prefix;
+		}
+
+		foreach ( $routes as $route ) {
+			if ( empty( $endpoints[ $route ] ) || ! is_array( $endpoints[ $route ] ) ) {
+				continue;
+			}
+			foreach ( $endpoints[ $route ] as $key => $handler ) {
+				if ( is_int( $key ) && is_array( $handler ) ) {
+					$endpoints[ $route ][ $key ]['show_in_index'] = false;
+				}
+			}
+		}
+
+		return $endpoints;
+	}
+
+	/**
+	 * Remove hidden namespaces from the /wp-json/ namespaces list
+	 *
+	 * @param WP_REST_Response $response
+	 *
+	 * @return WP_REST_Response
+	 */
+	public static function hide_rest_namespaces_from_index( $response ) {
+		if ( ! $response instanceof WP_REST_Response ) {
+			return $response;
+		}
+		$data = $response->get_data();
+		if ( empty( $data['namespaces'] ) || ! is_array( $data['namespaces'] ) ) {
+			return $response;
+		}
+
+		$data['namespaces'] = array_values( array_diff( $data['namespaces'], self::get_hidden_rest_prefixes() ) );
+		$response->set_data( $data );
+
+		return $response;
 	}
 
 	public static function display_marketing_optin_checkbox() {
@@ -674,19 +739,23 @@ class BWFAN_Common {
 		return false;
 	}
 
+	/**
+	 * Consent checkbox is not rendered when the setting is off or the logged-in contact is already subscribed.
+	 * In both cases consent is treated as granted (classic checkout emits a hidden bwfan_user_consent=1,
+	 * block checkout renders nothing, so the abandoned-cart capture falls back to this check).
+	 *
+	 * @return bool
+	 */
+	public static function is_marketing_consent_implicit() {
+		$global_settings = self::get_global_settings();
+
+		return empty( $global_settings['bwfan_user_consent'] ) || self::is_logged_in_contact_subscribed();
+	}
+
 	public static function add_user_consent_after_terms_and_conditions( $return = false, $field_priority = '' ) {
 		$global_settings = self::get_global_settings();
 
-		$marketing_status = 0;
-		if ( empty( $global_settings['bwfan_user_consent'] ) ) {
-			$marketing_status = 1;
-		}
-
-		if ( empty( $marketing_status ) && self::is_logged_in_contact_subscribed() ) {
-			$marketing_status = 1;
-		}
-
-		if ( 1 === $marketing_status ) {
+		if ( self::is_marketing_consent_implicit() ) {
 			if ( ! $return ) {
 				echo '<input id="bwfan_user_consent" name="bwfan_user_consent" value="1" type="hidden" />';
 
@@ -719,7 +788,7 @@ class BWFAN_Common {
 		if ( ! $return ) {
 			echo '<p class="bwfan_user_consent wfacp-form-control-wrapper wfacp-col-full wfacp-consent-term-condition form-row">';
 			echo '<label for="bwfan_user_consent" class="checkbox">';
-			echo '<input id="bwfan_user_consent" name="bwfan_user_consent" type="checkbox" value="1" ' . esc_html( $checked ) . ' />';
+			echo '<input id="bwfan_user_consent" name="bwfan_user_consent" class="input-checkbox" type="checkbox" value="1" ' . esc_html( $checked ) . ' />';
 			echo wp_kses_post( $user_consent_message );
 			echo '</label>';
 			echo '</p>';
@@ -727,7 +796,7 @@ class BWFAN_Common {
 			$field_priority = ! empty( $field_priority ) ? 'data-priority="' . ( absint( $field_priority ) + 5 ) . '"' : '';
 			$return         = '<p class="bwfan_user_consent wfacp-form-control-wrapper wfacp-col-full wfacp-consent-term-condition form-row" ' . $field_priority . '>';
 			$return         .= '<label for="bwfan_user_consent" class="checkbox">';
-			$return         .= '<input id="bwfan_user_consent" name="bwfan_user_consent" type="checkbox" value="1" ' . esc_html( $checked ) . ' />';
+			$return         .= '<input id="bwfan_user_consent" name="bwfan_user_consent" class="input-checkbox" type="checkbox" value="1" ' . esc_html( $checked ) . ' />';
 			$return         .= wp_kses_post( $user_consent_message );
 			$return         .= '</label>';
 			$return         .= '</p>';
@@ -847,21 +916,43 @@ class BWFAN_Common {
 	}
 
 	/**
+	 * Shift a site-time DateTime back to GMT.
+	 *
+	 * The offset is already signed, so it is negated rather than prefixed with '-'. Prefixing
+	 * produced '--25200 seconds' for zones west of Greenwich, which PHP reads as a positive
+	 * shift. It happened to be right here, and wrong-looking everywhere.
+	 *
 	 * @param DateTime $datetime
 	 */
 	public static function convert_to_gmt( $datetime ) {
-		$datetime->modify( '-' . self::get_timezone_offset() * HOUR_IN_SECONDS . ' seconds' );
+		$datetime->modify( ( - self::get_timezone_offset() ) * HOUR_IN_SECONDS . ' seconds' );
 	}
 
+	/**
+	 * Site UTC offset in hours, signed and possibly fractional (India +5.5, Nepal +5.75, Newfoundland -2.5).
+	 *
+	 * Resolved through `wp_timezone()` so this agrees with `wp_date()` / `date_i18n()` by construction.
+	 * Reading `timezone_string` / `gmt_offset` directly made this a second, independent resolution of the
+	 * site timezone. Both resolutions consult the same two options, so they agree on any untampered
+	 * install — but they were separate reads, and anything filtering `option_timezone_string` /
+	 * `option_gmt_offset` inconsistently could drive them apart. Callers would then shift by an offset
+	 * the formatter did not agree with, and the output was out by the full divergence. Going through
+	 * `wp_timezone()` deletes the second read rather than trying to keep two in step; it covers both
+	 * cases already, falling back to a ±HH:MM zone built from `gmt_offset`.
+	 *
+	 * Prompted by #4834, where merge tag output was 14 hours out on a site whose timezone read as
+	 * `America/Los_Angeles`. That divergence was never reproduced — the implementation replaced here
+	 * returns -7 for that zone, not the +7 the reported output implies — so treat #4834 as the symptom
+	 * that motivated this, not as a description of what it fixes.
+	 *
+	 * Known limitation: DST is evaluated at the current moment, not at the timestamp being converted,
+	 * so a January date converted in July gets the summer offset. Pre-existing, and unchanged here
+	 * because every caller shares it. Tracked separately.
+	 *
+	 * @return float|int Whole-hour zones come back as int, since PHP's `/` returns int when it divides evenly.
+	 */
 	public static function get_timezone_offset() {
-		$timezone = get_option( 'timezone_string' );
-		if ( $timezone ) {
-			$timezone_object = new DateTimeZone( $timezone );
-
-			return $timezone_object->getOffset( new DateTime( 'now' ) ) / HOUR_IN_SECONDS;
-		} else {
-			return floatval( get_option( 'gmt_offset', 0 ) );
-		}
+		return wp_timezone()->getOffset( new DateTime( 'now', new DateTimeZone( 'UTC' ) ) ) / HOUR_IN_SECONDS;
 	}
 
 	public static function convert_to_site_time( $date ) {
@@ -869,12 +960,18 @@ class BWFAN_Common {
 	}
 
 	/**
-	 * @param $datetime DateTime
+	 * Shift a GMT DateTime to site time.
+	 *
+	 * The offset is already signed, so it is used as-is. Prefixing '+' produced
+	 * '+-25200 seconds' for zones west of Greenwich: valid to PHP, but it reads as a bug
+	 * and invited "corrections" that truncated fractional offsets such as India +5.5.
+	 *
+	 * @param DateTime $datetime
 	 *
 	 * @return mixed
 	 */
 	public static function convert_from_gmt( $datetime ) {
-		return $datetime->modify( '+' . self::get_timezone_offset() * HOUR_IN_SECONDS . ' seconds' );
+		return $datetime->modify( self::get_timezone_offset() * HOUR_IN_SECONDS . ' seconds' );
 	}
 
 	/**
@@ -901,7 +998,7 @@ class BWFAN_Common {
 				return true;
 			}
 		} elseif ( 'all' === $screen_type || 'settings' === $screen_type ) {
-			if ( $page === 'autonami-settings' || false !== strpos( filter_input( INPUT_GET, 'path' ), 'settings' ) ) {
+			if ( $page === 'autonami-settings' || false !== strpos( (string) filter_input( INPUT_GET, 'path' ), 'settings' ) ) {
 				return true;
 			}
 		} elseif ( 'automation' === $screen_type ) {
@@ -1004,7 +1101,7 @@ class BWFAN_Common {
 	 * @return bool
 	 */
 	public static function is_autonami_page() {
-		if ( isset( $_GET['page'] ) && 'autonami-automations' === sanitize_text_field( $_GET['page'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification
+		if ( isset( $_GET['page'] ) && 'autonami-automations' === sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification
 			return true;
 		}
 
@@ -1029,6 +1126,9 @@ class BWFAN_Common {
 		}
 		if ( bwf_has_action_scheduled( 'bwfan_delete_old_abandoned_carts' ) ) {
 			bwf_unschedule_actions( 'bwfan_delete_old_abandoned_carts' );
+		}
+		if ( class_exists( 'BWFAN_Announcements' ) ) {
+			BWFAN_Announcements::deactivate( 'fka' );
 		}
 	}
 
@@ -1151,7 +1251,7 @@ class BWFAN_Common {
 		if ( function_exists( 'apache_setenv' ) ) {
 			@apache_setenv( 'no-gzip', '1' );
 		}
-		@ini_set( 'zlib.output_compression', 'Off' );
+		@ini_set( 'zlib.output_compression', 'Off' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- turns off output compression so the streamed file Content-Length stays accurate
 
 		// Clean (discard) all existing output buffers - prevents WordPress buffered content from interfering
 		while ( ob_get_level() > 0 ) {
@@ -1232,6 +1332,17 @@ class BWFAN_Common {
 		}
 
 		return $merge_tags;
+	}
+	/**
+	 * WP stores term names HTML-encoded ("Dairy &amp; Eggs"), so a WC REST category/tag search for
+	 * "Dairy & Eggs" never matches. Normalize the search to the stored (encoded) form.
+	 */
+	public static function normalize_term_rest_search( $args, $request ) {
+		if ( ! empty( $args['search'] ) && is_string( $args['search'] ) ) {
+			$args['search'] = htmlspecialchars( wp_specialchars_decode( $args['search'], ENT_QUOTES ), ENT_NOQUOTES );
+		}
+
+		return $args;
 	}
 
 	/**
@@ -1397,9 +1508,6 @@ class BWFAN_Common {
 	 * @return array
 	 */
 	public static function get_all_events_rules() {
-		if ( ! bwfan_is_autonami_pro_active() ) {
-			return [];
-		}
 		$all_rules_groups = array();
 		$events           = BWFAN_Core()->sources->get_events();
 		if ( empty( $events ) ) {
@@ -1637,17 +1745,24 @@ class BWFAN_Common {
 	public static function get_customer_order_count( $user_id, $force = false ) {
 		global $wpdb;
 
-		$order_count      = implode( "','", wc_get_order_types( 'order-count' ) );
-		$trashed_statuses = implode( "','", self::get_order_trashed_statuses() );
+		$order_types      = array_values( (array) wc_get_order_types( 'order-count' ) );
+		$trashed_statuses = array_values( (array) self::get_order_trashed_statuses() );
+
+		// Fallback to array( '' ) so a filtered-out list never yields an invalid `IN ()`
+		$order_types      = empty( $order_types ) ? array( '' ) : $order_types;
+		$trashed_statuses = empty( $trashed_statuses ) ? array( '' ) : $trashed_statuses;
+		$type_holders     = implode( ',', array_fill( 0, count( $order_types ), '%s' ) );
+		$status_holders   = implode( ',', array_fill( 0, count( $trashed_statuses ), '%s' ) );
+		$args             = array_merge( $order_types, $trashed_statuses, array( $user_id ) );
 
 		if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-			$query = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}wc_orders as orders LEFT JOIN {$wpdb->prefix}wc_orders_meta AS meta ON orders.id = meta.order_id WHERE meta.meta_key= '_customer_user' AND orders.type IN (%s) AND orders.status NOT IN (%s) AND meta.meta_value= %d", $order_count, $trashed_statuses, $user_id );
+			$query = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}wc_orders as orders WHERE orders.type IN ({$type_holders}) AND orders.status NOT IN ({$status_holders}) AND orders.customer_id = %d", ...$args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $type_holders/$status_holders are array_fill() '%s' placeholder lists; every value is bound via ...$args
 			$count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			return empty( $wpdb->last_error ) && ! empty( $count ) ? intval( $count ) : 0;
 		}
 
-		$query = $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->posts as posts LEFT JOIN {$wpdb->postmeta} AS meta ON posts.ID = meta.post_id WHERE   meta.meta_key= '_customer_user' AND posts.post_type IN (%s) AND posts.post_status NOT IN (%s) AND meta.meta_value= %d", $order_count, $trashed_statuses, $user_id );
+		$query = $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->posts as posts LEFT JOIN {$wpdb->postmeta} AS meta ON posts.ID = meta.post_id WHERE   meta.meta_key= '_customer_user' AND posts.post_type IN ({$type_holders}) AND posts.post_status NOT IN ({$status_holders}) AND meta.meta_value= %d", ...$args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $type_holders/$status_holders are array_fill() '%s' placeholder lists; every value is bound via ...$args
 
 		$count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
@@ -1881,7 +1996,7 @@ class BWFAN_Common {
 	 * @return mixed
 	 */
 	public static function get_cookie( $name ) {
-		return isset( $_COOKIE[ $name ] ) ? sanitize_text_field( $_COOKIE[ $name ] ) : false;
+		return isset( $_COOKIE[ $name ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ $name ] ) ) : false;
 	}
 
 	/**
@@ -1991,7 +2106,7 @@ class BWFAN_Common {
 			'post_type'      => 'shop_coupon',
 			'posts_per_page' => $limit,
 			'post_status'    => 'publish',
-			'meta_query'     => array(
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- admin coupon search on shop_coupon posts; small table, limited
 				array(
 					'key'     => '_is_bwfan_coupon',
 					'compare' => 'NOT EXISTS',
@@ -2111,7 +2226,7 @@ class BWFAN_Common {
 		if ( empty( $term ) ) {
 
 			if ( isset( $_POST['term'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
-				$term = stripslashes( sanitize_text_field( $_POST['term'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
+				$term = sanitize_text_field( wp_unslash( $_POST['term'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
 			}
 		}
 
@@ -2174,10 +2289,10 @@ class BWFAN_Common {
 			) );
 
 		}
-        $nonce     = ( isset( $_REQUEST['_wpnonce'] ) ) ? sanitize_text_field( $_REQUEST['_wpnonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
-        $bwf_nonce = ( isset( $_REQUEST['bwf_nonce'] ) ) ? sanitize_text_field( $_REQUEST['bwf_nonce'] ) : '';//phpcs:ignore WordPress.Security.NonceVerification
+        $nonce     = ( isset( $_REQUEST['_wpnonce'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
+        $bwf_nonce = ( isset( $_REQUEST['bwf_nonce'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['bwf_nonce'] ) ) : '';//phpcs:ignore WordPress.Security.NonceVerification
         // Some callers (custom addons, internal React components) post the bwfan-action-admin nonce under the key `nonce` instead of `_wpnonce`. Accept both.
-        $alt_nonce = ( isset( $_REQUEST['nonce'] ) ) ? sanitize_text_field( $_REQUEST['nonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
+        $alt_nonce = ( isset( $_REQUEST['nonce'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
         if ( ! wp_verify_nonce( $bwf_nonce, 'bwf_secure_key' ) && ! wp_verify_nonce( $nonce, 'bwfan-action-admin' ) && ! wp_verify_nonce( $alt_nonce, 'bwfan-action-admin' ) ) {
             wp_send_json( array(
                 'msg'    => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ),
@@ -2247,7 +2362,7 @@ class BWFAN_Common {
 			$query .= " LIMIT %d, %d ";
 			$query = $wpdb->prepare( $query, $offset, $limit );// phpcs:ignore WordPress.DB.PreparedSQL
 		}
-		$product_ids = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		$product_ids = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- post types sanitize_key()ed; values bound via prepare()
 
 		if ( is_numeric( $term ) ) {
 			$post_id   = absint( $term );
@@ -2280,7 +2395,7 @@ class BWFAN_Common {
 			}
 		}
 
-		return sprintf( '%s (#%d)%s', strip_tags( $product->get_title() ), $product->get_id(), ( count( $arguments ) > 0 ) ? ' (' . implode( ',', $arguments ) . ')' : '' );
+		return sprintf( '%s (#%d)%s', wp_strip_all_tags( $product->get_title() ), $product->get_id(), ( count( $arguments ) > 0 ) ? ' (' . implode( ',', $arguments ) . ')' : '' );
 	}
 
 	public static function get_variation_attribute( $variation ) {
@@ -2470,14 +2585,14 @@ class BWFAN_Common {
 		$filter_table           = null;
 		$filtered_table_actions = null;
 
-		if ( ( isset( $_GET['tab'] ) && 'tasks' === sanitize_text_field( $_GET['tab'] ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification
+		if ( ( isset( $_GET['tab'] ) && 'tasks' === sanitize_text_field( wp_unslash( $_GET['tab'] ) ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification
 			$filter_table = $wpdb->prefix . 'bwfan_tasks';
 		}
-		if ( ( isset( $_GET['tab'] ) && 'logs' === sanitize_text_field( $_GET['tab'] ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification
+		if ( ( isset( $_GET['tab'] ) && 'logs' === sanitize_text_field( wp_unslash( $_GET['tab'] ) ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification
 			$filter_table = $wpdb->prefix . 'bwfan_logs';
 		}
 
-		$task_status = ( isset( $_GET['status'] ) && '' !== $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : 't_0'; //phpcs:ignore WordPress.Security.NonceVerification
+		$task_status = ( isset( $_GET['status'] ) && '' !== $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : 't_0'; //phpcs:ignore WordPress.Security.NonceVerification
 		if ( strpos( $task_status, '_' ) !== false ) {
 			$task_status = explode( '_', $task_status );
 			$task_status = intval( $task_status[1] );
@@ -2494,7 +2609,7 @@ class BWFAN_Common {
 				$params[] = $task_status;
 			}
 			$parsed_query     = $wpdb->prepare( $query, $params ); // phpcs:ignore WordPress.DB.PreparedSQL
-			$distinct_actions = $wpdb->get_results( $parsed_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$distinct_actions = $wpdb->get_results( $parsed_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table hardcoded from $wpdb->prefix; status bound via %d
 			if ( is_array( $distinct_actions ) && count( $distinct_actions ) > 0 ) {
 				foreach ( $distinct_actions as $values ) {
 					$filtered_table_actions[ $values['actions'] ] = $values['actions'];
@@ -2554,7 +2669,7 @@ class BWFAN_Common {
 		$query                 .= ' AND am.`meta_key` = %s';
 		$params[]              = 'title';
 		$parsed_query          = $wpdb->prepare( $query, $params ); // phpcs:ignore WordPress.DB.PreparedSQL
-		$all_automations       = $wpdb->get_results( $parsed_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		$all_automations       = $wpdb->get_results( $parsed_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- tables from $wpdb->prefix; value bound via prepare()
 
 		if ( false === is_array( $all_automations ) || 0 === count( $all_automations ) ) {
 			return $result;
@@ -2635,43 +2750,51 @@ class BWFAN_Common {
 			'methods'             => WP_REST_Server::CREATABLE,
 			'callback'            => array( __CLASS__, 'capture_async_events' ),
 			'permission_callback' => '__return_true',
+			'show_in_index'       => false,
 		) );
 		register_rest_route( 'autonami/v1', '/worker', array(
 			'methods'             => WP_REST_Server::CREATABLE,
 			'callback'            => array( __CLASS__, 'run_worker_tasks' ),
 			'permission_callback' => '__return_true',
+			'show_in_index'       => false,
 		) );
 		register_rest_route( 'autonami/v1', '/autonami-cron', array(
 			'methods'             => WP_REST_Server::READABLE,
 			'callback'            => array( __CLASS__, 'run_autonami_cron_events' ),
 			'permission_callback' => '__return_true',
+			'show_in_index'       => false,
 		) );
 		register_rest_route( 'autonami/v1', '/delete-tasks', array(
 			'methods'             => WP_REST_Server::CREATABLE,
 			'callback'            => array( __CLASS__, 'delete_automation_tasks_by_unique_action_ids' ),
 			'permission_callback' => '__return_true',
+			'show_in_index'       => false,
 		) );
 		register_rest_route( 'autonami/v1', '/update-contact-automation', array(
 			'methods'             => WP_REST_Server::CREATABLE,
 			'callback'            => array( __CLASS__, 'update_contact_meta' ),
 			'permission_callback' => '__return_true',
+			'show_in_index'       => false,
 		) );
 		register_rest_route( 'autonami/v1', '/update-generated-increment', array(
 			'methods'             => WP_REST_Server::CREATABLE,
 			'callback'            => array( __CLASS__, 'update_generated_increment' ),
 			'permission_callback' => '__return_true',
+			'show_in_index'       => false,
 		) );
 		/** v2 autonami endpoint */
 		register_rest_route( 'autonami/v2', '/worker', array(
 			'methods'             => WP_REST_Server::CREATABLE,
 			'callback'            => array( __CLASS__, 'run_worker_tasks' ),
 			'permission_callback' => '__return_true',
+			'show_in_index'       => false,
 		) );
 
 		register_rest_route( 'autonami/v2', '/worker', array(
 			'methods'             => WP_REST_Server::READABLE,
 			'callback'            => array( __CLASS__, 'run_v2_worker_tasks' ),
 			'permission_callback' => '__return_true',
+			'show_in_index'       => false,
 		) );
 	}
 
@@ -2689,7 +2812,7 @@ class BWFAN_Common {
 
 		/** Check Unique key security */
 		$unique_key = get_option( 'bwfan_u_key', false );
-		if ( false === $unique_key || ! isset( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
+		if ( ! is_string( $unique_key ) || ! isset( $post_parameters['unique_key'] ) || ! is_string( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
 			return;
 		}
 
@@ -2942,7 +3065,7 @@ class BWFAN_Common {
 		 * Check Unique key security
 		 */
 		$unique_key = get_option( 'bwfan_u_key', false );
-		if ( false === $unique_key || ! isset( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
+		if ( ! is_string( $unique_key ) || ! isset( $post_parameters['unique_key'] ) || ! is_string( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
 			return;
 		}
 
@@ -3009,6 +3132,15 @@ class BWFAN_Common {
 
 		/** Modify Action Scheduler filters */
 		self::modify_as_filters();
+
+		/**
+		 * Same contract as WooFunnels_AS_DS::worker_as_run(): runs on every worker request, after
+		 * modify_as_filters() so a listener adding one of the 7 AS filters it clears is not stripped.
+		 * Fired here too because the autonami/v1 and autonami/v2 worker endpoints land in this copy and
+		 * never reach the woofunnels one - on a site with WP cron disabled, where the host cron only hits
+		 * an autonami worker URL, that is the only path there is.
+		 */
+		do_action( 'bwf_worker_before_as_run' );
 
 		$as_ins = ActionScheduler_QueueRunner::instance();
 
@@ -3393,7 +3525,7 @@ class BWFAN_Common {
 		$current_status        = 't_0';
 
 		if ( isset( $_GET['status'] ) && '' !== $_GET['status'] ) { //phpcs:ignore WordPress.Security.NonceVerification
-			$current_status = sanitize_text_field( $_GET['status'] );//phpcs:ignore WordPress.Security.NonceVerification
+			$current_status = sanitize_text_field( wp_unslash( $_GET['status'] ) );//phpcs:ignore WordPress.Security.NonceVerification
 		}
 
 		// For listing screen
@@ -3460,7 +3592,7 @@ class BWFAN_Common {
 		 * Check Unique key security
 		 */
 		$unique_key = get_option( 'bwfan_u_key', false );
-		if ( false === $unique_key || ! isset( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
+		if ( ! is_string( $unique_key ) || ! isset( $post_parameters['unique_key'] ) || ! is_string( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
 			return;
 		}
 
@@ -3562,7 +3694,7 @@ class BWFAN_Common {
 		 * Check Unique key security
 		 */
 		$unique_key = get_option( 'bwfan_u_key', false );
-		if ( false === $unique_key || ! isset( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
+		if ( ! is_string( $unique_key ) || ! isset( $post_parameters['unique_key'] ) || ! is_string( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
 			return;
 		}
 
@@ -3598,7 +3730,7 @@ class BWFAN_Common {
 		 * Check Unique key security
 		 */
 		$unique_key = get_option( 'bwfan_u_key', false );
-		if ( false === $unique_key || ! isset( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
+		if ( ! is_string( $unique_key ) || ! isset( $post_parameters['unique_key'] ) || ! is_string( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
 			return;
 		}
 
@@ -3869,7 +4001,7 @@ class BWFAN_Common {
 		$automationCount        = count( $abandoned_cart_ids );
 		$stringPlaceholders     = array_fill( 0, $automationCount, '%d' );
 		$placeholdersautomation = implode( ', ', $stringPlaceholders );
-		$sql_query              = $wpdb->prepare( "Delete FROM {table_name} WHERE ID IN ($placeholdersautomation)", $abandoned_cart_ids );// phpcs:ignore WordPress.DB.PreparedSQL
+		$sql_query              = $wpdb->prepare( "Delete FROM {table_name} WHERE ID IN ($placeholdersautomation)", $abandoned_cart_ids );// phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated via array_fill; ids absint()ed
 
 		BWFAN_Model_Abandonedcarts::delete_multiple( $sql_query );
 	}
@@ -4043,7 +4175,7 @@ class BWFAN_Common {
 		foreach ( $winback_automations as $automation_id ) {
 			$query = $wpdb->prepare( "SELECT t.ID FROM $task_table_name AS t JOIN $task_meta_table_name AS tm ON t.ID=tm.bwfan_task_id WHERE t.automation_id = %d AND tm.meta_key='integration_data' AND tm.meta_value LIKE %s", $automation_id, '%' . $email . '%' );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
 
-			$tasks_results[ $automation_id ] = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$tasks_results[ $automation_id ] = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- tables from $wpdb->prefix; values bound via prepare()
 		}
 
 		return $tasks_results;
@@ -4070,7 +4202,7 @@ class BWFAN_Common {
 		foreach ( $winback_automations as $automation_id ) {
 			$query = $wpdb->prepare( "SELECT t.ID FROM $task_table_name AS t JOIN $task_meta_table_name AS tm ON t.ID=tm.bwfan_task_id WHERE t.automation_id = %d AND tm.meta_key='integration_data' AND tm.meta_value LIKE %s", $automation_id, '%' . $phone . '%' );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
 
-			$tasks_results[ $automation_id ] = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$tasks_results[ $automation_id ] = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- tables from $wpdb->prefix; values bound via prepare()
 		}
 
 		return $tasks_results;
@@ -4206,7 +4338,7 @@ class BWFAN_Common {
 		global $wpdb;
 		$abandoned_table = $wpdb->prefix . 'bwfan_abandonedcarts';
 		$email           = sanitize_email( $email );
-		$abandoned_data  = $wpdb->get_results( $wpdb->prepare( "SELECT ID, last_modified FROM {$abandoned_table} WHERE status IN (1, 2) AND email = %s ORDER BY last_modified LIMIT 0, 3", $email ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$abandoned_data  = $wpdb->get_results( $wpdb->prepare( "SELECT ID, last_modified FROM {$abandoned_table} WHERE status IN (1, 2) AND email = %s ORDER BY last_modified LIMIT 0, 3", $email ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; email bound via %s
 
 		return $abandoned_data;
 	}
@@ -4508,11 +4640,11 @@ class BWFAN_Common {
 		}
 
 		$meta_data = array(
-			'meta_value' => ( true === $state ) ? 1 : 0,
+			'meta_value' => ( true === $state ) ? 1 : 0, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		);
 		$where     = array(
 			'bwfan_automation_id' => $automation_id,
-			'meta_key'            => 'requires_update',
+			'meta_key'            => 'requires_update', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		);
 		BWFAN_Model_Automationmeta::update( $meta_data, $where );
 	}
@@ -4648,6 +4780,56 @@ class BWFAN_Common {
 
 	public static function hide_free_products_cart_order_items() {
 		return apply_filters( 'bwfan_items_display_hide_free_products', false );
+	}
+
+	/**
+	 * Product names of a stored cart's items, keyed by product (or variation) id.
+	 *
+	 * The stored items embed WC_Product objects; waking each one costs a product
+	 * load (post, meta, terms) and lets the stored string pick the class. Read
+	 * them as plain arrays and take the titles from one primed post query.
+	 *
+	 * @param string $items      The cart row's serialized items.
+	 * @param bool   $skip_free  Leave out lines with no line_total.
+	 *
+	 * @return array
+	 */
+	public static function cart_item_names( $items, $skip_free = false ) {
+		if ( ! is_string( $items ) || ! is_serialized( $items ) ) {
+			return array();
+		}
+
+		$items = @unserialize( trim( $items ), array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, WordPress.PHP.NoSilencedErrors.Discouraged -- objects refused; corrupt rows read as empty, as maybe_unserialize() does
+		if ( ! is_array( $items ) ) {
+			return array();
+		}
+
+		$ids = array();
+		foreach ( $items as $item ) {
+			if ( ! is_array( $item ) || ( $skip_free && empty( $item['line_total'] ) ) ) {
+				continue;
+			}
+			$id = ! empty( $item['variation_id'] ) ? absint( $item['variation_id'] ) : ( isset( $item['product_id'] ) ? absint( $item['product_id'] ) : 0 );
+			if ( $id > 0 ) {
+				$ids[] = $id;
+			}
+		}
+
+		if ( empty( $ids ) ) {
+			return array();
+		}
+
+		_prime_post_caches( $ids, false, false );
+
+		$names = array();
+		foreach ( $ids as $id ) {
+			$title = get_post_field( 'post_title', $id, 'raw' );
+			if ( '' !== (string) $title ) {
+				$names[ $id ] = wp_strip_all_tags( $title );
+			}
+		}
+
+		return $names;
 	}
 
 	/**
@@ -5023,7 +5205,7 @@ class BWFAN_Common {
 			$query .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
 		}
 
-		return ! empty( $query ) ? $wpdb->get_results( $query, ARRAY_A ) : []; //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		return ! empty( $query ) ? $wpdb->get_results( $query, ARRAY_A ) : []; // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- ids absint()ed; other values bound via prepare()
 	}
 
 	/**
@@ -5046,7 +5228,7 @@ class BWFAN_Common {
 		if ( ! empty( $limit ) ) {
 			$query .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
 		}
-		$automations = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		$automations = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- query built from $wpdb->prepare() fragments
 
 		/** Search automations by title form automation meta table */
 		if ( ! empty( $search ) ) {
@@ -5057,7 +5239,7 @@ class BWFAN_Common {
 			$meta_query .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
 		}
 
-		$automation_meta = $wpdb->get_results( $meta_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		$automation_meta = $wpdb->get_results( $meta_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- query built from $wpdb->prepare() fragments
 
 		return array_merge( $automations, $automation_meta );
 	}
@@ -5081,7 +5263,7 @@ class BWFAN_Common {
 		}
 
 		/** Query to fetch unsubscribers data from DB */
-		$unsubscribers = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}bwfan_message_unsubscribe $where ORDER BY ID DESC LIMIT %d, %d ", $offset, $limit ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		$unsubscribers = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}bwfan_message_unsubscribe $where ORDER BY ID DESC LIMIT %d, %d ", $offset, $limit ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where built with $wpdb->prepare() before interpolation
 		if ( empty( $unsubscribers ) ) {
 			return array();
 		}
@@ -7016,6 +7198,7 @@ class BWFAN_Common {
 			} else {
 				$license_data = [
 					'manually_deactivated' => isset( $bwf_licenses[ BWFAN_PRO_ENCODE ]['manually_deactivated'] ) ? 1 : 0,
+					'expired'              => empty( $bwf_licenses[ BWFAN_PRO_ENCODE ]['expired'] ) ? 0 : 1,
 				];
 				if ( isset( $bwf_licenses[ BWFAN_PRO_ENCODE ]['data_extra']['api_key'] ) ) {
 					$license_data['api_key'] = 'xxxxxxxxxxxxxxxxxxxxxxxxxx' . substr( $bwf_licenses[ BWFAN_PRO_ENCODE ]['data_extra']['api_key'], - 6 );
@@ -7781,6 +7964,7 @@ class BWFAN_Common {
 				'type'       => 'notice',
 				'status'     => 'warning',
 				'class'      => 'bwfan-unsubscribe-logo-notice bwfan-setting-in-notice',
+				/* translators: %s: Link to update the brand logo */
 				'message'    => '<b>' . __( 'Alert', 'wp-marketing-automations' ) . ':</b> ' . sprintf( __( " No logo is currently displayed on your Subscribe page. Please update your logo to enhance your contact's appearance.  %s", 'wp-marketing-automations' ), "<a href='" . admin_url( '/admin.php?page=autonami&path=/settings/' ) . "' class='bwf-normal-a-t bwf-t-underline'>" . __( 'Update Brand Logo', 'wp-marketing-automations' ) . "</a>" ),
 				// phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
 				'isHtml'     => true,
@@ -8095,6 +8279,7 @@ class BWFAN_Common {
 				'type'       => 'notice',
 				'status'     => 'warning',
 				'class'      => 'bwfan-profile-logo-notice bwfan-setting-in-notice',
+				/* translators: %s: Link to update the brand logo */
 				'message'    => '<b>' . __( 'Alert', 'wp-marketing-automations' ) . ':</b> ' . sprintf( __( " No logo is currently displayed on your Contact Profile page. Please update your logo to enhance your contact's appearance.  %s", 'wp-marketing-automations' ), "<a href='page=autonami&path=/settings/' class='bwf-normal-a-t bwf-t-underline'>" . __( 'Update Brand Logo', 'wp-marketing-automations' ) . "</a>" ),
 				// phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
 				'isHtml'     => true,
@@ -8712,13 +8897,13 @@ class BWFAN_Common {
 		if ( $only_count === false ) {
 			$all_automations = self::get_db_cache_data( implode( ' ', $base_query ) );
 			if ( false === $all_automations ) {
-				$all_automations = $wpdb->get_results( implode( ' ', $base_query ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+				$all_automations = $wpdb->get_results( implode( ' ', $base_query ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- query built from prefix tables and prepare() fragments
 				self::set_db_cache_data( implode( ' ', $base_query ), $all_automations );
 			}
 		}
 		$overall_total = self::get_db_cache_data( implode( ' ', $count_query ) );
 		if ( false === $overall_total ) {
-			$overall_total = $wpdb->get_var( implode( ' ', $count_query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$overall_total = $wpdb->get_var( implode( ' ', $count_query ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- query built from prefix tables and prepare() fragments
 			self::set_db_cache_data( implode( ' ', $count_query ), $overall_total );
 		}
 
@@ -9468,7 +9653,7 @@ class BWFAN_Common {
 			$placeholders = implode( ', ', $placeholders );
 
 			$query  = $wpdb->prepare( "SELECT `{$p_key}`, `hook` FROM $table WHERE `hook` IN ($placeholders) AND `status` IN (0,1)", $list );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
-			$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$result = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- placeholders generated via array_fill; values bound in prepare()
 			if ( is_array( $result ) && count( $result ) > 0 ) {
 				foreach ( $result as $val ) {
 					self::$recurring_actions_db[ $val['hook'] ] = true;
@@ -9862,7 +10047,7 @@ class BWFAN_Common {
 		return in_array( strtolower( $parsed['scheme'] ), array( 'http', 'https' ), true );
 	}
 
-	public static function get_completed_contacts( $aid, $sid, $type = '', $offset = 0, $limit = 25, $path = '' ) {
+	public static function get_completed_contacts( $aid, $sid, $type = '', $offset = 0, $limit = 25, $path = '', $data_key = 'path' ) {
 
 		/**Get active automation contacts*/
 		if ( 'active' === $type ) {
@@ -9875,7 +10060,7 @@ class BWFAN_Common {
 		}
 
 		/**Get step completed contacts*/
-		return BWFAN_Model_Automation_Contact_Trail::get_step_completed_contacts( $aid, $sid, $type, $offset, $limit, $path );
+		return BWFAN_Model_Automation_Contact_Trail::get_step_completed_contacts( $aid, $sid, $type, $offset, $limit, $path, $data_key );
 	}
 
 	public static function get_automation_contacts_journey( $aid, $search = '' ) {
@@ -10232,7 +10417,7 @@ class BWFAN_Common {
 			$stringPlaceholders  = implode( ', ', $stringPlaceholders );
 
 			global $wpdb;
-			$query  = $wpdb->prepare( "SELECT `ID`,`trail` FROM {$wpdb->prefix}bwfan_automation_contact WHERE `last` = %d AND `ID` IN ( $stringPlaceholders ) AND (`status` = 1 OR `status` = 4) ", [
+			$query  = $wpdb->prepare( "SELECT `ID`,`trail` FROM {$wpdb->prefix}bwfan_automation_contact WHERE `last` = %d AND `ID` IN ( $stringPlaceholders ) AND (`status` = 1 OR `status` = 4) ", [ // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders generated via array_fill; arg count matches at runtime
 				$sid,
 				...$automation_contacts
 			] );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
@@ -11472,7 +11657,7 @@ class BWFAN_Common {
 			}
 
 			$meta_value = array_map( function ( $data ) {
-				if ( isset( $data['data'] ) && 'yesNoNode' !== $data['type'] ) {
+				if ( isset( $data['data'] ) && ! in_array( $data['type'], array( 'yesNoNode', 'splitpath', 'branchpath' ), true ) ) {
 					$data['data'] = [];
 				}
 
@@ -11649,8 +11834,8 @@ class BWFAN_Common {
 		}
 
 		return wc_get_orders( array(
-			'meta_key'   => '_woofunnel_cid',
-			'meta_value' => $contact->get_id(),
+			'meta_key'   => '_woofunnel_cid', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- single-contact order lookup by _woofunnel_cid; admin action, limited
+			'meta_value' => $contact->get_id(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- single-contact order lookup by _woofunnel_cid; admin action, limited
 			'orderby'    => 'ID',
 			'order'      => 'DESC',
 			'limit'      => 1,
@@ -11669,8 +11854,8 @@ class BWFAN_Common {
 
 		global $wpdb;
 		$orders_ids = wc_get_orders( array(
-			'meta_key'   => '_woofunnel_cid',
-			'meta_value' => $contact->get_id(),
+			'meta_key'   => '_woofunnel_cid', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- single-contact order lookup by _woofunnel_cid; admin action, limited
+			'meta_value' => $contact->get_id(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- single-contact order lookup by _woofunnel_cid; admin action, limited
 			'limit'      => - 1,
 			'return'     => 'ids'
 		) );
@@ -11683,10 +11868,10 @@ class BWFAN_Common {
 
 		if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 			$query  = $wpdb->prepare( "SELECT `id` AS refund_id, `parent_order_id` AS order_id FROM {$wpdb->prefix}wc_orders  WHERE type = %s AND status = %s AND `parent_order_id` IN ($orders_ids) ORDER BY id DESC LIMIT 1", 'shop_order_refund', 'wc-completed' );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
-			$refund = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$refund = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- order ids absint()ed; other values bound via %s
 		} else {
 			$query  = $wpdb->prepare( "SELECT `ID` AS refund_id, `post_parent` AS order_id FROM {$wpdb->prefix}posts WHERE `post_type` = %s AND `post_status` = %s AND `post_parent` IN ($orders_ids) ORDER BY `ID` DESC LIMIT 1", 'shop_order', 'publish' );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
-			$refund = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$refund = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- order ids absint()ed; other values bound via %s
 		}
 
 		return $refund;
@@ -11909,8 +12094,8 @@ class BWFAN_Common {
 			}
 			$ids          = array_map( 'absint', $ids );
 			$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-			$query        = $wpdb->prepare( "UPDATE `{$wpdb->prefix}bwfan_automation_contact_trail` SET `status` = 1, `data` = NULL WHERE ID IN ($placeholders);", $ids );
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query        = $wpdb->prepare( "UPDATE `{$wpdb->prefix}bwfan_automation_contact_trail` SET `status` = 1, `data` = NULL WHERE ID IN ($placeholders);", $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated via array_fill; ids absint()ed
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		} while ( ( time() - $start_time ) < 10 );
 	}
 
@@ -12143,8 +12328,8 @@ class BWFAN_Common {
 		/** If no data found */
 		if ( empty( $row ) ) {
 			$data = [
-				'meta_key'   => $meta_key,
-				'meta_value' => $meta_value,
+				'meta_key'   => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- writes an order meta row by order ID (HPOS or postmeta table), not a meta lookup query
+				'meta_value' => $meta_value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- writes an order meta row by order ID (HPOS or postmeta table), not a meta lookup query
 			];
 
 			if ( $hpos_enabled ) {
@@ -12165,13 +12350,13 @@ class BWFAN_Common {
 		/** update meta value */
 		$column = ( $hpos_enabled ) ? 'id' : 'meta_id';
 
-		$wpdb->update( $table, [ 'meta_value' => $meta_value ], [ $column => $row[ $column ] ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->update( $table, [ 'meta_value' => $meta_value ], [ $column => $row[ $column ] ] ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- writes an order meta row by order ID (HPOS or postmeta table), not a meta lookup query
 	}
 
 	/**
 	 * Get FK Automation links
 	 * 
-	 * @param string $type Specific link type to retrieve. If empty, returns all links. Supported types: 'upgrade', 'offer', 'autonami', 'support', 'docs', 'nxtgenbuilder', 'migratefromv1', 'whatsnew', 'publicapi', 'sublium'.
+	 * @param string $type Specific link type to retrieve. If empty, returns all links. Supported types: 'upgrade', 'offer', 'autonami', 'support', 'docs', 'nxtgenbuilder', 'migratefromv1', 'whatsnew', 'publicapi', 'sublium', 'account', 'paidorderstatus'.
 	 *
 	 * @return array|string 
 	 */
@@ -12193,6 +12378,7 @@ class BWFAN_Common {
 			'publicapi'     => apply_filters( 'bwfan_fka_public_api_link_append_utm_args', add_query_arg( $default_args, 'https://developers.funnelkit.com/#introduction' ) ),
 			'sublium'       => apply_filters( 'bwfan_fka_sublium_link_append_utm_args', add_query_arg( $default_args, 'https://sublium.com/' ) ),
 			'account'       => apply_filters( 'bwfan_fka_account_link_append_utm_args', add_query_arg( $default_args, 'https://myaccount.funnelkit.com/?utm_source=WordPress&utm_campaign=FKA+Lite+Plugin&utm_medium=Settings+License+Login' ) ),
+			'paidorderstatus' => apply_filters( 'bwfan_fka_paid_order_status_link_append_utm_args', add_query_arg( array_merge( $default_args, [ 'utm_medium' => 'WC+Import' ] ), 'https://funnelkit.com/docs/autonami-2/troubleshooting/set-custom-order-status-as-paid-order-status-for-syncing-orders/' ) ),
 		];
 
 		if ( ! empty( $type ) ) {
@@ -12300,13 +12486,28 @@ class BWFAN_Common {
 		$placeholders       = array_fill( 0, count( $hooks ), '%s' );
 		$placeholders_hooks = implode( ', ', $placeholders );
 
-		$query = $wpdb->prepare( "DELETE FROM `{$wpdb->prefix}bwf_actions` WHERE `hook` IN ($placeholders_hooks) AND `status` = 0", $hooks ); // phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
+		/**
+		 * Keep one pending row per hook instead of deleting every row and re-creating one. The previous
+		 * approach re-created only bwfcrm_broadcast_run_queue, so every other hook in the list above was left
+		 * unscheduled until someone opened wp-admin - and even that single re-insert could silently fail.
+		 *
+		 * The row kept is the oldest recurring one, falling back to the oldest row of any kind. Keeping a
+		 * plain MIN(`id`) could keep a one-off row over a recurring one and end the schedule after it fires.
+		 * The derived table is required, MySQL will not read the target table of a DELETE directly.
+		 */
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders generated via array_fill; values bound in prepare()
+		$query = $wpdb->prepare( "DELETE FROM `{$wpdb->prefix}bwf_actions`
+			WHERE `hook` IN ($placeholders_hooks) AND `status` = 0
+			AND `id` NOT IN (
+				SELECT `id` FROM (
+					SELECT COALESCE( MIN( CASE WHEN `recurring_interval` > 0 THEN `id` END ), MIN( `id` ) ) AS `id`
+					FROM `{$wpdb->prefix}bwf_actions`
+					WHERE `hook` IN ($placeholders_hooks) AND `status` = 0
+					GROUP BY `hook`
+				) AS `keep_rows`
+			)", array_merge( $hooks, $hooks ) ); // phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
-
-		if ( true === bwfan_is_autonami_pro_active() && in_array( 'bwfcrm_broadcast_run_queue', $hooks, true ) ) {
-			/** Reschedule broadcast */
-			bwf_schedule_recurring_action( time(), 60, 'bwfcrm_broadcast_run_queue', array(), 'bwfcrm' );
-		}
 	}
 
 	/**
@@ -12677,7 +12878,8 @@ class BWFAN_Common {
 			case 3:
 				/**
 				 * [0] => https://...
-				 */ return '#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#';
+				 * A trailing "/?" stays in the match (e.g. {{reorder_last_order_url}} fallback), else params get appended before the "?"
+				 */ return '#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|/\?|([^,[:punct:]\s]|/))#';
 			default:
 				return '';
 		}
@@ -13232,6 +13434,110 @@ class BWFAN_Common {
 	}
 
 	/**
+	 * Worker-side self-heal for the plugin's own recurring hooks.
+	 *
+	 * validate_scheduled_recurring_actions() otherwise only runs from admin/REST paths, so a store where
+	 * nobody opens wp-admin stays broken indefinitely once a hook loses its row. Throttled so the worker
+	 * does not pay for the lookup on every single run.
+	 *
+	 * @return void
+	 */
+	public static function validate_recurring_actions_on_worker() {
+		$interval = absint( apply_filters( 'bwfan_validate_recurring_actions_interval', 30 * MINUTE_IN_SECONDS ) );
+
+		/**
+		 * 0 means "do not throttle", not "switch the self-heal off". absint() also lands here for a filter
+		 * returning false, null or a non-numeric string, and on a cron-only store this is the only path that
+		 * repairs a missing hook - failing that silently closed would be worse than running it every request.
+		 */
+		if ( 0 === $interval ) {
+			self::validate_scheduled_recurring_actions();
+
+			return;
+		}
+
+		$throttle_key = 'bwfan_recurring_actions_validated';
+		if ( ! empty( get_transient( $throttle_key ) ) ) {
+			return;
+		}
+
+		set_transient( $throttle_key, time(), $interval );
+
+		self::validate_scheduled_recurring_actions();
+	}
+
+	/**
+	 * Map a multilingual plugin language code (e.g. 'de', 'zh-hans') to a full WordPress locale
+	 * (e.g. 'de_DE', 'zh_CN') so it can be used with switch_to_locale(). Best-effort resolution via
+	 * the active multilingual plugin's own APIs, with graceful fallback (returns '' when unresolved).
+	 *
+	 * @param string $lang
+	 *
+	 * @return string
+	 */
+	public static function get_locale_from_language_code( $lang ) {
+		if ( empty( $lang ) || ! is_string( $lang ) ) {
+			return '';
+		}
+
+		/**
+		 * Resolved once per language code: this runs for every date merge tag, and the WPML branch below
+		 * costs a filter call. Only successful resolutions are cached - an empty result may simply mean the
+		 * multilingual plugin had not finished booting on the first call, and caching that would keep the
+		 * whole request unresolved.
+		 */
+		static $resolved = array();
+		if ( ! empty( $resolved[ $lang ] ) ) {
+			return $resolved[ $lang ];
+		}
+
+		/** Already a full locale like de_DE */
+		if ( false !== strpos( $lang, '_' ) ) {
+			$resolved[ $lang ] = apply_filters( 'bwfan_locale_from_language_code', $lang, $lang );
+
+			return $resolved[ $lang ];
+		}
+
+		$locale = '';
+
+		/** WPML */
+		if ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
+			/**
+			 * SitePress::get_locale() is a plain lookup in WPML's locale map and works in cron/async
+			 * requests. 'wpml_active_languages' builds language-switcher data for the current page and
+			 * can come back empty outside a normal front-end request, so it is only the fallback.
+			 */
+			global $sitepress;
+			if ( is_object( $sitepress ) && method_exists( $sitepress, 'get_locale' ) ) {
+				$wpml_locale = $sitepress->get_locale( $lang );
+				$locale      = is_string( $wpml_locale ) ? $wpml_locale : '';
+			}
+
+			if ( empty( $locale ) ) {
+				$languages = apply_filters( 'wpml_active_languages', null );
+				if ( is_array( $languages ) && isset( $languages[ $lang ]['default_locale'] ) && ! empty( $languages[ $lang ]['default_locale'] ) ) {
+					$locale = $languages[ $lang ]['default_locale'];
+				}
+			}
+		}
+
+		/** Polylang */
+		if ( empty( $locale ) && function_exists( 'PLL' ) ) {
+			$pll = PLL();
+			if ( is_object( $pll ) && isset( $pll->model ) && method_exists( $pll->model, 'get_language' ) ) {
+				$pll_lang = $pll->model->get_language( $lang );
+				if ( is_object( $pll_lang ) && ! empty( $pll_lang->locale ) ) {
+					$locale = $pll_lang->locale;
+				}
+			}
+		}
+
+		$resolved[ $lang ] = apply_filters( 'bwfan_locale_from_language_code', $locale, $lang );
+
+		return $resolved[ $lang ];
+	}
+
+	/**
 	 * Validate scheduled recurring actions
 	 *
 	 * @return void
@@ -13250,21 +13556,145 @@ class BWFAN_Common {
 				'args'       => [],
 				'group_slug' => ''
 			],
-			[
+		];
+
+		/** V1 queue runner, only when V1 automations are still in use */
+		if ( self::is_automation_v1_active() ) {
+			$hooks[] = [
+				'name'       => 'bwfan_run_queue',
+				'time'       => MINUTE_IN_SECONDS,
+				'args'       => [],
+				'group_slug' => ''
+			];
+		}
+
+		/**
+		 * Daily housekeeping. A missing minute hook is noticed within minutes; these are the ones that die
+		 * quietly - logs grow forever, expired coupons are never purged, carts are never marked lost.
+		 *
+		 * 'start' only sets the first occurrence. Every one of these is registered in init() with a
+		 * bwf_recurring_action_{hook}_execution_time filter that pins later runs to store midnight, so the
+		 * value here only has to match the original scheduler.
+		 */
+		$midnight_time = self::get_midnight_store_time();
+
+		$hooks[] = [
+			'name'       => 'bwfan_delete_logs',
+			'time'       => DAY_IN_SECONDS,
+			'args'       => [],
+			'group_slug' => '',
+			'start'      => self::get_store_time( 4 )
+		];
+
+		/**
+		 * Ungated: Lite handles this itself (table validation, notifications), so it has to come back even
+		 * on a site where Pro was deactivated - Pro's deactivation() unschedules it without checking.
+		 */
+		$hooks[] = [
+			'name'       => 'bwfan_run_midnight_cron',
+			'time'       => DAY_IN_SECONDS,
+			'args'       => [],
+			'group_slug' => '',
+			'start'      => $midnight_time
+		];
+
+		/** Abandoned cart tracking is unscheduled when WooCommerce is inactive, so only re-arm it alongside WC */
+		if ( class_exists( 'WooCommerce' ) ) {
+			$hooks[] = [
+				'name'       => 'bwfan_check_abandoned_carts',
+				'time'       => MINUTE_IN_SECONDS,
+				'args'       => [],
+				'group_slug' => ''
+			];
+			$hooks[] = [
+				'name'       => 'bwfan_delete_expired_autonami_coupons',
+				'time'       => DAY_IN_SECONDS,
+				'args'       => [],
+				'group_slug' => '',
+				'start'      => $midnight_time
+			];
+			$hooks[] = [
+				'name'       => 'bwfan_mark_abandoned_lost_cart',
+				'time'       => DAY_IN_SECONDS,
+				'args'       => [],
+				'group_slug' => '',
+				'start'      => $midnight_time
+			];
+		}
+
+		/** Handled by the connectors add-on, which unschedules this on its own deactivation */
+		if ( class_exists( 'BWFAN_Connectors_Common' ) ) {
+			$hooks[] = [
+				'name'       => 'bwfan_run_midnight_connectors_sync',
+				'time'       => DAY_IN_SECONDS,
+				'args'       => [],
+				'group_slug' => '',
+				'start'      => $midnight_time
+			];
+		}
+
+		/** Pro-only hooks, nothing handles these on Lite */
+		if ( bwfan_is_autonami_pro_active() ) {
+			$hooks[] = [
 				'name'       => 'bwfcrm_broadcast_run_queue',
 				'time'       => MINUTE_IN_SECONDS,
 				'args'       => [],
 				'group_slug' => 'bwfcrm'
-			]
-		];
+			];
+			$hooks[] = [
+				'name'       => 'bwfan_5_minute_worker',
+				'time'       => MINUTE_IN_SECONDS * 5,
+				'args'       => [],
+				'group_slug' => ''
+			];
+		}
+
+		self::delete_unclaimable_recurring_rows( array_column( $hooks, 'name' ) );
 
 		foreach ( $hooks as $hook ) {
-			if ( bwf_has_action_scheduled( $hook['name'] ) ) {
+			/**
+			 * Status 0 (pending) only. A row stuck at 1 (running) or 2 (duplicate run detected) will never
+			 * execute again, and counting it as scheduled is what leaves the hook dead - the exact state this
+			 * method exists to repair. Args and group stay unfiltered, matching how this has always matched.
+			 * The 4th argument is ignored by framework copies older than 1.10.12.86, which degrades to the
+			 * previous any-status behaviour rather than erroring.
+			 */
+			if ( bwf_has_action_scheduled( $hook['name'], array(), '', 0 ) ) {
 				continue;
 			}
 
-			bwf_schedule_recurring_action( time(), $hook['time'], $hook['name'], $hook['args'], $hook['group_slug'] );
+			$start = isset( $hook['start'] ) ? $hook['start'] : time();
+
+			bwf_schedule_recurring_action( $start, $hook['time'], $hook['name'], $hook['args'], $hook['group_slug'] );
 		}
+	}
+
+	/**
+	 * Drop rows of our own recurring hooks that can never run again.
+	 *
+	 * Status 2 is written by BWF_AS_Action_Store when it finds the same recurring hook already running.
+	 * The row is normally consumed right after, so a leftover only exists when that request died - and
+	 * nothing else removes it: the claim query only takes status 0 and Action Scheduler's cleaner only
+	 * looks at running actions. The re-arm above no longer counts these rows as scheduled, so this is
+	 * garbage collection rather than the thing standing between a hook and its next run.
+	 *
+	 * Only safe because every hook handled here is a plugin-owned singleton with no arguments.
+	 *
+	 * @param array $hooks
+	 *
+	 * @return void
+	 */
+	public static function delete_unclaimable_recurring_rows( $hooks ) {
+		if ( empty( $hooks ) || ! is_array( $hooks ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$placeholders_hooks = implode( ', ', array_fill( 0, count( $hooks ), '%s' ) );
+
+		$query = $wpdb->prepare( "DELETE FROM `{$wpdb->prefix}bwf_actions` WHERE `hook` IN ($placeholders_hooks) AND `status` = 2", $hooks ); // phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
+		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 	}
 
 	/**
@@ -14682,10 +15112,10 @@ class BWFAN_Common {
 	 */
 	public static function get_client_ip() {
 		if ( ! empty( $_SERVER['HTTP_CF_RAY'] ) && ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
-			return sanitize_text_field( $_SERVER['HTTP_CF_CONNECTING_IP'] );
+			return sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
 		}
 
-		return sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' );
+		return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
 	}
 
 	/**
@@ -14695,7 +15125,7 @@ class BWFAN_Common {
 	 */
 	public static function detect_cart_entry_point() {
 		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-			$route = $_SERVER['REQUEST_URI'] ?? '';
+			$route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 			if ( false !== strpos( $route, 'wc/store' ) ) {
 				return 'store_api';
 			}
@@ -14733,30 +15163,30 @@ class BWFAN_Common {
 		$data = array(
 			'entry_point'    => ! empty( $entry_point ) ? sanitize_key( $entry_point ) : self::detect_cart_entry_point(),
 			'tracked_at'     => current_time( 'mysql', 1 ),
-			'request_method' => sanitize_text_field( $_SERVER['REQUEST_METHOD'] ?? '' ),
+			'request_method' => sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ),
 		);
 
 		if ( $capture_ip ) {
 			$data['ip']              = self::get_client_ip();
-			$data['ip_country']      = sanitize_text_field( $_SERVER['HTTP_CF_IPCOUNTRY'] ?? '' );
-			$data['forwarded_for']   = sanitize_text_field( $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '' );
-			$data['cf_bot_score']    = sanitize_text_field( $_SERVER['HTTP_CF_BOT_SCORE'] ?? '' );
-			$data['cf_threat_score'] = sanitize_text_field( $_SERVER['HTTP_CF_THREAT_SCORE'] ?? '' );
+			$data['ip_country']      = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_IPCOUNTRY'] ?? '' ) );
+			$data['forwarded_for']   = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '' ) );
+			$data['cf_bot_score']    = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_BOT_SCORE'] ?? '' ) );
+			$data['cf_threat_score'] = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_THREAT_SCORE'] ?? '' ) );
 		}
 
 		if ( $capture_device ) {
-			$data['user_agent']      = sanitize_text_field( $_SERVER['HTTP_USER_AGENT'] ?? '' );
-			$data['accept_encoding'] = sanitize_text_field( $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '' );
-			$data['accept_language'] = sanitize_text_field( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' );
-			$data['ch_ua']           = sanitize_text_field( $_SERVER['HTTP_SEC_CH_UA'] ?? '' );
-			$data['ch_ua_mobile']    = sanitize_text_field( $_SERVER['HTTP_SEC_CH_UA_MOBILE'] ?? '' );
-			$data['ch_ua_platform']  = sanitize_text_field( $_SERVER['HTTP_SEC_CH_UA_PLATFORM'] ?? '' );
-			$data['sec_fetch_mode']  = sanitize_text_field( $_SERVER['HTTP_SEC_FETCH_MODE'] ?? '' );
-			$data['sec_fetch_dest']  = sanitize_text_field( $_SERVER['HTTP_SEC_FETCH_DEST'] ?? '' );
-			$data['sec_fetch_site']  = sanitize_text_field( $_SERVER['HTTP_SEC_FETCH_SITE'] ?? '' );
-			$data['referer']         = sanitize_text_field( $_SERVER['HTTP_REFERER'] ?? '' );
-			$data['origin']          = sanitize_text_field( $_SERVER['HTTP_ORIGIN'] ?? '' );
-			$data['content_type']    = sanitize_text_field( $_SERVER['CONTENT_TYPE'] ?? '' );
+			$data['user_agent']      = sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ?? '' ) );
+			$data['accept_encoding'] = sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '' ) );
+			$data['accept_language'] = sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' ) );
+			$data['ch_ua']           = sanitize_text_field( wp_unslash( $_SERVER['HTTP_SEC_CH_UA'] ?? '' ) );
+			$data['ch_ua_mobile']    = sanitize_text_field( wp_unslash( $_SERVER['HTTP_SEC_CH_UA_MOBILE'] ?? '' ) );
+			$data['ch_ua_platform']  = sanitize_text_field( wp_unslash( $_SERVER['HTTP_SEC_CH_UA_PLATFORM'] ?? '' ) );
+			$data['sec_fetch_mode']  = sanitize_text_field( wp_unslash( $_SERVER['HTTP_SEC_FETCH_MODE'] ?? '' ) );
+			$data['sec_fetch_dest']  = sanitize_text_field( wp_unslash( $_SERVER['HTTP_SEC_FETCH_DEST'] ?? '' ) );
+			$data['sec_fetch_site']  = sanitize_text_field( wp_unslash( $_SERVER['HTTP_SEC_FETCH_SITE'] ?? '' ) );
+			$data['referer']         = sanitize_text_field( wp_unslash( $_SERVER['HTTP_REFERER'] ?? '' ) );
+			$data['origin']          = sanitize_text_field( wp_unslash( $_SERVER['HTTP_ORIGIN'] ?? '' ) );
+			$data['content_type']    = sanitize_text_field( wp_unslash( $_SERVER['CONTENT_TYPE'] ?? '' ) );
 		}
 
 		return $data;
@@ -14926,5 +15356,45 @@ class BWFAN_Common {
 		}
 
 		return $visitor_info;
+	}
+	/** Decode "&amp;" etc. in a term name for display */
+	public static function decode_term_name( $name ) {
+		return wp_specialchars_decode( (string) $name, ENT_QUOTES );
+	}
+
+	/**
+	 * Search terms by name, matching both "&" and the stored "&amp;" form
+	 *
+	 * @param string $taxonomy
+	 * @param string $search
+	 * @param int    $number max results, 0 = no limit
+	 *
+	 * @return WP_Term[]
+	 */
+	public static function search_terms_by_name( $taxonomy, $search, $number = 10 ) {
+		$search = wp_specialchars_decode( (string) $search, ENT_QUOTES );
+		/** WP stores term names through _wp_specialchars( ENT_NOQUOTES ): & < > encoded, quotes kept */
+		$variants = array_unique( array( $search, htmlspecialchars( $search, ENT_NOQUOTES ) ) );
+		$found    = array();
+
+		foreach ( $variants as $variant ) {
+			$terms = get_terms( array(
+				'taxonomy'   => array( $taxonomy ),
+				'orderby'    => 'id',
+				'order'      => 'ASC',
+				'number'     => $number,
+				'hide_empty' => false,
+				'fields'     => 'all',
+				'name__like' => $variant,
+			) );
+			if ( is_wp_error( $terms ) || empty( $terms ) ) {
+				continue;
+			}
+			foreach ( $terms as $term ) {
+				$found[ $term->term_id ] = $term;
+			}
+		}
+
+		return $number > 0 ? array_slice( array_values( $found ), 0, $number ) : array_values( $found );
 	}
 }

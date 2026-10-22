@@ -237,6 +237,7 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 					'sepa_gateway_trans'               => 'no',
 					'scripts'                          => '',
 					'scripts_head'                     => '',
+					'custom_css'                       => '',
 					'enable_log'                       => true,
 					'ttl_funnel'                       => '15', // in minutes
 					'send_processing_mail_on'          => 'end', // start or end

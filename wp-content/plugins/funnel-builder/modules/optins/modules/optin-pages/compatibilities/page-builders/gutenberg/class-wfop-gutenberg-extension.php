@@ -298,7 +298,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 		 */
 		public function prepare_frontend_module() {
 			global $post;
-			if ( is_null( $post ) ) {
+			if ( ! $post instanceof WP_Post ) {
 				return;
 			}
 			$this->post = $post;

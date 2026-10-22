@@ -34,6 +34,12 @@ class BWFAN_Conversation {
 
 	public $disable_tracking = false;
 
+	/** memo key => l_hash, for the life of the request. Only real hashes land here - an invalid link returns before the memo, a failed insert is not remembered. */
+	private $link_memo_hash = array();
+
+	/** ponytail: flat cap, no eviction. More distinct links than any real template carries; past it every call just goes to the DB. */
+	const LINK_HASH_MEMO_LIMIT = 200;
+
 	/**
 	 * @param $content
 	 *
@@ -255,7 +261,7 @@ class BWFAN_Conversation {
 			return preg_replace_callback( $link_regex, function ( $matches ) use ( $url_args, $track_id, $uid ) {
 				$this->do_shorten_links = true;
 
-				return $this->modify_message_body_urls( $matches[0], $url_args, $track_id, $uid );
+				return $this->modify_message_body_urls( $matches[0], $url_args, $track_id, $uid, false );
 			}, $body );
 
 		}
@@ -306,10 +312,11 @@ class BWFAN_Conversation {
 	 * @param $utm_data
 	 * @param $track_id
 	 * @param $uid
+	 * @param bool $is_html false for plain-text bodies (SMS, push), where "&" is never entity-encoded
 	 *
 	 * @return array|string|string[]|null
 	 */
-	public function modify_message_body_urls( $string, $utm_data, $track_id, $uid ) {
+	public function modify_message_body_urls( $string, $utm_data, $track_id, $uid, $is_html = true ) {
 		/** Check string not empty & needs to exclude from click track */
 		if ( empty( $string ) || BWFAN_Common::is_exclude_url( $string ) ) {
 			return $string;
@@ -338,7 +345,15 @@ class BWFAN_Conversation {
 		}
 
 		/** Add UTM data to the URL */
-		$url = ! empty( $url_args ) ? add_query_arg( $url_args, $string ) : $string;
+		$url = $string;
+		if ( ! empty( $url_args ) ) {
+			/** Decode "&amp;" first, else add_query_arg() turns "?&amp;x=1" into a param named "amp;x" */
+			$decoded = str_replace( array( '&amp;', '&#038;' ), '&', $string );
+			$url     = add_query_arg( $url_args, $decoded );
+
+			/** In HTML keep the link's original encoding, a bare "&" in an href can be read as an entity (e.g. "&reg_id") */
+			$url = ( ! $is_html || $decoded === $string ) ? $url : str_replace( '&', '&amp;', $url );
+		}
 
 		/**
 		 * Checking any shortener service provider is available or not
@@ -520,8 +535,8 @@ class BWFAN_Conversation {
 		if ( ! empty( $merge_tags ) && is_array( $merge_tags ) ) {
 			BWFAN_Model_Engagement_Trackingmeta::insert( array(
 				'eid'        => absint( $conversation_id ),
-				'meta_key'   => 'merge_tags',
-				'meta_value' => wp_json_encode( $merge_tags ),
+				'meta_key'   => 'merge_tags', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+				'meta_value' => wp_json_encode( $merge_tags ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			) );
 		}
 
@@ -545,9 +560,28 @@ class BWFAN_Conversation {
 			return BWFAN_Common::crm_error( __( 'Conversation not found', 'wp-marketing-automations' ) );
 		}
 
-		if ( empty( $hash_code ) ) {
-			$con       = BWFAN_Model_Templates::get( absint( $conversation_id ) );
-			$hash_code = $con['hash_code'];
+		/** Whether the body is the caller's; the template branch below overwrites $template either way */
+		$body_passed = ! empty( $template );
+
+		/**
+		 * The conversation row is read whether or not the caller passed a body, because the template
+		 * id has to be resolved either way.
+		 *
+		 * Every link that goes through append_to_email_body_links() reaches maybe_insert_link()
+		 * with no ids of its own, so that method falls back to $this->template_id. Resolving the
+		 * id only in the branch that loads the template left the previous flow's value standing
+		 * for every caller that hands in a body - the broadcast senders and the API controller
+		 * all do - and nothing anywhere clears this property, so those links were filed against
+		 * whatever template happened to run before them in the same request. One primary-key
+		 * read is a fair price for not misattributing the clicks, and the hash_code below comes
+		 * out of the same row.
+		 */
+		$conversation = BWFAN_Model_Engagement_Tracking::get( $conversation_id );
+		$template_id  = ( is_array( $conversation ) && ! empty( $conversation['tid'] ) ) ? absint( $conversation['tid'] ) : 0;
+
+		/** bwfan_engagement_tracking holds hash_code; bwfan_templates has no such column, so the id was never a template id */
+		if ( empty( $hash_code ) && is_array( $conversation ) && ! empty( $conversation['hash_code'] ) ) {
+			$hash_code = $conversation['hash_code'];
 		}
 
 		if ( empty( $hash_code ) ) {
@@ -555,21 +589,39 @@ class BWFAN_Conversation {
 			return BWFAN_Common::crm_error( sprintf( __( 'No tracking enabled on this conversation: %1$d', 'wp-marketing-automations' ), $conversation_id ) );
 		}
 
-		if ( empty( $template ) ) {
-			$conversation = BWFAN_Model_Engagement_Tracking::get( $conversation_id );
+		if ( ! $body_passed ) {
 			if ( empty( $conversation ) || ! isset( $conversation['tid'] ) ) {
 				return BWFAN_Common::crm_error( __( 'Conversation not found', 'wp-marketing-automations' ) );
 			}
 
-			$template_id = absint( $conversation['tid'] );
 			if ( empty( $template_id ) ) {
 				return BWFAN_Common::crm_error( __( 'Template not found', 'wp-marketing-automations' ) );
 			}
 
-			$template       = BWFAN_Model_Templates::get( absint( $template_id ) );
+			$template       = BWFAN_Model_Templates::get( $template_id );
 			$this->template = $template;
 			$template       = $template['template'];
 		}
+
+		/**
+		 * 0 rather than a stale id when the row has gone: an unknown tid simply drops that clause
+		 * from check_if_link_exists(), which still narrows on the correct oid, where a stale one
+		 * points confidently at another template.
+		 */
+		$this->template_id = $template_id;
+
+		/**
+		 * The id alone is not enough. get_link_hash() reads $this->template first and, when it is
+		 * set, answers out of that template's cached links map and writes new ones back into its
+		 * row - so a body handed in by the caller would take its link hashes from whatever template
+		 * ran before it in this request (BWFAN_Email_Conversations::add_tracking_code() leaves one
+		 * standing on this object, and nothing clears it). Null means maybe_insert_link(), which
+		 * keys on the ids resolved above.
+		 */
+		if ( $body_passed ) {
+			$this->template = null;
+		}
+
 		$template = BWFAN_Common::correct_shortcode_string( $template, $template_type );
 		$uid      = '';
 		if ( ! empty( $contact_id ) ) {
@@ -594,7 +646,15 @@ class BWFAN_Conversation {
 		$template           = BWFAN_Common::bwfan_correct_protocol_url( $template );
 		$pre_header         = BWFAN_Common::decode_merge_tags( $pre_header );
 
-		if ( empty( $this->engagement_type ) && ! empty( $broadcast_id ) ) {
+		/**
+		 * A broadcast id means this mail is a campaign, so say so rather than only filling a blank.
+		 * engagement_type is another property nothing clears, and maybe_insert_link() folds it into
+		 * both the link row's `type` and the l_hash: left to "only if still empty", a note or a
+		 * transactional mail earlier in this request kept its type and the campaign's links were
+		 * filed under it. Callers that mail with no broadcast id set the type themselves before
+		 * calling (notes, the API controller), so their value is untouched here.
+		 */
+		if ( ! empty( $broadcast_id ) ) {
 			$this->engagement_type = BWFAN_Email_Conversations::$TYPE_CAMPAIGN;
 		}
 
@@ -631,9 +691,10 @@ class BWFAN_Conversation {
 		$this->conversation_id = $conversation_id;
 		$this->broadcast_id    = $broadcast_id;
 
+		/** bwfan_engagement_tracking holds hash_code; bwfan_templates has no such column, so the id was never a template id */
 		if ( empty( $hash_code ) ) {
-			$con       = BWFAN_Model_Templates::get( absint( $conversation_id ) );
-			$hash_code = $con['hash_code'];
+			$con       = BWFAN_Model_Engagement_Tracking::get( absint( $conversation_id ) );
+			$hash_code = is_array( $con ) && ! empty( $con['hash_code'] ) ? $con['hash_code'] : '';
 		}
 
 		if ( empty( $hash_code ) ) {
@@ -641,8 +702,10 @@ class BWFAN_Conversation {
 			return BWFAN_Common::crm_error( sprintf( __( 'No tracking enabled on this conversation: %1$d', 'wp-marketing-automations' ), $conversation_id ) );
 		}
 
+		/** Resolved for the passed-body callers too - see the note in prepare_email_body() */
+		$template_id = BWFAN_Model_Engagement_Trackingmeta::get_meta( $conversation_id, 'template_id' );
+
 		if ( empty( $template ) ) {
-			$template_id = BWFAN_Model_Engagement_Trackingmeta::get_meta( $conversation_id, 'template_id' );
 			if ( empty( $template_id ) ) {
 				return BWFAN_Common::crm_error( __( 'Template not found', 'wp-marketing-automations' ) );
 			}
@@ -650,6 +713,15 @@ class BWFAN_Conversation {
 			$template = BWFAN_Model_Templates::get( intval( $template_id ) );
 			$template = $template['template'];
 		}
+
+		$this->template_id = absint( $template_id );
+
+		/**
+		 * Never assigned in this method, so anything standing here belongs to an earlier flow - and
+		 * get_link_hash() would answer this body's links out of that template's cached map. See the
+		 * note in prepare_email_body().
+		 */
+		$this->template = null;
 
 		$uid = '';
 		if ( ! empty( $contact_id ) ) {
@@ -706,8 +778,8 @@ class BWFAN_Conversation {
 
 		if ( ! empty( $error_message ) ) {
 			BWFAN_Model_Engagement_Trackingmeta::insert( array(
-				'meta_key'   => 'error_msg',
-				'meta_value' => $error_message,
+				'meta_key'   => 'error_msg', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+				'meta_value' => $error_message, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 				'eid'        => absint( $conversation_id ),
 			) );
 		}
@@ -746,9 +818,10 @@ class BWFAN_Conversation {
 		}
 
 		$this->conversation_id = $conversation_id;
+		/** bwfan_engagement_tracking holds hash_code; bwfan_templates has no such column, so the id was never a template id */
 		if ( empty( $hash_code ) ) {
-			$con       = BWFAN_Model_Templates::get( absint( $conversation_id ) );
-			$hash_code = $con['hash_code'];
+			$con       = BWFAN_Model_Engagement_Tracking::get( absint( $conversation_id ) );
+			$hash_code = is_array( $con ) && ! empty( $con['hash_code'] ) ? $con['hash_code'] : '';
 		}
 
 		if ( empty( $hash_code ) ) {
@@ -756,8 +829,10 @@ class BWFAN_Conversation {
 			return BWFAN_Common::crm_error( sprintf( __( 'No tracking enabled on this conversation: %1$d', 'wp-marketing-automations' ), $conversation_id ) );
 		}
 
+		/** Resolved for the passed-body callers too - see the note in prepare_email_body() */
+		$template_id = BWFAN_Model_Engagement_Trackingmeta::get_meta( $conversation_id, 'template_id' );
+
 		if ( empty( $template ) ) {
-			$template_id = BWFAN_Model_Engagement_Trackingmeta::get_meta( $conversation_id, 'template_id' );
 			if ( empty( $template_id ) ) {
 				return BWFAN_Common::crm_error( __( 'Template not found', 'wp-marketing-automations' ) );
 			}
@@ -765,6 +840,15 @@ class BWFAN_Conversation {
 			$template = BWFAN_Model_Templates::get( intval( $template_id ) );
 			$template = $template['template'];
 		}
+
+		$this->template_id = absint( $template_id );
+
+		/**
+		 * Never assigned in this method, so anything standing here belongs to an earlier flow - and
+		 * get_link_hash() would answer this body's links out of that template's cached map. See the
+		 * note in prepare_email_body().
+		 */
+		$this->template = null;
 
 		BWFAN_Merge_Tag_Loader::set_data( array(
 			'contact_id'   => intval( $contact_id ),
@@ -1267,7 +1351,24 @@ class BWFAN_Conversation {
 		$sid = $data['step_id'] ?? 0;
 
 		$cleaned_url = $this->get_cleaned_url( $link );
-		$l_hash      = BWFAN_Model_Links::check_if_link_exists( $link, [
+
+		/**
+		 * The answer depends on nothing but the five values below, so the memo collapses exactly
+		 * what the DB lookup collapses - both key on the cleaned URL, not the raw one.
+		 *
+		 * get_cleaned_url() drops the query string for an ordinary link; a bwfan-link-trigger URL
+		 * keeps its query, so those memoise per distinct query rather than per URL. Either way the
+		 * recipient's own args - bwfan-uid, bwfan-track-id, bwfan-auth - are appended afterwards by
+		 * convert_link_to_track_link() and never reach this method, so one entry serves every
+		 * contact. Without this, one SELECT per link per mail: a 5k broadcast with 7 links asks the
+		 * same 7 questions 5,000 times.
+		 */
+		$memo_key = implode( '|', [ $cleaned_url, $oid, $tid, $type, $sid ] );
+		if ( array_key_exists( $memo_key, $this->link_memo_hash ) ) {
+			return $this->link_memo_hash[ $memo_key ];
+		}
+
+		$l_hash = BWFAN_Model_Links::check_if_link_exists( $link, [
 			'clean_url' => $cleaned_url,
 			'oid'       => $oid,
 			'tid'       => $tid,
@@ -1275,7 +1376,7 @@ class BWFAN_Conversation {
 			'sid'       => $sid,
 		] );
 		if ( ! empty( $l_hash ) ) {
-			return $l_hash;
+			return $this->memoise_link_hash( $memo_key, $l_hash );
 		}
 		// HMAC-signed so the link hash cannot be pre-computed from public inputs (URL + numeric IDs).
 		// Delimited payload prevents boundary collisions (e.g. oid=1,tid=23 vs oid=12,tid=3).
@@ -1293,9 +1394,33 @@ class BWFAN_Conversation {
 			'sid'        => $sid,
 			'type'       => $type
 		];
-		BWFAN_Model_Links::insert( $data );
+		/**
+		 * Only remember a hash the row actually backs. On a failed insert the memo is skipped and
+		 * the next call this request repeats the lookup and the insert, rather than serving a hash
+		 * with no row behind it for the rest of the run. A duplicate-key failure means the row is
+		 * there anyway; that retry finds it and memoises then.
+		 */
+		if ( false === BWFAN_Model_Links::insert( $data ) ) {
+			return $link_hash;
+		}
 
-		return $link_hash;
+		return $this->memoise_link_hash( $memo_key, $link_hash );
+	}
+
+	/**
+	 * Remember a link hash for the rest of the request and hand it straight back.
+	 *
+	 * @param string $memo_key
+	 * @param string $l_hash
+	 *
+	 * @return string
+	 */
+	private function memoise_link_hash( $memo_key, $l_hash ) {
+		if ( count( $this->link_memo_hash ) < self::LINK_HASH_MEMO_LIMIT ) {
+			$this->link_memo_hash[ $memo_key ] = $l_hash;
+		}
+
+		return $l_hash;
 	}
 
 	/**

@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || exit;
+// phpcs:disable Generic.PHP.DisallowAlternativePHPTags -- <% %> below are Underscore.js template delimiters inside HTML output, not PHP tags (asp_tags was removed in PHP 7.0)
 
 #[\AllowDynamicProperties]
 class BWFAN_Rule_Is_First_Order extends BWFAN_Rule_Base {
@@ -25,31 +27,72 @@ class BWFAN_Rule_Is_First_Order extends BWFAN_Rule_Base {
 			return false;
 		}
 
-		$email = isset( $automation_data['global']['email'] ) ? $automation_data['global']['email'] : 0;
+		$order_id = isset( $automation_data['global']['order_id'] ) ? $automation_data['global']['order_id'] : 0;
+		$order    = ! empty( $order_id ) ? wc_get_order( $order_id ) : false;
 
 		$is_first = false;
-		if ( empty( $email ) || ! is_email( $email ) ) {
-			$order_id = isset( $automation_data['global']['order_id'] ) ? $automation_data['global']['order_id'] : 0;
-			$order    = wc_get_order( $order_id );
-			if ( ! $order instanceof WC_Order ) {
+		if ( $order instanceof WC_Order ) {
+			/** Order-triggered: decide relative to the triggering order so newer orders placed during a wait step cannot flip the answer. */
+			$is_first = $this->is_first_order_for_order( $order, isset( $automation_data['global']['email'] ) ? $automation_data['global']['email'] : '' );
+		} else {
+			$email = isset( $automation_data['global']['email'] ) ? $automation_data['global']['email'] : 0;
+			if ( empty( $email ) || ! is_email( $email ) ) {
 				return false;
 			}
 
-			$email = BWFAN_WooCommerce_Compatibility::get_order_data( $order, '_billing_email' );
+			$orders = wc_get_orders( array(
+				'customer' => $email,
+				'limit'    => 2,
+				'return'   => 'ids',
+			) );
+
+			if ( count( $orders ) === 1 ) {
+				$is_first = true;
+			}
 		}
 
-		$orders = wc_get_orders( array(
-			'customer' => $email,
-			'limit'    => 2,
-			'return'   => 'ids',
-		) );
-
-		if ( count( $orders ) === 1 ) {
-			$is_first = true;
-		}
 		$operator = $rule_data['data'];
 
 		return ( 'yes' === $operator ) ? $is_first : ! $is_first;
+	}
+
+	/**
+	 * Whether the given order is the customer's first qualifying (paid-status) order.
+	 *
+	 * Evaluated relative to the order itself so that newer orders placed after the automation
+	 * started (e.g. during a wait step) cannot change the answer. An order is the first when no
+	 * other paid-status order exists with an earlier creation date.
+	 *
+	 * @param WC_Order $order
+	 * @param string $fallback_email Used when the order has no valid billing email.
+	 *
+	 * @return bool
+	 */
+	protected function is_first_order_for_order( $order, $fallback_email = '' ) {
+		$email = BWFAN_WooCommerce_Compatibility::get_order_data( $order, '_billing_email' );
+		if ( empty( $email ) || ! is_email( $email ) ) {
+			$email = $fallback_email;
+		}
+		if ( empty( $email ) || ! is_email( $email ) ) {
+			return false;
+		}
+
+		$created = $order->get_date_created();
+		if ( ! $created instanceof WC_DateTime ) {
+			return false;
+		}
+
+		/** Only paid-status orders count as an earlier order. The triggering order itself is excluded below, so its own status plays no part. */
+		$earlier = wc_get_orders( array(
+			'customer'     => $email,
+			'status'       => wc_get_is_paid_statuses(),
+			'date_created' => '<' . $created->getTimestamp(),
+			'exclude'      => array( $order->get_id() ), // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- excludes only the triggering order, with limit 1
+			'limit'        => 1,
+			'return'       => 'ids',
+		) );
+
+		return empty( $earlier );
 	}
 
 	/** v2 Methods: END */
@@ -77,15 +120,15 @@ class BWFAN_Rule_Is_First_Order extends BWFAN_Rule_Base {
 			return $is_first;
 		}
 
-		$billing_email = ( isset( $data['email'] ) ) ? $data['email'] : '';
-		if ( empty( $billing_email ) && isset( $data['wc_order'] ) ) {
-			$order = $data['wc_order'];
-			/** check for order instance */
-			if ( $order instanceof WC_Order ) {
-				$billing_email = BWFAN_WooCommerce_Compatibility::get_order_data( $order, '_billing_email' );
-			}
+		$order = ( isset( $data['wc_order'] ) && $data['wc_order'] instanceof WC_Order ) ? $data['wc_order'] : false;
+		if ( $order instanceof WC_Order ) {
+			/** Order-triggered: decide relative to the triggering order so newer orders placed during a wait step cannot flip the answer. */
+			$is_first = $this->is_first_order_for_order( $order, isset( $data['email'] ) ? $data['email'] : '' );
+
+			return ( 'yes' === $rule_data['condition'] ) ? $is_first : ! $is_first;
 		}
 
+		$billing_email = ( isset( $data['email'] ) ) ? $data['email'] : '';
 		if ( empty( $billing_email ) ) {
 			return $is_first;
 		}
@@ -241,7 +284,7 @@ class BWFAN_Rule_Customer_User extends BWFAN_Dynamic_Option_Base {
 		if ( empty( $id ) ) {
 			$order_id = isset( $automation_data['global']['order_id'] ) ? $automation_data['global']['order_id'] : 0;
 			$order    = wc_get_order( $order_id );
-			$id       = $order->get_user_id();
+			$id       = $order instanceof WC_Order ? $order->get_user_id() : 0;
 		}
 
 		$data = $rule_data['data'];
@@ -308,7 +351,7 @@ class BWFAN_Rule_Customer_User extends BWFAN_Dynamic_Option_Base {
 		$id = BWFAN_Core()->rules->getRulesData( 'user_id' );
 		if ( empty( $id ) ) {
 			$order = BWFAN_Core()->rules->getRulesData( 'wc_order' );
-			$id    = $order->get_user_id();
+			$id    = $order instanceof WC_Order ? $order->get_user_id() : 0;
 		}
 
 		$rule_data['condition'] = array_map( 'intval', $rule_data['condition'] );

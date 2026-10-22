@@ -20,6 +20,11 @@ use Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\InvalidRequestException;
 class StripeTaxPluginHelper {
 
 	/**
+	 * Default label for US tax types (used for display purposes).
+	 */
+	public const SALES_TAX_LABEL = 'Sales tax';
+
+	/**
 	 * Array keys, used in "locks" logics
 	 *
 	 * @see TaxRegistrations::get_locks()
@@ -657,16 +662,62 @@ class StripeTaxPluginHelper {
 		self::DISPLAY_LOCAL_AMUSEMENT_TAX_PREFIX . self::FIPS_SCHILLER_PARK => 'Schiller Park Streaming Services Surcharge',
 		'state_sales_tax'                      => '',
 	);
+
 	/**
-	 * Possible keys of US states tax with names (usually just Sales tax)
+	 * Colorado incorporated-place names keyed by 5-digit Census place code.
+	 * Stripe returns these place codes for several Colorado local registrations.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
-	public const TAX_REGISTRATION_US_TAX_TYPES = array(
-		'state_sales_tax'          => 'Sales tax',
-		'state_communications_tax' => 'Sales tax',
-		'local_lease_tax'          => 'Sales tax',
-		'local_amusement_tax'      => 'Sales tax',
+	public const COLORADO_PLACE_CODES = array(
+		'03455' => 'Arvada',
+		'07850' => 'Boulder',
+		'20000' => 'Denver',
+		'23135' => 'Edgewater',
+		'26270' => 'Federal Heights',
+		'30340' => 'Glendale',
+		'43550' => 'Larkspur',
+		'45955' => 'Lone Tree',
+		'48445' => 'Manitou Springs',
+		'52570' => 'Mount Crested Butte',
+		'54330' => 'Northglenn',
+		'83835' => 'Westminster',
+		'84440' => 'Wheat Ridge',
+	);
+
+	/**
+	 * Minnesota place names keyed by 5-digit Census place code.
+	 *
+	 * @var string[]
+	 */
+	public const MINNESOTA_PLACE_CODES = array(
+		'06616' => 'Bloomington',
+		'39878' => 'Mankato',
+		'43000' => 'Minneapolis',
+	);
+
+	/**
+	 * Valid US tax type keys. The display label for each is SALES_TAX_LABEL.
+	 * Use get_tax_registration_us_tax_types() to get the full key => label mapping.
+	 *
+	 * @var string[]
+	 */
+	public const US_TAX_TYPE_KEYS = array(
+		'state_sales_tax',
+		'state_communications_tax',
+		'local_lease_tax',
+		'local_amusement_tax',
+		'admissions_tax',
+		'attendance_tax',
+		'entertainment_tax',
+		'gross_receipts_tax',
+		'hospitality_tax',
+		'mass_transit_parking_tax',
+		'parking_tax',
+		'resort_tax',
+		'luxury_tax',
+		'tourism_tax',
+		'state_retail_delivery_fee',
 	);
 	/**
 	 * Possible US states tax types
@@ -674,10 +725,41 @@ class StripeTaxPluginHelper {
 	 * @var array
 	 */
 	public const TAX_REGISTRATION_US_TYPE_OF_REGISTRATION = array(
-		'state_sales_tax'          => 'Standard',
-		'state_communications_tax' => 'Communications Tax',
-		'local_lease_tax'          => 'Lease Tax',
-		'local_amusement_tax'      => 'Amusement Tax',
+		'state_sales_tax'           => 'Standard',
+		'state_communications_tax'  => 'Communications Tax',
+		'local_lease_tax'           => 'Lease Tax',
+		'local_amusement_tax'       => 'Amusement Tax',
+		'admissions_tax'            => 'Admissions Tax',
+		'attendance_tax'            => 'Attendance Tax',
+		'entertainment_tax'         => 'Entertainment Tax',
+		'gross_receipts_tax'        => 'Gross Receipts Tax',
+		'hospitality_tax'           => 'Hospitality Tax',
+		'mass_transit_parking_tax'  => 'Mass Transit Parking Tax',
+		'parking_tax'               => 'Parking Tax',
+		'resort_tax'                => 'Resort Tax',
+		'luxury_tax'                => 'Luxury Tax',
+		'tourism_tax'               => 'Tourism Tax',
+		'state_retail_delivery_fee' => 'Retail Delivery Fee',
+	);
+	/**
+	 * US registration types that carry a local jurisdiction sub-object (`country_options.us.<type>.jurisdiction`),
+	 * used to build a jurisdiction-specific suffix for the State/Province column.
+	 *
+	 * @var string[]
+	 */
+	public const TAX_REGISTRATION_US_JURISDICTION_TYPES = array(
+		'local_amusement_tax',
+		'local_lease_tax',
+		'admissions_tax',
+		'attendance_tax',
+		'entertainment_tax',
+		'gross_receipts_tax',
+		'hospitality_tax',
+		'luxury_tax',
+		'resort_tax',
+		'tourism_tax',
+		'parking_tax',
+		'mass_transit_parking_tax',
 	);
 	/**
 	 * Names of Canada taxes
@@ -1133,12 +1215,13 @@ class StripeTaxPluginHelper {
 	}
 
 	/**
-	 * Get tax registration US tax types
+	 * Get tax registration US tax types (key => label mapping).
+	 * All types use SALES_TAX_LABEL as the display label.
 	 *
 	 * @return string[]
 	 */
 	public static function get_tax_registration_us_tax_types(): array {
-		return self::TAX_REGISTRATION_US_TAX_TYPES;
+		return array_fill_keys( self::US_TAX_TYPE_KEYS, self::SALES_TAX_LABEL );
 	}
 
 	/**
@@ -1148,6 +1231,196 @@ class StripeTaxPluginHelper {
 	 */
 	public static function get_tax_registration_us_type_of_registration(): array {
 		return self::TAX_REGISTRATION_US_TYPE_OF_REGISTRATION;
+	}
+
+	/**
+	 * Get tax registration US jurisdiction types
+	 *
+	 * @return string[]
+	 */
+	public static function get_tax_registration_us_jurisdiction_types(): array {
+		return self::TAX_REGISTRATION_US_JURISDICTION_TYPES;
+	}
+
+	/**
+	 * Resolve the display name for a US jurisdiction code.
+	 *
+	 * Uses the curated list of names when available, otherwise falls back to a
+	 * formatted version of the raw jurisdiction code returned by Stripe.
+	 *
+	 * @param string $type US registration type (e.g. 'local_amusement_tax', 'admissions_tax').
+	 * @param string $jurisdiction Jurisdiction code, as returned by Stripe.
+	 *
+	 * @return string
+	 */
+	public static function get_tax_registration_us_jurisdiction_name( string $type, string $jurisdiction ): string {
+		if ( '' === $jurisdiction ) {
+			return '';
+		}
+
+		$known_name = self::TAX_REGISTRATION_US_TAX_NAMES[ $type . '_' . $jurisdiction ] ?? '';
+		if ( '' !== $known_name ) {
+			return $known_name;
+		}
+
+		return ucwords( str_replace( array( '_', '-' ), ' ', $jurisdiction ) );
+	}
+
+	/**
+	 * Build the admin-facing State/Province label for a US tax registration.
+	 * Matches Stripe Dashboard formatting for jurisdiction-specific registrations, e.g.
+	 * "Colorado - Arvada Admissions Tax".
+	 *
+	 * @param string $state_name Human-readable US state name.
+	 * @param string $type US registration type.
+	 * @param string $jurisdiction Jurisdiction code, as returned by Stripe.
+	 *
+	 * @return string
+	 */
+	public static function get_tax_registration_us_state_label( string $state_name, string $type, string $jurisdiction = '' ): string {
+		$state_name = trim( $state_name );
+
+		if ( self::DISPLAY_STATE_COMMUNICATIONS_TAX === $type ) {
+			$communications_tax_name = self::TAX_REGISTRATION_US_TAX_NAMES[ self::DISPLAY_STATE_COMMUNICATIONS_TAX ];
+			return self::join_tax_registration_label_parts( $state_name, $communications_tax_name );
+		}
+
+		if ( ! in_array( $type, self::TAX_REGISTRATION_US_JURISDICTION_TYPES, true ) ) {
+			return '' !== $state_name ? $state_name : '—';
+		}
+
+		$jurisdiction_name = self::get_tax_registration_us_jurisdiction_name( $type, $jurisdiction );
+		$jurisdiction_name = self::normalize_tax_registration_us_jurisdiction_name( $state_name, $type, $jurisdiction, $jurisdiction_name );
+		$registration_type = self::TAX_REGISTRATION_US_TYPE_OF_REGISTRATION[ $type ];
+		if ( self::is_machine_tax_registration_us_jurisdiction_code( $jurisdiction ) && self::is_machine_tax_registration_us_jurisdiction_code( $jurisdiction_name ) ) {
+			$jurisdiction_name = '';
+		}
+		$jurisdiction_fragment = $jurisdiction_name;
+
+		if ( '' === $jurisdiction_fragment ) {
+			$jurisdiction_fragment = $registration_type;
+		}
+
+		if ( ! self::string_ends_with( $jurisdiction_fragment, $registration_type ) ) {
+			$jurisdiction_fragment = trim( $jurisdiction_fragment . ' ' . $registration_type );
+		}
+
+		return self::join_tax_registration_label_parts( $state_name, $jurisdiction_fragment );
+	}
+
+	/**
+	 * Normalize jurisdiction names for states where Stripe returns a machine code instead of a display name.
+	 *
+	 * @param string $state_name Human-readable US state name.
+	 * @param string $type US registration type.
+	 * @param string $jurisdiction Jurisdiction code from Stripe.
+	 * @param string $jurisdiction_name Current resolved jurisdiction name.
+	 *
+	 * @return string
+	 */
+	private static function normalize_tax_registration_us_jurisdiction_name( string $state_name, string $type, string $jurisdiction, string $jurisdiction_name ): string {
+		if ( ! preg_match( '/^\d{1,5}$/', $jurisdiction ) ) {
+			return $jurisdiction_name;
+		}
+
+		$jurisdiction_place_code = str_pad( $jurisdiction, 5, '0', STR_PAD_LEFT );
+		$place_name              = self::get_tax_registration_us_place_name_by_state( $state_name, $jurisdiction_place_code );
+
+		if ( '' !== $place_name ) {
+			if ( 'Colorado' === $state_name && 'admissions_tax' === $type && '20000' === $jurisdiction_place_code ) {
+				return 'Denver Facilities Development';
+			}
+
+			return $place_name;
+		}
+
+		return $jurisdiction_name;
+	}
+
+	/**
+	 * Resolve a readable place name for a US state/place code pair.
+	 *
+	 * @param string $state_name Human-readable US state name.
+	 * @param string $jurisdiction_place_code 5-digit place code.
+	 *
+	 * @return string
+	 */
+	private static function get_tax_registration_us_place_name_by_state( string $state_name, string $jurisdiction_place_code ): string {
+		if ( 'Colorado' === $state_name ) {
+			return self::COLORADO_PLACE_CODES[ $jurisdiction_place_code ] ?? '';
+		}
+
+		if ( 'Minnesota' === $state_name ) {
+			return self::MINNESOTA_PLACE_CODES[ $jurisdiction_place_code ] ?? '';
+		}
+
+		return '';
+	}
+
+	/**
+	 * Whether Stripe returned a code rather than a user-facing jurisdiction name.
+	 *
+	 * @param string $jurisdiction Jurisdiction code from Stripe.
+	 *
+	 * @return bool
+	 */
+	private static function is_machine_tax_registration_us_jurisdiction_code( string $jurisdiction ): bool {
+		if ( preg_match( '/^\d{1,5}$/', $jurisdiction ) ) {
+			return true;
+		}
+
+		if ( preg_match( '/^[a-z]{2}[\s_-]+[a-z]{2}[\s_-]+[a-z]\d+$/i', $jurisdiction ) ) {
+			return true;
+		}
+
+		if ( preg_match( '/^[a-z]\d{5,}$/i', $jurisdiction ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Join non-empty registration label parts using the dashboard separator.
+	 *
+	 * @param string $primary Primary part, usually the state name.
+	 * @param string $secondary Secondary part, usually the jurisdiction/tax name.
+	 *
+	 * @return string
+	 */
+	private static function join_tax_registration_label_parts( string $primary, string $secondary ): string {
+		$primary   = trim( $primary );
+		$secondary = trim( $secondary );
+
+		if ( '' !== $primary && '' !== $secondary ) {
+			return $primary . ' - ' . $secondary;
+		}
+
+		if ( '' !== $primary ) {
+			return $primary;
+		}
+
+		if ( '' !== $secondary ) {
+			return $secondary;
+		}
+
+		return '—';
+	}
+
+	/**
+	 * Polyfill for checking whether a string ends with a suffix.
+	 *
+	 * @param string $haystack Full string.
+	 * @param string $needle Suffix to check.
+	 *
+	 * @return bool
+	 */
+	private static function string_ends_with( string $haystack, string $needle ): bool {
+		if ( '' === $needle ) {
+			return true;
+		}
+
+		return substr( $haystack, -strlen( $needle ) ) === $needle;
 	}
 
 	/**
@@ -1467,6 +1740,19 @@ class StripeTaxPluginHelper {
 	}
 
 	/**
+	 * Get Stripe Dashboard link for a tax transaction.
+	 *
+	 * @param string $txn_id  Tax transaction ID (e.g. tax_txn_xxx).
+	 * @param bool   $is_test Whether the transaction was created in test/sandbox mode.
+	 *
+	 * @return string
+	 */
+	public static function get_dashboard_tax_transaction_link( string $txn_id, bool $is_test = false ): string {
+		$base = 'https://dashboard.stripe.com/' . ( $is_test ? 'test/' : '' );
+		return $base . 'tax/transactions/' . $txn_id;
+	}
+
+	/**
 	 * Returns html element where, required field needs to be marked (usually by adding asterisk "*" character).
 	 *
 	 * @return string
@@ -1749,8 +2035,11 @@ class StripeTaxPluginHelper {
 				'height' => true,
 			),
 			'span'       => array(
-				'class' => true,
-				'style' => true,
+				'class'            => true,
+				'style'            => true,
+				'data-tip'         => true,
+				'data-tip-live'    => true,
+				'data-tip-sandbox' => true,
 			),
 			'div'        => array(
 				'class' => true,

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 	#[\AllowDynamicProperties]
@@ -96,7 +97,7 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 				} else if ( 'exact' === $search_nature ) {
 					$search       = array_values( $search );
 					$placeholders = implode( ',', array_fill( 0, count( $search ), '%s' ) );
-					$search_terms = $wpdb->prepare( " AND name IN ( $placeholders )", ...$search );
+					$search_terms = $wpdb->prepare( " AND name IN ( $placeholders )", ...$search ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders from array_fill('%s'); values spread into prepare()
 				} else {
 					$search_terms = array_map( function ( $s_term ) use ( $wpdb ) {
 						return $wpdb->prepare( "name LIKE %s", '%' . $wpdb->esc_like( $s_term ) . '%' );
@@ -263,7 +264,7 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 			$keys  = '(' . implode( ', ', $keys ) . ')';
 			$query = 'INSERT INTO ' . self::_table() . ' ' . $keys . ' VALUES ' . implode( ', ', $placeholders );
 
-			return $wpdb->query( $wpdb->prepare( $query, $prepare_args ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->query( $wpdb->prepare( $query, $prepare_args ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- values bound via prepare(); column keys hardcoded by callers
 		}
 
 		/**
@@ -289,7 +290,7 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 				} else if ( 'exact' === $search_nature ) {
 					$search       = array_values( $search );
 					$placeholders = implode( ',', array_fill( 0, count( $search ), '%s' ) );
-					$search_terms = $wpdb->prepare( " AND name IN ( $placeholders )", ...$search );
+					$search_terms = $wpdb->prepare( " AND name IN ( $placeholders )", ...$search ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders from array_fill('%s'); values spread into prepare()
 				} else {
 					$search_terms = array_map( function ( $s_term ) use ( $wpdb ) {
 						return $wpdb->prepare( "name LIKE %s", '%' . $wpdb->esc_like( $s_term ) . '%' );
@@ -305,7 +306,7 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			$query = $wpdb->prepare( "SELECT COUNT(ID) from {$wpdb->prefix}bwfan_terms where type = %d ", $type ) . $search_terms;
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- all fragments via $wpdb->prepare() or absint()
 		}
 
 		/**
@@ -375,9 +376,9 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			// Build the query with proper escaping
 			$table = $wpdb->prefix . 'bwfan_terms';
-			$query = $wpdb->prepare( "SELECT ID, name FROM {$table} WHERE name IN ({$placeholders}) AND type = %d", array_merge( $term_names, [ $type ] ) );
+			$query = $wpdb->prepare( "SELECT ID, name FROM {$table} WHERE name IN ({$placeholders}) AND type = %d", array_merge( $term_names, [ $type ] ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders from array_fill('%s'); table from $wpdb->prefix
 
-			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- query built with $wpdb->prepare() above
 
 			$term_map    = [];
 			$found_names = [];
@@ -415,8 +416,8 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 
 					if ( $result ) {
 						$new_placeholders  = implode( ',', array_fill( 0, count( $insert_term_data ), '%s' ) );
-						$get_new_ids_query = $wpdb->prepare( "SELECT ID, name FROM {$table} WHERE name IN ({$new_placeholders}) AND type = %d", array_merge( $insert_term_data, [ $type ] ) );
-						$new_results       = $wpdb->get_results( $get_new_ids_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+						$get_new_ids_query = $wpdb->prepare( "SELECT ID, name FROM {$table} WHERE name IN ({$new_placeholders}) AND type = %d", array_merge( $insert_term_data, [ $type ] ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders from array_fill('%s'); table from $wpdb->prefix
+						$new_results       = $wpdb->get_results( $get_new_ids_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- query built with $wpdb->prepare() above
 
 						if ( ! empty( $new_results ) ) {
 							foreach ( $new_results as $new_result ) {

@@ -15,14 +15,14 @@ use FSVendor\WPDesk\Tracker\UserFeedback\AjaxUserFeedbackDataHandler;
  */
 class UserFeedback implements Hookable {
 
-	const THICKBOX_ID = 'new-rules-table-feedback';
+	const THICKBOX_ID          = 'new-rules-table-feedback';
 	const USER_FEEDBACK_OPTION = 'flexible_shipping_new_rules_feedback';
 
 	/**
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_action( 'wpdesk_tracker_user_feedback_data_handled', array( $this, 'save_user_feedback' ) );
+		add_action( 'wpdesk_tracker_user_feedback_data_handled', [ $this, 'save_user_feedback' ] );
 	}
 
 	/**
@@ -35,5 +35,4 @@ class UserFeedback implements Hookable {
 			update_option( self::USER_FEEDBACK_OPTION, $payload );
 		}
 	}
-
 }

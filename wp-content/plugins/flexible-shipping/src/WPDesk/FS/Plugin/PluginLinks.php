@@ -13,7 +13,7 @@ class PluginLinks implements Hookable {
 	}
 
 	public function hooks() {
-		add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 4 );
+		add_filter( 'plugin_row_meta', [ $this, 'plugin_row_meta' ], 10, 4 );
 	}
 
 	public function plugin_row_meta( $plugin_meta, $plugin_file, $plugin_data, $status ) {
@@ -32,5 +32,4 @@ class PluginLinks implements Hookable {
 
 		return $plugin_meta;
 	}
-
 }

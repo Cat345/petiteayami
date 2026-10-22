@@ -135,7 +135,7 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 		public function print_custom_css_in_head() {
 			global $post;
 
-			if ( ( ! empty( $post ) && $post->post_type === $this->get_post_type_slug() ) ) {
+			if ( $post instanceof WP_Post && $post->post_type === $this->get_post_type_slug() ) {
 				$this->setup_custom_options( $post->ID );
 				$style_custom_css = $this->get_custom_option( 'custom_css' );
 				if ( ! empty( $style_custom_css ) ) {
@@ -157,7 +157,7 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 		public function print_custom_js_in_footer() {
 			global $post;
 
-			if ( ( ! empty( $post ) && $post->post_type === $this->get_post_type_slug() ) ) {
+			if ( $post instanceof WP_Post && $post->post_type === $this->get_post_type_slug() ) {
 				$this->setup_custom_options( $post->ID );
 				$custom_js = html_entity_decode( $this->get_custom_option( 'custom_js' ), ENT_QUOTES | ENT_HTML401 );
 				if ( ! empty( $custom_js ) ) {

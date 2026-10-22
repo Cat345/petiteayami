@@ -106,14 +106,12 @@ class PremiumTemplatesFactory {
       'celebrations',
       __('Birthday email', 'mailpoet-premium'),
       __('Send a birthday email to your subscribers on their special day.', 'mailpoet-premium'),
-      function (bool $preview = false) use ($usesDiscountPattern): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function () use ($usesDiscountPattern): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           $usesDiscountPattern ? 'birthday-email-with-discount' : 'birthday-email-content',
           $usesDiscountPattern ? __('A birthday treat from us', 'mailpoet-premium') : __('Happy birthday!', 'mailpoet-premium'),
           $usesDiscountPattern ? __('A birthday treat from us', 'mailpoet-premium') : __('Happy birthday!', 'mailpoet-premium'),
-          $usesDiscountPattern ? __('Enjoy 10% off your next order', 'mailpoet-premium') : __('Wishing you a wonderful day', 'mailpoet-premium'),
-          'birthday-email'
+          $usesDiscountPattern ? __('Enjoy 10% off your next order', 'mailpoet-premium') : __('Wishing you a wonderful day', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -140,22 +138,18 @@ class PremiumTemplatesFactory {
         'Welcome new subscribers and start building a relationship with them. Send an email immediately after someone subscribes to your list to introduce your brand and a follow-up two days later to keep the conversation going.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $welcomeEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $welcomeEmailArgs = $this->createTemplateEmailArgs(
           'welcome-email-content',
           __('Welcome email', 'mailpoet-premium'),
           __('Welcome to our community!', 'mailpoet-premium'),
-          __('Thanks for subscribing', 'mailpoet-premium'),
-          'subscriber-welcome-series'
+          __('Thanks for subscribing', 'mailpoet-premium')
         );
-        $followUpEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+        $followUpEmailArgs = $this->createTemplateEmailArgs(
           'educational-campaign',
           __('Follow-up email', 'mailpoet-premium'),
           __('Here’s what to expect', 'mailpoet-premium'),
-          __('Learn more about us', 'mailpoet-premium'),
-          'subscriber-welcome-series'
+          __('Learn more about us', 'mailpoet-premium')
         );
         return $this->builder->createFromSequence(
           __('Welcome series for new subscribers', 'mailpoet-premium'),
@@ -260,22 +254,18 @@ class PremiumTemplatesFactory {
         'Welcome new WordPress users to your site. Send an email immediately after a WordPress user registers. Send a follow-up email two days later with more in-depth information.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $welcomeEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $welcomeEmailArgs = $this->createTemplateEmailArgs(
           'welcome-email-content',
           __('Welcome email', 'mailpoet-premium'),
           __('Welcome to our community!', 'mailpoet-premium'),
-          __('Thanks for joining us', 'mailpoet-premium'),
-          'user-welcome-series'
+          __('Thanks for joining us', 'mailpoet-premium')
         );
-        $followUpEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+        $followUpEmailArgs = $this->createTemplateEmailArgs(
           'educational-campaign',
           __('Follow-up email', 'mailpoet-premium'),
           __('Here’s what to expect', 'mailpoet-premium'),
-          __('Learn more about us', 'mailpoet-premium'),
-          'user-welcome-series'
+          __('Learn more about us', 'mailpoet-premium')
         );
         return $this->builder->createFromSequence(
           __('Welcome series for new WordPress users', 'mailpoet-premium'),
@@ -306,14 +296,12 @@ class PremiumTemplatesFactory {
         'These are your most important customers. Make them feel special by sending a thank you note for supporting your brand.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'post-purchase-thank-you',
           __('Thank you for your loyalty', 'mailpoet-premium'),
           __('Thank you for your loyalty', 'mailpoet-premium'),
-          __('We appreciate your continued support', 'mailpoet-premium'),
-          'thank-loyal-customers'
+          __('We appreciate your continued support', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -373,16 +361,13 @@ class PremiumTemplatesFactory {
           'mailpoet-premium'
         ),
       function (bool $preview = false) use ($supportsGeneratedCouponBlock): Automation {
-        $reminderEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+        $reminderEmailArgs = $this->createTemplateEmailArgs(
           'win-back-customer-reminder',
           __('We miss you', 'mailpoet-premium'),
           __('We miss you', 'mailpoet-premium'),
-          __('Fresh picks are waiting for you', 'mailpoet-premium'),
-          'win-back-inactive-customers'
+          __('Fresh picks are waiting for you', 'mailpoet-premium')
         );
-        $followUpEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+        $followUpEmailArgs = $this->createTemplateEmailArgs(
           $supportsGeneratedCouponBlock ? 'win-back-customer' : 'win-back-customer-final-nudge',
           $supportsGeneratedCouponBlock
             ? __('Here’s 15% off to welcome you back', 'mailpoet-premium')
@@ -392,8 +377,7 @@ class PremiumTemplatesFactory {
             : __('Still thinking it over?', 'mailpoet-premium'),
           $supportsGeneratedCouponBlock
             ? __('Your limited-time welcome-back offer', 'mailpoet-premium')
-            : __('Fresh picks are waiting', 'mailpoet-premium'),
-          'win-back-inactive-customers'
+            : __('Fresh picks are waiting', 'mailpoet-premium')
         );
         $tagIds = $this->getTemplateTagIds($preview, ['re-engaged']);
         $automation = $this->builder->createFromSequence(
@@ -449,26 +433,21 @@ class PremiumTemplatesFactory {
         'Encourage your potential customers to finalize their purchase when they have added items to their cart but haven’t finished the order yet. Offer a coupon code as a last resort to convert them to customers.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $firstReminderEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $firstReminderEmailArgs = $this->createTemplateEmailArgs(
           'abandoned-cart-content',
           __('It looks like you left something behind…', 'mailpoet-premium'),
           __('It looks like you left something behind…', 'mailpoet-premium'),
-          __('Complete your purchase today', 'mailpoet-premium'),
-          'abandoned-cart-campaign'
+          __('Complete your purchase today', 'mailpoet-premium')
         );
-        $secondReminderEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+        $secondReminderEmailArgs = $this->createTemplateEmailArgs(
           'abandoned-cart-reminder-content',
           __('Your cart is waiting', 'mailpoet-premium'),
           __('Your cart is waiting', 'mailpoet-premium'),
-          __('Your items are still waiting', 'mailpoet-premium'),
-          'abandoned-cart-campaign'
+          __('Your items are still waiting', 'mailpoet-premium')
         );
         $supportsGeneratedCouponBlock = $this->supportsGeneratedCouponBlock();
-        $discountEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+        $discountEmailArgs = $this->createTemplateEmailArgs(
           $supportsGeneratedCouponBlock ? 'abandoned-cart-with-discount-content' : 'abandoned-cart-content',
           $supportsGeneratedCouponBlock
             ? __('Your cart is waiting, and so is your 10% off!', 'mailpoet-premium')
@@ -478,8 +457,7 @@ class PremiumTemplatesFactory {
             : __('Your cart is still waiting', 'mailpoet-premium'),
           $supportsGeneratedCouponBlock
             ? __('A special discount awaits you', 'mailpoet-premium')
-            : __('Your items are still waiting', 'mailpoet-premium'),
-          'abandoned-cart-campaign'
+            : __('Your items are still waiting', 'mailpoet-premium')
         );
 
         $automation = $this->builder->createFromSequence(
@@ -569,32 +547,13 @@ class PremiumTemplatesFactory {
         'Encourage your customers to leave a review a few days after their purchase. Show them their opinion matters.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = [
-          'name' => __('How was your experience?', 'mailpoet-premium'),
-          'subject' => __('How was your experience?', 'mailpoet-premium'),
-          'preheader' => __('We’d love your feedback', 'mailpoet-premium'),
-        ];
-
-        if ($preview) {
-          $emailArgs['pattern'] = 'ask-for-review-post-purchase';
-        }
-
-        if (!$preview) {
-          $emailIds = $this->emailFactory->createBlockEditorEmail([
-            'pattern' => 'ask-for-review-post-purchase',
-            'subject' => $emailArgs['subject'],
-            'preheader' => $emailArgs['preheader'],
-          ]);
-          if (
-            !is_array($emailIds)
-            || !is_int($emailIds['email_id'] ?? null)
-            || !is_int($emailIds['email_wp_post_id'] ?? null)
-          ) {
-            throw new \RuntimeException('Could not create the ask-for-review block editor email.');
-          }
-          $emailArgs = array_merge($emailArgs, $emailIds);
-        }
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
+          'ask-for-review-post-purchase',
+          __('How was your experience?', 'mailpoet-premium'),
+          __('How was your experience?', 'mailpoet-premium'),
+          __('We’d love your feedback', 'mailpoet-premium')
+        );
 
         $automation = $this->builder->createFromSequence(
           __('Ask to leave a review post-purchase', 'mailpoet-premium'),
@@ -666,14 +625,12 @@ class PremiumTemplatesFactory {
         'Thank your happy customers for their feedback and let them know you appreciate their support.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'positive-review-follow-up',
           __('Thanks for your review!', 'mailpoet-premium'),
           __('Thanks for your review!', 'mailpoet-premium'),
-          __('We’re thrilled you had a good experience', 'mailpoet-premium'),
-          'follow-up-positive-review'
+          __('We’re thrilled you had a good experience', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -712,14 +669,12 @@ class PremiumTemplatesFactory {
         'Reach out to unhappy customers and show you care. Offer help or gather more feedback to improve.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'negative-review-follow-up',
           __('Sorry to hear that – can we help?', 'mailpoet-premium'),
           __('Sorry to hear that – can we help?', 'mailpoet-premium'),
-          __('Let’s make things right', 'mailpoet-premium'),
-          'follow-up-negative-review'
+          __('Let’s make things right', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -757,8 +712,7 @@ class PremiumTemplatesFactory {
       __('Thank customers who leave a 4 or 5-star review and offer a discount on their next order.', 'mailpoet-premium'),
       function (bool $preview = false): Automation {
         $supportsGeneratedCouponBlock = $this->supportsGeneratedCouponBlock();
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+        $emailArgs = $this->createTemplateEmailArgs(
           $supportsGeneratedCouponBlock ? 'reward-positive-reviewer' : 'positive-review-follow-up',
           __('Thanks for your review', 'mailpoet-premium'),
           $supportsGeneratedCouponBlock
@@ -766,8 +720,7 @@ class PremiumTemplatesFactory {
             : __('Thanks for your review!', 'mailpoet-premium'),
           $supportsGeneratedCouponBlock
             ? __('Enjoy a discount on your next order', 'mailpoet-premium')
-            : __('We’re thrilled you had a good experience', 'mailpoet-premium'),
-          'reward-positive-reviewers'
+            : __('We’re thrilled you had a good experience', 'mailpoet-premium')
         );
         $tagIds = $this->getTemplateTagIds($preview, ['left-positive-review']);
 
@@ -909,14 +862,12 @@ class PremiumTemplatesFactory {
         'Thank new subscribers and let them know what to expect. A warm welcome goes a long way.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'subscription-purchase-follow-up',
           __('Welcome to your subscription', 'mailpoet-premium'),
           __('Welcome to your subscription', 'mailpoet-premium'),
-          __('Here’s what happens next', 'mailpoet-premium'),
-          'follow-up-after-subscription-purchase'
+          __('Here’s what happens next', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -947,14 +898,12 @@ class PremiumTemplatesFactory {
         'Reinforce the value of your subscription by reminding customers what they’re getting after every renewal.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'subscription-renewal-follow-up',
           __('Your subscription renewed', 'mailpoet-premium'),
           __('Your subscription renewed successfully', 'mailpoet-premium'),
-          __('Thanks for continuing with us', 'mailpoet-premium'),
-          'follow-up-after-subscription-renewal'
+          __('Thanks for continuing with us', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -984,14 +933,12 @@ class PremiumTemplatesFactory {
         'Help customers fix failed payments and continue their subscription without disruption.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'subscription-failed-renewal-follow-up',
           __('Subscription renewal needs attention', 'mailpoet-premium'),
           __('We couldn’t renew your subscription', 'mailpoet-premium'),
-          __('Update your payment details to keep it active', 'mailpoet-premium'),
-          'follow-up-after-failed-renewal'
+          __('Update your payment details to keep it active', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -1021,14 +968,12 @@ class PremiumTemplatesFactory {
         'Reach out to subscribers who canceled and ask for their feedback to help improve your service.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'subscription-churned-follow-up',
           __('Subscription feedback request', 'mailpoet-premium'),
           __('Can we ask why you left?', 'mailpoet-premium'),
-          __('Your feedback helps us improve', 'mailpoet-premium'),
-          'follow-up-on-churned-subscription'
+          __('Your feedback helps us improve', 'mailpoet-premium')
         );
 
         // Only follow up if the customer no longer has an active subscription
@@ -1065,14 +1010,12 @@ class PremiumTemplatesFactory {
         'Check in with customers after their trial ends. Encourage them to keep enjoying the benefits of their subscription.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'subscription-trial-ended-follow-up',
           __('Trial follow-up', 'mailpoet-premium'),
           __('How was your trial?', 'mailpoet-premium'),
-          __('Keep the benefits going', 'mailpoet-premium'),
-          'follow-up-when-trial-ends'
+          __('Keep the benefits going', 'mailpoet-premium')
         );
 
         // The trial-ended trigger fires whether or not the customer kept paying,
@@ -1109,14 +1052,12 @@ class PremiumTemplatesFactory {
         'Re-engage former subscribers by showing what’s new and why it’s worth coming back.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'subscription-win-back',
           __('Subscription win-back', 'mailpoet-premium'),
           __('Here’s what’s new since you left', 'mailpoet-premium'),
-          __('We’d love to welcome you back', 'mailpoet-premium'),
-          'win-back-churned-subscribers'
+          __('We’d love to welcome you back', 'mailpoet-premium')
         );
 
         $automation = $this->builder->createFromSequence(
@@ -1172,14 +1113,12 @@ class PremiumTemplatesFactory {
         'Remind customers who left a booking in their cart to complete their reservation.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'booking-abandoned-spot',
           __('Your spot is waiting', 'mailpoet-premium'),
           __('Your spot is waiting', 'mailpoet-premium'),
-          __('Complete your booking', 'mailpoet-premium'),
-          'wc-booking-abandoned-spot'
+          __('Complete your booking', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -1210,14 +1149,12 @@ class PremiumTemplatesFactory {
         'Send a confirmation email after a new booking is created.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'booking-new-booking-follow-up',
           __('Booking confirmation', 'mailpoet-premium'),
           __('Your booking is confirmed', 'mailpoet-premium'),
-          __('Your booking details are inside', 'mailpoet-premium'),
-          'wc-booking-new-booking-follow-up'
+          __('Your booking details are inside', 'mailpoet-premium')
         );
 
         // No delay: the email sends immediately on booking creation so it stays
@@ -1249,14 +1186,12 @@ class PremiumTemplatesFactory {
         'Send a reminder before a booking starts. Customize the timing in the trigger settings.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'booking-pre-visit-reminder',
           __('Pre-visit reminder', 'mailpoet-premium'),
           __('A reminder about your upcoming booking', 'mailpoet-premium'),
-          __('Everything you need before your visit', 'mailpoet-premium'),
-          'wc-booking-pre-visit-reminder'
+          __('Everything you need before your visit', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -1294,22 +1229,18 @@ class PremiumTemplatesFactory {
         'Send a series of educational emails in the days before a booking starts to help customers prepare for their visit.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $whatToExpectEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $whatToExpectEmailArgs = $this->createTemplateEmailArgs(
           'booking-pre-visit-what-to-expect',
           __('What to expect', 'mailpoet-premium'),
           __('What to expect at your booking', 'mailpoet-premium'),
-          __('Everything you need before your visit', 'mailpoet-premium'),
-          'wc-booking-pre-visit-drip'
+          __('Everything you need before your visit', 'mailpoet-premium')
         );
-        $tipsEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+        $tipsEmailArgs = $this->createTemplateEmailArgs(
           'booking-pre-visit-tips',
           __('Booking tips', 'mailpoet-premium'),
           __('Make the most of your booking', 'mailpoet-premium'),
-          __('Helpful tips before your visit', 'mailpoet-premium'),
-          'wc-booking-pre-visit-drip'
+          __('Helpful tips before your visit', 'mailpoet-premium')
         );
         // Anchored to the booking start (not its creation) so both emails always land
         // before the visit. Last-minute bookings created inside the window get nothing.
@@ -1353,14 +1284,12 @@ class PremiumTemplatesFactory {
         'Ask for feedback after a booking is completed.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'booking-post-visit-review',
           __('Booking review request', 'mailpoet-premium'),
           __('How was your booking?', 'mailpoet-premium'),
-          __('We’d love your feedback', 'mailpoet-premium'),
-          'wc-booking-post-visit-review'
+          __('We’d love your feedback', 'mailpoet-premium')
         );
 
         return $this->builder->createFromSequence(
@@ -1391,14 +1320,12 @@ class PremiumTemplatesFactory {
         'Encourage customers to rebook after their booking is completed.',
         'mailpoet-premium'
       ),
-      function (bool $preview = false): Automation {
-        $emailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
+      function (): Automation {
+        $emailArgs = $this->createTemplateEmailArgs(
           'booking-next-booking-nudge',
           __('Next booking nudge', 'mailpoet-premium'),
           __('Ready for your next booking?', 'mailpoet-premium'),
-          __('Book your next visit when you’re ready', 'mailpoet-premium'),
-          'wc-booking-next-booking-nudge'
+          __('Book your next visit when you’re ready', 'mailpoet-premium')
         );
 
         // Only nudge customers who have not booked again during the 30-day wait.
@@ -1464,40 +1391,23 @@ class PremiumTemplatesFactory {
   }
 
   /**
+   * The email is created on the first "Edit content" click, with the editor the user picks.
+   * The free plugin fills it with the pattern (block) or its classic body.
+   *
    * @return array<string, mixed>
    */
-  private function createBlockEditorEmailArgs(
-    bool $preview,
+  private function createTemplateEmailArgs(
     string $pattern,
     string $name,
     string $subject,
-    string $preheader,
-    string $templateSlug
+    string $preheader
   ): array {
-    $args = [
+    return [
       'name' => $name,
       'subject' => $subject,
       'preheader' => $preheader,
-    ];
-
-    if ($preview) {
-      $args['pattern'] = $pattern;
-      return $args;
-    }
-
-    $emailIds = $this->emailFactory->createBlockEditorEmail([
       'pattern' => $pattern,
-      'subject' => $subject,
-      'preheader' => $preheader,
-    ]);
-    if (
-      !is_array($emailIds)
-      || !is_int($emailIds['email_id'] ?? null)
-      || !is_int($emailIds['email_wp_post_id'] ?? null)
-    ) {
-      throw new \RuntimeException(sprintf('Could not create the %s block editor email.', $templateSlug));
-    }
-    return array_merge($args, $emailIds);
+    ];
   }
 
   /**

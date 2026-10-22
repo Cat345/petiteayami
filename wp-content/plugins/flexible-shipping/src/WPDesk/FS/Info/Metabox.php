@@ -100,7 +100,7 @@ class Metabox {
 	 * @return string
 	 */
 	public function get_classes() {
-		$classes = array( 'fs-info-metabox' );
+		$classes = [ 'fs-info-metabox' ];
 
 		if ( $this->has_title() ) {
 			$classes[] = 'has-title';

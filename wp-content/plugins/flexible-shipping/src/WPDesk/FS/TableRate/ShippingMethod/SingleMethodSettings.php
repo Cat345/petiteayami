@@ -33,14 +33,14 @@ class SingleMethodSettings implements MethodSettings {
 	 * @return array
 	 */
 	private function append_tax_settings( array $settings_fields ) {
-		$tax_docs_link = 'pl_PL' !== get_locale()
+		$tax_docs_link       = 'pl_PL' !== get_locale()
 			? 'https://octol.io/fs-tax'
 			: 'https://octol.io/fs-tax-pl';
 		$new_settings_fields = [];
 		foreach ( $settings_fields as $key => $settings_field ) {
 			$new_settings_fields[ $key ] = $settings_field;
 			if ( CommonMethodSettings::METHOD_LOGO_ID === $key ) {
-				$new_settings_fields['tax_heading'] = [
+				$new_settings_fields['tax_heading']        = [
 					'title'       => __( 'Tax', 'flexible-shipping' ),
 					'type'        => 'title',
 					'description' => sprintf(
@@ -52,7 +52,7 @@ class SingleMethodSettings implements MethodSettings {
 					),
 					'default'     => '',
 				];
-				$new_settings_fields['tax_status'] = [
+				$new_settings_fields['tax_status']         = [
 					'title'    => __( 'Tax Status', 'flexible-shipping' ),
 					'type'     => 'select',
 					'default'  => 'taxable',
@@ -62,7 +62,7 @@ class SingleMethodSettings implements MethodSettings {
 					],
 					'desc_tip' => __( 'If you select to apply the tax, the plugin will use the tax rates defined in the WooCommerce settings at <strong>WooCommerce → Settings → Tax</strong>.', 'flexible-shipping' ),
 				];
-				$new_settings_fields['prices_include_tax']  = [
+				$new_settings_fields['prices_include_tax'] = [
 					'title'    => __( 'Tax included in shipping cost', 'flexible-shipping' ),
 					'type'     => 'select',
 					'default'  => 'no',

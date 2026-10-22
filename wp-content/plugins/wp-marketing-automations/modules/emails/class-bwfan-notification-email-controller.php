@@ -72,6 +72,7 @@ class BWFAN_Notification_Email_Controller {
 		if ( false === bwfan_is_autonami_pro_active() && ! empty( $notification ) ) {
 			$theme['theme']    = 'dark';
 			$title             = ! empty( $notification['title'] ) ? $notification['title'] : __( 'Black Friday', 'wp-marketing-automations' );
+			/* translators: %s: Notification title, e.g. Black Friday */
 			$theme['subtitle'] = sprintf( __( '💰 %s is HERE - Subscribe Now for Upto 55%% Off 💰', 'wp-marketing-automations' ), $title );
 			if ( ! empty( $notification['campaign'] ) ) {
 				$theme['button_url'] = add_query_arg( [
@@ -305,7 +306,7 @@ class BWFAN_Notification_Email_Controller {
 
 		$table_name = $wpdb->prefix . 'bwfan_automations';
 
-		$results = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT `event` FROM `$table_name` WHERE `v` = %d AND `status` = %d", 2, 1 ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$results = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT `event` FROM `$table_name` WHERE `v` = %d AND `status` = %d", 2, 1 ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; values bound via prepare()
 
 		return $results;
 	}

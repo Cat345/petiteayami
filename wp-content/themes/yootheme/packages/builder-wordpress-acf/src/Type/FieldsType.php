@@ -28,30 +28,29 @@ class FieldsType
     {
         $isType = $type->config['metadata']['type'] ?? false;
 
-        return [
-            'fields' => array_reduce(
-                $fields,
-                fn($fields, $field) => $fields +
-                    static::configFields(
-                        $field,
-                        [
-                            'type' => 'String',
-                            'metadata' => [
-                                'label' => $field['label'] ?: $field['name'],
-                                'group' => $isType ? $field['group']['title'] : null,
-                            ],
-                            'extensions' => [
-                                'call' => [
-                                    'func' => __CLASS__ . '::resolve',
-                                    'args' => ['field' => $field['name']],
-                                ],
-                            ],
+        $configs = [];
+
+        foreach ($fields as $field) {
+            $configs += static::configFields(
+                $field,
+                [
+                    'type' => 'String',
+                    'metadata' => [
+                        'label' => $field['label'] ?: $field['name'],
+                        'group' => $isType ? $field['group']['title'] : null,
+                    ],
+                    'extensions' => [
+                        'call' => [
+                            'func' => __CLASS__ . '::resolve',
+                            'args' => ['field' => $field['name']],
                         ],
-                        $source,
-                    ),
-                [],
-            ),
-        ];
+                    ],
+                ],
+                $source,
+            );
+        }
+
+        return ['fields' => $configs];
     }
 
     /**

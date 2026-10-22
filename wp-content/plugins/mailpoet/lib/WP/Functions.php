@@ -448,6 +448,10 @@ class Functions {
     return parse_blocks($content);
   }
 
+  public function isSsl(): bool {
+    return is_ssl();
+  }
+
   public function isMultisite() {
     return is_multisite();
   }

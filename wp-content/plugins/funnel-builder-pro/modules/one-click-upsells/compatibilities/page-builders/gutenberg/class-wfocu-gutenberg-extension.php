@@ -463,7 +463,7 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 			$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
 			if ( ! empty( $default_font ) ) {
 				$font_url = 'https://fonts.googleapis.com/css?family=' . urlencode( $default_font ) . ':100,200,300,400,500,600,700,800,900';
-				wp_enqueue_style( 'bwfblock-editor-default-font', $font_url, array(), null );
+				wp_enqueue_style( 'bwfblock-editor-default-font', $font_url, array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Google Fonts URL; null keeps ?ver= off it.
 				wp_add_inline_style( 'bwfblock-editor-default-font', '.editor-styles-wrapper { font-family: ' . esc_attr( $default_font ) . '; }' );
 			}
 		}

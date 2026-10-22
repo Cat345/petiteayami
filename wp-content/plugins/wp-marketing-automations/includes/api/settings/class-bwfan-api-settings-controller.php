@@ -500,7 +500,7 @@ class BWFAN_API_Settings_Controller extends BWFAN_API_Controller {
 			'worker'     => true,
 			'unique_key' => get_option( 'bwfan_u_key', false ),
 		);
-		$timing          = isset( $_GET['time'] ) ? $_GET['time'] : '';
+		$timing          = isset( $_GET['time'] ) ? sanitize_text_field( wp_unslash( $_GET['time'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only worker status check; value only compared with a timestamp
 		$args1           = bwf_get_remote_rest_args( $body_data );
 		$autonami_worker = wp_remote_post( $url, $args1 );
 
@@ -542,7 +542,7 @@ class BWFAN_API_Settings_Controller extends BWFAN_API_Controller {
 		);
 		$args2                 = bwf_get_remote_rest_args( $body_data );
 		$autonami_event_worker = wp_remote_post( $url, $args2 );
-		$timing                = isset( $_GET['time'] ) ? $_GET['time'] : '';
+		$timing                = isset( $_GET['time'] ) ? sanitize_text_field( wp_unslash( $_GET['time'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only worker status check; value only compared with a timestamp
 
 		if ( $autonami_event_worker instanceof WP_Error ) {
 			$this->response_code = 404;
@@ -578,7 +578,7 @@ class BWFAN_API_Settings_Controller extends BWFAN_API_Controller {
 		$url               = rest_url( '/woofunnels/v1/worker' ) . '?' . time();
 		$args              = [ 'method' => 'GET', 'sslverify' => false, ];
 		$woofunnels_worker = wp_remote_post( $url, $args );
-		$timing            = isset( $_GET['time'] ) ? $_GET['time'] : '';
+		$timing            = isset( $_GET['time'] ) ? sanitize_text_field( wp_unslash( $_GET['time'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only worker status check; value only compared with a timestamp
 
 		if ( $woofunnels_worker instanceof WP_Error ) {
 			$this->response_code = 404;

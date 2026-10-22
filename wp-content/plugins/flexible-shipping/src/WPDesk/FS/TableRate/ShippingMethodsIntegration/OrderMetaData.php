@@ -6,7 +6,7 @@ use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
 
 class OrderMetaData implements Hookable {
 
-	public const META_KEY   = 'fs_costs';
+	public const META_KEY = 'fs_costs';
 
 	private const  BASE       = 'base';
 	private const  ADDITIONAL = 'additional';

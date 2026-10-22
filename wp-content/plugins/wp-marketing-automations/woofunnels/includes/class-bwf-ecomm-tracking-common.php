@@ -264,7 +264,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND table_name = %s AND column_name = 'journey'", $wpdb->dbname, $table_name ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			if ( empty( $is_col ) ) {
-				$wpdb->query( "ALTER TABLE `{$table_name}` ADD `journey` longtext AFTER `referrer`" ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( "ALTER TABLE `{$table_name}` ADD `journey` longtext AFTER `referrer`" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- one-time schema migration on plugin table; name from prefix + const
 				if ( ! empty( $wpdb->last_error ) ) {
 					return;
 				}
@@ -411,7 +411,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			// Handle case if primary order already processed
 			if ( in_array( $parent_order->get_status(), wc_get_is_paid_statuses(), true ) ) {
 				global $wpdb;
-				$get_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}{$this->conv_table} WHERE type = %d AND source = %d", 2, $parent_order->get_id() ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$get_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}{$this->conv_table} WHERE type = %d AND source = %d", 2, $parent_order->get_id() ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from prefix + private constant prop; values bound via %d
 
 				if ( $get_data ) {
 
@@ -447,7 +447,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						/**
 						 * Copy data form parent row and modify and insert offer data
 						 */
-						$wpdb->update(
+						$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- wpdb->update on plugin conversion table; parameterized by core
 							"{$wpdb->prefix}{$this->conv_table}",
 							$get_data,
 							array(
@@ -919,7 +919,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			$parsed_url        = wp_parse_url( $link );
 			$relative_path     = ( is_array( $parsed_url ) && ! empty( $parsed_url['path'] ) ) ? ltrim( $parsed_url['path'], '/' ) : '';
 
-			$data     = wc_clean( wp_unslash( $_POST['data'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$data     = wc_clean( wp_unslash( $_POST['data'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wc_clean() sanitizes recursively
 			$products = ( isset( $data['products'] ) && is_array( $data['products'] ) ) ? array_values( $data['products'] ) : array();
 			$name     = ( ! empty( $products ) && isset( $products[0]['name'] ) ) ? $products[0]['name'] : '';
 
@@ -1252,8 +1252,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				return $result;
 			}
 
-			$list = file_get_contents( dirname( __DIR__ ) . '/contact/data/contries-timzone.json' ); //phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
-			$list = json_decode( $list, true );
+			$list = bwf_get_country_timezone_list();
 
 			$country_list = wp_list_pluck( $list, 'timezone' );
 
@@ -1317,8 +1316,8 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			 * @todo we will update code showing for funnel meta box currently not have exact mata for check order create by funnel
 			 * so we run query in conversion table and check order created by funnel
 			 */ global $wpdb;
-			$query    = $wpdb->prepare( 'SELECT * from ' . $wpdb->prefix . $this->conv_table . ' WHERE type = %s AND source = %d', 2, $order_id );
-			$get_data = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$query    = $wpdb->prepare( 'SELECT * from ' . $wpdb->prefix . $this->conv_table . ' WHERE type = %s AND source = %d', 2, $order_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from prefix + private constant prop; values bound via prepare
+			$get_data = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- runs string fully built by prepare at 1319
 			if ( empty( $get_data ) ) {
 				return;
 			}
@@ -1329,7 +1328,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			add_meta_box(
 				'bwfan_utm_info_box',
-				__( 'Conversion Tracking', 'woofunnels' ),
+				__( 'Conversion Tracking', 'wp-marketing-automations' ),
 				array( // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				$this,
 				'order_meta_box_data',
@@ -1378,7 +1377,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				$order_id
 			);
 
-			$offer_data = $wpdb->get_results( $offer_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$offer_data = $wpdb->get_results( $offer_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- runs prepared string; tables from prefix, order id bound
 
 			if ( is_array( $offer_data ) && count( $offer_data ) > 0 ) {
 				foreach ( $offer_data as $o_item ) {
@@ -1450,72 +1449,72 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				$ref = explode( '?', $get_data['referrer'] );
 			}
 			$data['funnel'] = array(
-				'name'  => __( 'Funnel', 'woofunnels' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'name'  => __( 'Funnel', 'wp-marketing-automations' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				'value' => $funnel,
 			);
 			if ( '' !== $first_click ) {
 				$data['first_click'] = array(
-					'name'  => __( 'First Interaction', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'First Interaction', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $first_click,
 				);
 			}
 			if ( '' !== $diff ) {
 				$data['convert'] = array(
-					'name'  => __( 'Conversion Time', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Conversion Time', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $diff,
 				);
 			}
 			if ( isset( $get_data['utm_source'] ) && '' !== $get_data['utm_source'] ) {
 				$data['utm_source'] = array(
-					'name'  => __( 'UTM Source', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'UTM Source', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => ucfirst( $get_data['utm_source'] ),
 				);
 			}
 			if ( isset( $get_data['utm_medium'] ) && '' !== $get_data['utm_medium'] ) {
 				$data['utm_medium'] = array(
-					'name'  => __( 'UTM Medium', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'UTM Medium', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => ucfirst( $get_data['utm_medium'] ),
 				);
 			}
 			if ( isset( $get_data['utm_campaign'] ) && '' !== $get_data['utm_campaign'] ) {
 				$data['utm_campaign'] = array(
-					'name'  => __( 'UTM Campaign', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'UTM Campaign', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $get_data['utm_campaign'],
 				);
 			}
 			if ( isset( $get_data['utm_term'] ) && '' !== $get_data['utm_term'] ) {
 				$data['utm_term'] = array(
-					'name'  => __( 'UTM Term', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'UTM Term', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $get_data['utm_term'],
 				);
 			}
 			if ( isset( $get_data['utm_content'] ) && '' !== $get_data['utm_content'] ) {
 				$data['utm_content'] = array(
-					'name'  => __( 'UTM Content', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'UTM Content', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $get_data['utm_content'],
 				);
 			}
 			if ( isset( $get_data['referrer'] ) && '' !== $get_data['referrer'] ) {
 				$data['referrer'] = array(
-					'name'  => __( 'Referrer', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Referrer', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => ( is_array( $ref ) && isset( $ref[0] ) ) ? '<a href="' . esc_url( $ref[0] ) . '" target="_blank">' . esc_html( $ref[0] ) . '</a>' : '',
 				);
 			}
 			if ( isset( $get_data['click_id'] ) ) {
 				$data['click_id'] = array(
-					'name'  => __( 'Click ID', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'value' => ( '' !== $get_data['click_id'] ) ? __( 'Yes', 'woofunnels' ) : __( 'No', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Click ID', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'value' => ( '' !== $get_data['click_id'] ) ? __( 'Yes', 'wp-marketing-automations' ) : __( 'No', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				);
 			}
 			if ( isset( $get_data['device'] ) && '' !== $get_data['device'] ) {
 				$data['device'] = array(
-					'name'  => __( 'Device', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Device', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => ucfirst( $get_data['device'] ),
 				);
 			}
 			if ( isset( $get_data['browser'] ) && '' !== $get_data['browser'] ) {
 				$data['browser'] = array(
-					'name'  => __( 'Browser', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Browser', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $get_data['browser'],
 				);
 			}
@@ -1524,12 +1523,12 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			 * First-touch UTM / referrer — stored in the existing *_last columns.
 			 */
 			$first_touch_labels = array(
-				'utm_source_last'   => __( 'First UTM Source', 'woofunnels' ),   // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'utm_medium_last'   => __( 'First UTM Medium', 'woofunnels' ),   // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'utm_campaign_last' => __( 'First UTM Campaign', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'utm_term_last'     => __( 'First UTM Term', 'woofunnels' ),     // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'utm_content_last'  => __( 'First UTM Content', 'woofunnels' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'referrer_last'     => __( 'First Referrer', 'woofunnels' ),     // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'utm_source_last'   => __( 'First UTM Source', 'wp-marketing-automations' ),   // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'utm_medium_last'   => __( 'First UTM Medium', 'wp-marketing-automations' ),   // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'utm_campaign_last' => __( 'First UTM Campaign', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'utm_term_last'     => __( 'First UTM Term', 'wp-marketing-automations' ),     // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'utm_content_last'  => __( 'First UTM Content', 'wp-marketing-automations' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'referrer_last'     => __( 'First Referrer', 'wp-marketing-automations' ),     // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			);
 			foreach ( $first_touch_labels as $first_key => $first_label ) {
 				if ( empty( $get_data[ $first_key ] ) ) {
@@ -1580,7 +1579,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					// a normalized-but-empty journey ({"j":[],"s":[]}) must not show an empty list.
 					if ( $journey_count > 0 ) {
 						$data['journey'] = array(
-							'name'  => __( 'Customer Journey', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+							'name'  => __( 'Customer Journey', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							'value' => $journey_html,
 						);
 					}
@@ -1714,7 +1713,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 			global $wpdb;
-			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . $this->conv_table . ' WHERE type= 2 AND source = %1s ', $order_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . $this->conv_table . ' WHERE type= 2 AND source = %d ', $order_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table from prefix + const; order id bound via %d
 		}
 
 		public function partially_refunded_process( $order_id, $refund_id ) {
@@ -1783,7 +1782,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			}
 
 			if ( $total_refund > 0 ) {
-				$get_totals = $wpdb->get_row( $wpdb->prepare( "SELECT value, checkout_total, bump_total, offer_total FROM {$wpdb->prefix}{$this->conv_table} WHERE type = 2 AND source = %d", absint( $order_id ) ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$get_totals = $wpdb->get_row( $wpdb->prepare( "SELECT value, checkout_total, bump_total, offer_total FROM {$wpdb->prefix}{$this->conv_table} WHERE type = 2 AND source = %d", absint( $order_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from prefix + private constant prop; id bound via %d
 
 				if ( is_array( $get_totals ) && count( $get_totals ) > 0 ) {
 					/**
@@ -1806,7 +1805,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						$update_args['checkout_total'] = $update_args['value'];
 					}
 
-					$wpdb->update(
+					$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- wpdb->update on plugin conversion table; parameterized by core
 						$wpdb->prefix . $this->conv_table,
 						$update_args,
 						array(
@@ -1839,8 +1838,8 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		 * We are handling cases of insert funnel analytics for which order thankyou page not open
 		 */
 		public function maybe_execute_thankyou_hook() {
-			// Ensure WFOCU_Core is available before proceeding
-			if ( ! class_exists( 'WFOCU_Core' ) ) {
+			// Ensure WooCommerce is active or WFOCU_Core is available before proceeding
+			if ( ! class_exists( 'WooCommerce' ) || ! class_exists( 'WFOCU_Core' ) ) {
 				return;
 			}
 
@@ -1852,7 +1851,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				',',
 				array_map(
 					function ( $a ) {
-						return "'wc-{$a}'";
+						return "'" . esc_sql( 'wc-' . $a ) . "'";
 					},
 					$status_to_query
 				)
@@ -1871,7 +1870,9 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 				$order_table      = $wpdb->prefix . 'wc_orders';
 				$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
+				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- paid statuses esc_sql quoted at build; other values bound by prepare
 				$query            = $wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from wpdb prefix + hardcoded wc_orders
 					"SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wffn_tracking_data')
                                 WHERE ord.type = %s
@@ -1880,8 +1881,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
 					'shop_order'
 				);
+				// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			} else {
+				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- paid statuses esc_sql quoted at build; other values bound by prepare
 				$query = $wpdb->prepare(
 					"SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wffn_tracking_data')
@@ -1891,9 +1894,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 ORDER BY p.post_date DESC LIMIT 0, 10",
 					'shop_order'
 				);
+				// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 
-			$query_results = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query_results = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- paid statuses esc_sql quoted at build; other values bound by prepare
 
 			if ( ! empty( $query_results ) && is_array( $query_results ) ) {
 
@@ -1969,7 +1973,9 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 						$order_table      = $wpdb->prefix . 'wc_orders';
 						$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- paid statuses esc_sql quoted at build; other values bound by prepare
 						$wfacp_query      = $wpdb->prepare(
+							// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from wpdb prefix + hardcoded wc_orders
 							"SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfacp_report_data')
                                 WHERE ord.type = %s
@@ -1978,8 +1984,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
 							'shop_order'
 						);
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 					} else {
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- paid statuses esc_sql quoted at build; other values bound by prepare
 						$wfacp_query = $wpdb->prepare(
 							"SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfacp_report_data')
@@ -1989,9 +1997,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 ORDER BY p.post_date DESC LIMIT 0, 10",
 							'shop_order'
 						);
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					}
 
-					$wfacp_results = $wpdb->get_results( $wfacp_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wfacp_results = $wpdb->get_results( $wfacp_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- paid statuses esc_sql quoted at build; other values bound by prepare
 
 					if ( is_array( $wfacp_results ) && count( $wfacp_results ) > 0 ) {
 						$wfacp_report = WFACP_Reporting::get_instance();
@@ -2026,7 +2035,9 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 						$order_table      = $wpdb->prefix . 'wc_orders';
 						$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- paid statuses esc_sql quoted at build; other values bound by prepare
 						$ob_query         = $wpdb->prepare(
+							// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from wpdb prefix + hardcoded wc_orders
 							"SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfob_report_data')
                                 WHERE ord.type = %s
@@ -2035,8 +2046,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
 							'shop_order'
 						);
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 					} else {
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- paid statuses esc_sql quoted at build; other values bound by prepare
 						$ob_query = $wpdb->prepare(
 							"SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfob_report_data')
@@ -2046,9 +2059,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 ORDER BY p.post_date DESC LIMIT 0, 10",
 							'shop_order'
 						);
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					}
 
-					$ob_results = $wpdb->get_results( $ob_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$ob_results = $wpdb->get_results( $ob_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- paid statuses esc_sql quoted at build; other values bound by prepare
 
 					if ( is_array( $ob_results ) && count( $ob_results ) > 0 ) {
 						$ob_report = WFOB_Reporting::get_instance();

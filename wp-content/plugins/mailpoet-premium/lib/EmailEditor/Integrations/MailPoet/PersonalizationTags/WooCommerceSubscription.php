@@ -59,7 +59,7 @@ class WooCommerceSubscription {
       return '';
     }
 
-    return esc_html($subscription->get_title());
+    return $subscription->get_title();
   }
 
   /**

@@ -207,7 +207,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 			if ( $num_of_steps > 1 ) {
 
 				$cartTitle          = __( 'Title', 'woofunnels-aero-checkout' );
-				$settingDescription = __( 'Note: Cart settings will work for Global Checkout when user navigates from Product > Cart > Checkout', 'woofunnels-aero-checkout' );
+				$settingDescription = __( 'Note: The cart step is added only on the Store Checkout, when the shopper reaches checkout from the cart page (Product > Cart > Checkout). It is not shown on funnel checkouts, on direct checkout links or in the builder preview.', 'woofunnels-aero-checkout' );
 				$cartText           = __( 'Cart', 'woocommerce' );
 				$options            = array(
 					'yes' => __( 'Yes', 'woofunnels-aero-checkout' ),
@@ -215,7 +215,10 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 				);
 				$this->add_heading( $tab_id, 'Cart', 'none', $bredcrumb_controls );
 				$this->add_select( $tab_id, 'step_cart_link_enable', __( 'Add to Breadcrumb', 'woofunnels-aero-checkout' ), $options, 'yes', $bredcrumb_controls );
-				$this->add_text( $tab_id, 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls, $settingDescription );
+				$cart_note = $tab_id->addCustomControl( '<div class="oxygen-option-default" style="color: #fff; line-height: 1.4; font-size: 12px;">' . esc_html( $settingDescription ) . '</div>', 'description' );
+				$cart_note->setParam( 'step_cart_link_note', '' );
+				$cart_note->setCondition( $this->get_condition_string( 'step_cart_link_note', $bredcrumb_controls ) );
+				$this->add_text( $tab_id, 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls );
 			}
 			$this->get_progress_settings( $tab_id );
 		}

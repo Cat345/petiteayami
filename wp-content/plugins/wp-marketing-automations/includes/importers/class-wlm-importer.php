@@ -2,6 +2,8 @@
 
 namespace BWFAN\Importers;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 use WP_User;
 
@@ -173,9 +175,9 @@ class WLM_Importer extends Importer {
 		$exp    = array();
 		foreach ( $levels as $id => $level ) {
 			$status[ absint( $id ) ] = strval( $this->get_status_code_from_api( $level ) );
-			$reg[ absint( $id ) ]    = date( 'Y-m-d H:i:s', absint( $level->Timestamp ) );
+			$reg[ absint( $id ) ]    = gmdate( 'Y-m-d H:i:s', absint( $level->Timestamp ) );
 			if ( ! empty( $level->ExpiryDate ) ) {
-				$exp[ absint( $id ) ] = date( 'Y-m-d H:i:s', absint( $level->ExpiryDate ) );
+				$exp[ absint( $id ) ] = gmdate( 'Y-m-d H:i:s', absint( $level->ExpiryDate ) );
 			}
 		}
 
@@ -310,7 +312,7 @@ class WLM_Importer extends Importer {
 		// Sanitize table name
 		$table_safe = esc_sql( $table );
 		$query      = "ALTER TABLE {$wpdb->prefix}{$table_safe} " . $cols_to_drop;
-		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table hardcoded; column names regex-sanitized from SHOW COLUMNS
 
 		return true;
 	}

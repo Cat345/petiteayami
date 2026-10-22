@@ -15,6 +15,7 @@ class BWFAN_Model_Tasks extends BWFAN_Model {
 		$stringPlaceholders      = array_fill( 0, $automationCount, '%s' );
 		$placeholders_automation = implode( ', ', $stringPlaceholders );
 		$sql_query               = "Select * FROM {table_name} WHERE automation_id IN ($placeholders_automation)";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via $wpdb->prepare()
 		$sql_query               = $wpdb->prepare( $sql_query, $automation_ids ); // WPCS: unprepared SQL OK
 		$active_tasks            = self::get_results( $sql_query );
 
@@ -49,8 +50,8 @@ class BWFAN_Model_Tasks extends BWFAN_Model {
 		global $wpdb;
 		$time  = current_time( 'timestamp', 1 );
 		$table = self::_table();
-		$query = $wpdb->prepare( "SELECT MAX(`ID`) FROM {$table} WHERE `e_date` < %s AND `status` = 0", $time );
-		$count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query = $wpdb->prepare( "SELECT MAX(`ID`) FROM {$table} WHERE `e_date` < %s AND `status` = 0", $time ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from _table(); value bound via %s
+		$count = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		if ( empty( $count ) ) {
 			return false;
 		}

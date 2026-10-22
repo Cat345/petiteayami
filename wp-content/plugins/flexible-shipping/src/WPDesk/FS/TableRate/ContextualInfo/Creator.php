@@ -402,5 +402,4 @@ class Creator implements HookableCollection {
 			return '';
 		}
 	}
-
 }

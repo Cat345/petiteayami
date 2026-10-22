@@ -22,5 +22,4 @@ class Integration implements Hookable, HookableCollection {
 
 		$this->hooks_on_hookable_objects();
 	}
-
 }

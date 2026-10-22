@@ -117,8 +117,7 @@ class ActionScheduler_DBStore extends ActionScheduler_Store {
 
 			$insert_sql = $this->build_insert_sql( $data, $unique );
 
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $insert_sql should be already prepared.
-			$wpdb->query( $insert_sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $insert_sql ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: $insert_sql is built with $wpdb->prepare()
 			$action_id = $wpdb->insert_id;
 
 			if ( is_wp_error( $action_id ) ) {
@@ -644,7 +643,7 @@ AND `group_id` = %d
 
 		$sql = $this->get_query_actions_sql( $query, $query_type );
 
-		return ( 'count' === $query_type ) ? $wpdb->get_var( $sql ) : $wpdb->get_col( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return ( 'count' === $query_type ) ? $wpdb->get_var( $sql ) : $wpdb->get_col( $sql ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: get_query_actions_sql() returns a prepared query
 	}
 
 	/**
@@ -662,7 +661,7 @@ AND `group_id` = %d
 		$actions_count_by_status = array();
 		$action_stati_and_labels = $this->get_status_labels();
 
-		foreach ( $wpdb->get_results( $sql ) as $action_data ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		foreach ( $wpdb->get_results( $sql ) as $action_data ) { //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: fixed query with no variable input
 			// Ignore any actions with invalid status.
 			if ( array_key_exists( $action_data->status, $action_stati_and_labels ) ) {
 				$actions_count_by_status[ $action_data->status ] = $action_data->count;
@@ -772,7 +771,7 @@ AND `group_id` = %d
 			$parameters = $action_ids;
 			array_unshift( $parameters, self::STATUS_CANCELED );
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- bundled Action Scheduler: $query_in is a run of %d placeholders bound by prepare()
 			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->actionscheduler_actions} SET status = %s WHERE action_id IN {$query_in}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -1011,7 +1010,7 @@ AND `group_id` = %d
 		$params[] = $limit;
 
 		$sql           = $wpdb->prepare( "{$update} {$where} {$order} LIMIT %d", $params ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders
-		$rows_affected = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows_affected = $wpdb->query( $sql ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: $sql is built with $wpdb->prepare()
 		if ( false === $rows_affected ) {
 			$error = empty( $wpdb->last_error )
 				? _x( 'unknown', 'database error', 'woocommerce' ) // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -1040,7 +1039,7 @@ AND `group_id` = %d
 		$sql = "SELECT COUNT(DISTINCT claim_id) FROM {$wpdb->actionscheduler_actions} WHERE claim_id != 0 AND status IN ( %s, %s)";
 		$sql = $wpdb->prepare( $sql, array( self::STATUS_PENDING, self::STATUS_RUNNING ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		return (int) $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (int) $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: $sql is built with $wpdb->prepare()
 	}
 
 	/**
@@ -1060,7 +1059,7 @@ AND `group_id` = %d
 		$sql = "SELECT claim_id FROM {$wpdb->actionscheduler_actions} WHERE action_id=%d";
 		$sql = $wpdb->prepare( $sql, $action_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		return (int) $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (int) $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: $sql is built with $wpdb->prepare()
 	}
 
 	/**
@@ -1088,7 +1087,7 @@ AND `group_id` = %d
 
 		// Verify that the scheduled date for each action is within the expected bounds (in some unusual
 		// cases, we cannot depend on MySQL to honor all of the WHERE conditions we specify).
-		foreach ( $wpdb->get_results( $sql ) as $claimed_action ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		foreach ( $wpdb->get_results( $sql ) as $claimed_action ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: $sql is built with $wpdb->prepare()
 			if ( $claimed_action->scheduled_date_gmt <= $cut_off ) {
 				$action_ids[] = absint( $claimed_action->action_id );
 			}
@@ -1123,7 +1122,7 @@ AND `group_id` = %d
 		$row_updates = 0;
 		if ( count( $action_ids ) > 0 ) {
 			$action_id_string = implode( ',', array_map( 'absint', $action_ids ) );
-			$row_updates      = $wpdb->query( "UPDATE {$wpdb->actionscheduler_actions} SET claim_id = 0 WHERE action_id IN ({$action_id_string})" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$row_updates      = $wpdb->query( "UPDATE {$wpdb->actionscheduler_actions} SET claim_id = 0 WHERE action_id IN ({$action_id_string})" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- bundled Action Scheduler: $action_id_string is absint()-cast IDs
 		}
 
 		$wpdb->delete( $wpdb->actionscheduler_claims, array( 'claim_id' => $claim->get_id() ), array( '%d' ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -1212,8 +1211,7 @@ AND `group_id` = %d
 		$sql = "UPDATE {$wpdb->actionscheduler_actions} SET attempts = attempts+1, status=%s, last_attempt_gmt = %s, last_attempt_local = %s WHERE action_id = %d";
 		$sql = $wpdb->prepare( $sql, self::STATUS_RUNNING, current_time( 'mysql', true ), current_time( 'mysql' ), $action_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$status_updated = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$status_updated = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: $sql is built with $wpdb->prepare()
 
 		if ( ! $status_updated ) {
 			throw new Exception(
@@ -1289,7 +1287,7 @@ AND `group_id` = %d
 
 		$sql    = "SELECT status FROM {$wpdb->actionscheduler_actions} WHERE action_id=%d";
 		$sql    = $wpdb->prepare( $sql, $action_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$status = $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$status = $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: $sql is built with $wpdb->prepare()
 
 		if ( is_null( $status ) ) {
 			throw new \InvalidArgumentException( __( 'Invalid action ID. No status found.', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.Security.EscapeOutput.ExceptionNotEscaped

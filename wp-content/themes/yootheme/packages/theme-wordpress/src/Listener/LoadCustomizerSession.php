@@ -70,10 +70,14 @@ class LoadCustomizerSession
      */
     protected function handlePost(): ?array
     {
-        $id = $this->parseSessionId($this->request->getParam($this->post) ?? '');
+        $sessionId = $this->request->getParam($this->post) ?? '';
+        $id = $this->parseSessionId($sessionId);
         $data = $this->request->getParam('customizer');
 
         if (!$id || !$data) {
+            if ($data && $sessionId) {
+                wp_send_json_error('Invalid customizer session.', 401);
+            }
             return null;
         }
 

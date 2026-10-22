@@ -40,7 +40,12 @@ class MultipleShippingZonesMatchedSameTerritoryNotice implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_action( 'admin_notices', array( $this, 'add_notice_when_multiple_zones_matches_same_territory' ) );
+		add_action(
+			'admin_notices',
+			function (): void {
+				$this->add_notice_when_multiple_zones_matches_same_territory();
+			}
+		);
 	}
 
 	/**
@@ -54,7 +59,7 @@ class MultipleShippingZonesMatchedSameTerritoryNotice implements Hookable {
 			$shipping_zones_dependencies = $this->prepare_shipping_zones_dependencies();
 			if ( count( $shipping_zones_dependencies ) ) {
 				$zones_message = $this->prepare_zone_messages( $shipping_zones_dependencies );
-				$notice_text = sprintf(
+				$notice_text   = sprintf(
 					// Translators: zones.
 					__( '%1$sFlexible Shipping hints%2$sA potential shipping zone configuration conflict has been detected: %3$s In order to fix it, change the shipping zones order starting from the narrowest at the very top of the list to the widest at the bottom and refresh the page.', 'flexible-shipping' ),
 					'<h4>',
@@ -66,7 +71,7 @@ class MultipleShippingZonesMatchedSameTerritoryNotice implements Hookable {
 					Notice::NOTICE_TYPE_ERROR,
 					false,
 					10,
-					array( 'class' => 'flexible-shipping-hint' )
+					[ 'class' => 'flexible-shipping-hint' ]
 				);
 
 				$matched_shipping_zones_notice = $this;
@@ -111,7 +116,7 @@ class MultipleShippingZonesMatchedSameTerritoryNotice implements Hookable {
 			foreach ( $dependency['covered'] as $zone ) {
 				$zones .= $zone->get_zone_name() . ', ';
 			}
-			$zones = trim( $zones, ', ' );
+			$zones     = trim( $zones, ', ' );
 			$messages .= sprintf(
 				// Translators: zone messages.
 				__( '%1$sWider %2$s shipping zone covers the range of the narrower one placed below: %3$s.%4$s', 'flexible-shipping' ),
@@ -134,18 +139,18 @@ class MultipleShippingZonesMatchedSameTerritoryNotice implements Hookable {
 	 * @return array
 	 */
 	private function prepare_shipping_zones_dependencies() {
-		$dependencies = array();
-		$zones = $this->get_zones();
+		$dependencies = [];
+		$zones        = $this->get_zones();
 		foreach ( $zones as $zone_id => $zone_data ) {
 			unset( $zones[ $zone_id ] );
 			$zone = $this->get_zone( $zone_id );
 			if ( ! $this->zone_contains_postcodes( $zone ) ) {
 				$zone_dependencies = $this->prepare_covered_zones( $zone, $zones );
 				if ( $zone_dependencies ) {
-					$dependencies[ $zone_id ] = array(
-						'zone' => $zone,
+					$dependencies[ $zone_id ] = [
+						'zone'    => $zone,
 						'covered' => $zone_dependencies,
-					);
+					];
 				}
 			}
 		}
@@ -180,8 +185,8 @@ class MultipleShippingZonesMatchedSameTerritoryNotice implements Hookable {
 	 * @return array
 	 */
 	private function prepare_covered_zones( \WC_Shipping_Zone $zone, array $zones ) {
-		$zone_dependencies = array();
-		$locations = $zone->get_zone_locations();
+		$zone_dependencies = [];
+		$locations         = $zone->get_zone_locations();
 		foreach ( $locations as $location ) {
 			foreach ( $zones as $zone_id => $zone_data ) {
 				$zone = $this->get_zone( $zone_id );
@@ -257,6 +262,8 @@ class MultipleShippingZonesMatchedSameTerritoryNotice implements Hookable {
 		if ( 'state' === $location->type && $location->code === $zone_state ) {
 			return true;
 		}
+
+		return false;
 	}
 
 	/**
@@ -269,5 +276,4 @@ class MultipleShippingZonesMatchedSameTerritoryNotice implements Hookable {
 	protected function get_continent_code_for_country( $country_code ) {
 		return $this->countries->get_continent_code_for_country( $country_code );
 	}
-
 }

@@ -20,11 +20,15 @@ class LoadBlockEditor
             return;
         }
 
+        if (get_current_screen()->base !== 'post') {
+            return;
+        }
+
         // This needs to use the native wp_enqueue_script function. Otherwise, the script won't be added within the block editor's iframe
         wp_enqueue_script(
             'posts-builder',
             Url::to('~assets/admin/js/posts-block.js', [], is_ssl()),
-            [],
+            ['wp-blocks', 'wp-components', 'wp-data', 'wp-editor', 'wp-element'],
             app(Config::class)->get('theme.version'),
             true,
         );
@@ -32,7 +36,7 @@ class LoadBlockEditor
         add_action('admin_footer', function () {
             if (current_user_can('edit_theme_options')) {
                 printf(
-                    '<div class="tm-editor" hidden><a href="%s" class="tm-button">%s</a><a href class="tm-link">%s</a></div>',
+                    '<div class="tm-editor" hidden><a href="%s" class="tm-button">%s</a><button type="button" class="components-button is-link tm-link">%s</button></div>',
                     static::getLink(),
                     __('YOOtheme', 'yootheme'),
                     __('&#8592; Back to Block Editor', 'yootheme'),

@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || exit;
+// phpcs:disable Generic.PHP.DisallowAlternativePHPTags -- <% %> below are Underscore.js template delimiters inside HTML output, not PHP tags (asp_tags was removed in PHP 7.0)
 
 #[\AllowDynamicProperties]
 class BWFAN_Rule_Users_Role extends BWFAN_Rule_Base {

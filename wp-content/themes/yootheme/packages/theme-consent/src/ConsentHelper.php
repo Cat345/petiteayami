@@ -93,8 +93,7 @@ class ConsentHelper
 
         foreach ($this->theme->scripts as $script) {
             $category = $script['category'] ?? 'functional';
-            $service = $script['service'] ?? '';
-
+            $service = $this->normalizeServiceId($script['service'] ?? '');
             $this->categories[] = $category;
 
             if ($service) {
@@ -155,6 +154,8 @@ class ConsentHelper
 
     protected function updateScript(string $script, string $category, string $service): string
     {
+        $service = $this->normalizeServiceId($service);
+
         return preg_replace_callback(
             '#<script(.*?)>#i',
             function ($matches) use ($category, $service) {
@@ -175,8 +176,13 @@ class ConsentHelper
 
                 return '<script ' . (new Attributes())->merge($attributes) . '>';
             },
-            stripslashes($script),
+            $script,
         );
+    }
+
+    protected function normalizeServiceId(string $service): string
+    {
+        return preg_replace('/\s+/', '-', trim($service)) ?? '';
     }
 
     /**

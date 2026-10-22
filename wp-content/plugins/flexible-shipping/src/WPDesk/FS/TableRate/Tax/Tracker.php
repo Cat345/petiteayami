@@ -29,10 +29,10 @@ class Tracker implements Hookable {
 	 */
 	public function append_tax_data( array $data, array $settings ) {
 		$tax_status = isset( $settings['tax_status'] ) ? $settings['tax_status'] : 'not_set';
-		$data = $this->append_data( $data, 'tax_status', $tax_status );
+		$data       = $this->append_data( $data, 'tax_status', $tax_status );
 
 		$prices_include_tax = isset( $settings['prices_include_tax'] ) ? $settings['prices_include_tax'] : 'not_set';
-		$data = $this->append_data( $data, 'prices_include_tax', $prices_include_tax );
+		$data               = $this->append_data( $data, 'prices_include_tax', $prices_include_tax );
 
 		return $data;
 	}
@@ -51,9 +51,8 @@ class Tracker implements Hookable {
 		if ( ! isset( $data[ $setting ][ $value ] ) ) {
 			$data[ $setting ][ $value ] = 0;
 		}
-		$data[ $setting ][ $value ]++;
+		++$data[ $setting ][ $value ];
 
 		return $data;
 	}
-
 }

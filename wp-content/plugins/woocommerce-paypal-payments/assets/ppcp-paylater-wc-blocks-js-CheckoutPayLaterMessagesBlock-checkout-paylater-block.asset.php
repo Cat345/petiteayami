@@ -1,5 +1,5 @@
 <?php
 
 namespace {
-    return array('dependencies' => array('react', 'wp-block-editor', 'wp-blocks', 'wp-components', 'wp-element', 'wp-i18n'), 'version' => 'fe88695f1692977a9b8e');
+    return array('dependencies' => array('react', 'wp-block-editor', 'wp-blocks', 'wp-components', 'wp-element', 'wp-i18n'), 'version' => '55e599032eafd2aa81c6');
 }

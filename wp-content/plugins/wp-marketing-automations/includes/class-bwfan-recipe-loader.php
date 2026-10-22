@@ -48,25 +48,54 @@ class BWFAN_Recipe_Loader {
 	 *
 	 * @param bool $load_new
 	 *
-	 * @return array|mixed
+	 * @return array
 	 */
 	public static function get_recipe_data( $load_new ) {
-		if ( ! $load_new && get_option( 'bwfan_get_recipes' ) ) {
-			$result = get_option( 'bwfan_get_recipes' );
-
-			if ( ! empty( $result ) ) {
-				return json_decode( $result, true );
+		// A cache written by an older version may be a proxy page or a cut-off body; refetch rather than serve it.
+		if ( ! $load_new ) {
+			$cached = json_decode( (string) get_option( 'bwfan_get_recipes' ), true );
+			if ( self::is_recipe_list( $cached ) ) {
+				return $cached;
 			}
 		}
 
-		$request = wp_remote_get( self::$web_url );
-		if ( is_wp_error( $request ) || wp_remote_retrieve_response_code( $request ) != 200 ) {
+		$request = wp_remote_get( self::$web_url, array( 'timeout' => 10 ) );
+		if ( is_wp_error( $request ) || 200 !== (int) wp_remote_retrieve_response_code( $request ) ) {
 			return [];
 		}
-		$result = wp_remote_retrieve_body( $request );
+
+		$result  = wp_remote_retrieve_body( $request );
+		$recipes = json_decode( $result, true );
+
+		// A 200 that is not the catalogue (a proxy page, a cut-off body) must not replace the cache.
+		if ( ! self::is_recipe_list( $recipes ) ) {
+			return [];
+		}
+
 		update_option( 'bwfan_get_recipes', $result, false );
 
-		return json_decode( $result, true );
+		return $recipes;
+	}
+
+	/**
+	 * A non-empty list whose rows each carry a slug - what the catalogue server sends.
+	 *
+	 * @param mixed $recipes
+	 *
+	 * @return bool
+	 */
+	private static function is_recipe_list( $recipes ) {
+		if ( ! is_array( $recipes ) || empty( $recipes ) ) {
+			return false;
+		}
+
+		foreach ( $recipes as $row ) {
+			if ( ! is_array( $row ) || empty( $row['slug'] ) || ! is_string( $row['slug'] ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

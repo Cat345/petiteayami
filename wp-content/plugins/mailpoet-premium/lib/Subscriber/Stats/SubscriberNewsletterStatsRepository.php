@@ -5,6 +5,8 @@ namespace MailPoet\Premium\Subscriber\Stats;
 if (!defined('ABSPATH')) exit;
 
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
@@ -12,6 +14,8 @@ use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -19,21 +23,18 @@ class SubscriberNewsletterStatsRepository extends ListingRepository {
   const SORT_BY_DATE = 'date';
   const SORT_BY_EVENT_TYPE = 'eventType';
 
+  /** @var EntityManager */
+  private $entityManager;
+
   /** @var WCHelper */
   private $wooCommerceHelper;
-
-  /**
-   * @var array{signature: string, events: SubscriberActivityEvent[]}|null
-   * Memoizes the assembled event list so getActivityData() + getActivityCount()
-   * for the same request don't compute it twice.
-   */
-  private $eventsCache = null;
 
   public function __construct(
     EntityManager $entityManager,
     WCHelper $wooCommerceHelper
   ) {
     parent::__construct($entityManager);
+    $this->entityManager = $entityManager;
     $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
@@ -41,27 +42,43 @@ class SubscriberNewsletterStatsRepository extends ListingRepository {
    * @return SubscriberActivityEvent[]
    */
   public function getActivityData(ListingDefinition $definition): array {
-    $events = $this->buildEvents($definition);
-    return array_slice($events, $definition->getOffset(), $definition->getLimit());
+    $index = $this->buildEventIndexQuery($definition);
+    if ($index === null) {
+      return [];
+    }
+
+    $sql = $index['sql'] . ' ' . $this->buildOrderBy($definition->getSortBy(), $definition->getSortOrder())
+      . ' LIMIT :limit OFFSET :offset';
+    $rows = $this->entityManager->getConnection()->executeQuery(
+      $sql,
+      $index['params'] + ['limit' => $definition->getLimit(), 'offset' => $definition->getOffset()],
+      $index['types'] + ['limit' => ParameterType::INTEGER, 'offset' => ParameterType::INTEGER]
+    )->fetchAllAssociative();
+
+    return $this->hydrateEvents($rows);
   }
 
   public function getActivityCount(ListingDefinition $definition): int {
-    return count($this->buildEvents($definition));
+    $index = $this->buildEventIndexQuery($definition);
+    if ($index === null) {
+      return 0;
+    }
+    $sql = 'SELECT COUNT(*) FROM (' . $index['sql'] . ') events';
+    $count = $this->entityManager->getConnection()->executeQuery($sql, $index['params'], $index['types'])->fetchOne();
+    return is_numeric($count) ? (int)$count : 0;
   }
 
   /**
-   * @return SubscriberActivityEvent[]
+   * Builds a UNION ALL over the stats tables that yields one (type, id,
+   * created_at) row per activity event, so sorting, counting and paging happen
+   * in SQL. Only the rows of the requested page are hydrated afterwards.
+   *
+   * @return array{sql: string, params: array<string, mixed>, types: array<string, int|string>}|null
    */
-  private function buildEvents(ListingDefinition $definition): array {
-    $signature = $this->getDefinitionSignature($definition);
-    if ($this->eventsCache !== null && $this->eventsCache['signature'] === $signature) {
-      return $this->eventsCache['events'];
-    }
-
-    $subscriberId = $definition->getParameters()['id'] ?? null;
-    if (!$subscriberId) {
-      $this->eventsCache = ['signature' => $signature, 'events' => []];
-      return [];
+  private function buildEventIndexQuery(ListingDefinition $definition): ?array {
+    $subscriberId = (int)($definition->getParameters()['id'] ?? 0);
+    if ($subscriberId <= 0) {
+      return null;
     }
 
     $filters = $definition->getFilters() ?: [];
@@ -76,192 +93,193 @@ class SubscriberNewsletterStatsRepository extends ListingRepository {
     $search = $definition->getSearch();
     $search = ($search !== null && strlen(trim($search)) > 0) ? trim($search) : null;
 
-    $events = [];
-    if (in_array(SubscriberActivityEvent::TYPE_OPEN, $types, true)) {
-      $events = array_merge($events, $this->getOpenEvents($subscriberId, $from, $to, $search));
-    }
-    if (in_array(SubscriberActivityEvent::TYPE_CLICK, $types, true)) {
-      $events = array_merge($events, $this->getClickEvents($subscriberId, $from, $to, $search));
-    }
-    if (in_array(SubscriberActivityEvent::TYPE_PURCHASE, $types, true)) {
-      $events = array_merge($events, $this->getPurchaseEvents($subscriberId, $from, $to, $search));
-    }
-    if (in_array(SubscriberActivityEvent::TYPE_UNSUBSCRIBE, $types, true)) {
-      $events = array_merge($events, $this->getUnsubscribeEvents($subscriberId, $from, $to, $search));
-    }
-
-    $this->sortEvents($events, $definition->getSortBy(), $definition->getSortOrder());
-
-    $this->eventsCache = ['signature' => $signature, 'events' => $events];
-    return $events;
-  }
-
-  /**
-   * @param int|string $subscriberId
-   * @return SubscriberActivityEvent[]
-   */
-  private function getOpenEvents($subscriberId, ?\DateTimeInterface $from, ?\DateTimeInterface $to, ?string $search): array {
-    $queryBuilder = clone $this->queryBuilder;
-    $queryBuilder
-      ->select('o, n')
-      ->from(StatisticsOpenEntity::class, 'o')
-      ->join('o.newsletter', 'n')
-      ->where('o.subscriber = :subscriber')
-      ->setParameter('subscriber', $subscriberId);
-    $this->applyDateRange($queryBuilder, 'o.createdAt', $from, $to);
-    if ($search !== null) {
-      $this->applyNewsletterSearch($queryBuilder, 'n', $search);
-    }
-
-    $events = [];
-    /** @var StatisticsOpenEntity $open */
-    foreach ($queryBuilder->getQuery()->getResult() as $open) {
-      $createdAt = $open->getCreatedAt();
-      if ($createdAt instanceof \DateTimeInterface) {
-        $events[] = SubscriberActivityEvent::forOpen($open, $createdAt);
-      }
-    }
-    return $events;
-  }
-
-  /**
-   * @param int|string $subscriberId
-   * @return SubscriberActivityEvent[]
-   */
-  private function getClickEvents($subscriberId, ?\DateTimeInterface $from, ?\DateTimeInterface $to, ?string $search): array {
-    $queryBuilder = clone $this->queryBuilder;
-    $queryBuilder
-      ->select('c, l, n')
-      ->from(StatisticsClickEntity::class, 'c')
-      ->join('c.link', 'l')
-      ->join('c.newsletter', 'n')
-      ->where('c.subscriber = :subscriber')
-      ->setParameter('subscriber', $subscriberId);
-    $this->applyDateRange($queryBuilder, 'c.createdAt', $from, $to);
-    if ($search !== null) {
-      $escaped = $this->escapeLike($search);
-      $queryBuilder
-        ->andWhere('n.subject LIKE :search OR l.url LIKE :search')
-        ->setParameter('search', "%$escaped%");
-    }
-
-    $events = [];
-    /** @var StatisticsClickEntity $click */
-    foreach ($queryBuilder->getQuery()->getResult() as $click) {
-      $createdAt = $click->getCreatedAt();
-      if ($createdAt instanceof \DateTimeInterface) {
-        $events[] = SubscriberActivityEvent::forClick($click, $createdAt);
-      }
-    }
-    return $events;
-  }
-
-  /**
-   * @param int|string $subscriberId
-   * @return SubscriberActivityEvent[]
-   */
-  private function getPurchaseEvents($subscriberId, ?\DateTimeInterface $from, ?\DateTimeInterface $to, ?string $search): array {
-    $queryBuilder = clone $this->queryBuilder;
-    $queryBuilder
-      ->select('wp, n')
-      ->from(StatisticsWooCommercePurchaseEntity::class, 'wp')
-      ->leftJoin('wp.newsletter', 'n')
-      ->where('wp.subscriber = :subscriber')
-      ->andWhere('wp.status IN (:states)')
-      ->setParameter('subscriber', $subscriberId)
-      ->setParameter('states', $this->wooCommerceHelper->getPurchaseStates());
-    $this->applyDateRange($queryBuilder, 'wp.createdAt', $from, $to);
-    if ($search !== null) {
-      $escaped = $this->escapeLike($search);
-      $queryBuilder
-        ->andWhere("n.subject LIKE :search OR CONCAT('', wp.orderId) LIKE :search")
-        ->setParameter('search', "%$escaped%");
-    }
-
-    $events = [];
-    /** @var StatisticsWooCommercePurchaseEntity $purchase */
-    foreach ($queryBuilder->getQuery()->getResult() as $purchase) {
-      $createdAt = $purchase->getCreatedAt();
-      if ($createdAt instanceof \DateTimeInterface) {
-        $events[] = SubscriberActivityEvent::forPurchase($purchase, $createdAt);
-      }
-    }
-    return $events;
-  }
-
-  /**
-   * @param int|string $subscriberId
-   * @return SubscriberActivityEvent[]
-   */
-  private function getUnsubscribeEvents($subscriberId, ?\DateTimeInterface $from, ?\DateTimeInterface $to, ?string $search): array {
-    $queryBuilder = clone $this->queryBuilder;
-    $queryBuilder
-      ->select('u, n')
-      ->from(StatisticsUnsubscribeEntity::class, 'u')
-      ->leftJoin('u.newsletter', 'n')
-      ->where('u.subscriber = :subscriber')
-      ->setParameter('subscriber', $subscriberId);
-    $this->applyDateRange($queryBuilder, 'u.createdAt', $from, $to);
-    if ($search !== null) {
-      $escaped = $this->escapeLike($search);
-      $queryBuilder
-        ->andWhere('n.subject LIKE :search OR u.reasonText LIKE :search')
-        ->setParameter('search', "%$escaped%");
-    }
-
-    $events = [];
-    /** @var StatisticsUnsubscribeEntity $unsubscribe */
-    foreach ($queryBuilder->getQuery()->getResult() as $unsubscribe) {
-      $createdAt = $unsubscribe->getCreatedAt();
-      if ($createdAt instanceof \DateTimeInterface) {
-        $events[] = SubscriberActivityEvent::forUnsubscribe($unsubscribe, $createdAt);
-      }
-    }
-    return $events;
-  }
-
-  private function applyDateRange(QueryBuilder $queryBuilder, string $field, ?\DateTimeInterface $from, ?\DateTimeInterface $to): void {
+    $params = ['subscriber' => $subscriberId];
+    $paramTypes = ['subscriber' => ParameterType::INTEGER];
+    $dateConstraint = '';
     if ($from instanceof \DateTimeInterface) {
-      $queryBuilder
-        ->andWhere("$field >= :fromDate")
-        ->setParameter('fromDate', $from);
+      $dateConstraint .= ' AND stat.created_at >= :fromDate';
+      $params['fromDate'] = $from->format('Y-m-d H:i:s');
+      $paramTypes['fromDate'] = ParameterType::STRING;
     }
     if ($to instanceof \DateTimeInterface) {
-      $queryBuilder
-        ->andWhere("$field <= :toDate")
-        ->setParameter('toDate', $to);
+      $dateConstraint .= ' AND stat.created_at <= :toDate';
+      $params['toDate'] = $to->format('Y-m-d H:i:s');
+      $paramTypes['toDate'] = ParameterType::STRING;
     }
-  }
+    if ($search !== null) {
+      $params['search'] = '%' . $this->escapeLike($search) . '%';
+      $paramTypes['search'] = ParameterType::STRING;
+    }
 
-  private function applyNewsletterSearch(QueryBuilder $queryBuilder, string $alias, string $search): void {
-    // campaign_name is derived from the linked WP post title, not a DB column,
-    // so newsletter search matches on the subject only (as it did before).
-    $escaped = $this->escapeLike($search);
-    $queryBuilder
-      ->andWhere("$alias.subject LIKE :search")
-      ->setParameter('search', "%$escaped%");
+    $newslettersTable = $this->getTableName(NewsletterEntity::class);
+    $queries = [];
+    if (in_array(SubscriberActivityEvent::TYPE_OPEN, $types, true)) {
+      $queries[] = $this->buildIndexSelect(
+        SubscriberActivityEvent::TYPE_OPEN,
+        $this->getTableName(StatisticsOpenEntity::class),
+        "INNER JOIN {$newslettersTable} n ON n.id = stat.newsletter_id",
+        $dateConstraint,
+        $search !== null ? ' AND n.subject LIKE :search' : ''
+      );
+    }
+    if (in_array(SubscriberActivityEvent::TYPE_CLICK, $types, true)) {
+      $linksTable = $this->getTableName(NewsletterLinkEntity::class);
+      $queries[] = $this->buildIndexSelect(
+        SubscriberActivityEvent::TYPE_CLICK,
+        $this->getTableName(StatisticsClickEntity::class),
+        "INNER JOIN {$linksTable} l ON l.id = stat.link_id INNER JOIN {$newslettersTable} n ON n.id = stat.newsletter_id",
+        $dateConstraint,
+        $search !== null ? ' AND (n.subject LIKE :search OR l.url LIKE :search)' : ''
+      );
+    }
+    if (in_array(SubscriberActivityEvent::TYPE_PURCHASE, $types, true)) {
+      $params['states'] = $this->wooCommerceHelper->getPurchaseStates();
+      $paramTypes['states'] = ArrayParameterType::STRING;
+      $queries[] = $this->buildIndexSelect(
+        SubscriberActivityEvent::TYPE_PURCHASE,
+        $this->getTableName(StatisticsWooCommercePurchaseEntity::class),
+        "LEFT JOIN {$newslettersTable} n ON n.id = stat.newsletter_id",
+        $dateConstraint . ' AND stat.status IN (:states)',
+        $search !== null ? ' AND (n.subject LIKE :search OR CAST(stat.order_id AS CHAR) LIKE :search)' : ''
+      );
+    }
+    if (in_array(SubscriberActivityEvent::TYPE_UNSUBSCRIBE, $types, true)) {
+      $queries[] = $this->buildIndexSelect(
+        SubscriberActivityEvent::TYPE_UNSUBSCRIBE,
+        $this->getTableName(StatisticsUnsubscribeEntity::class),
+        "LEFT JOIN {$newslettersTable} n ON n.id = stat.newsletter_id",
+        $dateConstraint,
+        $search !== null ? ' AND (n.subject LIKE :search OR stat.reason_text LIKE :search)' : ''
+      );
+    }
+
+    return [
+      'sql' => implode(' UNION ALL ', $queries),
+      'params' => $params,
+      'types' => $paramTypes,
+    ];
   }
 
   /**
-   * @param SubscriberActivityEvent[] $events
+   * One member of the UNION ALL: `(type, id, created_at)` for a single stats
+   * table, aliased `stat`, scoped to the subscriber.
+   *
+   * @param string $type one of the SubscriberActivityEvent constants, so inlining it is safe
+   * @param string $table the stats table name
+   * @param string $joins JOIN clauses; the newsletter must be aliased `n`
+   * @param string $dateConstraint extra `AND ...` conditions, already parameterized
+   * @param string $searchConstraint extra `AND ...` search condition, or empty
    */
-  private function sortEvents(array &$events, string $sortBy, string $sortOrder): void {
-    $direction = strtolower($sortOrder) === 'asc' ? 1 : -1;
-    usort($events, function (SubscriberActivityEvent $first, SubscriberActivityEvent $second) use ($sortBy, $direction): int {
-      if ($sortBy === self::SORT_BY_EVENT_TYPE) {
-        // Sort by the translated label the user actually sees, not the
-        // internal type, so the order matches the visible Event column.
-        $result = strcmp(
-          $this->getEventTypeLabel($first->getType()),
-          $this->getEventTypeLabel($second->getType())
-        );
-        if ($result !== 0) {
-          return $direction * $result;
-        }
+  private function buildIndexSelect(string $type, string $table, string $joins, string $dateConstraint, string $searchConstraint): string {
+    return "SELECT '{$type}' AS type, stat.id AS id, stat.created_at AS created_at"
+      . " FROM {$table} stat {$joins}"
+      . " WHERE stat.subscriber_id = :subscriber{$dateConstraint}{$searchConstraint}";
+  }
+
+  private function buildOrderBy(string $sortBy, string $sortOrder): string {
+    $direction = strtolower($sortOrder) === 'asc' ? 'ASC' : 'DESC';
+    $orderBy = [];
+    if ($sortBy === self::SORT_BY_EVENT_TYPE) {
+      // Sort by the translated label the user actually sees, not the internal
+      // type, so the order matches the visible Event column.
+      $labels = [];
+      foreach ($this->normalizeEventTypes(null) as $type) {
+        $labels[$type] = $this->getEventTypeLabel($type);
       }
-      $result = $first->getCreatedAt()->getTimestamp() <=> $second->getCreatedAt()->getTimestamp();
-      return $direction * $result;
-    });
+      asort($labels, SORT_STRING);
+      $cases = '';
+      foreach (array_keys($labels) as $rank => $type) {
+        $cases .= " WHEN '{$type}' THEN {$rank}";
+      }
+      $orderBy[] = "CASE type{$cases} END {$direction}";
+    }
+    $orderBy[] = "created_at {$direction}";
+    // `id` is only unique within one stats table, so `type` makes the order
+    // total across the UNION and keeps paging stable.
+    $orderBy[] = "type {$direction}";
+    $orderBy[] = "id {$direction}";
+    return 'ORDER BY ' . implode(', ', $orderBy);
+  }
+
+  /**
+   * @param array<int, array<string, mixed>> $rows
+   * @return SubscriberActivityEvent[]
+   */
+  private function hydrateEvents(array $rows): array {
+    $index = [];
+    foreach ($rows as $row) {
+      $type = $row['type'] ?? null;
+      $id = $row['id'] ?? null;
+      if (is_string($type) && is_numeric($id)) {
+        $index[] = ['type' => $type, 'id' => (int)$id];
+      }
+    }
+
+    $idsByType = [];
+    foreach ($index as $row) {
+      $idsByType[$row['type']][] = $row['id'];
+    }
+
+    $entities = [
+      SubscriberActivityEvent::TYPE_OPEN => $this->findByIds(StatisticsOpenEntity::class, 'o', 'o, n', ['o.newsletter' => 'n'], $idsByType[SubscriberActivityEvent::TYPE_OPEN] ?? []),
+      SubscriberActivityEvent::TYPE_CLICK => $this->findByIds(StatisticsClickEntity::class, 'c', 'c, l, n', ['c.link' => 'l', 'c.newsletter' => 'n'], $idsByType[SubscriberActivityEvent::TYPE_CLICK] ?? []),
+      SubscriberActivityEvent::TYPE_PURCHASE => $this->findByIds(StatisticsWooCommercePurchaseEntity::class, 'wp', 'wp, n', ['wp.newsletter' => 'n'], $idsByType[SubscriberActivityEvent::TYPE_PURCHASE] ?? []),
+      SubscriberActivityEvent::TYPE_UNSUBSCRIBE => $this->findByIds(StatisticsUnsubscribeEntity::class, 'u', 'u, n', ['u.newsletter' => 'n'], $idsByType[SubscriberActivityEvent::TYPE_UNSUBSCRIBE] ?? []),
+    ];
+
+    $events = [];
+    foreach ($index as $row) {
+      $entity = $entities[$row['type']][$row['id']] ?? null;
+      $createdAt = $entity ? $entity->getCreatedAt() : null;
+      if (!$createdAt instanceof \DateTimeInterface) {
+        continue;
+      }
+      if ($entity instanceof StatisticsOpenEntity) {
+        $events[] = SubscriberActivityEvent::forOpen($entity, $createdAt);
+      } elseif ($entity instanceof StatisticsClickEntity) {
+        $events[] = SubscriberActivityEvent::forClick($entity, $createdAt);
+      } elseif ($entity instanceof StatisticsWooCommercePurchaseEntity) {
+        $events[] = SubscriberActivityEvent::forPurchase($entity, $createdAt);
+      } elseif ($entity instanceof StatisticsUnsubscribeEntity) {
+        $events[] = SubscriberActivityEvent::forUnsubscribe($entity, $createdAt);
+      }
+    }
+    return $events;
+  }
+
+  /**
+   * @template T of object
+   * @param class-string<T> $entityClass
+   * @param array<string, string> $joins association => alias
+   * @param int[] $ids
+   * @return array<int, T>
+   */
+  private function findByIds(string $entityClass, string $alias, string $select, array $joins, array $ids): array {
+    if (!$ids) {
+      return [];
+    }
+    $queryBuilder = clone $this->queryBuilder;
+    $queryBuilder
+      ->select($select)
+      ->from($entityClass, $alias)
+      ->where("{$alias}.id IN (:ids)")
+      ->setParameter('ids', $ids);
+    foreach ($joins as $association => $joinAlias) {
+      $queryBuilder->leftJoin($association, $joinAlias);
+    }
+
+    $byId = [];
+    foreach ($queryBuilder->getQuery()->getResult() as $entity) {
+      $byId[(int)$entity->getId()] = $entity;
+    }
+    return $byId;
+  }
+
+  /**
+   * @param class-string $entityClass
+   */
+  private function getTableName(string $entityClass): string {
+    return $this->entityManager->getClassMetadata($entityClass)->getTableName();
   }
 
   private function getEventTypeLabel(string $type): string {
@@ -308,16 +326,6 @@ class SubscriberNewsletterStatsRepository extends ListingRepository {
     } catch (\Exception $e) {
       return null;
     }
-  }
-
-  private function getDefinitionSignature(ListingDefinition $definition): string {
-    return (string)wp_json_encode([
-      'id' => $definition->getParameters()['id'] ?? null,
-      'filters' => $definition->getFilters(),
-      'search' => $definition->getSearch(),
-      'sortBy' => $definition->getSortBy(),
-      'sortOrder' => $definition->getSortOrder(),
-    ]);
   }
 
   private function escapeLike(string $search): string {

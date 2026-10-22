@@ -106,8 +106,8 @@ class JSON extends AbstractImporter {
 		 * Filters whether shipping rates for export.
 		 *
 		 * @param array  $new_shipping_method .
-		 * @param string $shipping_method     .
-		 * @param JSON   $this                .
+		 * @param array  $shipping_method     .
+		 * @param JSON   $importer            Importer instance.
 		 *
 		 * @since 3.17.0
 		 */

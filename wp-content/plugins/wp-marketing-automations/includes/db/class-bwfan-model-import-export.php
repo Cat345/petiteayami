@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ( defined( 'BWFAN_PRO_VERSION' ) && version_compare( BWFAN_PRO_VERSION, '3.7.0', '>=' ) && ! class_exists( 'BWFAN_Model_Import_Export' )) || ! bwfan_is_autonami_pro_active() ) {
 
@@ -26,7 +27,7 @@ if ( ( defined( 'BWFAN_PRO_VERSION' ) && version_compare( BWFAN_PRO_VERSION, '3.
 			);
 			$result      = [
 				'exports'     => self::get_results( $query ),
-				'total_count' => $wpdb->get_var( $count_query ) //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				'total_count' => $wpdb->get_var( $count_query ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- prepared with absint type, or hardcoded literal; prefix table
 			];
 
 			return $result;
@@ -40,7 +41,7 @@ if ( ( defined( 'BWFAN_PRO_VERSION' ) && version_compare( BWFAN_PRO_VERSION, '3.
 			$table = "{$wpdb->prefix}bwfan_import_export";
 			$query = " SELECT MIN(`id`) FROM $table WHERE type = 2 ";
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- prepared with absint type, or hardcoded literal; prefix table
 		}
 	}
 }

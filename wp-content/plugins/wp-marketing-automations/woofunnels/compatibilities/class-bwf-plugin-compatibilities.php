@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'BWF_Plugin_Compatibilities' ) ) {
 	/**
 	 * Class BWF_Plugin_Compatibilities

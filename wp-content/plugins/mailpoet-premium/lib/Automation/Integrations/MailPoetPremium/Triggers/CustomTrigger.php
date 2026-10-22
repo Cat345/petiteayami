@@ -13,6 +13,8 @@ use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Logging\LoggerFactory;
+use MailPoet\Premium\Automation\Integrations\MailPoetPremium\CustomHookChain;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Payloads\CustomDataPayload;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Subjects\CustomDataSubject;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -32,16 +34,21 @@ class CustomTrigger implements Trigger {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var CustomHookChain */
+  private $customHookChain;
+
   /** @var Functions */
   private $wp;
 
   public function __construct(
     AutomationStorage $automationStorage,
     SubscribersRepository $subscribersRepository,
+    CustomHookChain $customHookChain,
     Functions $wp
   ) {
     $this->automationStorage = $automationStorage;
     $this->subscribersRepository = $subscribersRepository;
+    $this->customHookChain = $customHookChain;
     $this->wp = $wp;
   }
 
@@ -80,6 +87,14 @@ class CustomTrigger implements Trigger {
     if (!$this->wp->isEmail($email)) {
       return;
     }
+    $depth = $this->customHookChain->getCurrentDepth();
+    if (!$this->customHookChain->isDepthAllowed($depth)) {
+      LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_PREMIUM)->error(
+        'Custom trigger for hook "{hook}" skipped: the chain of custom actions exceeded {max} hops',
+        ['hook' => $hook, 'max' => CustomHookChain::MAX_DEPTH]
+      );
+      return;
+    }
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
     if (!$subscriber) {
       $subscriber = new SubscriberEntity();
@@ -89,7 +104,7 @@ class CustomTrigger implements Trigger {
     }
     $customData = $this->sanitizeCustomData($customData);
     $subscriberSubject = new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()]);
-    $customDataSubject = new Subject(CustomDataSubject::KEY, ['hook' => $hook, 'data' => $customData]);
+    $customDataSubject = new Subject(CustomDataSubject::KEY, ['hook' => $hook, 'data' => $customData, 'depth' => $depth]);
     $this->wp->doAction(
       Hooks::TRIGGER,
       $this,
@@ -136,8 +151,8 @@ class CustomTrigger implements Trigger {
     }
     $hooks = array_unique($hooks);
     foreach ($hooks as $hook) {
-      add_action($hook, function (string $email, array $customData = []) use ($hook) {
-        $this->handle($hook, $email, $customData);
+      $this->wp->addAction($hook, function (...$args) use ($hook) {
+        $this->handleHookCall($hook, $args);
       }, 10, 2);
     }
   }
@@ -152,5 +167,32 @@ class CustomTrigger implements Trigger {
 
     $payload = $customData->getPayload();
     return $payload instanceof CustomDataPayload && $payload->getHook() === $hook;
+  }
+
+  /**
+   * The configured hook can be any WordPress action, so its arguments must be
+   * checked before they reach the typed handler and a failure must not take
+   * down the request the action fired in.
+   *
+   * @param mixed[] $args
+   */
+  private function handleHookCall(string $hook, array $args): void {
+    $email = $args[0] ?? null;
+    if (!is_string($email)) {
+      return;
+    }
+    $customData = $args[1] ?? [];
+    if (!is_array($customData)) {
+      $customData = [];
+    }
+
+    try {
+      $this->handle($hook, $email, $customData);
+    } catch (\Throwable $e) {
+      LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_PREMIUM)->error(
+        'Custom trigger for hook "{hook}" failed: {message}',
+        ['hook' => $hook, 'message' => $e->getMessage()]
+      );
+    }
   }
 }

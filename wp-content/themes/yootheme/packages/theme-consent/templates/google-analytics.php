@@ -3,6 +3,11 @@
 window.dataLayer = window.dataLayer || [];
 
 function gtag(){ dataLayer.push(arguments); }
+
+gtag('js', new Date());
+
+<?php // Only render consent mode when the consent manager can update its initially denied state. ?>
+<?php if ($consent): ?>
 function gtagConsent(consent) {
     const ads = consent?.hasConsent('marketing.google_ads') ? 'granted' : 'denied';
     const analytics = consent?.hasConsent('statistics.google_analytics') ? 'granted' : 'denied';
@@ -15,11 +20,14 @@ function gtagConsent(consent) {
     };
 }
 
-gtag('js', new Date());
-gtag('config', '<?= $script['api_key'] ?? '' ?>');
 gtag('consent', 'default', gtagConsent());
 
 document.addEventListener('yootheme:consent.init', ({detail}) => gtag('consent', 'update', gtagConsent(detail)));
 document.addEventListener('yootheme:consent.change', ({detail}) => gtag('consent', 'update', gtagConsent(detail)));
+<?php endif; ?>
+
+gtag('config', '<?= $script['api_key'] ?? '' ?>');
 </script>
-<script src="https://www.googletagmanager.com/gtag/js?id=<?= $script['api_key'] ?? '' ?>" async></script>
+<script<?= $consent && ($script['consent_mode'] ?? 'advanced') === 'basic'
+    ? ' data-category="statistics.google_analytics marketing.google_ads"'
+    : '' ?> src="https://www.googletagmanager.com/gtag/js?id=<?= $script['api_key'] ?? '' ?>" async></script>

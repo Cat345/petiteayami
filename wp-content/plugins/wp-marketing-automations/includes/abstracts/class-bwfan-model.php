@@ -20,13 +20,14 @@ abstract class BWFAN_Model {
 
 		$query = self::_fetch_sql( $value );
 
-		return $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL
+		return $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- query built by _fetch_sql() via $wpdb->prepare(); table from $wpdb->prefix
 	}
 
 	private static function _fetch_sql( $value ) {
 		global $wpdb;
 		$sql = sprintf( 'SELECT * FROM %s WHERE %s = %%s', self::_table(), static::$primary_key );
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix and class props; value bound via %s placeholder
 		return $wpdb->prepare( $sql, $value ); // WPCS: unprepared SQL OK
 	}
 
@@ -42,9 +43,20 @@ abstract class BWFAN_Model {
 		return $wpdb->prefix . $tablename;
 	}
 
+	/**
+	 * Rows inserted, or false on failure - wpdb returns false both for a failed query and for a
+	 * pre-query bail-out (an unknown column, a charset or length it cannot resolve), and only the
+	 * first of those sets $wpdb->last_error. Callers that must know whether the row landed have to
+	 * read this; last_error alone misses the rest.
+	 *
+	 * @param array $data
+	 *
+	 * @return int|false
+	 */
 	static function insert( $data ) {
 		global $wpdb;
-		$wpdb->insert( self::_table(), $data ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL
+
+		return $wpdb->insert( self::_table(), $data ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL
 	}
 
 	static function update( $data, $where ) {
@@ -57,7 +69,7 @@ abstract class BWFAN_Model {
 		global $wpdb;
 		$sql = sprintf( 'DELETE FROM %s WHERE %s = %%s', self::_table(), static::$primary_key );
 
-		return $wpdb->query( $wpdb->prepare( $sql, $value ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->query( $wpdb->prepare( $sql, $value ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table/pk from class props; value bound via $wpdb->prepare()
 	}
 
 	/**
@@ -98,7 +110,7 @@ abstract class BWFAN_Model {
 
 			/** Suppress wpdb's native error logging; deadlocks are handled here and logged via fka-db-deadlock. last_error stays populated for detection below. */
 			$suppress = $wpdb->suppress_errors( true );
-			$result   = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$result   = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- caller passes $wpdb->prepare()d SQL; only {table_name} swapped for _table()
 			$wpdb->suppress_errors( $suppress );
 
 			if ( false !== $result || ! self::is_deadlock_error( $wpdb->last_error ) ) {
@@ -169,7 +181,7 @@ abstract class BWFAN_Model {
 			}
 		}
 
-		return $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL
+		return $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- identifiers backtick-escaped, col_value esc_sql() in quotes, automation_id absint()
 	}
 
 	static function count( $data = array() ) {
@@ -190,7 +202,7 @@ abstract class BWFAN_Model {
 			}
 		}
 
-		return $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL
+		return $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- column backtick-escaped, operator whitelisted, values bound via prepare()
 	}
 
 	static function get_specific_rows( $where_key, $where_value, $offset = 0, $limit = 0 ) {
@@ -214,7 +226,7 @@ abstract class BWFAN_Model {
 			$query = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		}
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- where_key whitelisted; values bound via $wpdb->prepare()
 	}
 
 	static function get_rows( $only_query = false, $automation_ids = array() ) {
@@ -224,28 +236,28 @@ abstract class BWFAN_Model {
 		$page_number    = 1;
 		$count_per_page = self::$count;
 		$next_offset    = ( $page_number - 1 ) * $count_per_page;
-		$sql_query      = $wpdb->prepare( "SELECT * FROM $table_name ORDER BY c_date DESC LIMIT %d OFFSET %d", $count_per_page, $next_offset );
+		$sql_query      = $wpdb->prepare( "SELECT * FROM $table_name ORDER BY c_date DESC LIMIT %d OFFSET %d", $count_per_page, $next_offset ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from _table() ($wpdb->prefix); limit/offset bound via %d
 
-		if ( isset( $_GET['paged'] ) && $_GET['paged'] > 1 ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
-			$page_number = sanitize_text_field( $_GET['paged'] ); // WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( isset( $_GET['paged'] ) && $_GET['paged'] > 1 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			$page_number = sanitize_text_field( wp_unslash( $_GET['paged'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			$next_offset = ( $page_number - 1 ) * $count_per_page;
-			$sql_query   = $wpdb->prepare( "SELECT * FROM $table_name ORDER BY c_date DESC LIMIT %d OFFSET %d", $count_per_page, $next_offset );
+			$sql_query   = $wpdb->prepare( "SELECT * FROM $table_name ORDER BY c_date DESC LIMIT %d OFFSET %d", $count_per_page, $next_offset ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from _table(); paged offset bound via %d placeholder
 		}
 
-		if ( isset( $_GET['status'] ) && 'all' !== $_GET['status'] ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
-			$status    = sanitize_text_field( $_GET['status'] ); // WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( isset( $_GET['status'] ) && 'all' !== $_GET['status'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			$status    = sanitize_text_field( wp_unslash( $_GET['status'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			$status    = ( 'active' === $status ) ? 1 : 2;
-			$sql_query = $wpdb->prepare( "SELECT * FROM $table_name WHERE status = %d ORDER BY c_date DESC LIMIT %d OFFSET %d", $status, $count_per_page, $next_offset );
+			$sql_query = $wpdb->prepare( "SELECT * FROM $table_name WHERE status = %d ORDER BY c_date DESC LIMIT %d OFFSET %d", $status, $count_per_page, $next_offset ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from _table(); status and paging bound via %d
 		}
 
-		if ( ( isset( $_GET['paged'] ) && $_GET['paged'] > 0 ) && ( isset( $_GET['status'] ) && '' !== $_GET['status'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
-			$page_number = sanitize_text_field( $_GET['paged'] ); // WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( ( isset( $_GET['paged'] ) && $_GET['paged'] > 0 ) && ( isset( $_GET['status'] ) && '' !== $_GET['status'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			$page_number = sanitize_text_field( wp_unslash( $_GET['paged'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			$next_offset = ( $page_number - 1 ) * $count_per_page;
-			$status      = sanitize_text_field( $_GET['status'] ); // WordPress.CSRF.NonceVerification.NoNonceVerification
-			$sql_query   = $wpdb->prepare( "SELECT * FROM $table_name WHERE status = %d ORDER BY c_date DESC LIMIT %d OFFSET %d", $status, $count_per_page, $next_offset );
+			$status      = sanitize_text_field( wp_unslash( $_GET['status'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			$sql_query   = $wpdb->prepare( "SELECT * FROM $table_name WHERE status = %d ORDER BY c_date DESC LIMIT %d OFFSET %d", $status, $count_per_page, $next_offset ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from _table(); request values bound via %d placeholders
 		}
 
-		$result = $wpdb->get_results( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_results( $sql_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above; table from _table()
 
 		return $result;
 	}
@@ -256,7 +268,7 @@ abstract class BWFAN_Model {
 		if ( ! empty( $args ) ) {
 			$query = $wpdb->prepare( $query, ...$args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
-		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- generic model wrapper; callers pass SQL built with $wpdb->prepare() or args prepared here
 
 		return $results;
 	}
@@ -290,9 +302,9 @@ abstract class BWFAN_Model {
 
 		// Build placeholders for prepared statement
 		$placeholders = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
-		$query        = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id IN ({$placeholders})", ...$ids ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+		$query        = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id IN ({$placeholders})", ...$ids ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders from array_fill('%d'); ids absint(); table from $wpdb->prefix
 
-		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above; ids absint()
 
 		if ( empty( $results ) ) {
 			return [];
@@ -319,7 +331,7 @@ abstract class BWFAN_Model {
 			$query = $wpdb->prepare( $query, ...$args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- generic model wrapper; callers pass SQL built with $wpdb->prepare() or args prepared here
 	}
 
 	static function delete_multiple( $query, $args = array() ) {
@@ -332,7 +344,7 @@ abstract class BWFAN_Model {
 		if ( ! empty( $args ) ) {
 			$query = $wpdb->prepare( $query, ...$args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
-		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- generic model wrapper; callers pass SQL built with $wpdb->prepare() or args prepared here
 	}
 
 	static function update_multiple( $query, $args = array() ) {
@@ -340,7 +352,7 @@ abstract class BWFAN_Model {
 	}
 
 	static function get_current_date_time() {
-		return date( 'Y-m-d H:i:s' );
+		return gmdate( 'Y-m-d H:i:s' );
 	}
 
 	static function insert_multiple( $values, $keys, $formats = [] ) {
@@ -356,7 +368,7 @@ abstract class BWFAN_Model {
 			foreach ( $keys as $index => $key ) {
 				$format   = is_array( $formats ) && isset( $formats[ $index ] ) ? $formats[ $index ] : false;
 				$format   = ! empty( $format ) ? $format : ( is_numeric( $value[ $key ] ) ? '%d' : '%s' );
-				$return[] = $wpdb->prepare( $format, $value[ $key ] );
+				$return[] = $wpdb->prepare( $format, $value[ $key ] ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- format is hardcoded %d/%s from caller; value bound via $wpdb->prepare()
 			}
 
 			return '(' . implode( ',', $return ) . ')';
@@ -365,7 +377,8 @@ abstract class BWFAN_Model {
 		$keys   = '(' . implode( ', ', $keys ) . ')';
 		$query  = 'INSERT INTO ' . self::_table() . ' ' . $keys . ' VALUES ' . $values;
 
-		return $wpdb->query( $wpdb->prepare( "$query ", $values ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		/** Every value above is already escaped via $wpdb->prepare(); the old outer prepare() had no placeholders and only raised a notice */
+		return $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- every value escaped with $wpdb->prepare() above; keys are hardcoded column names from callers
 	}
 
 	/**
@@ -393,7 +406,7 @@ abstract class BWFAN_Model {
 
 		$sql = "INSERT IGNORE INTO `$table` (`" . implode( '`,`', $columns ) . "`) VALUES (" . implode( ',', $placeholders ) . ")";
 
-		//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- values bound via $wpdb->prepare(); columns hardcoded by callers; table from _table()
 		$result = $wpdb->query( $wpdb->prepare( $sql, array_values( $data ) ) );
 		if ( ! empty( $result ) ) {
 			return $result;

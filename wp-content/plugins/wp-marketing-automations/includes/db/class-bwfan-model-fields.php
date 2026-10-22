@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 	#[\AllowDynamicProperties]
@@ -58,7 +59,7 @@ if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 				$type = array_filter( array_map( 'absint', $type ) );
 				if ( ! empty( $type ) ) {
 					$placeholder = implode( ',', array_fill( 0, count( $type ), '%d' ) );
-					$query       .= $wpdb->prepare( " AND type IN ($placeholder)", $type );
+					$query       .= $wpdb->prepare( " AND type IN ($placeholder)", $type ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders via array_fill; types absint()ed
 				}
 			}
 
@@ -99,7 +100,7 @@ if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 
 				$query = "SELECT * FROM $table";
 
-				$rest_fields = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$rest_fields = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from _table()
 				$fields      = [];
 				foreach ( $rest_fields as $field ) {
 					if ( ! is_array( $field ) ) {
@@ -133,12 +134,12 @@ if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 			global $wpdb;
 			$table = self::_table();
 
-			$query = "SELECT `type` FROM $table WHERE `ID` = $id LIMIT 0,1";
+			$query = "SELECT `type` FROM $table WHERE `ID` = " . intval( $id ) . " LIMIT 0,1";
 			if ( isset( self::$cache_query[ md5( $query ) ] ) ) {
 				return self::$cache_query[ md5( $query ) ];
 			}
 
-			self::$cache_query[ md5( $query ) ] = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			self::$cache_query[ md5( $query ) ] = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- field id intval()ed when building the query
 
 			return self::$cache_query[ md5( $query ) ];
 		}
@@ -157,7 +158,7 @@ if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 				return self::$cache_query[ md5( $query ) ];
 			}
 
-			self::$cache_query[ md5( $query ) ] = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			self::$cache_query[ md5( $query ) ] = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from _table()
 
 			return self::$cache_query[ md5( $query ) ];
 		}
@@ -169,7 +170,7 @@ if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 			$addressfield = implode( "', '", array_keys( BWFCRM_Fields::$contact_address_fields ) );
 
 			$query         = "SELECT COUNT(ID) FROM {$table} WHERE 1=1 AND vmode=1 AND slug NOT IN('$addressfield')";
-			$custom_fields = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$custom_fields = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- values from hardcoded class property; table from _table()
 			$column_field  = BWFCRM_Fields::$contact_columns;
 			if ( isset( $column_field['creation_date'] ) ) {
 				unset( $column_field['creation_date'] );
@@ -196,9 +197,9 @@ if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			$ids         = array_map( 'absint', $ids );
 			$placeholder = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-			$query       = $wpdb->prepare( "SELECT * From $table WHERE ID IN ($placeholder)", $ids );
+			$query       = $wpdb->prepare( "SELECT * From $table WHERE ID IN ($placeholder)", $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders via array_fill; ids absint()ed
 
-			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		}
 	}
 }

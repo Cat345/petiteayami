@@ -19,7 +19,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 
 			add_filter( 'woofunnels_global_settings', function ( $menu ) {
 				array_push( $menu, array(
-					'title'    => __( 'General', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'title'    => __( 'General', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'slug'     => 'woofunnels_general_settings',
 					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
 					'priority' => 5,
@@ -73,7 +73,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 			BWF_Admin_Breadcrumbs::render_sticky_bar();
 			?>
             <div class="wrap bwf-funnel-common">
-                <h1 class="wp-heading-inline"><?php esc_html_e( 'Settings', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></h1>
+                <h1 class="wp-heading-inline"><?php esc_html_e( 'Settings', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></h1>
 				<?php
 				$admin_settings = BWF_Admin_Settings::get_instance();
 				$admin_settings->render_tab_html( 'woofunnels_general_settings' );
@@ -85,41 +85,41 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
                         <div class="bwf-tabs-wrapper">
                             <div class="bwf-tab-title" data-tab="<?php $i ++;
 							echo esc_attr($i); ?>" role="tab">
-								<?php esc_html_e( 'Permalinks', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+								<?php esc_html_e( 'Permalinks', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                             </div>
                             <div class="bwf-tab-title" data-tab="<?php $i ++;
 							echo esc_attr($i); ?>" role="tab">
-								<?php esc_html_e( 'Facebook Pixel', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+								<?php esc_html_e( 'Facebook Pixel', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                             </div>
                             <div class="bwf-tab-title" data-tab="<?php $i ++;
 							echo esc_attr($i); ?>" role="tab">
-								<?php esc_html_e( 'Google Analytics', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+								<?php esc_html_e( 'Google Analytics', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                             </div>
 
 
 							<?php if ( apply_filters( 'bwf_enable_ecommerce_integration_gad', false ) ) { ?>
                                 <div class="bwf-tab-title" data-tab="<?php $i ++;
 								echo esc_attr($i); ?>" role="tab">
-									<?php esc_html_e( 'Google Ads', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+									<?php esc_html_e( 'Google Ads', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                                 </div>
 							<?php }
 							if ( apply_filters( 'bwf_enable_ecommerce_integration_pinterest', false ) ) { ?>
                                 <div class="bwf-tab-title" data-tab="<?php $i ++;
 								echo esc_attr($i); ?>" role="tab">
-									<?php esc_html_e( 'Pinterest', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+									<?php esc_html_e( 'Pinterest', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                                 </div>
 							<?php }
 
 							if ( apply_filters( 'bwf_enable_ecommerce_integration_tiktok', false ) ) { ?>
                                 <div class="bwf-tab-title" data-tab="<?php $i ++;
 								echo esc_attr($i); ?>" role="tab">
-									<?php esc_html_e( 'TikTok', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+									<?php esc_html_e( 'TikTok', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                                 </div>
 							<?php }
 							if ( apply_filters( 'bwf_enable_ecommerce_integration_snapchat', false ) ) { ?>
                                 <div class="bwf-tab-title" data-tab="<?php $i ++;
 								echo esc_attr($i); ?>" role="tab">
-									<?php esc_html_e( 'Snapchat', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+									<?php esc_html_e( 'Snapchat', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                                 </div>
 							<?php } ?>
 
@@ -137,7 +137,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
                                 </form>
                                 <div class="bwf_form_button">
                                     <span class="bwf_loader_global_save spinner" style="float: left;"></span>
-                                    <button v-on:click.self="onSubmit" class="bwf_save_btn_style"><?php esc_html_e( 'Save Changes', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></button>
+                                    <button v-on:click.self="onSubmit" class="bwf_save_btn_style"><?php esc_html_e( 'Save Changes', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></button>
 
                                 </div>
                             </div>
@@ -316,7 +316,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 		}
 
 		public function maybe_add_js() {
-			wp_enqueue_script( 'bwf-general-settings', plugin_dir_url( WooFunnel_Loader::$ultimate_path ) . 'woofunnels/assets/js/bwf-general-settings.js', [], BWF_VERSION );
+			wp_enqueue_script( 'bwf-general-settings', plugin_dir_url( WooFunnel_Loader::$ultimate_path ) . 'woofunnels/assets/js/bwf-general-settings.js', [], BWF_VERSION, false );
 			wp_enqueue_style( 'bwf-general-settings', plugin_dir_url( WooFunnel_Loader::$ultimate_path ) . 'woofunnels/assets/css/bwf-general-settings.css', array(), BWF_VERSION );
 
 
@@ -327,19 +327,19 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 			$localized_data = [
 				'nonce_general_settings' => wp_create_nonce( 'bwf_general_settings_update' ),
 				'texts'                  => array(
-					'settings_success'    => __( 'Changes saved', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'permalink_help_text' => __( 'Leave empty to remove slug completely from url', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'settings_success'    => __( 'Changes saved', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'permalink_help_text' => __( 'Leave empty to remove slug completely from url', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				),
 				'globalOptionsFields'    => array(
 					'options'       => $this->filter_admin_options( $this->get_option() ),
 					'legends_texts' => array(
-						'fb'         => __( 'Facebook Pixel', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-						'ga'         => __( 'Google Analytics', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-						'gad'        => __( 'Google Ads', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-						'pint'       => __( 'Pinterest', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-						'permalinks' => __( 'Permalinks', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-						'tiktok'     => __( 'Tiktok', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-						'snapchat'   => __( 'Snapchat', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'fb'         => __( 'Facebook Pixel', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'ga'         => __( 'Google Analytics', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'gad'        => __( 'Google Ads', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'pint'       => __( 'Pinterest', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'permalinks' => __( 'Permalinks', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'tiktok'     => __( 'Tiktok', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'snapchat'   => __( 'Snapchat', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					),
 					'fields'        => $this->all_fields()
 				)
@@ -378,8 +378,8 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 			$localized_data['checkout_page_slug']  = $checkout_page_slug;
 			$localized_data['permalink_structure'] = get_option( 'permalink_structure' );
 			$localized_data['errors']              = array(
-				'checkout_slug' => sprintf( __( 'Error: The permalink "%s" is reserved by Native WooCommerce Checkout Page. Try another permalink.', 'woofunnels' ), $checkout_page_slug ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
-				'empty_base'    => sprintf( __( 'Error: The current Permalinks settings does not allow blank values. Switch Permalink settings to \'Post name\'. <a href="%s">Click Here To Change</a>', 'woofunnels' ), admin_url( 'options-permalink.php' ) ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				'checkout_slug' => sprintf( __( 'Error: The permalink "%s" is reserved by Native WooCommerce Checkout Page. Try another permalink.', 'wp-marketing-automations' ), $checkout_page_slug ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				'empty_base'    => sprintf( __( 'Error: The current Permalinks settings does not allow blank values. Switch Permalink settings to \'Post name\'. <a href="%s">Click Here To Change</a>', 'wp-marketing-automations' ), admin_url( 'options-permalink.php' ) ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 			);
 
 			return $localized_data;
@@ -400,8 +400,8 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 			$localized_data['checkout_page_slug']  = $checkout_page_slug;
 			$localized_data['permalink_structure'] = get_option( 'permalink_structure' );
 			$localized_data['errors']              = array(
-				'checkout_slug' => sprintf( __( 'Error: The permalink "%s" is reserved by Native WooCommerce Checkout Page. Try another permalink.', 'woofunnels' ), $checkout_page_slug ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
-				'empty_base'    => sprintf( __( 'Error: The current Permalinks settings does not allow blank values. Switch Permalink settings to \'Post name\'. <a href="%s">Click Here To Change</a>', 'woofunnels' ), admin_url( 'options-permalink.php' ) ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				'checkout_slug' => sprintf( __( 'Error: The permalink "%s" is reserved by Native WooCommerce Checkout Page. Try another permalink.', 'wp-marketing-automations' ), $checkout_page_slug ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				'empty_base'    => sprintf( __( 'Error: The current Permalinks settings does not allow blank values. Switch Permalink settings to \'Post name\'. <a href="%s">Click Here To Change</a>', 'wp-marketing-automations' ), admin_url( 'options-permalink.php' ) ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 			);
 
 			$localized_data['pro_status'] = [];
@@ -447,12 +447,12 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
 				wp_send_json( array(
 					'status' => false,
-					'msg'    => __( 'You do not have permission to perform this action.', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'msg'    => __( 'You do not have permission to perform this action.', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'data'   => '',
 				), 403 );
 			}
 			check_admin_referer( 'bwf_general_settings_update', '_nonce' );
-			$options = isset( $_POST['data'] ) ? bwf_clean( $_POST['data'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$options = isset( $_POST['data'] ) ? bwf_clean( wp_unslash( $_POST['data'] ) ) : 0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- bwf_clean() sanitizes recursively
 			$resp    = $this->update_global_settings_fields( $options );
 			wp_send_json( $resp );
 		}
@@ -461,7 +461,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 			$options = ( is_array( $options ) && wp_unslash( bwf_clean( $options ) ) ) ? bwf_clean( $options ) : 0;
 			$resp    = [
 				'status' => false,
-				'msg'    => __( 'Settings Updated', 'woofunnels' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'msg'    => __( 'Settings Updated', 'wp-marketing-automations' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				'data'   => '',
 			];
 
@@ -523,7 +523,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 		public function maybe_change_title( $title ) {
 			if ( 'bwf_settings' === filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) || 'bwf_settings' === filter_input( INPUT_GET, 'section', FILTER_UNSAFE_RAW ) ) {
 				$admin_title = get_bloginfo( 'name' );
-				$title       = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress', 'woofunnels' ), 'FunnelKit', $admin_title ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				$title       = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress', 'wp-marketing-automations' ), 'FunnelKit', $admin_title ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 			}
 
 			return $title;

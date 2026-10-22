@@ -23,7 +23,7 @@ class ContainerPlugin
     public function onLoad(SchemaBuilder $schema): void
     {
         $schema->setDirective(new BindDirective($this->container));
-        $schema->setDirective(new CallDirective($this->container));
+        $schema->setDirective(new CallDirective());
     }
 
     /**

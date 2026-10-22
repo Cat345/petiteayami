@@ -17,17 +17,16 @@ use MailPoet\NotFoundException;
  * Product revenue is resolved through PurchasedProducts, which follows the
  * WooCommerce order-attribution read model: Woo-backed reporting is default-on
  * (orders whose standard Woo source resolved to `mailpoet`), with the legacy
- * `statistics_woocommerce_purchases` table as fallback. That resolution
- * aggregates per-product totals across every attributed order, so - unlike the
- * other campaign-stats listings - the minimum-threshold filters, search,
- * sorting and pagination are applied in PHP over the already-aggregated product
- * set rather than in the database query.
+ * `statistics_woocommerce_purchases` table as fallback. The per-product totals
+ * are summed in SQL across every attributed order, so - unlike the other
+ * campaign-stats listings - the minimum-threshold filters, search, sorting and
+ * pagination are applied in PHP over the already-aggregated product set.
  *
- * This is the explicit database-side exception the parent epic allows: the
- * per-product aggregation is unavoidably a full scan of the newsletter's orders
- * regardless of paging (a single product spans many orders), and reusing the
- * attribution reader keeps MailPoet's reported revenue consistent with Woo
- * Analytics. The aggregated product set is small, so PHP paging is cheap.
+ * This is the explicit database-side exception the parent epic allows: a
+ * single product spans many orders, so the aggregate can't be paged by order,
+ * and reusing the attribution reader keeps MailPoet's reported revenue
+ * consistent with Woo Analytics. The aggregated product set is small, so PHP
+ * paging is cheap.
  */
 class PurchasedProductsListing {
   use StatsListingFilterTrait;

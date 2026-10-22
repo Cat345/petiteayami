@@ -315,7 +315,7 @@ $modal_toggle = $this->el('a', [
             <div class="uk-modal-header">
             <?php endif ?>
 
-                <?= $modal_title($props) ?><?= __('Privacy Settings', 'yootheme') ?><?= $modal_title->end() ?>
+                <?= $modal_title($props, __('Privacy Settings', 'yootheme')) ?>
 
             <?php if ($props['modal_sections']) : ?>
             </div>
@@ -335,10 +335,13 @@ $modal_toggle = $this->el('a', [
                 <?php endif ?>
 
                     <?php foreach ($consent->getCategories() as $category) : ?>
+                    <?php $id = "consent-cookies-{$category}" ?>
                     <div class="uk-grid-column-small uk-grid-row<?= $props['modal_category_grid_row_gap'] ? '-' . $props['modal_category_grid_row_gap'] : '' ?>" uk-grid>
                         <div class="uk-width-auto <?= $props['modal_categories_right'] ? 'uk-flex-last' : '' ?>">
 
-                            <div class="uk-<?= $props['modal_category_title_style'] ?>"><input id="consent-cookies-<?= $category ?>" class="uk-checkbox <?= $props['modal_categories_checkbox_large'] ? 'uk-form-large' : '' ?>" type="checkbox" <?= $category === 'functional' ? 'checked disabled' : "name=\"{$category}\"" ?>></div>
+                            <div class="uk-<?= $props['modal_category_title_style'] ?>">
+                                <input <?= $props['modal_layout'] == 'accordion' ? 'aria-labelledby' : 'id' ?>="<?= $id?>" class="uk-checkbox <?= $props['modal_categories_checkbox_large'] ? 'uk-form-large' : '' ?>" type="checkbox" <?= $category === 'functional' ? 'checked disabled' : "name=\"{$category}\"" ?>>
+                            </div>
 
                         </div>
                         <div class="uk-width-expand">
@@ -351,25 +354,20 @@ $modal_toggle = $this->el('a', [
 
                                         <?= $modal_category_title($props) ?>
 
-                                            <?php if ($props['modal_layout'] != 'accordion') : ?>
-                                            <label for="consent-cookies-<?= $category ?>">
-                                            <?php endif ?>
-
-                                            <?php
-                                               if ($category === 'functional') {
-                                                    echo __('Functional', 'yootheme');
-                                                } elseif ($category === 'preferences') {
-                                                    echo __('Preferences', 'yootheme');
-                                                } elseif ($category === 'statistics') {
-                                                    echo __('Statistics', 'yootheme');
-                                                } elseif ($category === 'marketing') {
-                                                    echo __('Marketing', 'yootheme');
-                                                }
+                                            <?= ($props['modal_layout'] == 'accordion'
+                                                    ? $this->el('span', ['id' => $id])
+                                                    : $this->el('label', ['for' => $id]))(
+                                                [],
+                                                $category === 'functional'
+                                                    ? __('Functional', 'yootheme')
+                                                    : ($category === 'preferences'
+                                                    ? __('Preferences', 'yootheme')
+                                                    : ($category === 'statistics'
+                                                        ? __('Statistics', 'yootheme')
+                                                        : ($category === 'marketing'
+                                                            ? __('Marketing', 'yootheme')
+                                                            : ''))))
                                             ?>
-
-                                            <?php if ($props['modal_layout'] != 'accordion') : ?>
-                                            </label>
-                                            <?php endif ?>
 
                                         <?= $modal_category_title->end() ?>
 
@@ -383,19 +381,16 @@ $modal_toggle = $this->el('a', [
                             <?php endif ?>
 
                                 <?php if ($props['modal_categories_description']) : ?>
-                                <?= $modal_category_content($props) ?>
-                                <?php
-                                    if ($category === 'functional') {
-                                        echo __('These technologies are required to activate the core functionality of our website.', 'yootheme');
-                                    } elseif ($category === 'preferences') {
-                                        echo __('These technologies allow our website to remember your preferences and provide you with a more personalized experience.', 'yootheme');
-                                    } elseif ($category === 'statistics') {
-                                        echo __('These technologies enable us to analyse the use of our website in order to measure and improve performance.', 'yootheme');
-                                    } elseif ($category === 'marketing') {
-                                        echo __('These technologies are used by our marketing partners to show you personalized advertisements relevant to your interests.', 'yootheme');
-                                    }
+                                <?= $modal_category_content($props, $category === 'functional'
+                                        ? __('These technologies are required to activate the core functionality of our website.', 'yootheme')
+                                        : ($category === 'preferences'
+                                            ? __('These technologies allow our website to remember your preferences and provide you with a more personalized experience.', 'yootheme')
+                                            : ($category === 'statistics'
+                                                ? __('These technologies enable us to analyse the use of our website in order to measure and improve performance.', 'yootheme')
+                                                : ($category === 'marketing'
+                                                    ? __('These technologies are used by our marketing partners to show you personalized advertisements relevant to your interests.', 'yootheme')
+                                                    : ''))))
                                 ?>
-                                <?= $modal_category_content->end() ?>
                                 <?php endif ?>
 
                                 <?php if ($services = $consent->getServices($category)) : ?>

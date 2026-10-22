@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T10:38:42+00:00\n"
+"POT-Creation-Date: 2026-10-21T13:14:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-order-bump\n"
@@ -36,7 +36,7 @@ msgid "Funnelkit"
 msgstr ""
 
 #: admin/class-wfob-admin.php:43
-#: includes/class-wfob-reporting.php:279
+#: includes/class-wfob-reporting.php:292
 msgid "Order Bumps"
 msgstr ""
 
@@ -113,7 +113,7 @@ msgid "Design"
 msgstr ""
 
 #: admin/includes/class-wfob-post-table.php:211
-#: includes/class-wfob-rules.php:263
+#: includes/class-wfob-rules.php:265
 msgid "Rules"
 msgstr ""
 
@@ -133,8 +133,8 @@ msgstr ""
 
 #: admin/includes/class-wfob-post-table.php:308
 #: admin/view/section-settings.php:20
-#: includes/class-wfob-common.php:2806
-#: includes/class-wfob-common.php:2807
+#: includes/class-wfob-common.php:2820
+#: includes/class-wfob-common.php:2821
 msgid "Priority"
 msgstr ""
 
@@ -215,14 +215,14 @@ msgstr ""
 
 #: admin/view/global-settings.php:25
 #: includes/class-wfob-common.php:836
-#: includes/class-wfob-common.php:2758
-#: includes/class-wfob-common.php:2759
+#: includes/class-wfob-common.php:2772
+#: includes/class-wfob-common.php:2773
 msgid "Custom CSS"
 msgstr ""
 
 #: admin/view/global-settings.php:28
-#: includes/class-wfob-common.php:2773
-#: includes/class-wfob-common.php:2774
+#: includes/class-wfob-common.php:2787
+#: includes/class-wfob-common.php:2788
 msgid "Advance"
 msgstr ""
 
@@ -618,7 +618,7 @@ msgid "Data Saving..."
 msgstr ""
 
 #: includes/class-wfob-common.php:837
-#: includes/class-wfob-common.php:2765
+#: includes/class-wfob-common.php:2779
 msgid "Custom CSS Tweaks"
 msgstr ""
 
@@ -975,49 +975,49 @@ msgstr ""
 msgid "Top"
 msgstr ""
 
-#: includes/class-wfob-common.php:2130
+#: includes/class-wfob-common.php:2144
 msgid "Copy"
 msgstr ""
 
-#: includes/class-wfob-common.php:2766
-#: includes/class-wfob-common.php:2782
+#: includes/class-wfob-common.php:2780
+#: includes/class-wfob-common.php:2796
 msgid "Type here..."
 msgstr ""
 
-#: includes/class-wfob-common.php:2781
+#: includes/class-wfob-common.php:2795
 msgid "Number of Bumps to be shown"
 msgstr ""
 
-#: includes/class-wfob-common.php:2783
+#: includes/class-wfob-common.php:2797
 msgid "Enter the limit of OrderBumps to be display on the checkout page"
 msgstr ""
 
-#: includes/class-wfob-common.php:2813
+#: includes/class-wfob-common.php:2827
 msgid "Set Priority"
 msgstr ""
 
-#: includes/class-wfob-common.php:2814
+#: includes/class-wfob-common.php:2828
 msgid "There may be a chance that OrderBump can be set up in a way that two OrderBump can trigger. In such cases, Prioirty is used to determine which OrderBump will display. Priority Number 1 is considered highest."
 msgstr ""
 
-#: includes/class-wfob-common.php:2821
-#: includes/class-wfob-common.php:2822
+#: includes/class-wfob-common.php:2835
+#: includes/class-wfob-common.php:2836
 msgid "Position"
 msgstr ""
 
-#: includes/class-wfob-common.php:2830
+#: includes/class-wfob-common.php:2844
 msgid "Display Position"
 msgstr ""
 
-#: includes/class-wfob-common.php:2831
+#: includes/class-wfob-common.php:2845
 msgid "You can reposition the OrderBump using these option"
 msgstr ""
 
-#: includes/class-wfob-reporting.php:282
+#: includes/class-wfob-reporting.php:295
 msgid "Sales By Date"
 msgstr ""
 
-#: includes/class-wfob-reporting.php:289
+#: includes/class-wfob-reporting.php:302
 msgid "Sales By Bump"
 msgstr ""
 
@@ -1078,64 +1078,72 @@ msgid "Coupons - Text Match"
 msgstr ""
 
 #: includes/class-wfob-rules.php:166
+msgid "Order Item - Text Match"
+msgstr ""
+
+#: includes/class-wfob-rules.php:167
+msgid "SKU - Text/Regex Match"
+msgstr ""
+
+#: includes/class-wfob-rules.php:168
 msgid "Cart Shipping Method"
 msgstr ""
 
-#: includes/class-wfob-rules.php:169
+#: includes/class-wfob-rules.php:171
 msgid "Product"
 msgstr ""
 
-#: includes/class-wfob-rules.php:170
+#: includes/class-wfob-rules.php:172
 msgid "Product Stock Status"
 msgstr ""
 
-#: includes/class-wfob-rules.php:172
-#: includes/class-wfob-rules.php:173
+#: includes/class-wfob-rules.php:174
+#: includes/class-wfob-rules.php:175
 msgid "Customer"
 msgstr ""
 
-#: includes/class-wfob-rules.php:174
+#: includes/class-wfob-rules.php:176
 msgid "Customer User Role"
 msgstr ""
 
-#: includes/class-wfob-rules.php:175
+#: includes/class-wfob-rules.php:177
 msgid "Customer Product Purchased"
 msgstr ""
 
-#: includes/class-wfob-rules.php:177
+#: includes/class-wfob-rules.php:179
 msgid "Geography"
 msgstr ""
 
-#: includes/class-wfob-rules.php:178
+#: includes/class-wfob-rules.php:180
 msgid "Shipping Country"
 msgstr ""
 
-#: includes/class-wfob-rules.php:179
+#: includes/class-wfob-rules.php:181
 msgid "Billing Country"
 msgstr ""
 
-#: includes/class-wfob-rules.php:181
+#: includes/class-wfob-rules.php:183
 msgid "Date/Time"
 msgstr ""
 
-#: includes/class-wfob-rules.php:182
+#: includes/class-wfob-rules.php:184
 msgid "Day"
 msgstr ""
 
-#: includes/class-wfob-rules.php:183
+#: includes/class-wfob-rules.php:185
 #: includes/reports/class-wfob-by-date.php:223
 msgid "Date"
 msgstr ""
 
-#: includes/class-wfob-rules.php:184
+#: includes/class-wfob-rules.php:186
 msgid "Time"
 msgstr ""
 
-#: includes/class-wfob-rules.php:189
+#: includes/class-wfob-rules.php:191
 msgid "Checkout"
 msgstr ""
 
-#: includes/class-wfob-rules.php:190
+#: includes/class-wfob-rules.php:192
 msgid "FunnelKit Checkout pages"
 msgstr ""
 
@@ -1904,19 +1912,19 @@ msgid "is less or equal to"
 msgstr ""
 
 #: rules/rules/cart.php:164
-#: rules/rules/cart.php:1194
+#: rules/rules/cart.php:1205
 msgid "contains at most"
 msgstr ""
 
 #: rules/rules/cart.php:165
-#: rules/rules/cart.php:1193
+#: rules/rules/cart.php:1204
 msgid "contains at least"
 msgstr ""
 
 #: rules/rules/cart.php:166
 #: rules/rules/cart.php:239
 #: rules/rules/cart.php:367
-#: rules/rules/cart.php:1195
+#: rules/rules/cart.php:1206
 msgid "contains exactly"
 msgstr ""
 
@@ -1939,24 +1947,32 @@ msgid "matches none of"
 msgstr ""
 
 #: rules/rules/cart.php:711
-#: rules/rules/cart.php:824
-#: rules/rules/cart.php:984
-#: rules/rules/cart.php:1049
-#: rules/rules/cart.php:1114
+#: rules/rules/cart.php:835
+#: rules/rules/cart.php:995
+#: rules/rules/cart.php:1060
+#: rules/rules/cart.php:1125
 #: rules/rules/wfacp.php:20
 msgid "matched any of"
 msgstr ""
 
 #: rules/rules/cart.php:712
-#: rules/rules/cart.php:825
+#: rules/rules/cart.php:836
 msgid "matches all of "
 msgstr ""
 
-#: rules/rules/cart.php:826
+#: rules/rules/cart.php:736
+msgid "Virtual"
+msgstr ""
+
+#: rules/rules/cart.php:737
+msgid "Downloadable"
+msgstr ""
+
+#: rules/rules/cart.php:837
 msgid "matched none of"
 msgstr ""
 
-#: rules/rules/cart.php:910
+#: rules/rules/cart.php:921
 #: rules/rules/customer.php:14
 #: rules/rules/customer.php:56
 #: rules/rules/date-time.php:14
@@ -1968,7 +1984,7 @@ msgstr ""
 msgid "is"
 msgstr ""
 
-#: rules/rules/cart.php:911
+#: rules/rules/cart.php:922
 #: rules/rules/customer.php:15
 #: rules/rules/customer.php:57
 #: rules/rules/date-time.php:15
@@ -1980,30 +1996,54 @@ msgstr ""
 msgid "is not"
 msgstr ""
 
-#: rules/rules/cart.php:985
-#: rules/rules/cart.php:1050
-#: rules/rules/cart.php:1115
+#: rules/rules/cart.php:996
+#: rules/rules/cart.php:1061
+#: rules/rules/cart.php:1126
 msgid "matches none of "
 msgstr ""
 
-#: rules/rules/cart.php:1196
+#: rules/rules/cart.php:1207
 msgid "does not contains at least"
 msgstr ""
 
-#: rules/rules/cart.php:1289
+#: rules/rules/cart.php:1300
+#: rules/rules/cart.php:1382
+#: rules/rules/cart.php:1539
 msgid "any contains"
 msgstr ""
 
-#: rules/rules/cart.php:1290
+#: rules/rules/cart.php:1301
+#: rules/rules/cart.php:1384
+#: rules/rules/cart.php:1540
 msgid "any starts with"
 msgstr ""
 
-#: rules/rules/cart.php:1291
+#: rules/rules/cart.php:1302
+#: rules/rules/cart.php:1385
+#: rules/rules/cart.php:1541
 msgid "any ends with"
 msgstr ""
 
-#: rules/rules/cart.php:1292
+#: rules/rules/cart.php:1303
+#: rules/rules/cart.php:1386
+#: rules/rules/cart.php:1545
 msgid "doesn't contain"
+msgstr ""
+
+#: rules/rules/cart.php:1383
+msgid "contains all of"
+msgstr ""
+
+#: rules/rules/cart.php:1542
+msgid "any matches regex"
+msgstr ""
+
+#: rules/rules/cart.php:1543
+msgid "all matches regex"
+msgstr ""
+
+#: rules/rules/cart.php:1544
+msgid "none matches regex"
 msgstr ""
 
 #: rules/rules/date-time.php:23

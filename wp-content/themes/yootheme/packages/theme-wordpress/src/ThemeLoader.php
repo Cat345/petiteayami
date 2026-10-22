@@ -37,9 +37,12 @@ class ThemeLoader
         /** @var Config $configuration */
         $configuration = app(Config::class);
 
-        // load childtheme config
-        if (is_child_theme()) {
-            app()->load(get_stylesheet_directory() . '/config.php');
+        $childDir = is_child_theme()
+            ? strtr(realpath(get_stylesheet_directory()), '\\', '/')
+            : null;
+
+        if ($childDir) {
+            app()->load("{$childDir}/config.php");
         }
 
         $configuration->add('theme', [
@@ -47,6 +50,7 @@ class ThemeLoader
             'active' => true,
             'default' => is_main_site(),
             'template' => get_template(),
+            'childDir' => $childDir,
         ]);
 
         // add configurations
@@ -108,7 +112,11 @@ class ThemeLoader
                 $themeConfig['minimum_stability'] = 'stable';
             }
 
-            set_theme_mod('config', json_encode($themeConfig));
+            $encoded = json_encode($themeConfig, JSON_UNESCAPED_SLASHES);
+
+            if ($encoded !== false) {
+                set_theme_mod('config', $encoded);
+            }
         }
 
         return $themeConfig;

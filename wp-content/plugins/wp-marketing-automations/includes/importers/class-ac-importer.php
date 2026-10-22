@@ -2,6 +2,8 @@
 
 namespace BWFAN\Importers;
 
+defined( 'ABSPATH' ) || exit;
+
 use BWFAN\Importers\AC\Calls\Get_Contact_All_Data;
 use BWFAN\Importers\AC\Calls\Get_Contacts;
 use BWFAN\Importers\AC\Calls\Get_Custom_Fields;

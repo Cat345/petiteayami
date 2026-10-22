@@ -33,6 +33,7 @@ abstract class Order_Tax_Calculation extends Hook_Handlers {
 		'checkout_create_order_line_item',
 		'checkout_create_order_fee_item',
 		'checkout_create_order_shipping_item',
+		'checkout_create_order_tax_item',
 		'order_before_calculate_taxes',
 		'order_after_calculate_totals',
 		'order_item_after_calculate_taxes',
@@ -43,6 +44,33 @@ abstract class Order_Tax_Calculation extends Hook_Handlers {
 	);
 
 	const ACTIVATION_OPTIONS = array();
+
+	/**
+	 * Register action and filter hook handlers.
+	 */
+	public static function register_hook_handlers(): void {
+		parent::register_hook_handlers();
+
+		add_filter(
+			'wcs_new_order_created',
+			array( static::class, 'wcs_new_order_created' ),
+			100,
+			3
+		);
+	}
+
+	/**
+	 * Unregister action and filter hook handlers.
+	 */
+	public static function unregister_hook_handlers(): void {
+		parent::unregister_hook_handlers();
+
+		remove_filter(
+			'wcs_new_order_created',
+			array( static::class, 'wcs_new_order_created' ),
+			100
+		);
+	}
 
 
 	/**
@@ -120,6 +148,44 @@ abstract class Order_Tax_Calculation extends Hook_Handlers {
 	}
 
 	/**
+	 * Ensures checkout tax items are initialized from Stripe virtual rates.
+	 *
+	 * @param object $tax_order_item Order tax item.
+	 * @param int    $rate_id Tax rate id.
+	 */
+	public static function checkout_create_order_tax_item( $tax_order_item, $rate_id ) {
+		if ( ! static::is_enabled() ) {
+			return;
+		}
+
+		$stripe_rate = StripeTaxTaxRateMemRepo::read( $rate_id );
+
+		if ( ! $stripe_rate ) {
+			return;
+		}
+
+		if ( method_exists( $tax_order_item, 'set_rate_id' ) ) {
+			$tax_order_item->set_rate_id( $rate_id );
+		}
+
+		if ( method_exists( $tax_order_item, 'set_rate_code' ) && method_exists( $stripe_rate, 'get_code' ) ) {
+			$tax_order_item->set_rate_code( $stripe_rate->get_code() );
+		}
+
+		if ( method_exists( $tax_order_item, 'set_label' ) ) {
+			$tax_order_item->set_label( $stripe_rate['name'] );
+		}
+
+		if ( method_exists( $tax_order_item, 'set_rate_percent' ) ) {
+			$tax_order_item->set_rate_percent( $stripe_rate['rate'] );
+		}
+
+		if ( method_exists( $tax_order_item, 'set_compound' ) ) {
+			$tax_order_item->set_compound( ! empty( $stripe_rate['compound'] ) );
+		}
+	}
+
+	/**
 	 * "woocommerce_order_before_calculate_taxes" hook handler
 	 *
 	 * @param array  $args WC args.
@@ -145,6 +211,54 @@ abstract class Order_Tax_Calculation extends Hook_Handlers {
 			static::on_generic_error( $err );
 			self::set_current_request_failed( true );
 		}
+	}
+
+	/**
+	 * "wcs_new_order_created" filter handler.
+	 * Recalculates taxes for subscription renewals before payment is attempted.
+	 *
+	 * @param object $order Renewal/resubscribe order.
+	 * @param object $subscription Source subscription.
+	 * @param string $type New order type.
+	 *
+	 * @return object
+	 *
+	 * @throws Throwable Throws caught exception.
+	 */
+	public static function wcs_new_order_created( $order, $subscription, $type ) {
+		if ( ! static::is_enabled() ) {
+			return $order;
+		}
+
+		if ( 'renewal_order' !== $type ) {
+			return $order;
+		}
+
+		if ( ! $subscription || ! method_exists( $subscription, 'payment_method_supports' ) ) {
+			return $order;
+		}
+
+		if ( ! $subscription->payment_method_supports( 'subscription_amount_changes' ) ) {
+			return $order;
+		}
+
+		try {
+			$subscription->calculate_taxes();
+			$subscription->calculate_totals( false );
+			$subscription->save();
+
+			$order->calculate_taxes();
+			$order->calculate_totals( false );
+			$order->save();
+		} catch ( InvalidRequestException $err ) {
+			static::on_error( $err );
+			self::set_current_request_failed( true );
+		} catch ( Throwable $err ) {
+			static::on_generic_error( $err );
+			self::set_current_request_failed( true );
+		}
+
+		return $order;
 	}
 
 	/**

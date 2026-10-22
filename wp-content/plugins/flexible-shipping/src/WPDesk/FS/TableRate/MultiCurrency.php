@@ -41,5 +41,4 @@ class MultiCurrency implements Hookable {
 
 		return (float) apply_filters( $this->filter_prefix . '/currency-switchers/amount', $amount, $this->logger );
 	}
-
 }

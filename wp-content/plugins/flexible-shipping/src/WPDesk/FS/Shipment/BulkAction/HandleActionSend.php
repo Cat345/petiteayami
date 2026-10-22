@@ -40,10 +40,14 @@ class HandleActionSend implements HandleActionStrategyInterface {
 			$messages[ $post_id ] = [];
 
 			foreach ( $shipments as $shipment ) {
-				/* @var $shipment WPDesk_Flexible_Shipping_Shipment|WPDesk_Flexible_Shipping_Shipment_Interface */
+				/** @var WPDesk_Flexible_Shipping_Shipment&WPDesk_Flexible_Shipping_Shipment_Interface $shipment */
+				$create_shipment = [ $shipment, 'api_create' ];
+				if ( ! is_callable( $create_shipment ) ) {
+					continue;
+				}
 				try {
 					$shipment->set_sent_via_bulk();
-					$shipment->api_create();
+					$create_shipment();
 					$messages[ $post_id ][ $shipment->get_id() ] = [
 						'status'  => 'created',
 						'message' => __( 'Shipment created.', 'flexible-shipping' ),

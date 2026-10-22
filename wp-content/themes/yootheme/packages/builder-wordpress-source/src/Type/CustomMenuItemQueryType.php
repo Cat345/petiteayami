@@ -198,7 +198,7 @@ class CustomMenuItemQueryType
                     continue;
                 }
 
-                if (!($item->type === 'custom' && $item->url === '#')) {
+                if ($item->type !== 'custom' || $item->url !== '#') {
                     $result[] = $item;
                     continue;
                 }

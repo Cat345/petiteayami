@@ -27,7 +27,7 @@ abstract class Str
 
         if (empty($cache[$pattern])) {
             $regexp = addcslashes($pattern, '/\\.+^$()=!<>|#');
-            $regexp = strtr($regexp, ['*' => '.*', '?' => '.?']);
+            $regexp = strtr($regexp, ['*' => '.*', '?' => '.']);
             $regexp = static::convertBraces($regexp);
 
             $cache[$pattern] = "#^{$regexp}$#s";

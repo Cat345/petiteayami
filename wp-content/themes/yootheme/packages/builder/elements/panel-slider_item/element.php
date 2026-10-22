@@ -28,7 +28,7 @@ return [
         'render' => function ($node, $params) {
             // Display
             foreach (
-                ['title', 'meta', 'content', 'link', 'image', 'video', 'hover_image', 'hover_image']
+                ['title', 'meta', 'content', 'link', 'image', 'video', 'hover_image', 'hover_video']
                 as $key
             ) {
                 if (!$params['parent']->props["show_{$key}"]) {

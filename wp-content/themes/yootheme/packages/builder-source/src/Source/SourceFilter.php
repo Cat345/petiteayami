@@ -142,10 +142,7 @@ trait SourceFilter
      */
     public function applyTransform($value, $transform)
     {
-        if (is_int($transform)) {
-            return mb_convert_case($value, $transform, 'UTF-8');
-        }
-        return $value;
+        return is_int($transform) ? mb_convert_case($value, $transform, 'UTF-8') : $value;
     }
 
     /**

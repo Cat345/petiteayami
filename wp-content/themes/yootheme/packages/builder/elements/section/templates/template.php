@@ -219,7 +219,9 @@ $title = $this->el('div', [
 
         <?php if ($props['title'] != '') : ?>
             <?= $title($props) ?>
-                <div class="<?= $props['title_rotation'] == 'left' ? 'tm-rotate-180' : '' ?>"><?= $props['title'] ?></div>
+                <?= $this->el('div', [
+                    'class' => ['tm-rotate-180' => $props['title_rotation'] == 'left']
+                ])->render($props, $props['title'] ?? '') ?>
             <?= $title->end() ?>
         </div>
         <?php endif ?>

@@ -129,7 +129,7 @@ class BWFAN_Admin {
 			wp_send_json( $resp );
 		}
 
-		$id     = sanitize_text_field( $_POST['automation_id'] );
+		$id     = sanitize_text_field( wp_unslash( $_POST['automation_id'] ) );
 		$result = BWFAN_Model_Automationmeta::insert_automation_meta_data( $id, [
 			'v1_migrate' => true,
 		] );
@@ -478,7 +478,7 @@ class BWFAN_Admin {
 		 */
 		if ( true === $v1_active && BWFAN_Common::is_load_admin_assets( 'all' ) ) {
 			wp_enqueue_style( 'bwfan-izimodal', $this->admin_url . '/includes/iziModal/iziModal.css', array(), BWFAN_VERSION_DEV );
-			wp_enqueue_script( 'bwfan-izimodal', $this->admin_url . '/includes/iziModal/iziModal.js', array(), BWFAN_VERSION_DEV );
+			wp_enqueue_script( 'bwfan-izimodal', $this->admin_url . '/includes/iziModal/iziModal.js', array(), BWFAN_VERSION_DEV, false );
 		}
 
 		$data = array(
@@ -597,9 +597,10 @@ class BWFAN_Admin {
 		$data['pro_active']                           = $pro_active;
 
 		if ( BWFAN_Common::is_load_admin_assets( 'all' ) ) {
-			$data['bwfan_global_settings']        = BWFAN_Common::get_global_settings();
-			$data['bwfan_global_settings_schema'] = BWFAN_Common::get_setting_schema();
+			$data['bwfan_global_settings'] = BWFAN_Common::get_global_settings();
 		}
+
+		/** Settings schema (~60K) is never localized; the settings screen fetches it via GET /settings (refreshSettingsSchema in JS). */
 
 		if ( bwfan_is_autonami_pro_active() ) {
 			$data['pro_version_notice']           = [ 'version' => BWFAN_MIN_PRO_VERSION ];
@@ -837,7 +838,7 @@ class BWFAN_Admin {
 	 */
 	public function autonami_page() {
 		//phpcs:disable WordPress.Security.NonceVerification
-		if ( ! isset( $_GET['page'] ) && 'autonami' !== sanitize_text_field( $_GET['page'] ) ) {
+		if ( ! isset( $_GET['page'] ) && 'autonami' !== sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) {
 			return;
 		}
 		if ( class_exists( 'BWFCRM_Dashboard' ) ) {
@@ -971,7 +972,7 @@ class BWFAN_Admin {
 
 		/* translators: 1: Dynamic URL */
 
-		return sprintf( __( 'Over %1$s 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Do you need help? <a href="%2$s" target="_blank"><b>Contact FunnelKit Support</b></a>.', 'wp-marketing-automations' ), '302+', esc_url( $link ) );
+		return sprintf( __( 'Over %1$s 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Do you need help? <a href="%2$s" target="_blank"><b>Contact FunnelKit Support</b></a>.', 'wp-marketing-automations' ), '330+', esc_url( $link ) );
 	}
 
 	/**
@@ -997,8 +998,8 @@ class BWFAN_Admin {
 	 * @since 1.0.0
 	 */
 	public function get_automation_section() {
-		if ( isset( $_GET['section'] ) && ! empty( sanitize_text_field( $_GET['section'] ) ) && isset( $_GET['page'] ) && 'autonami-automations' === sanitize_text_field( $_GET['page'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
-			return sanitize_text_field( $_GET['section'] ); // WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( isset( $_GET['section'] ) && ! empty( sanitize_text_field( wp_unslash( $_GET['section'] ) ) ) && isset( $_GET['page'] ) && 'autonami-automations' === sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			return sanitize_text_field( wp_unslash( $_GET['section'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 		}
 
 		return 'automation';
@@ -1010,8 +1011,8 @@ class BWFAN_Admin {
 	 * @since 1.0.0
 	 */
 	public function maybe_set_automation_id() {
-		if ( $this->is_autonami_page() && isset( $_GET['edit'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
-			BWFAN_Core()->automations->set_automation_id( sanitize_text_field( $_GET['edit'] ) ); // WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( $this->is_autonami_page() && isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			BWFAN_Core()->automations->set_automation_id( sanitize_text_field( wp_unslash( $_GET['edit'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			BWFAN_Core()->automations->set_automation_details();
 
 			do_action( 'bwfan_automation_data_set_automation' ); // WordPress.CSRF.NonceVerification.NoNonceVerification
@@ -1109,7 +1110,7 @@ class BWFAN_Admin {
 	 * Remove all the notices in our dashboard pages as they might break the design.
 	 */
 	public function maybe_remove_all_notices_on_page() {
-		if ( isset( $_GET['page'] ) && 'autonami' === sanitize_text_field( $_GET['page'] ) && isset( $_GET['section'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( isset( $_GET['page'] ) && 'autonami' === sanitize_text_field( wp_unslash( $_GET['page'] ) ) && isset( $_GET['section'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			remove_all_actions( 'admin_notices' );
 		}
 	}
@@ -1183,7 +1184,7 @@ class BWFAN_Admin {
 	 */
 	public function maybe_handle_optin_choice() {
 		if ( isset( $_GET['bwfan-optin-choice'] ) && isset( $_GET['_bwfan_optin_nonce'] ) ) {
-			if ( ! wp_verify_nonce( $_GET['_bwfan_optin_nonce'], 'bwfan_optin_nonce' ) ) {
+			if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_bwfan_optin_nonce'] ) ), 'bwfan_optin_nonce' ) ) {
 				wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'wp-marketing-automations' ) );
 			}
 
@@ -1191,7 +1192,7 @@ class BWFAN_Admin {
 				wp_die( esc_html__( 'Cheating huh?', 'wp-marketing-automations' ) );
 			}
 
-			$optin_choice = sanitize_text_field( $_GET['bwfan-optin-choice'] );
+			$optin_choice = sanitize_text_field( wp_unslash( $_GET['bwfan-optin-choice'] ) );
 			if ( $optin_choice === 'yes' ) {
 				$this->allow_optin();
 
@@ -1250,8 +1251,8 @@ class BWFAN_Admin {
 	 * @since 1.0.0
 	 */
 	public function get_automation_id() {
-		if ( isset( $_GET['edit'] ) && ! empty( sanitize_text_field( $_GET['edit'] ) ) && isset( $_GET['page'] ) && 'autonami-automations' === sanitize_text_field( $_GET['page'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
-			return sanitize_text_field( $_GET['edit'] ); // WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( isset( $_GET['edit'] ) && ! empty( sanitize_text_field( wp_unslash( $_GET['edit'] ) ) ) && isset( $_GET['page'] ) && 'autonami-automations' === sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			return sanitize_text_field( wp_unslash( $_GET['edit'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 		}
 
 		return false;
@@ -1275,9 +1276,9 @@ class BWFAN_Admin {
 			return;
 		}
 
-		if ( isset( $_GET['edit'] ) ) {
-			if ( isset( $_GET['section'] ) ) {
-				if ( 'preview_email' === sanitize_text_field( $_GET['section'] ) ) {
+		if ( isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			if ( isset( $_GET['section'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+				if ( 'preview_email' === sanitize_text_field( wp_unslash( $_GET['section'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 					include_once $this->admin_path . '/view/preview_email.php';
 					exit;
 				}
@@ -1288,8 +1289,8 @@ class BWFAN_Admin {
 			return;
 		}
 
-		if ( isset( $_GET['tab'] ) ) {
-			$tab = sanitize_text_field( $_GET['tab'] );
+		if ( isset( $_GET['tab'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			switch ( $tab ) {
 				case 'tasks':
 					wp_safe_redirect( admin_url( 'admin.php?page=autonami&path=/automations/task-history' ) );
@@ -1401,29 +1402,29 @@ class BWFAN_Admin {
 	/** handling autonami connector page  */
 	public function redirect_autonami_connector_page() {
 		/** handling connectors oAuth 2.0 in autonami */
-		if ( isset( $_GET['page'] ) && 'autonami' === $_GET['page'] && isset( $_GET['tab'] ) && 'connector' === $_GET['tab'] ) {
+		if ( isset( $_GET['page'] ) && 'autonami' === $_GET['page'] && isset( $_GET['tab'] ) && 'connector' === $_GET['tab'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- legacy admin URL redirect; query re-encoded by http_build_query() and sent via wp_safe_redirect()
 			$_GET['path'] = '/connectors';
 			unset( $_GET['tab'] );
-			$build_query = http_build_query( $_GET );
+			$build_query = http_build_query( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- legacy admin URL redirect; query re-encoded by http_build_query() and sent via wp_safe_redirect()
 
 			wp_safe_redirect( admin_url( 'admin.php?' . $build_query ) );
 			exit;
 		}
 
 		/** handling batch process page in autonami */
-		if ( isset( $_GET['page'] ) && 'autonami' === $_GET['page'] && isset( $_GET['tab'] ) && 'batch_process' === $_GET['tab'] ) {
+		if ( isset( $_GET['page'] ) && 'autonami' === $_GET['page'] && isset( $_GET['tab'] ) && 'batch_process' === $_GET['tab'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- legacy admin URL redirect; query re-encoded by http_build_query() and sent via wp_safe_redirect()
 			$_GET['page'] = 'autonami-automations';
-			$build_query  = http_build_query( $_GET );
+			$build_query  = http_build_query( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- legacy admin URL redirect; query re-encoded by http_build_query() and sent via wp_safe_redirect()
 
 			wp_safe_redirect( admin_url( 'admin.php?' . $build_query ) );
 			exit;
 		}
 
 		/** handling autonami builder page */
-		if ( isset( $_GET['page'] ) && 'autonami' === $_GET['page'] && isset( $_GET['section'] ) && 'automation' === $_GET['section'] && filter_input( INPUT_GET, 'edit' ) > 0 ) {
+		if ( isset( $_GET['page'] ) && 'autonami' === $_GET['page'] && isset( $_GET['section'] ) && 'automation' === $_GET['section'] && filter_input( INPUT_GET, 'edit' ) > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- legacy admin URL redirect; query re-encoded by http_build_query() and sent via wp_safe_redirect()
 			$_GET['page'] = 'autonami-automations';
 			unset( $_GET['section'] );
-			$build_query = http_build_query( $_GET );
+			$build_query = http_build_query( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- legacy admin URL redirect; query re-encoded by http_build_query() and sent via wp_safe_redirect()
 
 			wp_safe_redirect( admin_url( 'admin.php?' . $build_query ) );
 			exit;
@@ -1749,7 +1750,8 @@ class BWFAN_Admin {
 		$resync_text = [
 			'text'    => __( 'Resync Orders', 'wp-marketing-automations' ),
 			'loading' => __( 'Syncing ...', 'wp-marketing-automations' ),
-		]
+			'error'   => __( 'Request failed. Please try again.', 'wp-marketing-automations' ),
+		];
 		?>
         <style type="text/css">
             .bwf-order-edit-wrap {
@@ -2041,7 +2043,7 @@ class BWFAN_Admin {
 			);
 			printf(
 				'<div class="requires">%s</div>',
-				$notice
+				wp_kses_post( $notice )
 			);
 			return;
 		}
@@ -2057,7 +2059,7 @@ class BWFAN_Admin {
 			);
 			printf(
 				'<div class="requires">%s</div>',
-				$notice
+				wp_kses_post( $notice )
 			);
 			return;
 		}
@@ -2086,7 +2088,7 @@ class BWFAN_Admin {
 		);
 		printf(
 			'<div class="requires">%s</div>',
-			$notice
+			wp_kses_post( $notice )
 		);
 	}
 
@@ -2155,7 +2157,7 @@ class BWFAN_Admin {
 	 * @return void
 	 */
 	public function maybe_redirect_to_wizard() {
-		if ( ! current_user_can( 'manage_options' ) || ! isset( $_GET['page'] ) || 'autonami' !== $_GET['page'] ) {
+		if ( ! current_user_can( 'manage_options' ) || ! isset( $_GET['page'] ) || 'autonami' !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			return;
 		}
 

@@ -61,6 +61,9 @@ class BWFAN_API_Recipe_Controller extends BWFAN_API_Controller {
 
 		/** Fetch Recipe data */
 		$recipe_data = $this->get_selected_recipe( $recipe_slug );
+		if ( is_wp_error( $recipe_data ) ) {
+			return $this->error_response( $recipe_data->get_error_message(), null, 400 );
+		}
 		if ( empty( $recipe_data ) ) {
 			return $this->error_response( __( 'Recipe not found.', 'wp-marketing-automations' ), null, 400 );
 		}
@@ -83,6 +86,9 @@ class BWFAN_API_Recipe_Controller extends BWFAN_API_Controller {
 
 		/** Fetch Recipe data */
 		$recipe_data = $this->get_selected_recipe( $recipe_slug );
+		if ( is_wp_error( $recipe_data ) ) {
+			return $this->error_response( $recipe_data->get_error_message(), null, 400 );
+		}
 		if ( empty( $recipe_data ) ) {
 			return $this->error_response( __( 'Recipe not found', 'wp-marketing-automations' ), null, 400 );
 		}
@@ -124,15 +130,24 @@ class BWFAN_API_Recipe_Controller extends BWFAN_API_Controller {
 	 *
 	 * @return array|false
 	 */
+	/**
+	 * @return array|false|WP_Error The recipe; false when the service says there is no such recipe;
+	 *                              WP_Error when the service could not be reached.
+	 */
 	public function get_selected_recipe( $slug ) {
 		// Sanitize slug to prevent path traversal
 		$slug    = sanitize_key( $slug );
 		$request = wp_remote_get( "https://app.getautonami.com/recipe/$slug" );
-		if ( is_wp_error( $request ) || wp_remote_retrieve_response_code( $request ) !== 200 ) {
+		$code    = is_wp_error( $request ) ? 0 : (int) wp_remote_retrieve_response_code( $request );
+		if ( 404 === $code ) {
 			return false;
 		}
+		// Blocked, timed out or a server error: not an answer about the recipe, so don't report it as missing.
+		if ( 200 !== $code ) {
+			return new WP_Error( 'bwfan_recipe_unreachable', __( 'Could not reach the FunnelKit recipe service, so the recipe could not be loaded. Check that this site can make outbound requests, then try again.', 'wp-marketing-automations' ) );
+		}
 		$data = json_decode( wp_remote_retrieve_body( $request ), true );
-		if ( isset( $data['error'] ) ) {
+		if ( ! is_array( $data ) || isset( $data['error'] ) ) {
 			return false;
 		}
 

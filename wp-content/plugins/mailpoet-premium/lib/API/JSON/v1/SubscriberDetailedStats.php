@@ -12,6 +12,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Listing;
 use MailPoet\Premium\API\JSON\v1\ResponseBuilders\SubscriberDetailedStatsResponseBuilder;
 use MailPoet\Premium\Subscriber\Stats\SubscriberNewsletterStatsRepository;
+use MailPoet\Premium\Util\License\DetailedAnalyticsGuard;
 
 class SubscriberDetailedStats extends APIEndpoint {
   public $permissions = [
@@ -27,17 +28,32 @@ class SubscriberDetailedStats extends APIEndpoint {
   /** @var Listing\Handler */
   private $listingHandler;
 
+  /** @var DetailedAnalyticsGuard */
+  private $detailedAnalyticsGuard;
+
   public function __construct(
     SubscriberNewsletterStatsRepository $subscriberStatsRepository,
     SubscriberDetailedStatsResponseBuilder $responseBuilder,
-    Listing\Handler $listingHandler
+    Listing\Handler $listingHandler,
+    DetailedAnalyticsGuard $detailedAnalyticsGuard
   ) {
     $this->subscriberStatsRepository = $subscriberStatsRepository;
     $this->responseBuilder = $responseBuilder;
     $this->listingHandler = $listingHandler;
+    $this->detailedAnalyticsGuard = $detailedAnalyticsGuard;
   }
 
   public function listing($data = []) {
+    if ($this->detailedAnalyticsGuard->isRestricted()) {
+      return $this->errorResponse(
+        [
+          APIError::FORBIDDEN => $this->detailedAnalyticsGuard->getRestrictedMessage(),
+        ],
+        [],
+        Response::STATUS_FORBIDDEN
+      );
+    }
+
     $subscriberId = $data['params']['id'] ?? null;
     if (!isset($subscriberId)) {
       return $this->errorResponse(

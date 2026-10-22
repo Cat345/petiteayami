@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 final class BWFAN_WC_Product_Stock_Reduced extends BWFAN_Event {

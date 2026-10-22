@@ -28,27 +28,27 @@ class WooCommerceABC extends Links {
 	 * @return array[]
 	 */
 	protected function get_links() {
-		return array(
-			array(
+		return [
+			[
 				'label' => __( 'Shipping Zones', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-info-zones',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Shipping Tax', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-info-tax',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Shipping Methods', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-info-methods',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Shipping Classes', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-info-classes',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Table Rate Shipping', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-info-table-rate',
-			),
-		);
+			],
+		];
 	}
 }

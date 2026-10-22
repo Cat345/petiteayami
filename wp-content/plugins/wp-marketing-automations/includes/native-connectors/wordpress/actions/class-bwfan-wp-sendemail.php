@@ -563,6 +563,13 @@ final class BWFAN_Wp_Sendemail extends BWFAN_Action {
 				'message' => __( 'Recipient email missing. Please provide email to send email.', 'wp-marketing-automations' ),
 			);
 		}
+		if ( $this->is_block_email_without_body() ) {
+			$this->set_log( 'email_send_refused_empty_block_body: ' . $to );
+
+			return array(
+				'message' => __( 'Email content missing. This email was made in the block editor but has no rendered content; open it in the editor and save it again.', 'wp-marketing-automations' ),
+			);
+		}
 
 		/** Send Email */
 		$global_settings = BWFAN_Common::get_global_settings();
@@ -686,6 +693,31 @@ final class BWFAN_Wp_Sendemail extends BWFAN_Action {
 	}
 
 	/**
+	 * A block-editor email is sent from the HTML stored beside its design, never
+	 * from the design itself. When that HTML is missing the design would still
+	 * open fine in the editor, but the recipient would get an empty message, so
+	 * the send is refused instead.
+	 *
+	 * @return bool
+	 */
+	protected function is_block_email_without_body() {
+		if ( true === $this->is_preview ) {
+			return false;
+		}
+
+		$template = isset( $this->data['template'] ) ? absint( $this->data['template'] ) : 0;
+
+		if ( self::$TEMPLATE_BLOCK !== $template ) {
+			return false;
+		}
+
+		$body = isset( $this->data['body'] ) && is_string( $this->data['body'] ) ? $this->data['body'] : '';
+
+		// &nbsp; decodes to U+00A0, which trim() does not strip.
+		return '' === trim( str_replace( "\xC2\xA0", '', html_entity_decode( $body, ENT_QUOTES | ENT_HTML401 ) ) );
+	}
+
+	/**
 	 * Append pre header in email body
 	 *
 	 * @param $body
@@ -755,6 +787,7 @@ final class BWFAN_Wp_Sendemail extends BWFAN_Action {
 		$this->set_data( $action_data['processed_data'] );
 		$this->data['task_id'] = $action_data['task_id'];
 		$sql_query             = 'Select meta_value FROM {table_name} WHERE bwfan_task_id = %d AND meta_key = %s';
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		$sql_query             = $wpdb->prepare( $sql_query, $this->data['task_id'], 't_track_id' ); // WPCS: unprepared SQL OK
 		$gids                  = BWFAN_Model_Taskmeta::get_results( $sql_query );
 		$this->data['gid']     = '';

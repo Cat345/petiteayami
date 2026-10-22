@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'BWFAN_Compatibility_With_Aelia_CS' ) ) {
 	class BWFAN_Compatibility_With_Aelia_CS {
 

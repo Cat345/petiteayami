@@ -78,8 +78,8 @@ class BWFAN_WC_Dynamic_Coupon extends BWFAN_Merge_Tag {
 		BWFAN_Common::check_nonce();
 
 		$finalarr     = [];
-		$automationId = absint( sanitize_text_field( $_POST['automationId'] ) );
-		$merge_tag    = isset( $_POST['merge_tag'] ) ? sanitize_text_field( $_POST['merge_tag'] ) : '';
+		$automationId = isset( $_POST['automationId'] ) ? absint( sanitize_text_field( wp_unslash( $_POST['automationId'] ) ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified by BWFAN_Common::check_nonce() above
+		$merge_tag    = isset( $_POST['merge_tag'] ) ? sanitize_text_field( wp_unslash( $_POST['merge_tag'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified by BWFAN_Common::check_nonce() above
 
 		/** check for automation id */
 		if ( empty( $automationId ) ) {
@@ -92,7 +92,7 @@ class BWFAN_WC_Dynamic_Coupon extends BWFAN_Merge_Tag {
 
 		/** To get automation step with action create coupon and stataus is 1 */
 		$query   = "SELECT * FROM {$wpdb->prefix}bwfan_automation_step WHERE `aid` = {$automationId} AND `action` LIKE '%wc_create_coupon%' AND `status` = '1'";
-		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- automationId absint()ed; table from $wpdb->prefix
 
 		/** Check for empty step */
 		if ( empty( $results ) ) {

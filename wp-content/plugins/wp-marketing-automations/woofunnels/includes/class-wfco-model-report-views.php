@@ -21,7 +21,7 @@ if ( ! class_exists( 'WFCO_Model_Report_views' ) ) {
 				$sql    = $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE status = %d", $status ); //phpcs:ignore WordPress.DB.PreparedSQL
 			}
 
-			return $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table from class name; GET status mapped to 1 or 2 and bound
 		}
 
 		private static function _table() {
@@ -60,14 +60,14 @@ if ( ! class_exists( 'WFCO_Model_Report_views' ) ) {
 			$table = self::_table();
 
 			if ( $has_object_id ) {
-				$result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- `$table` is a trusted internal identifier from self::_table(); date/object_id/type bound via prepare().
+				$result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` is a trusted internal identifier from self::_table(); date/object_id/type bound via prepare().; table from class name; values bound via prepare
 			} else {
-				$result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- `$table` is a trusted internal identifier from self::_table(); date/type bound via prepare().
+				$result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` is a trusted internal identifier from self::_table(); date/type bound via prepare().; table from class name; values bound via prepare
 			}
 
 			if ( ! empty( $result ) ) {
 				$primary_id = absint( $result[0]['id'] );
-				$wpdb->query( $wpdb->prepare( "UPDATE `$table` SET no_of_sessions = no_of_sessions + 1 WHERE id = %d", $primary_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+				$wpdb->query( $wpdb->prepare( "UPDATE `$table` SET no_of_sessions = no_of_sessions + 1 WHERE id = %d", $primary_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table from class name; id absint and bound via %d
 			} else {
 				$wpdb->insert( $table, $insert ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- $wpdb->insert() parameterizes internally; safe.
 			}
@@ -87,26 +87,26 @@ if ( ! class_exists( 'WFCO_Model_Report_views' ) ) {
 						return [];
 					}
 					if ( $has_object_id ) {
-						return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE {$date} AND `object_id` = %d AND `type` = %d", $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); $date regex-validated above; ids bound via %d.
+						return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE {$date} AND `object_id` = %d AND `type` = %d", $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- `$table` from self::_table() (trusted); $date regex-validated above; ids bound via %d.; table from class; date fragment regex-whitelisted; ids bound
 					}
 
-					return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE {$date} AND `type` = %d", $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); $date regex-validated above; type bound via %d.
+					return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE {$date} AND `type` = %d", $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- `$table` from self::_table() (trusted); $date regex-validated above; type bound via %d.; table from class; date fragment regex-whitelisted; type bound
 				}
 
 				$date = sanitize_text_field( $date );
 				if ( $has_object_id ) {
-					return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); values bound via prepare().
+					return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- `$table` from self::_table() (trusted); values bound via prepare().; table from class name; values bound via prepare
 				}
 
-				return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); values bound via prepare().
+				return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- `$table` from self::_table() (trusted); values bound via prepare().; table from class name; values bound via prepare
 			}
 
 			$date = date( 'Y-m-d' ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 			if ( $has_object_id ) {
-				return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); values bound via prepare().
+				return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- `$table` from self::_table() (trusted); values bound via prepare().; table from class name; values bound via prepare
 			}
 
-			return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); values bound via prepare().
+			return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- `$table` from self::_table() (trusted); values bound via prepare().; table from class name; values bound via prepare
 		}
 
 

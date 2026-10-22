@@ -2,6 +2,8 @@
 
 namespace BWFAN\Importers;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 
 /**
@@ -138,7 +140,7 @@ class AFFWP_Importer extends Importer {
 		$order_safe     = esc_sql( $order );
 		$query          = "SELECT DISTINCT user_id FROM {$wpdb->prefix}affiliate_wp_affiliates ORDER BY {$order_by_safe} {$order_safe}" . $pagination_query;
 
-		$users = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		$users = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- order by whitelisted; LIMIT prepared; prefix table
 
 		if ( empty( $users ) ) {
 			return array();

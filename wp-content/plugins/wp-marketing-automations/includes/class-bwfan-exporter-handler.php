@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 use BWFAN\Exporter\Base;
 
@@ -222,7 +223,7 @@ class BWFAN_Exporter_Handler {
 
 
 		if ( isset( $export_data['url'] ) && is_file( $export_data['url'] ) ) {
-			unlink( $export_data['url'] );
+			wp_delete_file( $export_data['url'] );
 		}
 
 		unset( $user_data[ $type ] );

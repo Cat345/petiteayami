@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Logged-in-only
@@ -21,7 +22,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Logged_In_Only' ) ) {
 		public function bwfan_allow_rest_apis( $status ) {
 			$rest_route = $GLOBALS['wp']->query_vars['rest_route'];
 
-			if ( false !== strpos( $rest_route, 'autonami' ) || false !== strpos( $rest_route, 'woofunnel' ) || false !== strpos( $rest_route, 'funnelkit' ) ) {
+			if ( false !== strpos( $rest_route, 'autonami' ) || false !== strpos( $rest_route, 'woofunnel' ) || false !== strpos( $rest_route, 'funnelkit-automations' ) ) {
 				remove_filter( 'rest_authentication_errors', 'logged_in_only_rest_api' );
 			}
 

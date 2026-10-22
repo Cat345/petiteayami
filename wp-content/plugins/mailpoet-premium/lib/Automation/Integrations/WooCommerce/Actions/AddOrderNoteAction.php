@@ -14,6 +14,7 @@ use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
+use MailPoet\Premium\Automation\Engine\AutomationAuthorization;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 
@@ -22,6 +23,15 @@ class AddOrderNoteAction implements Action {
 
   private const NOTE_TYPE_PRIVATE = 'private';
   private const NOTE_TYPE_CUSTOMER = 'customer';
+
+  /** @var AutomationAuthorization */
+  private $authorization;
+
+  public function __construct(
+    AutomationAuthorization $authorization
+  ) {
+    $this->authorization = $authorization;
+  }
 
   public function getKey(): string {
     return self::KEY;
@@ -49,9 +59,11 @@ class AddOrderNoteAction implements Action {
     $stepArgs = $args->getStep()->getArgs();
     $this->validateNote((string)($stepArgs['note'] ?? ''));
     $this->validateNoteType((string)($stepArgs['note_type'] ?? self::NOTE_TYPE_PRIVATE));
+    $this->authorization->authorizeSave($args->getAutomation(), [AutomationAuthorization::CAPABILITY_MANAGE_WOOCOMMERCE], $this->getAuthorizationMessage());
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
+    $this->authorization->authorizeRun($args->getAutomation(), [AutomationAuthorization::CAPABILITY_MANAGE_WOOCOMMERCE], $this->getAuthorizationMessage());
     $stepArgs = $args->getStep()->getArgs();
     $note = (string)($stepArgs['note'] ?? '');
     $noteType = (string)($stepArgs['note_type'] ?? self::NOTE_TYPE_PRIVATE);
@@ -71,6 +83,10 @@ class AddOrderNoteAction implements Action {
 
   public function onDuplicate(Step $step): Step {
     return $step;
+  }
+
+  private function getAuthorizationMessage(): string {
+    return __('The user who last saved this automation is not allowed to add order notes.', 'mailpoet-premium');
   }
 
   private function validateNote(string $note): void {

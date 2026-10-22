@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFAN_Model_Contact_Note' ) && BWFAN_Common::is_pro_3_0() ) {
 

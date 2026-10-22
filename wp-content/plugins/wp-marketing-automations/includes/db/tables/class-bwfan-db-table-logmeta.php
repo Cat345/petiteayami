@@ -28,7 +28,7 @@ class BWFAN_DB_Table_Logmeta extends BWFAN_DB_Tables_Base {
 			'primary_key' => 'ID',
 			'indexes'    => [
 				'bwfan_log_id' => [ 'bwfan_log_id' ],
-				'meta_key'      => [ 'meta_key' ],
+				'meta_key'      => [ 'meta_key' ], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- index definition for the plugin meta table meta_key column
 			],
 			'unique_keys' => [],
 		];

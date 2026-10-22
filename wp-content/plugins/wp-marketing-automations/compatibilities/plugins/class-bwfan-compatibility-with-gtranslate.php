@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * WordPress gTranslate Plugin Compatibility
@@ -31,7 +32,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_GTRANSLATE' ) ) {
 		public static function get_gtranslate_language() {
 			// Check if googtrans cookie is set
 			if ( isset( $_COOKIE['googtrans'] ) ) {
-				$googtrans = bwf_clean( $_COOKIE['googtrans'] );
+				$googtrans = sanitize_text_field( wp_unslash( $_COOKIE['googtrans'] ) );
 				$googtrans = explode( '/', $googtrans );
 
 				return is_array( $googtrans ) ? end( $googtrans ) : '';
@@ -39,12 +40,12 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_GTRANSLATE' ) ) {
 
 			// Check if HTTP_X_GT_LANG header is set
 			if ( isset( $_SERVER['HTTP_X_GT_LANG'] ) && ! empty( $_SERVER['HTTP_X_GT_LANG'] ) ) {
-				return bwf_clean( $_SERVER['HTTP_X_GT_LANG'] );
+				return sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_GT_LANG'] ) );
 			}
 
 			// Check domain mapping if HTTP_HOST is set
 			if ( isset( $_SERVER['HTTP_HOST'] ) && ! empty( $_SERVER['HTTP_HOST'] ) ) {
-				$current_domain = bwf_clean( $_SERVER['HTTP_HOST'] );
+				$current_domain = sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) );
 				$gtranslate     = get_option( 'GTranslate' );
 				$domain         = wp_parse_url( home_url(), PHP_URL_HOST );
 

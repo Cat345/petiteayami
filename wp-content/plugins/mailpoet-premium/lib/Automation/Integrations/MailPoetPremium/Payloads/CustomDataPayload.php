@@ -15,15 +15,20 @@ class CustomDataPayload implements Payload {
   /** @var scalar[] */
   private $data;
 
+  /** @var int */
+  private $depth;
+
   /**
    * @param scalar[] $data
    */
   public function __construct(
     string $hook,
-    array $data
+    array $data,
+    int $depth = 0
   ) {
     $this->hook = $hook;
     $this->data = $data;
+    $this->depth = $depth;
   }
 
   /**
@@ -35,5 +40,9 @@ class CustomDataPayload implements Payload {
 
   public function getHook(): string {
     return $this->hook;
+  }
+
+  public function getDepth(): int {
+    return $this->depth;
   }
 }

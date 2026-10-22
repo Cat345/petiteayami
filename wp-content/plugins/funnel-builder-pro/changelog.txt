@@ -1,20 +1,29 @@
 *** FunnelKit Funnel Builder Pro ***
 
-= 3.16.0.7 (Sept 03, 2026) =
-* Improved: Upsells: Compatibility updated with Sublium Subscriptions (#9383)
-* Improved: Bump: Multi product Carousel skin CSS enhancements. (#9386)
-* Fixed: Upsells: Bricks compatibility showing error for offers when no product is added. (#9501)
 
+= 3.17.0.1 (Oct 21, 2026) =
+* Improved: A/B: The rules tab now explains that A/B test variants inherit rules from the original offer instead of accepting edits that would not apply. (#9659)
+* Improved: Upsells: Removed the Views info tooltip from upsells offer rows in funnel analytics, causing redundancy. (#9673)
+* Fixed: Cart: Cart Rewards no longer blocks admin redirects, such as completing an order, after cart totals are recalculated during AJAX requests. (#9664)
 
-= 3.16.0.6 (Sept 01, 2026) =
-* Improved: Upsells: Compatibility with Sublium improved. (#9466)
-* Improved: Upsells: Compatibility with Authorize.net CIM improved for upsell refunds. (#9462)
-* Improved: Upsells: Compatibility updated with Woo Payments express checkout methods. (#9477)
-* Improved: Checkout: Compatibility updated with WooCommerce Smart Coupons By Store Apps. (#9467)
-* Improved: Checkout: Compatibility updated with Postcode.eu Address Validation plugin. (#9475)
-* Fixed: Funnel: Store checkout Step analytics showing zero after back navigation from single step. (#9452)
-* Fixed: Upsells: Failed order email getting sent twice when batching is enabled for upsells. (#9435)
-
+= 3.17.0 (Oct 12, 2026) =
+* Added: Order Bumps: Added a Cart Variant Type display rule for downloadable, virtual and physical items. (#9317)
+* Added: Order Bumps: Added Order Item Text Match and SKU Text/Regex Match display rules. (#9471)
+* Added: Order Bumps: Added the wfob_swap_products filter to decide the replaced cart product at runtime. (#9570)
+* Added: Upsells: Added a Custom CSS field to the global upsell settings. (#9519)
+* Added: Upsells: Added PayPlug to the supported gateways. (#9555)
+* Improved: A/B: Sales page A/B test analytics now report full-funnel revenue including checkout, order bumps and upsells. (#8636)
+* Improved: Order Bumps: Improved compatibility with CURCY WooCommerce Multi Currency. (#9499)
+* Improved: Upsells: Improved compatibility with Zamp Tax. (#9358)
+* Improved: Upsells: Hardened reporting and tracking script output for safer rendering. (#9581)
+* Improved: Upsells: Improved compatibility with Sublium Subscriptions. (#9590)
+* Improved: Upsells: Improved compatibility with Spectra. (#9624)
+* Improved: Upsells: Improved compatibility with WooPayments. (#9655)
+* Fixed: A/B: Embedded script content is now preserved in A/B test winner templates. (#9548)
+* Fixed: Checkout: Resolved repeated order review requests on idle checkout sessions. (#9425)
+* Fixed: Upsells: Order confirmation emails are no longer resent repeatedly after an upsell. (#9491)
+* Fixed: Upsells: GA4 purchase events now fire for Store API and express wallet orders. (#9530)
+* Fixed: Upsells: The internal missed sale note is no longer included in customer emails. (#9551)
 
 = 3.16.0.5 (Aug 20, 2026) =
 * Improved: Funnel: Compatibility with Elementor improved related to widget cache. (#9446)

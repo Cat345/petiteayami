@@ -57,7 +57,7 @@ if ( ! class_exists( 'BWFCRM_Note' ) && BWFAN_Common::is_pro_3_0() ) {
 			$notes_data['created_by']    = isset( $args['created_by'] ) ? $args['created_by'] : $user_id;
 			$notes_data['created_date']  = current_time( 'mysql', 1 );
 			$notes_data['modified_date'] = current_time( 'mysql', 1 );
-			$notes_data['date_time']     = isset( $args['date_time'] ) ? date( 'Y-m-d H:i:s', strtotime( $args['date_time'] ) ) : current_time( 'mysql', 1 );
+			$notes_data['date_time']     = isset( $args['date_time'] ) ? date( 'Y-m-d H:i:s', strtotime( $args['date_time'] ) ) : current_time( 'mysql', 1 ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Round-trips strtotime($string) in default tz; gmdate would shift the stored note time
 			$notes_data['type']          = isset( $args['type'] ) ? $args['type'] : self::$NOTE_GENERAL;
 
 			BWFAN_Model_Contact_Note::insert( $notes_data );
@@ -104,7 +104,7 @@ if ( ! class_exists( 'BWFCRM_Note' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			if ( ! empty( $args['date_time'] ) ) {
-				$notes_data['date_time'] = date( 'Y-m-d H:i:s', strtotime( $args['date_time'] ) );
+				$notes_data['date_time'] = date( 'Y-m-d H:i:s', strtotime( $args['date_time'] ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Round-trips strtotime($string) in default tz; gmdate would shift the stored note time
 			}
 
 			if ( ! empty( $args['type'] ) ) {

@@ -1,5 +1,42 @@
 *** Stripe Tax - Sales tax automation for WooCommerce ***
 
+2026-10-14 - version 2.2.0
+* Improved the live/sandbox mode toggle label to clearly convey the current state.
+* Fixed the key label mismatch between the Stripe App and WooCommerce connector.
+* Enabled Stripe Tax automatically when the Stripe Tax connector is installed.
+* Simplified product tax category configuration by removing the need to set it in two separate places.
+* Converted bare URLs in error messages into hyperlinks.
+* Fixed Canadian GST/HST registration types being displayed when the United States is selected as the country.
+* Added an explanation at checkout when Stripe Tax calculates 0% tax, helping merchants distinguish a valid zero-tax result from a configuration error.
+* Added error messages, status indicators, and diagnostic guidance for failed tax calculations.
+* Fixed the “Save changes” button remaining disabled for Alabama, the default state when adding a new registration.
+* Added integration with WooCommerce Subscriptions.
+* Fixed post-capture recalculation overwriting the order total and causing a mismatch with the payment charge.
+* Fixed the review prompt overlapping the bulk action controls on the Tax Registrations page.
+* Fixed WooCommerce 11 overwriting Stripe Tax virtual tax rates with rate_percent = 0.
+* Prevented Stripe Tax from blocking WooCommerce Store API calls when disabled.
+* Reactivated the built-in WooCommerce tax system when Stripe Tax is active and "Enable Stripe tax" is unchecked.
+* Added missing headers and the HPOS compatibility declaration.
+* Fixed Semgrep security issues.
+
+2026-09-02 - version 2.1.0
+* Added option to skip Stripe Tax calculations on the cart page.
+* Added warning banner in WP admin when Stripe Tax is in sandbox mode.
+* Added informational tooltip icons to all configuration fields on the Stripe Tax settings page.
+* Added a Stripe Tax activity log meta box to the WooCommerce order detail page.
+* Updated PHPUnit to fix CVE-2026-24765 (unsafe deserialization in PHPT coverage).
+* Fixed admin flow where shipping address source was used even when billing information was submitted.
+* Fixed duplicate /v1/tax/calculations requests triggered when adding a fee to an order from admin.
+* Fixed taxes not being calculated on Express Checkout when no Shipping Zone is configured.
+* Added cache guard for class-options.php.
+* Fixed misalignment of the "Steps" sections on the Stripe Tax settings page.
+* Fixed invalid tax address log pollution.
+* Fixed admin page to display net coupon amount immediately for tax-inclusive orders.
+* Fixed non-basic Stripe registrations missing Tax Type and Registration Type in WooCommerce.
+* Fixed taxable amount calculation to include Printful shipping charges.
+* Fixed dynamically injected Printful shipping rates being classified as txcd_00000000 (Nontaxable) instead of txcd_92010001 (Shipping).
+* Added "Refresh" button in Tax Registrations admin to clear cached Stripe registrations.
+
 2026-07-06 - version 2.0.5
 * Fixed tax reversals silently failing when refunds were issued by amount instead of quantity.
 * Fixed unbounded growth of persistent object cache groups.

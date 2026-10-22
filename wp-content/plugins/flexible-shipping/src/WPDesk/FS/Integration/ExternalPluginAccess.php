@@ -18,6 +18,7 @@ class ExternalPluginAccess {
 	 * @var string
 	 */
 	private $plugin_version;
+
 	/**
 	 * @var LoggerInterface
 	 */
@@ -47,5 +48,4 @@ class ExternalPluginAccess {
 	public function get_logger() {
 		return $this->logger;
 	}
-
 }

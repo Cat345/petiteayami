@@ -27,6 +27,9 @@ $stepClassName  = 'wfacp_single_step_form';
 $stepMultiClass = 'wfacp_single_step_form';
 if ( $totalStepCount > 1 && $totalStepCount == 2 ) {
 	$stepMultiClass = 'wfacp_two_step';
+} elseif ( 4 === absint( $totalStepCount ) ) {
+	// Four steps keep the three-step styling and narrow it with wfacp_four_step.
+	$stepMultiClass = 'wfacp_three_step wfacp_four_step';
 } else {
 	$stepMultiClass = 'wfacp_three_step';
 }
@@ -206,7 +209,7 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 										<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo esc_html( wp_strip_all_tags( $section['sub_heading'] ) ); ?></h4>
 										<?php
 									}
-									do_action('wfacp_form_section_inside_heading_' . $section_index . '_' . $step);
+									do_action( 'wfacp_form_section_inside_heading_' . $section_index . '_' . $step );
 
 									?>
 								</div>

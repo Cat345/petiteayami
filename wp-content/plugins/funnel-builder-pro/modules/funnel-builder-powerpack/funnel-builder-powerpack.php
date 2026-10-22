@@ -110,7 +110,7 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			 * missing, so an admin notice asks for a Funnel Builder update.
 			 * Bump on every release that depends on newly moved or added free-plugin code.
 			 */
-			define( 'WFFN_PRO_MIN_LITE_VERSION', '3.15.0.8' );
+			define( 'WFFN_PRO_MIN_LITE_VERSION', '3.16.1' );
 			define( 'WFFN_PRO_SLUG', 'wffn_pro' );
 			define( 'WFFN_PRO_FULL_NAME', 'FunnelKit Funnel Builder Pro' );
 			define( 'WFFN_PRO_PLUGIN_FILE', __FILE__ );
@@ -210,8 +210,14 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			require __DIR__ . '/includes/class-wffn-pro-woofunnels-support.php';
 			require __DIR__ . '/includes/class-wffn-conversion-data.php';
 			require __DIR__ . '/includes/class-wffn-visitor-tracking.php';
+			require __DIR__ . '/includes/class-wffn-journey.php';
 			require __DIR__ . '/includes/optin-pro/woofunnels-optins-pro.php';
 			require __DIR__ . '/includes/wc_thankyou-pro/woofunnels-wc_thankyou-pro.php';
+
+			// Stripe builds below 1.16.0 leak order-pay data; see the class header. Lite copy wins when present.
+			if ( defined( 'FKWCS_VERSION' ) && version_compare( FKWCS_VERSION, '1.16.0', '<' ) && ! class_exists( 'WFFN_Compatibility_FK_Stripe' ) ) {
+				require_once __DIR__ . '/includes/compatibilities/class-wffn-pro-fk-stripe-compatibility.php';
+			}
 			/**
 			 * The three REST controllers -- analytics, reset and import/export --
 			 * are no longer required here. They are autoloadable by class name and

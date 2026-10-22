@@ -108,11 +108,33 @@ if ( ! class_exists( 'WFFN_Views_Tracking' ) ) {
 			 * Record thankyou page views for native store checkout
 			 */
 			$order = wc_get_order( $order_id );
-			if ( $order instanceof WC_Order && empty( $order->get_meta( '_wfacp_post_id' ) ) ) {
+			if ( $order instanceof WC_Order && empty( $order->get_meta( '_wfacp_post_id' ) ) && $this->is_funnel_analytics_allowed( $order ) ) {
 				$this->record( $post->ID, 5 );
 				WFFN_Core()->data->set_cookie( 'wfty_native_' . $order_id, 'yes', time() + ( DAY_IN_SECONDS * 1 ) );
 				WFFN_Core()->logger->log( 'Order #' . $order_id . ': record view thankyou page #' . $_GET['wfty_source'], 'wffn', true ); // phpcs:ignore
 			}
+		}
+
+		/**
+		 * Funnel analytics consent (wffn_allow_funnel_analytics), as decided at checkout for this order and now.
+		 *
+		 * @param WC_Order $order
+		 *
+		 * @return bool
+		 */
+		private function is_funnel_analytics_allowed( $order ) {
+			if ( 'yes' === $order->get_meta( '_wffn_analytics_withheld' ) ) {
+				return false;
+			}
+			$context = array(
+				'event' => 'native_thankyou_view',
+				'order' => $order,
+			);
+			if ( function_exists( 'wffn_is_funnel_analytics_allowed' ) ) {
+				return wffn_is_funnel_analytics_allowed( $context );
+			}
+
+			return false !== filter_var( apply_filters( 'wffn_allow_funnel_analytics', true, $context ), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 		}
 	}
 

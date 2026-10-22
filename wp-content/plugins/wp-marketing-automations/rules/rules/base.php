@@ -195,13 +195,16 @@ class BWFAN_Rule_Base {
 		if ( 'between' === $type && is_array( $rule_data['data'] ) ) {
 			$from_data = $rule_data['data']['from'];
 			$to_data   = $rule_data['data']['to'];
+			// phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Output re-parsed with strtotime() in default tz to truncate to midnight
 			$from      = strtotime( date( 'Y-m-d', $current_time - ( DAY_IN_SECONDS * absint( $from_data ) ) ) );// excluding time
+			// phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Output re-parsed with strtotime() in default tz to truncate to midnight
 			$to        = strtotime( date( 'Y-m-d', $current_time - ( DAY_IN_SECONDS * absint( $to_data ) ) ) );// excluding time
 			$result    = ( ( $data >= $to ) && ( $data <= $from ) );
 
 			return $result;
 		}
 
+		// phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Output re-parsed with strtotime() in default tz to truncate to midnight
 		$filter_value = strtotime( date( 'Y-m-d', $current_time - ( DAY_IN_SECONDS * absint( $rule_data['data'] ) ) ) );// excluding time
 
 		switch ( $type ) {

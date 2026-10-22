@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * UTM Leads Tracker - XLPlugins
@@ -37,11 +38,11 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_UTM_Leads_Tracker' ) ) {
 		 */
 		public function bwfan_populate_utm_lead_data_cart( $abandoned_data ) {
 
-			if ( ! isset( $_COOKIE['xlutm_params_utm'] ) ) {
+			if ( ! isset( $_COOKIE['xlutm_params_utm'] ) || ! is_string( $_COOKIE['xlutm_params_utm'] ) ) {
 				return $abandoned_data;
 			}
 
-			$abandoned_data['xlutm_data'] = json_decode( stripslashes( $_COOKIE['xlutm_params_utm'] ), true );
+			$abandoned_data['xlutm_data'] = map_deep( json_decode( wp_unslash( $_COOKIE['xlutm_params_utm'] ), true ), function ( $value ) { return is_string( $value ) ? sanitize_text_field( $value ) : $value; } ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded string values are sanitize_text_field()ed, other JSON types kept
 
 			return $abandoned_data;
 		}

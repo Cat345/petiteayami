@@ -18,9 +18,11 @@ use Throwable;
  * Base class for hook handlers.
  */
 abstract class Hook_Handlers {
-	const ACTIONS            = array();
-	const FILTERS            = array();
-	const ACTIVATION_OPTIONS = array();
+	const ACTIONS                            = array();
+	const FILTERS                            = array();
+	const ACTIVATION_OPTIONS                 = array();
+	const INVALID_TAX_LOCATION_ERROR_MESSAGE = 'Invalid tax location address';
+	const INVALID_TAX_LOCATION_SESSION_FLAG  = 'stwc_invalid_tax_location_error_logged';
 
 	/**
 	 * Whether the current request has failed.
@@ -35,6 +37,13 @@ abstract class Hook_Handlers {
 	 * @var string
 	 */
 	protected static $current_request_error_message = '';
+
+	/**
+	 * Tracks whether invalid tax location was already seen in this request.
+	 *
+	 * @var bool
+	 */
+	protected static $invalid_tax_location_logged_this_request = false;
 
 	/**
 	 * Register action and filter hook handlers
@@ -105,7 +114,9 @@ abstract class Hook_Handlers {
 	 * @param throwable $err The error.
 	 */
 	protected static function on_error( $err ) {
-		StripeTaxLogger::log_info( $err->getMessage() );
+		if ( ! static::should_rate_limit_input_error_log( $err ) ) {
+			StripeTaxLogger::log_info( $err->getMessage() );
+		}
 		static::$current_request_error_message = static::get_customer_safe_error_message( $err );
 
 		if ( is_admin() ) {
@@ -160,7 +171,9 @@ abstract class Hook_Handlers {
 	 * @param throwable $err The error.
 	 */
 	protected static function on_generic_error( $err ) {
-		StripeTaxLogger::log_error( $err->getMessage() );
+		if ( ! static::should_rate_limit_input_error_log( $err ) ) {
+			StripeTaxLogger::log_error( $err->getMessage() );
+		}
 		static::$current_request_error_message = static::get_customer_safe_error_message( $err );
 
 		if ( is_admin() ) {
@@ -221,5 +234,51 @@ abstract class Hook_Handlers {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Deduplicate noisy input validation logs per customer session.
+	 *
+	 * @param Throwable $err The captured exception.
+	 *
+	 * @return bool True when logging should be skipped.
+	 */
+	protected static function should_rate_limit_input_error_log( Throwable $err ): bool {
+		if ( ! $err instanceof Input_Exception ) {
+			return false;
+		}
+
+		if ( static::INVALID_TAX_LOCATION_ERROR_MESSAGE !== trim( (string) $err->getMessage() ) ) {
+			return false;
+		}
+
+		// Prevent duplicate logs within the same request even without a WC session.
+		if ( static::$invalid_tax_location_logged_this_request ) {
+			return true;
+		}
+
+		static::$invalid_tax_location_logged_this_request = true;
+
+		if ( ! function_exists( 'WC' ) ) {
+			return false;
+		}
+
+		$woocommerce = WC();
+		$session     = $woocommerce ? $woocommerce->session : null;
+		if ( ! is_object( $session ) ) {
+			return false;
+		}
+
+		if ( ! method_exists( $session, 'get' ) || ! method_exists( $session, 'set' ) ) {
+			return false;
+		}
+
+		if ( $session->get( static::INVALID_TAX_LOCATION_SESSION_FLAG, false ) ) {
+			return true;
+		}
+
+		$session->set( static::INVALID_TAX_LOCATION_SESSION_FLAG, true );
+
+		return false;
 	}
 }

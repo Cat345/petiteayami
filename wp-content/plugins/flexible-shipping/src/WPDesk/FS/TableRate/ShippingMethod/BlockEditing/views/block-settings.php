@@ -9,7 +9,7 @@
 ?>
 
 <style>
-    #flexible_shipping_import, #flexible_shipping_export_selected {
-        display: none;
-    }
+	#flexible_shipping_import, #flexible_shipping_export_selected {
+		display: none;
+	}
 </style>

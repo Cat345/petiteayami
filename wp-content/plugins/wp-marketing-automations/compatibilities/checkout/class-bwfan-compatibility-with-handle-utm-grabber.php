@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Handle UTM Grabber
@@ -46,7 +47,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Handle_UTM_Grabber' ) ) {
 				}
 
 				$cookie_field = $handle_utm_grabber[ $utm_key ];
-				$domain       = isset( $_SERVER["SERVER_NAME"] ) ? $_SERVER["SERVER_NAME"] : '';
+				$domain       = isset( $_SERVER["SERVER_NAME"] ) ? sanitize_text_field( wp_unslash( $_SERVER["SERVER_NAME"] ) ) : '';
 				if ( strtolower( substr( $domain, 0, 4 ) ) == 'www.' ) {
 					$domain = substr( $domain, 4 );
 				}
@@ -83,7 +84,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Handle_UTM_Grabber' ) ) {
 				if ( ! isset( $_COOKIE[ $key ] ) || empty( $_COOKIE[ $key ] ) ) {
 					continue;
 				}
-				$handle_utm_grabber_data[ $key ] = $_COOKIE[ $key ];
+				$handle_utm_grabber_data[ $key ] = sanitize_text_field( wp_unslash( $_COOKIE[ $key ] ) );
 			}
 
 			$data['handle_utm_grabber'] = $handle_utm_grabber_data;

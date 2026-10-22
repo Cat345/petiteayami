@@ -43,6 +43,13 @@ if ( ! class_exists( 'BWF_AS_CLI' ) ) {
 					$this->print_custom_error( '2' );
 				}
 
+				/**
+				 * Runs on every worker request, i.e. also here - the CLI path, which WooFunnels_AS_DS::worker_as_run()
+				 * (the REST worker) never reaches. Plugins use this to re-arm their own recurring hooks if the row
+				 * has gone missing.
+				 */
+				do_action( 'bwf_worker_before_as_run' );
+
 				/** Custom queue cleaner instance */
 				$cleaner = new ActionScheduler_QueueCleaner( null, $size );
 

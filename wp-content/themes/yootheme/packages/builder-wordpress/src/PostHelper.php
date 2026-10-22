@@ -6,7 +6,7 @@ use WP_Post;
 
 class PostHelper
 {
-    public const PATTERN = '/<!--\s?(\{.*})\s?-->/';
+    public const PATTERN = '/<!--\s?({.*})\s?-->/';
 
     public static function matchContent(?string $content): ?string
     {
@@ -14,6 +14,23 @@ class PostHelper
             preg_match(static::PATTERN, $content, $matches)
             ? $matches[1]
             : null;
+    }
+
+    public static function escapeContent(?string $content): ?string
+    {
+        if (!$content || !str_contains($content, '<!--')) {
+            return $content;
+        }
+
+        return preg_replace_callback(
+            static::PATTERN,
+            fn($matches) => str_replace(
+                $matches[1],
+                strtr($matches[1], ['<' => '\u003C']),
+                $matches[0],
+            ),
+            $content,
+        );
     }
 
     /**

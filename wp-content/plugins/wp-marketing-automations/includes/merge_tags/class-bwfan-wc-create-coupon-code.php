@@ -77,11 +77,27 @@ class BWFAN_WC_Create_Coupon_Code extends BWFAN_Merge_Tag {
 		}
 
 		$parameters['automation_id'] = BWFAN_Merge_Tag_Loader::get_data( 'automation_id' );
-		$all_actions                 = BWFAN_Load_Integrations::get_all_integrations();
-		$action_data                 = array(
+
+		/**
+		 * Resolve the one action this tag needs, not the whole registry.
+		 *
+		 * get_all_integrations() calls load_all_actions(), which materializes
+		 * every mapped action across Lite, Pro and Connectors — 173 files with
+		 * an instantiation, load_hooks() and get_localize_data() apiece. That
+		 * is the pre-lazy-loading cost, and it defeated lazy action loading for
+		 * the whole process the moment an email body carried this tag.
+		 * get_action() materializes exactly this slug.
+		 */
+		$coupon_action = BWFAN_Core()->integration->get_action( 'wc_create_coupon' );
+		if ( ! $coupon_action instanceof BWFAN_Action ) {
+			/** WooCommerce inactive, or the slug never resolved. */
+			return '';
+		}
+
+		$action_data = array(
 			'processed_data' => $parameters,
 		);
-		$result                      = $all_actions['wc']['wc_create_coupon']->execute_action( $action_data );
+		$result      = $coupon_action->execute_action( $action_data );
 
 		if ( is_array( $result ) && count( $result ) > 0 && 4 === $result['status'] ) { // Error in coupon creation
 			// @todo log this error somewhere

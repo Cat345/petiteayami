@@ -56,13 +56,14 @@ if ( ! class_exists( 'WooFunnels_Create_DB_Tables' ) ) {
 		 * This method create new tables in database except core table
 		 */
 		public function create() {
-			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 			$current_table_list = get_option( '_bwf_db_table_list', array( 'tables' => array(), 'version' => '0.0.0' ) );
 			$tables             = apply_filters( 'bwf_add_db_table_schema', array(), $current_table_list );
 
 			global $wpdb;
 
 			if ( is_array( $tables ) && count( $tables ) > 0 ) {
+				/** dbDelta lives here — only parse wp-admin/includes/upgrade.php when there is actually schema to apply */
+				require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 				foreach ( $tables as $table ) {
 					$schema = $table['schema'];
 					$schema = str_replace( array( '{table_prefix}', '{table_collate}' ), array( $wpdb->prefix, $this->charset_collate ), $schema );

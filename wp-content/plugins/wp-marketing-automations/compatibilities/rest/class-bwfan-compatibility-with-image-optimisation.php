@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Image Optimizer – Optimize Images and Convert to WebP or AVIF
@@ -30,7 +31,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Image_Optimization' ) ) {
 		public function remove_image_optimization_hook() {
 			$rest_route = filter_input( INPUT_GET, 'rest_route' );
 			if ( empty( $rest_route ) ) {
-				$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : '';
+				$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 			}
 			if ( empty( $rest_route ) ) {
 				return;

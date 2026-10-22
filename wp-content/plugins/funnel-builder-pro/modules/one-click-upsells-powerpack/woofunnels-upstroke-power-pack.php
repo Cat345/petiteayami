@@ -71,6 +71,48 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 			add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
 		}
 
+
+
+
+
+		/**
+		 * Drop a scheduled-sale window from a product we have just priced at runtime.
+		 *
+		 * WooCommerce 11.1.0 added Automattic\WooCommerce\Internal\ScheduledSalePriceReconciler
+		 * (woocommerce/woocommerce#65551), filtering `woocommerce_product_get_price` at priority 99:
+		 *
+		 *     if ( ! $within_window && (float) $stored_price === (float) $sale_price ) {
+		 *         return $regular_price;
+		 *     }
+		 *
+		 * An offer price set with set_price() matches that test whenever it coincides with the
+		 * product's own sale price - or its regular price while a sale is scheduled but not yet
+		 * running. The offer is then read at the catalog price in 'view' context, which is what cart
+		 * totals and WC_Abstract_Order::add_product() use, so the wrong amount is charged, including
+		 * into a subscription's recurring total. Since WooCommerce 10.x a lapsed sale keeps its price
+		 * and dates indefinitely, so this is not a short window after a sale ends.
+		 *
+		 * Clearing the window on this per-request object makes the reconciler return at its own "no
+		 * sale dates" guard. Both dates go: a sale scheduled to START later puts "now" outside the
+		 * window just the same. Re-asserting the price at a later filter priority was the
+		 * alternative and is not safe - it discards conversions that legitimately ran before it,
+		 * such as CURCY at priority 99.
+		 *
+		 * Nothing is saved; the product's stored schedule is untouched and repeat calls are no-ops.
+		 *
+		 * @param WC_Product $product Product priced at runtime.
+		 */
+		public static function detach_sale_schedule( $product ) {
+			if ( ! $product instanceof WC_Product ) {
+				return;
+			}
+
+			if ( $product->get_date_on_sale_from( 'edit' ) || $product->get_date_on_sale_to( 'edit' ) ) {
+				$product->set_date_on_sale_from( '' );
+				$product->set_date_on_sale_to( '' );
+			}
+		}
+
 		public static function instance() {
 			if ( null === self::$instance ) {
 				self::$instance = new self();

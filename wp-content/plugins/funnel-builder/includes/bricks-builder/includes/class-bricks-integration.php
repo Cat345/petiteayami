@@ -150,6 +150,7 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 			add_action( 'wp_ajax_bricks_save_post', array( $this, 'wp_register_elements' ), - 1 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
 			add_action( 'wp_ajax_bricks_regenerate_css_file', array( $this, 'register_elements_for_css_regeneration' ), - 1 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
 			add_action( 'bricks_regenerate_css_files', array( $this, 'register_all_elements' ), - 1 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
+			add_action( 'save_post', array( $this, 'register_elements_on_save_post' ), 9, 2 );
 			add_action( 'rest_api_init', array( $this, 'rest_register_elements' ), 9 );
 			add_action( 'wffn_before_import_checkout_template', array( $this, 'rest_register_elements_on_import' ), 10, 2 );
 			add_action( 'wffn_import_template_background', array( $this, 'rest_register_elements' ), 9 );
@@ -343,6 +344,41 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 			}
 
 			if ( WFOPP_Core()->optin_pages->get_post_type_slug() === $post_type ) {
+				$this->register_elements( 'optin-pages' );
+			}
+		}
+
+		/**
+		 * Register elements before Bricks regenerates the post CSS file on save_post.
+		 *
+		 * Bricks\Assets_Files::save_post() (save_post, priority 10) rewrites post-{ID}.min.css on every
+		 * save made outside the builder (FunnelKit admin, wp_update_post(), REST). Without our elements
+		 * registered, their control CSS is dropped from the file.
+		 *
+		 * @param int     $post_id Post ID.
+		 * @param WP_Post $post Post object.
+		 *
+		 * @return void
+		 */
+		public function register_elements_on_save_post( $post_id, $post ) {
+			if ( wp_is_post_revision( $post ) || ! class_exists( 'Bricks\Database' ) || 'file' !== \Bricks\Database::get_setting( 'cssLoading' ) || empty( \Bricks\Database::get_data( $post_id, 'content' ) ) ) {
+				return;
+			}
+
+			if ( class_exists( 'WFACP_Common' ) && WFACP_Common::get_post_type_slug() === $post->post_type ) {
+				if ( 0 === did_action( 'wfacp_template_class_found' ) && ! is_null( WFACP_Core()->template_loader ) ) {
+					WFACP_Core()->template_loader::$is_checkout = true;
+					WFACP_Common::set_id( $post_id );
+					WFACP_Core()->template_loader->maybe_setup_page();
+				}
+				$this->register_elements( 'checkout' );
+			}
+
+			if ( ! is_null( WFFN_Core()->thank_you_pages ) && WFFN_Core()->thank_you_pages->get_post_type_slug() === $post->post_type ) {
+				$this->register_elements( 'thankyou-pages' );
+			}
+
+			if ( WFOPP_Core()->optin_pages->get_post_type_slug() === $post->post_type ) {
 				$this->register_elements( 'optin-pages' );
 			}
 		}

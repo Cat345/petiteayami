@@ -111,7 +111,7 @@ if ($type == 'nav') {
 
     $attrs['class'][] = 'uk-nav';
     $attrs['class'][] = "uk-nav-{$config('~menu.style')}";
-    $attrs['class'][] = $config('~menu.style') == 'primary' ? "uk-nav-{$config('~menu.size')}" : '';
+    $attrs['class'][] = $config('~menu.size') && $config('~menu.style') == 'primary' ? "uk-nav-{$config('~menu.size')}" : '';
     $attrs['class'][] = $config('~menu.divider') ? 'uk-nav-divider' : '';
 
     // Accordion menu
@@ -147,7 +147,6 @@ if ($type !== 'nav') {
     // Store menu config in case builder renders a menu module/widget
     $menuConfig = $config('~menu');
 
-    $builder = app(Builder::class);
     foreach ($items as $item) {
         if ($content = $config("~theme.menu.items.{$item->id}.content")) {
             if ($config($recursionKey = "builderRecursion{$item->id}")) {
@@ -156,6 +155,7 @@ if ($type !== 'nav') {
 
             $config->set($recursionKey, true);
 
+            $builder ??= app(Builder::class);
             $item->builder = $builder->render(
                 json_encode($content),
                 ['prefix' => "menu-item-{$item->id}"]

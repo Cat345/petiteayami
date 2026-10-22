@@ -17,6 +17,5 @@ class ProductFieldValue extends AbstractCondition {
 		$this->is_disabled  = true;
 
 		$this->name .= ' ' . __( '(PRO feature)', 'flexible-shipping' );
-
 	}
 }

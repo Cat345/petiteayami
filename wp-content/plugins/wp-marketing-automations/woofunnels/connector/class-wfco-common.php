@@ -127,8 +127,8 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 			foreach ( $data as $key => $val ) {
 				$meta_data                 = array();
 				$meta_data['connector_id'] = $connector_id;
-				$meta_data['meta_key']     = $key;
-				$meta_data['meta_value']   = maybe_serialize( $val );
+				$meta_data['meta_key']     = $key; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the connector meta table row, not a WP_Query meta lookup
+				$meta_data['meta_value']   = maybe_serialize( $val ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the connector meta table row, not a WP_Query meta lookup
 				WFCO_Model_ConnectorMeta::insert( $meta_data );
 			}
 
@@ -203,8 +203,8 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 			foreach ( $new_data as $key => $val ) {
 				$meta_data                 = array();
 				$meta_data['connector_id'] = $connector_id;
-				$meta_data['meta_key']     = $key;
-				$meta_data['meta_value']   = maybe_serialize( $val );
+				$meta_data['meta_key']     = $key; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the connector meta table row, not a WP_Query meta lookup
+				$meta_data['meta_value']   = maybe_serialize( $val ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the connector meta table row, not a WP_Query meta lookup
 				WFCO_Model_ConnectorMeta::insert( $meta_data );
 			}
 		}
@@ -641,8 +641,17 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 
 		public static function get_call_object( $connector_slug, $call_slug ) {
 			$all_connectors = WFCO_Load_Connectors::get_all_connectors();
+			$val            = isset( $all_connectors[ $connector_slug ][ $call_slug ] ) ? $all_connectors[ $connector_slug ][ $call_slug ] : null;
 
-			return $all_connectors[ $connector_slug ][ $call_slug ];
+			if ( $val instanceof WFCO_Call ) {
+				return $val;
+			}
+			if ( is_string( $val ) ) {
+				/** Lazy ref (declared $calls_map): load the one file behind it */
+				return WFCO_Load_Connectors::materialize_call( $call_slug, $connector_slug );
+			}
+
+			return null; // was an unguarded array read — clean null instead
 		}
 	}
 }

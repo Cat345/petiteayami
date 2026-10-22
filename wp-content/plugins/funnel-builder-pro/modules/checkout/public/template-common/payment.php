@@ -65,7 +65,9 @@ if ( ! empty( $payment_des ) ) {
 		?>
 	<div class="wfacp-comm-title <?php echo $border_cls; ?>">
 		<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?> "><?php echo $payment_methods_heading; ?></h2>
+		<?php if ( ! empty( $payment_methods_sub_heading ) ) { ?>
 		<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
+		<?php } ?>
 	</div>
 	<?php } ?>
 	<?php do_action( 'wfacp_checkout_before_order_review' ); ?>

@@ -55,7 +55,7 @@ class ProVersionUpdateReminder implements Hookable {
 				'flexible-shipping'
 			),
 			'<strong>',
-			FLEXIBLE_SHIPPING_PRO_VERSION,
+			defined( 'FLEXIBLE_SHIPPING_PRO_VERSION' ) ? constant( 'FLEXIBLE_SHIPPING_PRO_VERSION' ) : '',
 			'</strong>',
 			'<strong>',
 			'</strong>',
@@ -65,5 +65,4 @@ class ProVersionUpdateReminder implements Hookable {
 			'</a>'
 		);
 	}
-
 }

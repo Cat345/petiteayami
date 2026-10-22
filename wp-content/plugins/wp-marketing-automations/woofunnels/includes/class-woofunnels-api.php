@@ -35,7 +35,7 @@ if ( ! class_exists( 'WooFunnels_API' ) ) :
 			$api_params = self::get_api_args( array(
 				'action' => 'get_woofunnels_plugins',
 				'attrs'  => array(
-					'meta_query' => array(
+					'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- argument sent to the remote FunnelKit API, not a local query
 						array(
 							'key'     => 'is_visible_in_dashboard',
 							'value'   => 'yes',

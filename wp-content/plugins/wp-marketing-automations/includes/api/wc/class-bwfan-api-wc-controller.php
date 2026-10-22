@@ -108,8 +108,8 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 		global $wpdb;
 
 		/** To get automation step with action create coupon and status is 1 */
-		$query   = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}bwfan_automation_step WHERE `aid` = %d AND `action` LIKE '%wc_create_coupon%' AND `status` = '1'", intval( $automationId ) );
-		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query   = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}bwfan_automation_step WHERE `aid` = %d AND `action` LIKE %s AND `status` = '1'", intval( $automationId ), '%' . $wpdb->esc_like( 'wc_create_coupon' ) . '%' );
+		$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() on previous line
 
 		/** Check for empty step */
 		if ( empty( $results ) ) {
@@ -271,7 +271,7 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 	public function get_best_selling_product( $limit, $page ) {
 		$param = array(
 			'post_type'      => 'product',
-			'meta_key'       => 'total_sales',
+			'meta_key'       => 'total_sales', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 			'orderby'        => 'meta_value_num',
 			'posts_per_page' => $limit,
 			'paged'          => $page,
@@ -298,7 +298,7 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 		);
 
 		if ( ! empty( $this->category_in ) ) {
-			$param['tax_query'] = [
+			$param['tax_query'] = [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 				[
 					'taxonomy' => 'product_cat',
 					'field'    => 'term_id',
@@ -309,7 +309,7 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 		}
 
 		if ( ! empty( $this->category_not_in ) ) {
-			$param['tax_query'] = [
+			$param['tax_query'] = [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 				[
 					'taxonomy' => 'product_cat',
 					'field'    => 'term_id',
@@ -333,7 +333,7 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 	public function get_sale_products( $limit, $page ) {
 		$param = array(
 			'post_type'      => array( 'product', 'product_variation' ),
-			'meta_query'     => array(
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 				'relation' => 'OR',
 				array( // Simple products type
 					'key'     => '_sale_price',
@@ -373,7 +373,7 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 		);
 		$param       = array(
 			'post_type'      => 'product',
-			'tax_query'      => $tax_query,
+			'tax_query'      => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 			'posts_per_page' => $limit,
 			'paged'          => $page,
 			'fields'         => 'ids',
@@ -414,11 +414,11 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 	public function get_top_rated_products( $limit, $page ) {
 		$param = array(
 			'post_type'      => 'product',
-			'meta_key'       => '_wc_average_rating',
+			'meta_key'       => '_wc_average_rating', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 			'orderby'        => 'meta_value_num',
 			'order'          => 'DESC',
-			'meta_query'     => WC()->query->get_meta_query(),
-			'tax_query'      => WC()->query->get_tax_query(),
+			'meta_query'     => WC()->query->get_meta_query(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
+			'tax_query'      => WC()->query->get_tax_query(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 			'posts_per_page' => $limit,
 			'paged'          => $page,
 			'fields'         => 'ids'
@@ -468,7 +468,7 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 		}
 
 		if ( ! empty( $filter_key ) ) {
-			$args['meta_query'] = [
+			$args['meta_query'] = [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 				[
 					'key'     => '_stock_status',
 					'value'   => $filter_key,
@@ -493,7 +493,7 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 
 		/** Add category argument **/
 		if ( ! empty( $this->categories ) ) {
-			$data['tax_query'] = [
+			$data['tax_query'] = [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 				[
 					'taxonomy' => 'product_cat',
 					'field'    => 'term_id',
@@ -521,7 +521,7 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 
 		/** Add exclude_ids argument **/
 		if ( ! empty( $this->exclude_ids ) ) {
-			$data['post__not_in'] = $this->exclude_ids;
+			$data['post__not_in'] = $this->exclude_ids; // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in -- exclude_ids is the short list of products already picked in the search field
 		}
 
 		/** Add sort by argument **/
@@ -580,18 +580,18 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 				$args['order']   = 'DESC';
 				break;
 			case 'sales':
-				$args['meta_key'] = 'total_sales';
+				$args['meta_key'] = 'total_sales'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 				$args['orderby']  = 'meta_value_num';
 				$args['order']    = 'DESC';
 				break;
 			case 'lowest_price':
 				$args['orderby']  = 'meta_value_num';
-				$args['meta_key'] = '_price';
+				$args['meta_key'] = '_price'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 				$args['order']    = 'ASC';
 				break;
 			case 'highest_price':
 				$args['orderby']  = 'meta_value_num';
-				$args['meta_key'] = '_price';
+				$args['meta_key'] = '_price'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 				$args['order']    = 'DESC';
 				break;
 			case 'random':
@@ -698,7 +698,7 @@ class BWFAN_API_WC_Controller extends BWFAN_API_Controller {
 		);
 
 		if ( $exclude_autonami ) {
-			$args['meta_query'] = [
+			$args['meta_query'] = [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- admin coupon search on shop_coupon posts; small table, limited
 				[
 					'key'     => '_is_bwfan_coupon',
 					'compare' => 'NOT EXISTS', // this will exclude the coupons where _is_bwfan_coupon meta key exists

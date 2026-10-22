@@ -78,7 +78,7 @@ class BWFAN_WC_Cart_Abandoned_Data extends Cart_Merge_Tag {
 				$field_value = $this->get_date_value( $field_value, $attr );
 				break;
 			case 'price':
-				$field_value = $this->get_price_value( $field_value, $attr );
+				$field_value = $this->get_price_value( $field_value, $attr, $cart_details );
 				break;
 			default:
 				break;
@@ -133,16 +133,17 @@ class BWFAN_WC_Cart_Abandoned_Data extends Cart_Merge_Tag {
 	 *
 	 * @param $value
 	 * @param $attr
+	 * @param $cart_details
 	 *
 	 * @return string|float
 	 */
-	public function get_price_value( $value, $attr ) {
+	public function get_price_value( $value, $attr, $cart_details = null ) {
 		if ( ! is_array( $attr ) || ! isset( $attr['type'] ) || 'price' !== $attr['type'] ) {
 			return $value;
 		}
 
 		// Get cart details for currency if available
-		$cart_details = BWFAN_Merge_Tag_Loader::get_data( 'cart_details' );
+		$cart_details = empty( $cart_details ) ? BWFAN_Merge_Tag_Loader::get_data( 'cart_details' ) : $cart_details;
 		$order        = null;
 
 		// Try to get order from cart details if available
@@ -161,6 +162,16 @@ class BWFAN_WC_Cart_Abandoned_Data extends Cart_Merge_Tag {
 
 		// Get formatting options
 		$formatting = BWFAN_Common::get_formatting_for_wc_price( $price_attr, $order );
+
+		// Without an order, use the currency stored with the cart instead of the store currency
+		if ( ! $order instanceof WC_Order && ! empty( $formatting['currency'] ) && ! empty( $cart_details['currency'] ) ) {
+			$cart_symbol = '';
+			if ( method_exists( 'BWF_Plugin_Compatibilities', 'get_currency_symbol' ) ) {
+				$cart_symbol = BWF_Plugin_Compatibilities::get_currency_symbol( $cart_details['currency'] );
+			}
+			$cart_symbol            = empty( $cart_symbol ) ? get_woocommerce_currency_symbol( $cart_details['currency'] ) : $cart_symbol;
+			$formatting['currency'] = html_entity_decode( $cart_symbol, ENT_QUOTES | ENT_HTML401 );
+		}
 
 		// Format the price
 		return BWFAN_Common::get_formatted_price_wc( $price_value, $formatting['raw'], $formatting['currency'] );

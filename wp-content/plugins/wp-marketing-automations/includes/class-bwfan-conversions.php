@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFAN_Conversions' ) && BWFAN_Common::is_pro_3_0() ) {
 	#[\AllowDynamicProperties]
@@ -85,8 +86,8 @@ if ( ! class_exists( 'BWFAN_Conversions' ) && BWFAN_Common::is_pro_3_0() ) {
 			$email_order_strtotime       = $email_order_conversion_days * DAY_IN_SECONDS;
 			$order_creation_date         = $order->get_date_created();
 			$order_from                  = ( strtotime( $order_creation_date ) - $email_order_strtotime );
-			$order_from                  = date( 'Y-m-d', $order_from );
-			$order_to                    = date( 'Y-m-d', strtotime( $order_creation_date ) );
+			$order_from                  = gmdate( 'Y-m-d', $order_from );
+			$order_to                    = gmdate( 'Y-m-d', strtotime( $order_creation_date ) );
 
 			/** Get automation ids in which don't need to mark conversion */
 			$skip_aids = BWFAN_Common::get_skip_conversion_automations();
@@ -110,8 +111,8 @@ if ( ! class_exists( 'BWFAN_Conversions' ) && BWFAN_Common::is_pro_3_0() ) {
 				$query_params = array_merge( $query_params, $skip_aids );
 			}
 
-			$query   = $wpdb->prepare( "SELECT `ID`, `cid`, `oid`, `type` FROM `{$wpdb->prefix}bwfan_engagement_tracking` WHERE DATE(`created_at`) >= %s AND DATE(`created_at`) <= %s AND ($email_open OR ((`mode` = 2 || `mode` = 3) && `click` > 0)) AND `hash_code` != '' AND `cid` = %d AND `oid` > 0 AND `type` IN (1,2)$not_in_clause ORDER BY `updated_at` DESC LIMIT 0,1", $query_params );
-			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query   = $wpdb->prepare( "SELECT `ID`, `cid`, `oid`, `type` FROM `{$wpdb->prefix}bwfan_engagement_tracking` WHERE DATE(`created_at`) >= %s AND DATE(`created_at`) <= %s AND ($email_open OR ((`mode` = 2 || `mode` = 3) && `click` > 0)) AND `hash_code` != '' AND `cid` = %d AND `oid` > 0 AND `type` IN (1,2)$not_in_clause ORDER BY `updated_at` DESC LIMIT 0,1", $query_params ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders from array_fill('%d'); args passed as array match count
+			$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 
 			/** No conversations found */
 			if ( ! is_array( $results ) || 0 === count( $results ) ) {
@@ -308,7 +309,7 @@ if ( ! class_exists( 'BWFAN_Conversions' ) && BWFAN_Common::is_pro_3_0() ) {
 			$order_email   = sanitize_email( $order_email );
 			$order_phone   = sanitize_text_field( $order_phone );
 			$track_query   = $wpdb->prepare( "SELECT ID, oid, type FROM {$wpdb->prefix}bwfan_engagement_tracking WHERE ((mode = 1 AND open > 0) OR (mode = 2 AND click > 0)) AND hash_code != '' AND send_to IN (%s, %s) ORDER BY created_at DESC LIMIT 0, 1", $order_email, $order_phone );
-			$track_results = $wpdb->get_results( $track_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$track_results = $wpdb->get_results( $track_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 			$track_id      = ! empty( $track_results[0]['ID'] ) ? $track_results[0]['ID'] : 0;
 
 			return $track_id;

@@ -9,6 +9,9 @@ use YOOtheme\Theme\ThemeConfig;
 use YOOtheme\View;
 use function YOOtheme\app;
 
+/**
+ * @see https://developers.google.com/tag-platform/security/concepts/consent-mode#overview
+ */
 class LoadGoogleAnalyticsScript
 {
     protected const TYPE = 'script-google-analytics';
@@ -43,7 +46,10 @@ class LoadGoogleAnalyticsScript
             }
 
             $template = Path::join(__DIR__, '../../templates/google-analytics.php');
-            $script['head'] = (new View())->render($template, ['script' => $script]);
+            $script['head'] = (new View())->render($template, [
+                'script' => $script,
+                'consent' => $this->config->get('~theme.consent.type') !== 'none',
+            ]);
 
             break;
         }
@@ -66,6 +72,17 @@ class LoadGoogleAnalyticsScript
                         'label' => 'API Key',
                         'attrs' => [
                             'placeholder' => 'GT-XXXXX or G-XXXXX',
+                        ],
+                    ],
+
+                    'consent_mode' => [
+                        'label' => 'Consent Mode',
+                        'description' => 'Load Google tags before or after consent.',
+                        'type' => 'select',
+                        'defaultIndex' => 1,
+                        'options' => [
+                            'Basic' => 'basic',
+                            'Advanced' => 'advanced',
                         ],
                     ],
 

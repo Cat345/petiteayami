@@ -277,7 +277,7 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 				var main_chart;
 
 				jQuery(function () {
-					var bumps_data = jQuery.parseJSON('<?php echo json_encode( $chart_data ); ?>');
+					var bumps_data = <?php echo wp_json_encode( $chart_data, JSON_HEX_TAG | JSON_HEX_AMP ); ?>;
 					var drawGraph = function (highlight) {
 						var series = [
 							{
@@ -375,7 +375,7 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 									tickColor: 'transparent',
 									mode: "time",
 									timeformat: "<?php echo ( 'day' === $this->chart_groupby ) ? '%d %b' : '%b'; ?>",
-									monthNames: <?php echo json_encode( array_values( $wp_locale->month_abbrev ) ); ?>,
+									monthNames: <?php echo wp_json_encode( array_values( $wp_locale->month_abbrev ), JSON_HEX_TAG | JSON_HEX_AMP ); ?>,
 									tickLength: 1,
 									minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
 									font: {

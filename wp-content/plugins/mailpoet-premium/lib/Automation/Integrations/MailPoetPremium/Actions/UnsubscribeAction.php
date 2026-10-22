@@ -15,6 +15,7 @@ use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Premium\Automation\Engine\AutomationAuthorization;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -32,14 +33,19 @@ class UnsubscribeAction implements Action {
   /** @var Unsubscribes */
   private $unsubscribesTracker;
 
+  /** @var AutomationAuthorization */
+  private $authorization;
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
     TrackingConfig $trackingConfig,
-    Unsubscribes $unsubscribesTracker
+    Unsubscribes $unsubscribesTracker,
+    AutomationAuthorization $authorization
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->trackingConfig = $trackingConfig;
     $this->unsubscribesTracker = $unsubscribesTracker;
+    $this->authorization = $authorization;
   }
 
   public function getKey(): string {
@@ -62,10 +68,11 @@ class UnsubscribeAction implements Action {
   }
 
   public function validate(StepValidationArgs $args): void {
-    // TODO: we may want to add some checks here
+    $this->authorization->authorizeSave($args->getAutomation(), [], $this->getAuthorizationMessage());
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
+    $this->authorization->authorizeRun($args->getAutomation(), [], $this->getAuthorizationMessage());
     $subscriberId = $args->getSinglePayloadByClass(SubscriberPayload::class)->getId();
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
     if (!$subscriber) {
@@ -94,5 +101,9 @@ class UnsubscribeAction implements Action {
   public function onDuplicate(Step $step): Step {
     // Intentionally left empty for now
     return $step;
+  }
+
+  private function getAuthorizationMessage(): string {
+    return __('The user who last saved this automation is not allowed to manage automations.', 'mailpoet-premium');
   }
 }

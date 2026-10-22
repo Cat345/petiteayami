@@ -42,9 +42,11 @@ class ChangeSubscriptionStatusAction extends AbstractSubscriptionAction implemen
 
   public function validate(StepValidationArgs $args): void {
     $this->validateTargetStatus((string)($args->getStep()->getArgs()['target_status'] ?? ''));
+    $this->authorizeSave($args->getAutomation());
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
+    $this->authorizeRun($args->getAutomation());
     $this->runtimeWooCommerceSubscriptionsActive();
     $targetStatus = (string)($args->getStep()->getArgs()['target_status'] ?? '');
     $this->validateTargetStatus($targetStatus);

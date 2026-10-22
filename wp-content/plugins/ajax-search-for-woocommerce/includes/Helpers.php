@@ -2130,6 +2130,9 @@ class Helpers {
      */
     public static function productsUseGlobalUniqueId() {
         global $wpdb;
+        if ( !defined( 'WC_VERSION' ) || version_compare( WC_VERSION, '9.2', '<' ) ) {
+            return false;
+        }
         $result = $wpdb->get_var( "\n\t\t\t\tSELECT COUNT(*)\n\t\t\t\tFROM {$wpdb->posts} as posts\n\t\t\t\tINNER JOIN {$wpdb->wc_product_meta_lookup} AS lookup ON posts.ID = lookup.product_id\n\t\t\t\tWHERE\n\t\t\t\tposts.post_type IN ( 'product', 'product_variation' )\n\t\t\t\tAND posts.post_status != 'trash'\n\t\t\t\tAND lookup.global_unique_id <> ''\n\t\t\t\t" );
         return intval( $result ) > 0;
     }

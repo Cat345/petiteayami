@@ -25,7 +25,7 @@ if ( ! class_exists( 'WFCO_Model_ConnectorMeta' ) ) {
 			global $wpdb;
 			$table = self::_table();
 
-			$result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE connector_id = %d", $id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table is a trusted internal identifier from self::_table(); $id bound via %d.
+			$result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE connector_id = %d", $id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $table is a trusted internal identifier from self::_table(); $id bound via %d.; Prefixed table from class name, id bound via %d; custom table
 			$meta      = [];
 
 			if ( is_array( $result ) && count( $result ) > 0 ) {
@@ -61,6 +61,7 @@ if ( ! class_exists( 'WFCO_Model_ConnectorMeta' ) ) {
 
 			/** Fetching connectors meta - single query */
 			$query  = "Select * FROM $table WHERE connector_id IN ($placeholders)";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- IN placeholders generated in code, ids bound via %d
 			$query  = $wpdb->prepare( $query, $ids ); // WPCS: unprepared SQL OK
 			$result = self::get_results( $query );
 

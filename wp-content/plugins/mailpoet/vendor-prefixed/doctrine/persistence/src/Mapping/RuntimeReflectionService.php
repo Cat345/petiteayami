@@ -16,52 +16,52 @@ use function version_compare;
 use const PHP_VERSION_ID;
 class RuntimeReflectionService implements ReflectionService
 {
- private $supportsTypedPropertiesWorkaround;
- public function __construct()
- {
- $this->supportsTypedPropertiesWorkaround = version_compare(phpversion(), '7.4.0') >= 0;
- }
- public function getParentClasses(string $class)
- {
- if (!class_exists($class)) {
- throw MappingException::nonExistingClass($class);
- }
- $parents = class_parents($class);
- assert($parents !== \false);
- return $parents;
- }
- public function getClassShortName(string $class)
- {
- $reflectionClass = new ReflectionClass($class);
- return $reflectionClass->getShortName();
- }
- public function getClassNamespace(string $class)
- {
- $reflectionClass = new ReflectionClass($class);
- return $reflectionClass->getNamespaceName();
- }
- public function getClass(string $class)
- {
- return new ReflectionClass($class);
- }
- public function getAccessibleProperty(string $class, string $property)
- {
- $reflectionProperty = new RuntimeReflectionProperty($class, $property);
- if ($this->supportsTypedPropertiesWorkaround && !array_key_exists($property, $this->getClass($class)->getDefaultProperties())) {
- $reflectionProperty = new TypedNoDefaultReflectionProperty($class, $property);
- }
- if (PHP_VERSION_ID < 80100) {
- $reflectionProperty->setAccessible(\true);
- }
- return $reflectionProperty;
- }
- public function hasPublicMethod(string $class, string $method)
- {
- try {
- $reflectionMethod = new ReflectionMethod($class, $method);
- } catch (ReflectionException $e) {
- return \false;
- }
- return $reflectionMethod->isPublic();
- }
+private $supportsTypedPropertiesWorkaround;
+public function __construct()
+{
+$this->supportsTypedPropertiesWorkaround = version_compare(phpversion(), '7.4.0') >= 0;
+}
+public function getParentClasses(string $class)
+{
+if (!class_exists($class)) {
+throw MappingException::nonExistingClass($class);
+}
+$parents = class_parents($class);
+assert($parents !== \false);
+return $parents;
+}
+public function getClassShortName(string $class)
+{
+$reflectionClass = new ReflectionClass($class);
+return $reflectionClass->getShortName();
+}
+public function getClassNamespace(string $class)
+{
+$reflectionClass = new ReflectionClass($class);
+return $reflectionClass->getNamespaceName();
+}
+public function getClass(string $class)
+{
+return new ReflectionClass($class);
+}
+public function getAccessibleProperty(string $class, string $property)
+{
+$reflectionProperty = new RuntimeReflectionProperty($class, $property);
+if ($this->supportsTypedPropertiesWorkaround && !array_key_exists($property, $this->getClass($class)->getDefaultProperties())) {
+$reflectionProperty = new TypedNoDefaultReflectionProperty($class, $property);
+}
+if (PHP_VERSION_ID < 80100) {
+$reflectionProperty->setAccessible(\true);
+}
+return $reflectionProperty;
+}
+public function hasPublicMethod(string $class, string $method)
+{
+try {
+$reflectionMethod = new ReflectionMethod($class, $method);
+} catch (ReflectionException $e) {
+return \false;
+}
+return $reflectionMethod->isPublic();
+}
 }

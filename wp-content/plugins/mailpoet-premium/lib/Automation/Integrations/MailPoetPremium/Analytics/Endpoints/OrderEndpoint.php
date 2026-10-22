@@ -12,6 +12,7 @@ use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\Query;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Analytics\Controller\OrderController;
+use MailPoet\Premium\Util\License\DetailedAnalyticsGuard;
 use MailPoet\Validator\Builder;
 
 class OrderEndpoint extends Endpoint {
@@ -21,12 +22,17 @@ class OrderEndpoint extends Endpoint {
   /** @var OrderController */
   private $orderController;
 
+  /** @var DetailedAnalyticsGuard */
+  private $detailedAnalyticsGuard;
+
   public function __construct(
     AutomationStorage $automationStorage,
-    OrderController $orderController
+    OrderController $orderController,
+    DetailedAnalyticsGuard $detailedAnalyticsGuard
   ) {
     $this->automationStorage = $automationStorage;
     $this->orderController = $orderController;
+    $this->detailedAnalyticsGuard = $detailedAnalyticsGuard;
   }
 
   public static function getRequestSchema(): array {
@@ -37,6 +43,8 @@ class OrderEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
+    $this->detailedAnalyticsGuard->guardRestAccess();
+
     $id = absint(is_numeric($request->getParam('id')) ? $request->getParam('id') : 0);
     $automation = $this->automationStorage->getAutomation($id);
     if (!$automation) {

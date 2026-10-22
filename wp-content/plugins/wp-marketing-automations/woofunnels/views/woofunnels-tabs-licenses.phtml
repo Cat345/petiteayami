@@ -6,7 +6,7 @@ $current_page = 'woofunnels';
 // Exit if accessed directly
 ?>
 <div class="woofunnels_plugins_wrap">
-    <h1><?php esc_html_e( 'Manage Licenses', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></h1>
+    <h1><?php esc_html_e( 'Manage Licenses', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></h1>
 	<?php
 	if ( is_object( $model ) ) {
 		?>
@@ -16,11 +16,11 @@ $current_page = 'woofunnels';
 				$licenses->get_plugins_list();
 				if ( ! empty( $licenses->plugins_list ) ) { ?>
                     <li class="plugin-install-featured <?php echo ( isset( $model->current_tab ) && $model->current_tab === "licenses" ) ? "current" : "" ?>">
-                        <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . "&tab=licenses" ); ?>"><?php esc_html_e( 'Licenses', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                        <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . "&tab=licenses" ); ?>"><?php esc_html_e( 'Licenses', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
                     </li>
 				<?php } ?>
                 <li class="plugin-install-popular <?php echo ( isset( $model->current_tab ) && $model->current_tab === "services" ) ? "current" : "" ?>">
-                    <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . "&tab=support" ); ?>" class=""><?php esc_html_e( 'Support', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                    <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . "&tab=support" ); ?>" class=""><?php esc_html_e( 'Support', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
                 </li>
 				<?php
 				if ( isset( $model->additional_tabs ) && is_array( $model->additional_tabs ) && count( $model->additional_tabs ) > 0 ): ?>
@@ -47,7 +47,7 @@ $current_page = 'woofunnels';
 					?>
                     <p class="submit woothemes-helper-submit-wrapper">
 						<?php
-						submit_button( __( 'Activate License', 'woofunnels' ), 'button-primary', null, false ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						submit_button( __( 'Activate License', 'wp-marketing-automations' ), 'button-primary', null, false ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						?>
                     </p><!--/.submit-->
 					<?php wp_nonce_field( 'woofunnels-activate-license' ); ?>
@@ -55,10 +55,10 @@ $current_page = 'woofunnels';
 
                 <div class="col-wrap">
 					<?php
-					$notice_text_raw = __( 'Note: You need to have valid licenses to receive updates and support for these plugins.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					$notice_text_raw = __( 'Note: You need to have valid licenses to receive updates and support for these plugins.', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					$notice_text_raw .= ' <a target="_blank" href="https://myaccount.funnelkit.com/">';
-					$notice_text_raw .= __( 'Click Here', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					$notice_text_raw .= '</a> ' . __( 'to get your license key(s).', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					$notice_text_raw .= __( 'Click Here', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					$notice_text_raw .= '</a> ' . __( 'to get your license key(s).', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					$notice_text     = apply_filters( 'woofunnels_after_license_table_notice', $notice_text_raw );
 					?>
                     <p style="font-size: 12px;"><?php echo $notice_text; ?></p>
@@ -69,6 +69,6 @@ $current_page = 'woofunnels';
         </div><!--/#col-container-->
 		<?php do_action( 'woofunnels_licenses_after_area' ); ?>
 	<?php } else { ?>
-        <div class="woofunnels_cannot_connect"> <?php echo apply_filters( 'woofunnels_no_data_license', esc_html__( 'Could not connect to server.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></div>
+        <div class="woofunnels_cannot_connect"> <?php echo apply_filters( 'woofunnels_no_data_license', esc_html__( 'Could not connect to server.', 'wp-marketing-automations' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></div>
 	<?php } ?>
 </div>

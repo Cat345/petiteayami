@@ -160,7 +160,7 @@ if ( ! $show_smart_button_shimmer ) {
 		 * size its own iframe, as it does on the native checkout.
 		 */
 		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:not(#wfacp_smart_button_wc_payment_gpay_apay) iframe {
-			max-height: 42px !important;
+			max-height: 52px !important;
 			height: 100% !important;
 		}
 

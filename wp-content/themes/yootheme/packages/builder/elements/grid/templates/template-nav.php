@@ -73,7 +73,7 @@ $container = $props['filter_wrap'] ? $this->el('div', [
         'class' => ['uk-active' => $tag === array_key_first($tags) && !$props['filter_all']],
         'uk-filter-control' => json_encode(['filter' => '[data-tag~="' . str_replace('"', '\"', $tag) . '"]']),
     ]) ?>>
-        <a href><?= $name ?></a>
+        <a href><?= $this->e($name) ?></a>
     </li>
     <?php endforeach ?>
 

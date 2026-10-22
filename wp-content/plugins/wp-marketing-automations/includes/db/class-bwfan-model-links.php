@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 
 if ( ! class_exists( 'BWFAN_Model_Links' ) ) {
@@ -20,6 +21,11 @@ if ( ! class_exists( 'BWFAN_Model_Links' ) ) {
 			global $wpdb;
 			$type_query = '';
 			$return_col = empty( $return_col ) ? "`l_hash`" : $return_col;
+			/** Column names are placed in the SQL as identifiers, so allow only real bwfan_links columns */
+			$link_columns = array( 'ID', 'url', 'l_hash', 'clean_url', 'created_at', 'oid', 'sid', 'tid', 'type' );
+			if ( ! in_array( trim( (string) $search_by, '`' ), $link_columns, true ) || ! in_array( trim( (string) $return_col, '`' ), $link_columns, true ) ) {
+				return null;
+			}
 			$args       = [ $value ];
 			if ( ! empty( $type ) ) {
 				$type_query = " AND `type` = %d";
@@ -28,7 +34,7 @@ if ( ! class_exists( 'BWFAN_Model_Links' ) ) {
 
 			$query = "SELECT {$return_col} FROM {$wpdb->prefix}bwfan_links WHERE `{$search_by}` = %s {$type_query}";
 
-			return $wpdb->get_var( $wpdb->prepare( $query, $args ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_var( $wpdb->prepare( $query, $args ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- columns whitelisted to bwfan_links columns above; value and type bound via placeholders
 		}
 
 		/**
@@ -51,7 +57,7 @@ if ( ! class_exists( 'BWFAN_Model_Links' ) ) {
 				$args[] = $clean_url;
 			}
 
-			return $wpdb->get_row( $wpdb->prepare( $query, $args ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_row( $wpdb->prepare( $query, $args ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- values bound via prepare()
 		}
 
 		/**
@@ -75,8 +81,20 @@ if ( ! class_exists( 'BWFAN_Model_Links' ) ) {
 				$where .= $wpdb->prepare( " AND `clean_url` = %s", $data['clean_url'] );
 			}
 
-			if ( ! empty( $data['template_id'] ) ) {
-				$where .= $wpdb->prepare( " AND `tid` = %d", intval( $data['template_id'] ) );
+			/**
+			 * Read `tid`, which is the key every caller in these plugins actually sends. This
+			 * clause looked for `template_id` alone and so never fired: two templates sharing a
+			 * broadcast (an A/B split sends both under one oid) matched each other's row and the
+			 * second reused the first's l_hash, attributing its clicks to the wrong variant.
+			 *
+			 * `template_id` is still honoured behind it. This method is public and static, and
+			 * that key is what it read before - so an outside caller passing it had a filter that
+			 * worked, and narrowing to `tid` alone would have widened their lookups without a word.
+			 * `tid` wins when both are present, since that is the one the column is named after.
+			 */
+			$link_tid = $data['tid'] ?? ( $data['template_id'] ?? 0 );
+			if ( ! empty( $link_tid ) ) {
+				$where .= $wpdb->prepare( " AND `tid` = %d", intval( $link_tid ) );
 			}
 			if ( ! empty( $data['type'] ) ) {
 				$where .= $wpdb->prepare( " AND `type` = %d", intval( $data['type'] ) );
@@ -88,7 +106,7 @@ if ( ! class_exists( 'BWFAN_Model_Links' ) ) {
 				$where .= $wpdb->prepare( " AND `sid` = %d", intval( $data['sid'] ) );
 			}
 
-			return $wpdb->get_var( "SELECT `l_hash` FROM {$wpdb->prefix}bwfan_links WHERE $where" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_var( "SELECT `l_hash` FROM {$wpdb->prefix}bwfan_links WHERE $where" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- where fragments each built with $wpdb->prepare()
 		}
 
 		/**

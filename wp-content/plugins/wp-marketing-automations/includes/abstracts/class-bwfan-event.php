@@ -692,8 +692,8 @@ abstract class BWFAN_Event {
 		$placeholders = array_fill( 0, count( $task_ids ), '%d' );
 		$placeholders = implode( ', ', $placeholders );
 
-		$query = $wpdb->prepare( "UPDATE `{$wpdb->prefix}bwfan_tasks` SET `claim_id` = 1 WHERE `ID` IN ($placeholders)", $task_ids );
-		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query = $wpdb->prepare( "UPDATE `{$wpdb->prefix}bwfan_tasks` SET `claim_id` = 1 WHERE `ID` IN ($placeholders)", $task_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders from array_fill %d; ids bound via prepare(); table from prefix
+		$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill %d; ids bound via prepare(); table from prefix
 
 		/** @var BWFAN_Tasks $task_ins */
 		$task_ins = BWFAN_Tasks::get_instance();
@@ -778,7 +778,9 @@ abstract class BWFAN_Event {
 
 		$record_date_timestamp = $record_date->getTimestamp();
 		$current_timestamp     = current_time( 'timestamp', 1 );
+		// phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Round-trips via new DateTime() with no tz; keep default-tz pairing
 		$datetime1             = new DateTime( date( 'Y-m-d H:i:s', $record_date_timestamp ) );//start time
+		// phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Round-trips via new DateTime() with no tz; keep default-tz pairing
 		$datetime2             = new DateTime( date( 'Y-m-d H:i:s', $current_timestamp ) );//end time
 		$interval              = $datetime1->diff( $datetime2 );
 		$days_difference       = intval( $interval->format( '%a' ) );

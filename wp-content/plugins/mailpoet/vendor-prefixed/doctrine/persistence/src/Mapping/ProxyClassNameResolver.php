@@ -5,5 +5,5 @@ if (!defined('ABSPATH')) exit;
 use MailPoetVendor\Doctrine\Persistence\Proxy;
 interface ProxyClassNameResolver
 {
- public function resolveClassName(string $className) : string;
+public function resolveClassName(string $className): string;
 }

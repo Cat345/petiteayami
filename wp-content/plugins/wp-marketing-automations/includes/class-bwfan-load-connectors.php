@@ -136,9 +136,9 @@ class BWFAN_Load_Connectors {
 	}
 
 	public function load_connectors_rest_call() {
-		$rest_route = isset( $_GET['rest_route'] ) ? $_GET['rest_route'] : '';
+		$rest_route = isset( $_GET['rest_route'] ) ? esc_url_raw( wp_unslash( $_GET['rest_route'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- request detection only; decides which code loads, changes nothing
 		if ( empty( $rest_route ) ) {
-			$rest_route = $_SERVER['REQUEST_URI'];
+			$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 		}
 		if ( empty( $rest_route ) ) {
 			return;
@@ -155,7 +155,7 @@ class BWFAN_Load_Connectors {
 		if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
 			return;
 		}
-		$ajax_action = $_POST['action'] ?? '';
+		$ajax_action = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- read-only: action name only decides whether connector classes load
 		$array       = [ 'wfco', 'bwfan' ];
 		foreach ( $array as $value ) {
 			if ( strpos( $ajax_action, $value ) !== false ) {

@@ -11,6 +11,8 @@ class BWFAN_API_Plugin_Status_Controller extends BWFAN_API_Controller {
 
 	public static $ins;
 
+	protected $auto_activate = false;
+
 	public static function get_instance() {
 		if ( null === self::$ins ) {
 			self::$ins = new self();
@@ -39,9 +41,15 @@ class BWFAN_API_Plugin_Status_Controller extends BWFAN_API_Controller {
 	 * POST /plugin/install_and_activate — install or activate a plugin
 	 */
 	public function install_and_activate_plugin() {
+		self::load_plugin_functions();
+
 		// basename of the plugin - plugin_folder/main_file
-		$plugin     = isset( $this->args['plugin'] ) && ! empty( $this->args['plugin'] ) ? $this->args['plugin'] : '';
-		$pro_plugin = isset( $this->args['plugin_pro'] ) && ! empty( $this->args['plugin_pro'] ) ? $this->args['plugin_pro'] : '';
+		$plugin     = isset( $this->args['plugin'] ) && ! empty( $this->args['plugin'] ) ? sanitize_text_field( wp_unslash( $this->args['plugin'] ) ) : '';
+		$pro_plugin = isset( $this->args['plugin_pro'] ) && ! empty( $this->args['plugin_pro'] ) ? sanitize_text_field( wp_unslash( $this->args['plugin_pro'] ) ) : '';
+
+		if ( isset( $this->args['auto_activate'] ) && ! empty( $this->args['auto_activate'] ) ) {
+			$this->auto_activate = true;
+		}
 
 		// actions - install | activate
 		$action = isset( $this->args['action'] ) && ! empty( $this->args['action'] ) ? $this->args['action'] : '';
@@ -60,7 +68,58 @@ class BWFAN_API_Plugin_Status_Controller extends BWFAN_API_Controller {
 			return $this->error_response( __( 'Action is missing : install or activate', 'wp-marketing-automations' ) );
 		}
 
+		/**
+		 * On an explicit activate the basename is request input, so it is bound to the plugins
+		 * this UI actually offers. The auto-activate that follows an install is deliberately not
+		 * checked here: that basename comes from the installer, and the ZIP it came from was
+		 * already pinned to a trusted host by is_allowed_plugin_source().
+		 */
+		if ( 'activate' === $action && ! in_array( $plugin, self::get_activatable_plugins(), true ) ) {
+			$this->response_code = 400;
+
+			return $this->error_response( __( 'This plugin cannot be activated from here', 'wp-marketing-automations' ) );
+		}
+
 		return $this->install_or_activate_addon_plugins( $plugin, $plugin_url, $action );
+	}
+
+	/**
+	 * get_plugins(), is_plugin_active() and activate_plugin() live in an admin include that a
+	 * REST request never loads. Called from both public entry points, which every other path
+	 * in this class routes through.
+	 */
+	private static function load_plugin_functions() {
+		if ( ! function_exists( 'get_plugins' ) || ! function_exists( 'is_plugin_active' ) || ! function_exists( 'activate_plugin' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+	}
+
+	/**
+	 * Plugin basenames this endpoint may activate on request.
+	 *
+	 * The announcement products own their own init paths (a feed can pick a key, never a path);
+	 * wp-mail-smtp is the other screen that calls this endpoint, see admin/frontend/src/smtp/index.js.
+	 *
+	 * @return string[] Plugin basenames, i.e. folder/main-file.php.
+	 */
+	public static function get_activatable_plugins() {
+		$allowed = array(
+			'wp-mail-smtp/wp_mail_smtp.php',
+			'wp-mail-smtp-pro/wp_mail_smtp.php',
+		);
+
+		if ( class_exists( 'BWFAN_Announcements' ) ) {
+			$allowed = array_merge( $allowed, array_values( wp_list_pluck( BWFAN_Announcements::get_products(), 'init' ) ) );
+		}
+
+		/**
+		 * Filter the plugin basenames the install/activate endpoint may activate on request.
+		 *
+		 * @param string[] $allowed Plugin basenames.
+		 */
+		$allowed = apply_filters( 'bwfan_allowed_activate_plugins', $allowed );
+
+		return array_values( array_unique( array_filter( (array) $allowed, 'is_string' ) ) );
 	}
 
 	/**
@@ -85,13 +144,15 @@ class BWFAN_API_Plugin_Status_Controller extends BWFAN_API_Controller {
 
 		switch ( $action ) {
 			case 'install':
-				$result = $this->install_plugin( $installer, $plugin_url );
+				$result = $this->install_plugin( $installer, $plugin_url, $plugin );
 				break;
 			case 'activate':
 				$result = $this->activate_plugin( $plugin );
 				break;
 			default:
-				return $this->success_response( __( 'Undefined error', 'wp-marketing-automations' ) );
+				$this->response_code = 400;
+
+				return $this->error_response( __( 'Invalid action: expected install or activate', 'wp-marketing-automations' ) );
 		}
 
 		return $result;
@@ -102,10 +163,11 @@ class BWFAN_API_Plugin_Status_Controller extends BWFAN_API_Controller {
 	 *
 	 * @param $installer
 	 * @param $plugin_url
+	 * @param $plugin
 	 *
 	 * @return WP_REST_Response|WP_Error
 	 */
-	public function install_plugin( $installer, $plugin_url ) {
+	public function install_plugin( $installer, $plugin_url, $plugin = '' ) {
 		if ( empty( $plugin_url ) ) {
 			return $this->error_response( __( 'Plugin URL is missing', 'wp-marketing-automations' ) );
 		}
@@ -128,8 +190,20 @@ class BWFAN_API_Plugin_Status_Controller extends BWFAN_API_Controller {
 			return $this->error_response( __( 'Some error occurred: install function not found', 'wp-marketing-automations' ) );
 		}
 
-		if ( ! $installer->install( $plugin_url ) ) {
-			return $this->error_response( __( 'Some error occurred: installation failed', 'wp-marketing-automations' ) );
+		/**
+		 * Plugin_Upgrader::install() returns true, false, or the WP_Error it failed with.
+		 * A WP_Error is truthy, so a bare falsy check reports a failed install as installed.
+		 */
+		$install_result = $installer->install( $plugin_url );
+		if ( ! $install_result || is_wp_error( $install_result ) ) {
+			return $this->error_response( __( 'Some error occurred: installation failed', 'wp-marketing-automations' ), is_wp_error( $install_result ) ? $install_result : null );
+		}
+
+		if ( $this->auto_activate ) {
+			// Activate what was actually installed; the request's basename is only a fallback.
+			$installed = method_exists( $installer, 'plugin_info' ) ? $installer->plugin_info() : false;
+
+			return $this->activate_plugin( is_string( $installed ) && '' !== $installed ? $installed : $plugin );
 		}
 
 		$result['is_installed'] = true;
@@ -214,6 +288,12 @@ class BWFAN_API_Plugin_Status_Controller extends BWFAN_API_Controller {
 		$result['is_activated'] = true;
 		$result['msg']          = esc_html__( 'Plugin activated', 'wp-marketing-automations' );
 
+		$products = BWFAN_Announcements::get_products();
+		if ( isset( $products['stripe']['init'] ) && $products['stripe']['init'] === $plugin ) {
+			// Namespace-relative: the client resolves it through getApiPath() (autonami-app or legacy autonami-admin).
+			$result['next_action'] = '/plugin-connect-link';
+		}
+
 		$this->response_code = 200;
 
 		return $this->success_response( $result );
@@ -223,9 +303,13 @@ class BWFAN_API_Plugin_Status_Controller extends BWFAN_API_Controller {
 	 * GET /plugin/status — check plugin status
 	 */
 	public function get_plugin_status() {
-		// plugin - plugin_folder/main_file
-		$plugin     = isset( $this->args['plugin'] ) ? $this->args['plugin'] : '';
-		$pro_plugin = isset( $this->args['plugin_pro'] ) ? $this->args['plugin_pro'] : '';
+		self::load_plugin_functions();
+
+		// plugin - plugin_folder/main_file. Sanitized like the install route: an array here
+		// reaches array_key_exists() below, which is a TypeError on PHP 8. sanitize_text_field()
+		// returns '' for an array, so the "name is missing" branch catches it instead.
+		$plugin     = isset( $this->args['plugin'] ) ? sanitize_text_field( wp_unslash( $this->args['plugin'] ) ) : '';
+		$pro_plugin = isset( $this->args['plugin_pro'] ) ? sanitize_text_field( wp_unslash( $this->args['plugin_pro'] ) ) : '';
 
 		if ( empty( $plugin ) && empty( $pro_plugin ) ) {
 			return $this->error_response( __( 'Plugin name is missing', 'wp-marketing-automations' ) );

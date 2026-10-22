@@ -45,13 +45,17 @@ class FreeShippingBlock implements Hookable {
 
 	public function get_free_shipping_notices() {
 		$free_shipping_notices = [];
-		foreach ($this->get_free_shipping_notices_data() as $free_shipping_notice_data) {
+		foreach ( $this->get_free_shipping_notices_data() as $free_shipping_notice_data ) {
 			$free_shipping_notices[] = [
 				'content' => apply_filters( 'flexible-shipping/free-shipping/render-notice', $free_shipping_notice_data ),
-				'blocks'  => apply_filters( 'flexible-shipping/free-shipping-block/allowed-blocks', [
-					'checkout',
-					'cart'
-				], $free_shipping_notice_data ),
+				'blocks'  => apply_filters(
+					'flexible-shipping/free-shipping-block/allowed-blocks',
+					[
+						'checkout',
+						'cart',
+					],
+					$free_shipping_notice_data
+				),
 			];
 		}
 
@@ -76,8 +80,8 @@ class FreeShippingBlock implements Hookable {
 	 */
 	private function get_free_shipping_notices_data() {
 		$free_shipping_notice_data = [];
-		$session_variable_names = apply_filters( 'flexible-shipping/free-shipping-block/session-variables', $this->session_variable_names );
-		if ( ! is_array( $session_variable_names) ) {
+		$session_variable_names    = apply_filters( 'flexible-shipping/free-shipping-block/session-variables', $this->session_variable_names );
+		if ( ! is_array( $session_variable_names ) ) {
 			return [];
 		}
 		foreach ( $session_variable_names as $session_variable_name ) {
@@ -99,5 +103,4 @@ class FreeShippingBlock implements Hookable {
 		}
 		return WC()->session;
 	}
-
 }

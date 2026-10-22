@@ -15,10 +15,11 @@ class BWFAN_Model_Logmeta extends BWFAN_Model {
 			$stringPlaceholders     = array_fill( 0, $automationCount, '%s' );
 			$placeholdersautomation = implode( ', ', $stringPlaceholders );
 			$sql_query              = "SELECT bwfan_log_id, meta_value, meta_key FROM $table_name WHERE bwfan_log_id IN ($placeholdersautomation)";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- generated %s placeholders; ids bound via prepare
 			$sql_query              = $wpdb->prepare( $sql_query, $automation_ids ); // WPCS: unprepared SQL OK
 		}
 
-		$result = $wpdb->get_results( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_results( $sql_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- generated %s placeholders; ids bound via prepare
 
 		return $result;
 	}
@@ -41,8 +42,9 @@ class BWFAN_Model_Logmeta extends BWFAN_Model {
 		global $wpdb;
 		$table     = self::_table();
 		$sql_query = "SELECT * FROM $table WHERE bwfan_log_id =%d";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; id bound via %d
 		$sql_query = $wpdb->prepare( $sql_query, $task_id ); // WPCS: unprepared SQL OK
-		$result    = $wpdb->get_results( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result    = $wpdb->get_results( $sql_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; id bound via %d
 		$meta      = [];
 
 		if ( is_array( $result ) && count( $result ) > 0 ) {

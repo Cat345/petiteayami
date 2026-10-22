@@ -23,6 +23,15 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 	 * @param array $post_parameters
 	 */
 	public static function capture_async_goal( $event, $post_parameters ) {
+		/**
+		 * Goals are Pro-only. The engine already fast-forwards goal steps on Lite,
+		 * so traversing contacts toward one would skip their pending steps while the
+		 * goal itself does nothing. Parked (status 4) contacts resume when Pro returns.
+		 */
+		if ( ! bwfan_is_autonami_pro_active() ) {
+			return false;
+		}
+
 		/** @todo maybe create AS action and run async */
 		self::$captured_data = $post_parameters;
 
@@ -127,9 +136,9 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 		$placeholder        = implode( ', ', $string_placeholder );
 
 		$data  = array_merge( [ $contact_id ], $automations );
-		$query = $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}bwfan_automation_contact` WHERE `cid` = %d AND `aid` IN ($placeholder) AND `status` IN (1,4,6)", $data );
+		$query = $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}bwfan_automation_contact` WHERE `cid` = %d AND `aid` IN ($placeholder) AND `status` IN (1,4,6)", $data ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- IN() placeholders generated as %d; values bound; table from $wpdb->prefix
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- IN() placeholders generated as %d; values bound; table from $wpdb->prefix
 	}
 
 	/**
@@ -225,8 +234,8 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 			$placeholder = array_fill( 0, count( $step_ids ), '%d' );
 			$placeholder = implode( ', ', $placeholder );
 
-			$query    = $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_step` WHERE `type` = 3 AND `status` IN (0, 1) AND `ID` IN ($placeholder)", $step_ids );
-			$step_ids = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query    = $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_step` WHERE `type` = 3 AND `status` IN (0, 1) AND `ID` IN ($placeholder)", $step_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- IN() placeholders generated as %d; values bound via prepare
+			$step_ids = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- IN() placeholders generated as %d; values bound via prepare
 
 			return ! empty( $step_ids ) ? $step_ids : [];
 		}
@@ -234,7 +243,7 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 			return [];
 		}
 		$query    = $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_step` WHERE `aid` = %d AND `type` = 3 AND `status` IN (0, 1) AND `action` LIKE %s", $automation_id, "%{$event_slug}%" );
-		$step_ids = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$step_ids = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- IN() placeholders generated as %d; values bound via prepare
 
 		return ! empty( $step_ids ) ? $step_ids : [];
 	}
@@ -294,8 +303,8 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 		$placeholder        = implode( ', ', $string_placeholder );
 		/**  Update status and time   */
 		$data  = array_merge( [ 1, time() ], $filtered );
-		$query = $wpdb->prepare( "UPDATE `{$wpdb->prefix}bwfan_automation_contact_trail` SET `status` = %d, `c_time` = %d  WHERE `ID` IN ($placeholder)", $data );
-		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query = $wpdb->prepare( "UPDATE `{$wpdb->prefix}bwfan_automation_contact_trail` SET `status` = %d, `c_time` = %d  WHERE `ID` IN ($placeholder)", $data ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholder count matches array args at runtime; all %d
+		$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholder count matches array args at runtime; all %d
 
 		$this->update_status = true;
 	}

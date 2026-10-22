@@ -297,10 +297,10 @@ class BWFAN_API_Tags_Controller extends BWFAN_API_Controller {
 			$query = "SELECT COUNT(DISTINCT c.id) FROM {$wpdb->prefix}bwf_contact as c   WHERE 1=1 AND ( c.email != '' AND c.email IS NOT NULL ) AND ( c.tags LIKE %s  )";
 			$query .= " AND ( c.status = 1 )    AND (   NOT EXISTS   (SELECT 1 FROM {$wpdb->prefix}bwfan_message_unsubscribe AS unsub WHERE c.email = unsub.recipient ) AND   NOT EXISTS  (SELECT 1 FROM {$wpdb->prefix}bwfan_message_unsubscribe AS unsub1 WHERE c.contact_no = unsub1.recipient ))";
 
-			return intval( $wpdb->get_var( $wpdb->prepare( $query, $tag_id ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return intval( $wpdb->get_var( $wpdb->prepare( $query, $tag_id ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL w/ $wpdb->prefix tables; tag_id bound via %s
 		}
 		$query     = "SELECT COUNT(DISTINCT c.`id`) AS contacts, COUNT(DISTINCT wc.`id`) AS customers, SUM( wc.`total_order_value`) AS total_revenue  FROM {$wpdb->prefix}bwf_contact as c LEFT JOIN {$wpdb->prefix}bwf_wc_customers AS wc ON c.`id`=wc.`cid` WHERE 1=1 AND ( c.email != '' AND c.email IS NOT NULL ) AND ( c.tags LIKE %s  )";
-		$customers = $wpdb->get_row( $wpdb->prepare( $query, $tag_id ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$customers = $wpdb->get_row( $wpdb->prepare( $query, $tag_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL w/ $wpdb->prefix tables; tag_id bound via %s
 		if ( ! empty( $customers ) ) {
 			return [
 				'count'     => $customers['contacts'],

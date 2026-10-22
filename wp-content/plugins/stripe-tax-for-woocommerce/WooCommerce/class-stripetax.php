@@ -111,7 +111,7 @@ class StripeTax extends WC_Settings_Page {
 
 		check_admin_referer( 'woocommerce-settings' );
 		if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'woocommerce-settings' ) ) {
-			$this->do_exit();
+			exit;
 		}
 
 		$api_key = Options::get_current_mode_key();
@@ -143,7 +143,7 @@ class StripeTax extends WC_Settings_Page {
 	protected function stripe_tax_for_woocommerce_add_tax_registrations(): void {
 		check_admin_referer( 'woocommerce-settings' );
 		if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'woocommerce-settings' ) ) {
-			$this->do_exit();
+			exit;
 		}
 
 		$api_key = Options::get_current_mode_key();
@@ -507,7 +507,7 @@ class StripeTax extends WC_Settings_Page {
 			try {
 				static::stripe_tax_for_woocommerce_add_tax_registrations();
 			} catch ( \Throwable $e ) {
-				ErrorRenderer::set_error_object( 'add_tax_registration', $e->getMessage(), 'error' );
+				ErrorRenderer::set_error_object( 'add_tax_registration', make_clickable( esc_html( wp_strip_all_tags( $e->getMessage() ) ) ), 'error' );
 			}
 
 			return;
@@ -516,7 +516,7 @@ class StripeTax extends WC_Settings_Page {
 		if ( array_key_exists( 'stripe_tax_for_woocommerce_enable_live_mode', $_POST ) && is_string( $_POST['stripe_tax_for_woocommerce_enable_live_mode'] ) ) {
 			check_admin_referer( 'woocommerce-settings' );
 			if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'woocommerce-settings' ) ) {
-				StripeTaxPluginHelper::do_exit();
+				exit;
 			}
 			$enable_live_mode = sanitize_text_field( wp_unslash( $_POST['stripe_tax_for_woocommerce_enable_live_mode'] ) );
 			if ( '1' === $enable_live_mode ) {
@@ -524,6 +524,19 @@ class StripeTax extends WC_Settings_Page {
 			} else {
 				Options::update_option( Options::OPTION_LIVE_MODE_ENABLED, '0' );
 			}
+		}
+
+		$previous_mode_type = Options::get_mode_type();
+		$mode_type          = ! empty( $_POST['stripe_tax_for_woocommerce_mode'] ) ? 1 : 0;
+
+		// When switching from live mode to sandbox mode, regenerate the sandbox notice token.
+		if ( Options::MODE_TEST === $mode_type && Options::MODE_TEST !== $previous_mode_type ) {
+			Options::update_option( Options::OPTION_SANDBOX_NOTICE_TOKEN, wp_generate_uuid4() );
+		}
+
+		if ( array_key_exists( 'stripe_tax_for_woocommerce_skip_cart_tax_calculation', $_POST ) && is_string( $_POST['stripe_tax_for_woocommerce_skip_cart_tax_calculation'] ) ) {
+			$skip_cart = sanitize_text_field( wp_unslash( $_POST['stripe_tax_for_woocommerce_skip_cart_tax_calculation'] ) );
+			Options::update_option( Options::OPTION_SKIP_CART_TAX_CALCULATION, '1' === $skip_cart ? '1' : '0' );
 		}
 
 		$mode_type = ! empty( $_POST['stripe_tax_for_woocommerce_mode'] ) ? 1 : 0;
@@ -619,7 +632,7 @@ class StripeTax extends WC_Settings_Page {
 				if ( isset( $_REQUEST['action'] ) && 'trash' === $_REQUEST['action'] ) {
 					check_admin_referer( 'woocommerce-settings' );
 					if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'woocommerce-settings' ) ) {
-						$this->do_exit();
+						exit;
 					}
 					$this->stripe_tax_for_woocommerce_end_registration_immediately();
 					wp_safe_redirect( admin_url( 'admin.php?page=wc-settings&tab=stripe_tax_for_woocommerce&section=' . $current_section ) . ( isset( $_GET['add_tax_registration'] ) ? '&add_tax_registration' : '' ) );
@@ -645,7 +658,7 @@ class StripeTax extends WC_Settings_Page {
 	protected function correctKeysProvided( $mode, $secret_key, $retur_error = false ) {
 		$error_msg = '';
 		if ( ! $secret_key ) {
-			$error_msg = 'Secret Key field is mandatory';
+			$error_msg = 'Restricted key field is mandatory';
 
 			if ( ! $retur_error ) {
 				\WC_Admin_Settings::add_error( $error_msg );
@@ -691,7 +704,7 @@ class StripeTax extends WC_Settings_Page {
 		$needlerk = 'rk_';
 
 		if ( false === strpos( $secret_key, $needlesk ) && false === strpos( $secret_key, $needlerk ) ) {
-			$error_msg = 'Publishable key provided instead of secret key.';
+			$error_msg = 'Publishable key provided instead of restricted key.';
 			if ( ! $retur_error ) {
 				\WC_Admin_Settings::add_error( $error_msg );
 				return false;
@@ -708,7 +721,7 @@ class StripeTax extends WC_Settings_Page {
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$account = $stripe_client->accounts->retrieve();
 		} catch ( \Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\AuthenticationException $e ) {
-			$error_msg = 'The Secret key provided is invalid (authentication failed).';
+			$error_msg = 'The Restricted key provided is invalid (authentication failed).';
 			if ( ! $retur_error ) {
 				\WC_Admin_Settings::add_error( $error_msg );
 				return false;

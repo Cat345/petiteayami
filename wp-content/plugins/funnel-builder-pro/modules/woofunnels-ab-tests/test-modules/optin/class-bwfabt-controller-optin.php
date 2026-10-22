@@ -618,7 +618,19 @@ if ( ! class_exists( 'BWFABT_Controller_Optin' ) ) {
 			$get_query = 'SELECT object_id, SUM(CASE WHEN type = 16 THEN `no_of_sessions` END) AS `viewed`  ' . $params . ' ' . $interval_query . ' FROM `' . $wpdb->prefix . 'wfco_report_views`  WHERE object_id IN (' . $step_ids . ') ' . $date_query . ' ' . $group_by . ' ORDER BY object_id ASC';
 			$get_data  = $wpdb->get_results( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-			$sql_query = "SELECT conv.step_id AS 'id', count( conv.source_id ) AS 'order_count', conv.source_id AS 'source_id', SUM(conv.checkout_total) AS 'amount', COUNT(conv.id) AS 'conversions',  conv.timestamp AS 'date', 'wc_checkout' AS 'type' 
+			/**
+			 * Column of bwf_conversion_tracking summed as the variant's revenue. Default
+			 * `checkout_total` is the checkout order only; return `value` to also include the
+			 * conversion's order bump and upsell revenue (value = checkout + bump + offer).
+			 *
+			 * @param string $revenue_column checkout_total|value
+			 * @param string $type           Experiment type.
+			 * @param int    $experiment_id
+			 */
+			$revenue_column = apply_filters( 'bwfabt_conversion_revenue_column', 'checkout_total', 'optin', $experiment_id );
+			$revenue_column = in_array( $revenue_column, array( 'checkout_total', 'value' ), true ) ? $revenue_column : 'checkout_total';
+
+			$sql_query = "SELECT conv.step_id AS 'id', count( conv.source_id ) AS 'order_count', conv.source_id AS 'source_id', SUM(conv." . $revenue_column . ") AS 'amount', COUNT(conv.id) AS 'conversions',  conv.timestamp AS 'date', 'wc_checkout' AS 'type'
 		FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . ' AS conv WHERE conv.type = %d AND conv.step_id != 0 ' . $revenue_query . ' GROUP BY conv.source_id ORDER BY conv.step_id ASC';
 
 			// $sql_query: conv.type bound %d, $revenue_query dates esc_sql'd, table is $wpdb->prefix + literal.

@@ -3,6 +3,7 @@
 namespace YOOtheme\Image\Listener;
 
 use YOOtheme\Config;
+use YOOtheme\Http\Uri;
 use YOOtheme\Path;
 use YOOtheme\Url;
 use function YOOtheme\app;
@@ -44,19 +45,25 @@ class LoadImageUrl
         }
 
         $cacheKey = static::getCacheKey($src, $params);
+        // Escape literal percent signs before the URI filter preserves encoded sequences.
+        $cachePath = (new Uri(''))->withPath(str_replace('%', '%25', $cacheKey))->getPath();
 
         if (
             (!static::getConfig('app.sef') || !static::getConfig('~theme.image_urls')) &&
-            is_file($cacheFile = Path::join(static::getConfig('image.cacheDir'), $cacheKey))
+            is_file(Path::join(static::getConfig('image.cacheDir'), $cacheKey))
         ) {
-            return $next($cacheFile, $parameters, $secure);
+            return $next(
+                Path::join(static::getConfig('image.cacheDir'), $cachePath),
+                $parameters,
+                $secure,
+            );
         }
 
         unset($params['cachekey']);
 
         // commas are srcset separators, therefore `hash` is last parameter to avoid trailing comma in url (which is being ignored in chrome)
         return Url::route(
-            "cache/{$cacheKey}",
+            "cache/{$cachePath}",
             ['src' => $src] + $params + ['hash' => static::getHash($url)],
         );
     }
@@ -72,7 +79,7 @@ class LoadImageUrl
     /**
      * @param array<string, string> $params
      */
-    protected static function getCacheKey(string $file, array $params): string
+    public static function getCacheKey(string $file, array $params): string
     {
         $key = $params['cachekey'];
         $filename = pathinfo($file, PATHINFO_FILENAME);

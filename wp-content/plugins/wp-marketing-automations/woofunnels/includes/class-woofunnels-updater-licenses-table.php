@@ -51,7 +51,7 @@ if ( ! class_exists( 'WooFunnels_Updater_Licenses_Table' ) ) {
 		 * @since  1.0.0
 		 */
 		public function no_items() {
-			echo wpautop( __( 'No plugins available for activation.', 'woofunnels' ) ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+			echo wpautop( __( 'No plugins available for activation.', 'wp-marketing-automations' ) ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 		}
 
 		// End no_items(0)
@@ -103,7 +103,7 @@ if ( ! class_exists( 'WooFunnels_Updater_Licenses_Table' ) ) {
 		public function column_product_version( $item ) {
 
 			if ( isset( $item['latest_version'], $item['product_version'] ) && version_compare( $item['product_version'], $item['latest_version'], '<' ) ) {
-				$version_text = '<strong>' . esc_html( $item['product_version'] ) . '<span class="update-available"> - ' . sprintf( __( 'version %1$s available', 'woofunnels' ), esc_html( $item['latest_version'] ) ) . '</span></strong>' . "\n";  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				$version_text = '<strong>' . esc_html( $item['product_version'] ) . '<span class="update-available"> - ' . sprintf( __( 'version %1$s available', 'wp-marketing-automations' ), esc_html( $item['latest_version'] ) ) . '</span></strong>' . "\n";  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 			} else {
 				$version_text = '<strong class="latest-version">' . esc_html( $item['product_version'] ) . '</strong>' . "\n";
 			}
@@ -123,19 +123,19 @@ if ( ! class_exists( 'WooFunnels_Updater_Licenses_Table' ) ) {
 		public function column_product_status( $item ) {
 			$response   = '';
 			$input_text = '<input name="license_keys[' . esc_attr( $item['product_file_path'] ) . '][key]" id="license_keys-' . esc_attr( $item['product_file_path'] ) . '" type="text" size="37" aria-required="true" value="' . esc_attr( $item['existing_key']['key'] ) . '" placeholder="' . esc_attr__( '
-Place your license key here', 'woofunnels' ) . '" />' . "\n";  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+Place your license key here', 'wp-marketing-automations' ) . '" />' . "\n";  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 			if ( $this->is_license_expire( $item ) ) {
 				$response_notice = '';
 				$response_notice .= $input_text;
-				$response_notice .= '<span class="below_input_message">' . sprintf( __( 'This license has expired. Login to <a target="_blank" href="%s">Your Account</a> and renew your license.', 'woofunnels' ), 'https://myaccount.funnelkit.com/' ) . '</span>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				$response_notice .= '<span class="below_input_message">' . sprintf( __( 'This license has expired. Login to <a target="_blank" href="%s">Your Account</a> and renew your license.', 'wp-marketing-automations' ), 'https://myaccount.funnelkit.com/' ) . '</span>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 				$response        .= apply_filters( 'woofunnels_license_notice_bewlow_field', $response_notice, $item );
 			} elseif ( 'active' === $item['product_status'] ) {
 				if ( empty( $item['_data']['activated'] ) ) {
 					$response_notice = '';
 					$response_notice .= $input_text;
 					if ( ! isset( $item['_data']['manually_deactivated'] ) || empty( $item['_data']['manually_deactivated'] ) ) {
-						$response_notice .= '<span class="below_input_message">' . sprintf( __( 'This license is no longer valid. Login to <a target="_blank" href="%s">Your Account</a> and renew your license.', 'woofunnels' ), 'https://myaccount.funnelkit.com/' ) . '</span>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+						$response_notice .= '<span class="below_input_message">' . sprintf( __( 'This license is no longer valid. Login to <a target="_blank" href="%s">Your Account</a> and renew your license.', 'wp-marketing-automations' ), 'https://myaccount.funnelkit.com/' ) . '</span>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 
 					}
 					$response .= apply_filters( 'woofunnels_license_notice_bewlow_field', $response_notice, $item );
@@ -148,7 +148,7 @@ Place your license key here', 'woofunnels' ) . '" />' . "\n";  // phpcs:ignore W
 						$license_key = $license_obj->get_secret_license_key( $item['existing_key']['key'] );
 						$response    = $license_key . '<br/>';
 					}
-					$response .= '<a href="' . esc_url( $deactivate_url ) . '">' . __( 'Deactivate', 'woofunnels' ) . '</a>' . "\n"; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					$response .= '<a href="' . esc_url( $deactivate_url ) . '">' . __( 'Deactivate', 'wp-marketing-automations' ) . '</a>' . "\n"; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 			} else {
 				$response = $input_text;
@@ -171,7 +171,7 @@ Place your license key here', 'woofunnels' ) . '" />' . "\n";  // phpcs:ignore W
 
 		public function column_product_expiry( $item ) {
 			if ( $this->is_license_expire( $item ) ) {
-				$date_string = __( 'Expire', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				$date_string = __( 'Expire', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				try {
 					$date        = new DateTime( $item['existing_key']['expires'] );
 					$date_string = $date->format( get_option( 'date_format' ) );
@@ -182,9 +182,9 @@ Place your license key here', 'woofunnels' ) . '" />' . "\n";  // phpcs:ignore W
 				return $date_string;
 			} else {
 				if ( '' === $item['existing_key']['key'] ) {
-					return __( 'N/A', 'woofunnels' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					return __( 'N/A', 'wp-marketing-automations' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				} elseif ( '' === $item['existing_key']['expires'] ) {
-					return __( 'Lifetime', 'woofunnels' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					return __( 'Lifetime', 'wp-marketing-automations' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				} else {
 					$date        = new DateTime( $item['existing_key']['expires'] );
 					$date_string = $date->format( get_option( 'date_format' ) );
@@ -226,10 +226,10 @@ Place your license key here', 'woofunnels' ) . '" />' . "\n";  // phpcs:ignore W
 
 		public function get_columns() {
 			$columns = array(
-				'plugin'          => __( 'Plugin', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'product_version' => __( 'Version', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'product_status'  => __( 'Key', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'product_expiry'  => __( 'Renews On', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'plugin'          => __( 'Plugin', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'product_version' => __( 'Version', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'product_status'  => __( 'Key', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'product_expiry'  => __( 'Renews On', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			);
 
 			return $columns;

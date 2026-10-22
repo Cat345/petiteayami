@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 $all_triggers          = BWFAN_Load_Sources::get_sources_obj();
 $all_registered_events = BWFAN_Core()->sources->get_events();
 $db_saved_value        = $trigger_events;

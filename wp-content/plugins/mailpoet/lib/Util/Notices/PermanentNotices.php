@@ -89,6 +89,9 @@ class PermanentNotices {
   /** @var CaptchaDisabledNotice */
   private $captchaDisabledNotice;
 
+  /** @var SenderDomainPausedCampaignsNotice */
+  private $senderDomainPausedCampaignsNotice;
+
   public function __construct(
     WPFunctions $wp,
     CronHelper $cronHelper,
@@ -102,7 +105,8 @@ class PermanentNotices {
     SenderDomainAuthenticationNotices $senderDomainAuthenticationNotices,
     AuthorizedSenderDomainController $senderDomainController,
     NewslettersRepository $newslettersRepository,
-    CaptchaDisabledNotice $captchaDisabledNotice
+    CaptchaDisabledNotice $captchaDisabledNotice,
+    SenderDomainPausedCampaignsNotice $senderDomainPausedCampaignsNotice
   ) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings($wp);
@@ -126,6 +130,7 @@ class PermanentNotices {
     $this->stuckPostNotificationNotice = new StuckPostNotificationNotice($wp, $newslettersRepository);
     $this->senderDomainAuthenticationNotices = $senderDomainAuthenticationNotices;
     $this->captchaDisabledNotice = $captchaDisabledNotice;
+    $this->senderDomainPausedCampaignsNotice = $senderDomainPausedCampaignsNotice;
   }
 
   public function init() {
@@ -205,8 +210,23 @@ class PermanentNotices {
       'mailpoet-newsletter-editor',
       ...$excludeSetupWizard,
     ];
+    $excludePausedCampaignsNotice = [
+      Menu::EMAIL_EDITOR_PAGE_SLUG,
+      Menu::FORM_EDITOR_PAGE_SLUG,
+      Menu::AUTOMATION_EDITOR_PAGE_SLUG,
+      ...$excludeSetupWizard,
+    ];
+    $pausedCampaignsNotice = $this->senderDomainPausedCampaignsNotice->init(
+      Menu::isOnMailPoetAdminPage($excludePausedCampaignsNotice)
+    );
+    // The general notice stays visible unless the paused campaigns notice already covers the default sender domain
+    $coveredByPausedCampaignsNotice = $pausedCampaignsNotice !== null && in_array(
+      $this->senderDomainAuthenticationNotices->getDefaultFromDomain(),
+      $this->senderDomainPausedCampaignsNotice->getListedDomains(),
+      true
+    );
     $this->senderDomainAuthenticationNotices->init(
-      Menu::isOnMailPoetAdminPage($excludeDomainAuthenticationNotices)
+      !$coveredByPausedCampaignsNotice && Menu::isOnMailPoetAdminPage($excludeDomainAuthenticationNotices)
     );
   }
 

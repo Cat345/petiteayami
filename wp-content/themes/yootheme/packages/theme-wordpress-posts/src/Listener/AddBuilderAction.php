@@ -37,7 +37,7 @@ class AddBuilderAction
         ]);
 
         $actions['yootheme'] = sprintf(
-            '<a href="%s" class="tm-button">%s</a>',
+            '<a href="%s">%s</a>',
             $link,
             __('Edit with YOOtheme', 'yootheme'),
         );

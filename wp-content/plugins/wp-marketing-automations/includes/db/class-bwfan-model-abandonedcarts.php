@@ -24,7 +24,7 @@ class BWFAN_Model_Abandonedcarts extends BWFAN_Model {
 			$order_by      = ' ORDER BY `' . str_replace( '`', '``', $order_by ) . '` DESC';
 		}
 
-		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}bwfan_abandonedcarts {$where} {$order_by} {$limit_string}", $output ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}bwfan_abandonedcarts {$where} {$order_by} {$limit_string}", $output ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- callers pass WHERE built with $wpdb->prepare(); order_by whitelisted; limit prepared
 	}
 
 	public static function delete_abandoned_cart_row( $data ) {
@@ -60,9 +60,9 @@ class BWFAN_Model_Abandonedcarts extends BWFAN_Model {
 		}
 
 		$where = implode( ' AND ', $where_clauses );
-		$query = $wpdb->prepare( "DELETE FROM {$table_name} WHERE {$where}", ...$where_values ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$query = $wpdb->prepare( "DELETE FROM {$table_name} WHERE {$where}", ...$where_values ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- columns whitelisted; values bound via prepare() with spread
 
-		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		return $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- columns whitelisted; values bound via prepare() with spread
 	}
 
 	/**
@@ -80,7 +80,7 @@ class BWFAN_Model_Abandonedcarts extends BWFAN_Model {
 		if ( $abandoned_time > 0 ) {
 			$query .= $wpdb->prepare( " AND TIMESTAMPDIFF(MINUTE,last_modified,UTC_TIMESTAMP) >= %d", $abandoned_time );
 		}
-		$count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$count = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; time intval()ed and prepared
 
 		return ! empty( $count );
 	}
@@ -93,12 +93,12 @@ class BWFAN_Model_Abandonedcarts extends BWFAN_Model {
 	 */
 	public static function get_duplicate_entry() {
 		global $wpdb;
-		$start_time = date( 'Y-m-d H:i:s', strtotime( '-12 hours' ) );
+		$start_time = gmdate( 'Y-m-d H:i:s', strtotime( '-12 hours' ) );
 
 		$query = "SELECT GROUP_CONCAT(`ID`) AS `pkey` FROM `{$wpdb->prefix}bwfan_abandonedcarts` WHERE `created_time` > %s AND (`status` = 0 OR `status` = 3) GROUP BY `email` HAVING COUNT(`email`) > 1";
-		$query = $wpdb->prepare( $query, $start_time );
+		$query = $wpdb->prepare( $query, $start_time ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 
-		$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		if ( empty( $result ) ) {
 			return [];
 		}

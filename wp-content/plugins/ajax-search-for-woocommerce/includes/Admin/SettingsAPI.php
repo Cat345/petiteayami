@@ -860,6 +860,12 @@ class SettingsAPI {
 					{'old': '#dgwt_wcas_troubleshooting', 'new': '#troubleshooting'},
 				];
 
+				// A tab href reaches jQuery's $(); only allow "#id" selectors so a forged tab
+				// (e.g. injected into an admin notice) cannot smuggle an HTML string into $().
+				function dgwtWcasIsSafeTabHref(href) {
+					return typeof href === 'string' && /^#[A-Za-z0-9_-]+$/.test(href);
+				}
+
 				function getOldTabHref($new) {
 					var result = $new;
 					tabHrefs.forEach(function (href) {
@@ -927,7 +933,7 @@ class SettingsAPI {
 						$('.<?php 
         echo $this->prefix;
         ?>nav-tab-wrapper a:not(.js-nav-tab-minor)').each(function () {
-							if ($(this).attr('href') === maybe_active) {
+							if ($(this).attr('href') === maybe_active && dgwtWcasIsSafeTabHref(maybe_active)) {
 								activetab = maybe_active;
 							}
 						});
@@ -940,7 +946,7 @@ class SettingsAPI {
 					$('.<?php 
         echo $this->prefix;
         ?>nav-tab-wrapper a:not(.js-nav-tab-minor)').each(function () {
-						if ($(this).attr('href') === maybe_active_href) {
+						if ($(this).attr('href') === maybe_active_href && dgwtWcasIsSafeTabHref(maybe_active_href)) {
 							activetab = maybe_active_href;
 						}
 					});
@@ -981,6 +987,10 @@ class SettingsAPI {
 				$('.<?php 
         echo $this->prefix;
         ?>nav-tab-wrapper a:not(.js-nav-tab-minor)').on('click', function (evt) {
+					if (!dgwtWcasIsSafeTabHref($(this).attr('href'))) {
+						evt.preventDefault();
+						return;
+					}
 					if (typeof (localStorage) !== 'undefined') {
 						localStorage.setItem('<?php 
         echo $this->prefix;

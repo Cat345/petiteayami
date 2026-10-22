@@ -96,11 +96,16 @@ class ExtendedProduct {
 	 * @throws \Exception In case of invalid tax code entered.
 	 */
 	public function get_on_save_post_parameter_tax_code( WC_Data $wc_data ): string {
-		$tax_code = '';
-		$nonce    = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';
-		wp_verify_nonce( $nonce );
+		$tax_code   = '';
+		$product_id = $wc_data->get_id();
 
-		if ( isset( $_POST['_stripe_tax_for_woocommerce_tax_code'] ) ) {
+		// The posted tax code is only trusted when it comes from a verified product edit form submission by an authorized user.
+		$is_verified_form_submission = current_user_can( 'edit_post', $product_id ) && ( // phpcs:ignore WordPress.WP.Capabilities.Unknown -- Standard core capability.
+			wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woocommerce_meta_nonce'] ?? '' ) ), 'woocommerce_save_data' ) ||
+			wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ?? '' ) ), 'update-post_' . $product_id )
+		);
+
+		if ( $is_verified_form_submission && isset( $_POST['_stripe_tax_for_woocommerce_tax_code'] ) ) {
 			$tax_code = sanitize_text_field( wp_unslash( $_POST['_stripe_tax_for_woocommerce_tax_code'] ) );
 			/* @phpstan-ignore-next-line */
 		} elseif ( $wc_data->get_parent_id() ) {

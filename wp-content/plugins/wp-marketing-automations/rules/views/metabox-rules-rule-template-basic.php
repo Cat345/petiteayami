@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; /* phpcs:disable Generic.PHP.DisallowAlternativePHPTags -- <% %> below are Underscore.js template delimiters inside HTML output, not PHP tags (asp_tags was removed in PHP 7.0) */ ?>
 <td class="remove">
     <span>IF</span>
     <a href="#" class="bwfan-remove-rule bwfan-button-remove">Delete</a>

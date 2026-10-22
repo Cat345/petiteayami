@@ -20,8 +20,8 @@ use WPDesk_Flexible_Shipping;
 class FreeShippingNoticeGenerator implements Hookable {
 
 	const SETTING_METHOD_FREE_SHIPPING = 'method_free_shipping';
-	const META_DATA_FS_METHOD = '_fs_method';
-	const PRIORITY = 10;
+	const META_DATA_FS_METHOD          = '_fs_method';
+	const PRIORITY                     = 10;
 
 	/**
 	 * @var WC_Cart|null
@@ -31,7 +31,7 @@ class FreeShippingNoticeGenerator implements Hookable {
 	/**
 	 * @var WC_Session|null
 	 */
-	private $session;
+	private ?WC_Session $session;
 
 	/**
 	 * @var string
@@ -74,7 +74,6 @@ class FreeShippingNoticeGenerator implements Hookable {
 	 * Triggered by filter. Must return $package_rates.
 	 *
 	 * @param array $package_rates .
-	 * @param array $package       .
 	 *
 	 * @return array
 	 */
@@ -90,7 +89,7 @@ class FreeShippingNoticeGenerator implements Hookable {
 	}
 
 	protected function get_session() {
-		return WC()->session;
+		return $this->session ?? WC()->session;
 	}
 
 	/**
@@ -112,9 +111,9 @@ class FreeShippingNoticeGenerator implements Hookable {
 			(float) apply_filters( 'flexible_shipping_value_in_currency', $lowest_free_shipping_limit, $lowest_free_shipping_limit ),
 			wc_get_rounding_precision()
 		);
-		$amount                                          = $lowest_free_shipping_limit - $this->get_cart_value();
-		$free_shipping_notice_text                       = $shipping_method_with_lowest_free_shipping_limit[ NoticeTextSettings::FIELD_NAME ] ?? '';
-		$meta_data                                       = apply_filters( 'flexible-shipping/free-shipping/metadata', [ 'method_settings' => $shipping_method_with_lowest_free_shipping_limit ], $shipping_method_with_lowest_free_shipping_limit );
+		$amount                    = $lowest_free_shipping_limit - $this->get_cart_value();
+		$free_shipping_notice_text = $shipping_method_with_lowest_free_shipping_limit[ NoticeTextSettings::FIELD_NAME ] ?? '';
+		$meta_data                 = apply_filters( 'flexible-shipping/free-shipping/metadata', [ 'method_settings' => $shipping_method_with_lowest_free_shipping_limit ], $shipping_method_with_lowest_free_shipping_limit );
 
 		$free_shipping_notice_data = $this->prepare_free_shipping_notice_data(
 			( $shipping_method_with_lowest_free_shipping_limit[ ProgressBarSettings::FIELD_NAME ] ?? 'no' ) === 'yes',
@@ -171,6 +170,7 @@ class FreeShippingNoticeGenerator implements Hookable {
 	 */
 	protected function get_notice_text_message( string $amount, string $message ): string {
 		$message = $this->format_notice_text(
+			// Translators: %1$s: amount left for free shipping.
 			empty( $message ) ? __( 'You only need %1$s more to get free shipping!', 'flexible-shipping' ) : wpdesk__( $message, 'flexible-shipping' ),
 			$amount
 		);
@@ -188,10 +188,11 @@ class FreeShippingNoticeGenerator implements Hookable {
 	 */
 	private function format_notice_text( string $message, string $amount ): string {
 		try {
-			return sprintf( $message, $amount );
+			return ( new NoticeTextFormatter() )->format( $message, $amount );
 		} catch ( \Throwable $e ) {
 			try {
-				return sprintf( __( 'You only need %1$s more to get free shipping!', 'flexible-shipping' ), $amount );
+				// Translators: %1$s: amount left for free shipping.
+				return ( new NoticeTextFormatter() )->format( __( 'You only need %1$s more to get free shipping!', 'flexible-shipping' ), $amount );
 			} catch ( \Throwable $e ) {
 				return 'You only need ' . $amount . ' more to get free shipping!';
 			}
@@ -309,7 +310,7 @@ class FreeShippingNoticeGenerator implements Hookable {
 	 */
 	protected function get_shipping_method_with_lowest_free_shipping_limit( $package_rates ): array {
 		$lowest_free_shipping_limit = null;
-		$shipping_method = [];
+		$shipping_method            = [];
 		/** @var WC_Shipping_Rate $package_rate */
 		foreach ( $package_rates as $package_rate ) {
 			if ( $this->is_package_rate_from_flexible_shipping( $package_rate ) ) {
@@ -319,7 +320,7 @@ class FreeShippingNoticeGenerator implements Hookable {
 					$method_free_shipping_limit = round( floatval( $fs_method[ self::SETTING_METHOD_FREE_SHIPPING ] ), wc_get_rounding_precision() );
 					if ( $lowest_free_shipping_limit === null || $method_free_shipping_limit < $lowest_free_shipping_limit ) {
 						$lowest_free_shipping_limit = $method_free_shipping_limit;
-						$shipping_method = $fs_method;
+						$shipping_method            = $fs_method;
 					}
 				}
 			}

@@ -5,9 +5,11 @@ namespace MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Acti
 if (!defined('ABSPATH')) exit;
 
 
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Exceptions\RuntimeException;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
+use MailPoet\Premium\Automation\Engine\AutomationAuthorization;
 use MailPoet\WooCommerce\WooCommerceSubscriptions\Helper as WCS;
 
 abstract class AbstractSubscriptionAction {
@@ -31,12 +33,29 @@ abstract class AbstractSubscriptionAction {
   /** @var WooCommerce */
   protected $woocommerce;
 
+  /** @var AutomationAuthorization */
+  protected $authorization;
+
   public function __construct(
     WCS $wcs,
-    WooCommerce $woocommerce
+    WooCommerce $woocommerce,
+    AutomationAuthorization $authorization
   ) {
     $this->wcs = $wcs;
     $this->woocommerce = $woocommerce;
+    $this->authorization = $authorization;
+  }
+
+  protected function authorizeSave(Automation $automation): void {
+    $this->authorization->authorizeSave($automation, [AutomationAuthorization::CAPABILITY_MANAGE_WOOCOMMERCE], $this->getAuthorizationMessage());
+  }
+
+  protected function authorizeRun(Automation $automation): void {
+    $this->authorization->authorizeRun($automation, [AutomationAuthorization::CAPABILITY_MANAGE_WOOCOMMERCE], $this->getAuthorizationMessage());
+  }
+
+  private function getAuthorizationMessage(): string {
+    return __('The user who last saved this automation is not allowed to manage WooCommerce subscriptions.', 'mailpoet-premium');
   }
 
   protected function validateWooCommerceSubscriptionsActive(): void {

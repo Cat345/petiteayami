@@ -18,29 +18,26 @@ class GroupType
      */
     public static function config($fieldGroup): array
     {
-        return [
-            'fields' => array_filter(
-                array_reduce(
-                    Helper::fields('posts', $fieldGroup['fieldSlugs']),
-                    fn($fields, $field) => $fields +
-                        Helper::loadFields($field, [
-                            'type' => 'String',
-                            'name' => Str::snakeCase($field['slug']),
-                            'metadata' => [
-                                'label' => $field['name'],
-                                'group' => $fieldGroup['name'],
-                            ],
-                            'extensions' => [
-                                'call' => [
-                                    'func' => __CLASS__ . '::resolve',
-                                    'args' => ['slug' => $field['slug']],
-                                ],
-                            ],
-                        ]),
-                    [],
-                ),
-            ),
-        ];
+        $fields = [];
+
+        foreach (Helper::fields('posts', $fieldGroup['fieldSlugs']) as $field) {
+            $fields += Helper::loadFields($field, [
+                'type' => 'String',
+                'name' => Str::snakeCase($field['slug']),
+                'metadata' => [
+                    'label' => $field['name'],
+                    'group' => $fieldGroup['name'],
+                ],
+                'extensions' => [
+                    'call' => [
+                        'func' => __CLASS__ . '::resolve',
+                        'args' => ['slug' => $field['slug']],
+                    ],
+                ],
+            ]);
+        }
+
+        return ['fields' => $fields];
     }
 
     /**

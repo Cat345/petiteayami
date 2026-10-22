@@ -18,6 +18,9 @@ $stepClassName  = 'wfacp_single_step_form';
 $stepMultiClass = 'wfacp_single_step_form';
 if ( $totalStepCount > 1 && $totalStepCount == 2 ) {
 	$stepMultiClass = 'wfacp_two_step';
+} elseif ( 4 === absint( $totalStepCount ) ) {
+	// Four steps keep the three-step styling and narrow it with wfacp_four_step.
+	$stepMultiClass = 'wfacp_three_step wfacp_four_step';
 } else {
 	$stepMultiClass = 'wfacp_three_step';
 }
@@ -215,7 +218,9 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 								?>
 							<div class="wfacp-comm-title <?php echo $border_cls; ?>">
 								<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?> "><?php echo $payment_methods_heading; ?></h2>
+								<?php if ( ! empty( $payment_methods_sub_heading ) ) { ?>
 								<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
+								<?php } ?>
 							</div>
 							<?php } ?>
 							<div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">

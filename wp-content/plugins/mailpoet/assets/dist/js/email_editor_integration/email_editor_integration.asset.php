@@ -40,8 +40,7 @@ if (!defined('ABSPATH')) exit;
 		'wp-private-apis',
 		'wp-rich-text',
 		'wp-style-engine',
-		'wp-theme',
 		'wp-url'
 	),
-	'version' => '5dd8bef7b4586ea8686f'
+	'version' => '78918e8135b65c1b8d07'
 );

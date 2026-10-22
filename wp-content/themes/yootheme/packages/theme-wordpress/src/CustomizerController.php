@@ -15,12 +15,15 @@ class CustomizerController
         // init customizer
         Event::emit('customizer.init');
 
+        $return = $request->getQueryParam('return');
+        $return = is_string($return) ? $return : '';
+
         // init config
         $config->add('customizer', [
             'site' => trailingslashit(home_url()),
-            'nonce' => wp_create_nonce('wp_rest'),
             'config' => $config('~theme'),
-            'return' => $request->getQueryParam('return') ?: get_admin_url(),
+            'return' =>
+                wp_validate_redirect(wp_sanitize_redirect($return), admin_url()) ?: admin_url(),
         ]);
 
         // load template

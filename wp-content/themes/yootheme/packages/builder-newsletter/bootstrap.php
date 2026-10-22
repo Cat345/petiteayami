@@ -42,7 +42,7 @@ return [
         ) => new CampaignMonitorProvider($config('~theme.cmonitor_api'), $client),
 
         NewsletterController::class => fn(Config $config) => new NewsletterController(
-            $config('theme.newsletterProvider'),
+            $config('theme.newsletterProvider', []),
             $config('app.secret'),
         ),
     ],

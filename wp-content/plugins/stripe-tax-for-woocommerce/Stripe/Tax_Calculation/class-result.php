@@ -102,6 +102,13 @@ class Result extends Data {
 	public $shipping_rate = null;
 
 	/**
+	 * Whether checkout should show a zero-rated tax line.
+	 *
+	 * @var bool
+	 */
+	public $show_zero_rated_tax_line = false;
+
+	/**
 	 * Creates a new tax calculation result
 	 *
 	 * @param string $id Stripe tax calculation ID.
@@ -296,7 +303,7 @@ class Result extends Data {
 		}
 
 		// @phpstan-ignore-next-line
-		return new static(
+		$result = new static(
 			$api_calculation->id,
 			$api_calculation->currency,
 			$customer_details,
@@ -313,6 +320,47 @@ class Result extends Data {
 			Amount_Utility::from_cents( $fees_tax_amount_inclusive, $api_calculation->currency ),
 			Amount_Utility::from_cents( $fees_tax_amount_exclusive, $api_calculation->currency )
 		);
+
+		$result->show_zero_rated_tax_line = static::should_show_zero_rated_tax_line( $api_calculation );
+
+		return $result;
+	}
+
+	/**
+	 * Check whether the API response is a pure zero-rated taxable scenario.
+	 *
+	 * @param object $api_calculation Tax calculation API response.
+	 */
+	protected static function should_show_zero_rated_tax_line( object $api_calculation ): bool {
+		if ( ! isset( $api_calculation->tax_breakdown ) ) {
+			return false;
+		}
+
+		$has_zero_rated_taxable_amount = false;
+
+		foreach ( $api_calculation->tax_breakdown as $tax_breakdown_line ) {
+			$amount = isset( $tax_breakdown_line->amount ) ? (int) $tax_breakdown_line->amount : 0;
+
+			if ( $amount > 0 ) {
+				return false;
+			}
+
+			$taxable_amount = isset( $tax_breakdown_line->taxable_amount ) ? (int) $tax_breakdown_line->taxable_amount : 0;
+
+			if ( $taxable_amount <= 0 ) {
+				continue;
+			}
+
+			$taxability_reason = isset( $tax_breakdown_line->taxability_reason ) ? (string) $tax_breakdown_line->taxability_reason : '';
+
+			if ( 'zero_rated' !== $taxability_reason ) {
+				return false;
+			}
+
+			$has_zero_rated_taxable_amount = true;
+		}
+
+		return $has_zero_rated_taxable_amount;
 	}
 
 	/**
@@ -365,13 +413,32 @@ class Result extends Data {
 	 * @param object $api_line_item Tax calculation response line item.
 	 */
 	protected static function tax_breakdown_from_api_calculation_result_line_item( $api_line_item ) {
-		$api_line_item_breakdown = $api_line_item->tax_breakdown;
-		$tax_breakdown           = array();
+		$api_line_item_breakdown   = $api_line_item->tax_breakdown;
+		$tax_breakdown             = array();
+		$is_inclusive_tax_behavior = isset( $api_line_item->tax_behavior )
+			&& self::TAX_BEHAVIOR_INCLUSIVE === $api_line_item->tax_behavior;
 
 		foreach ( $api_line_item_breakdown as $tax_breakdown_line ) {
-			$tax_rate = StripeTax_Tax_Rate_Controller::find_by_api_tax_breakdown( $tax_breakdown_line );
+			$tax_rate  = StripeTax_Tax_Rate_Controller::find_by_api_tax_breakdown( $tax_breakdown_line );
+			$rate_type = isset( $tax_breakdown_line->tax_rate_details->rate_type )
+				? (string) $tax_breakdown_line->tax_rate_details->rate_type
+				: 'percentage';
+			$tax_type  = isset( $tax_breakdown_line->tax_rate_details->tax_type )
+				? (string) $tax_breakdown_line->tax_rate_details->tax_type
+				: '';
 
-			if ( ! $tax_rate || 0.0 === (float) $tax_rate['rate'] || 0 === $tax_breakdown_line->amount ) {
+			$rate_percent            = $tax_rate ? (float) $tax_rate['rate'] : 0.0;
+			$is_flat_amount_tax_line = 'flat_amount' === $rate_type || 'retail_delivery_fee' === $tax_type;
+
+			if ( ! $tax_rate || 0 === $tax_breakdown_line->amount ) {
+				continue;
+			}
+
+			if ( $is_inclusive_tax_behavior && 0.0 === $rate_percent ) {
+				continue;
+			}
+
+			if ( ! $is_inclusive_tax_behavior && 0.0 === $rate_percent && ! $is_flat_amount_tax_line ) {
 				continue;
 			}
 

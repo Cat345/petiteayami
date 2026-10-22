@@ -86,7 +86,7 @@ class BWFAN_WC_Item_Data extends BWFAN_Cart_Display {
 		// If type is price, show formatted price preview
 		switch ( $type ) {
 			case 'date':
-				return $this->get_date_value( date( 'Y-m-d H:i:s' ), $attr );
+				return $this->get_date_value( gmdate( 'Y-m-d H:i:s' ), $attr );
 			case 'price':
 				return $this->get_price_value( 1255.50, $attr );
 			default:
@@ -165,7 +165,7 @@ class BWFAN_WC_Item_Data extends BWFAN_Cart_Display {
 		$date_formats = [];
 		foreach ( $formats as $data ) {
 			if ( isset( $data['format'] ) ) {
-				$date_time      = date( $data['format'] );
+				$date_time      = gmdate( $data['format'] );
 				$date_formats[] = [
 					'value' => $data['format'],
 					'label' => $date_time,
@@ -289,7 +289,7 @@ class BWFAN_WC_Item_Data extends BWFAN_Cart_Display {
 		$date_formats = [];
 		foreach ( $formats as $data ) {
 			if ( isset( $data['format'] ) ) {
-				$date_time      = date( $data['format'] );
+				$date_time      = gmdate( $data['format'] );
 				$date_formats[] = [
 					'value' => $data['format'],
 					'label' => $date_time,

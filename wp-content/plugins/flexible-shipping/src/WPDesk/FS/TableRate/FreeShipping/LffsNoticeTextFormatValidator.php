@@ -25,7 +25,7 @@ final class LffsNoticeTextFormatValidator {
 		}
 
 		try {
-			sprintf( $message, '' );
+			( new NoticeTextFormatter() )->format( $message, '' );
 		} catch ( \Throwable $e ) {
 			return false;
 		}

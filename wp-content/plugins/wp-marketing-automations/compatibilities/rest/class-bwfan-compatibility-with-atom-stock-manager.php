@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * ATUM WooCommerce Inventory Management and Stock Tracking
@@ -33,7 +34,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Atom_Stock_Manager' ) ) {
 		public function unhook_atom_stock_manager( $action_id, $timeout ) {
 			$rest_route = filter_input( INPUT_GET, 'rest_route' );
 			if ( empty( $rest_route ) ) {
-				$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : '';
+				$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 			}
 			if ( empty( $rest_route ) ) {
 				return;

@@ -2,7 +2,7 @@
 $current_page = 'woofunnels';
 ?>
 <div class="woofunnels_plugins_wrap">
-    <h1><?php esc_html_e( 'View Plugins ', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></h1>
+    <h1><?php esc_html_e( 'View Plugins ', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></h1>
 	<?php if ( $model ) { ?>
         <div class="wp-filter">
 
@@ -28,12 +28,12 @@ $current_page = 'woofunnels';
 				$licenses->get_plugins_list();
 				if ( ! empty( $licenses->plugins_list ) ) { ?>
                     <li class="plugin-install-featured <?php echo ( isset( $model->current_tab ) && $model->current_tab === "licenses" ) ? "current" : "" ?>">
-                        <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . "&tab=licenses" ); ?>"><?php esc_html_e( 'Licenses', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                        <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . "&tab=licenses" ); ?>"><?php esc_html_e( 'Licenses', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
                     </li>
 				<?php } ?>
                 <li class="plugin-install-popular">
                     <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . "&tab=support" ); ?>"
-                       class=""><?php esc_html_e( 'Support', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                       class=""><?php esc_html_e( 'Support', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
                 </li>
 
 				<?php if ( isset( $model->additional_tabs ) && is_array( $modal->additional_tabs ) && count( $modal->additional_tabs ) > 0 ): ?>
@@ -82,12 +82,12 @@ $current_page = 'woofunnels';
                                                 </li>
 											<?php else: ?>
                                                 <li><span
-                                                        class="button button-disabled"><?php _e( 'Installed', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></span>
+                                                        class="button button-disabled"><?php _e( 'Installed', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></span>
                                                 </li>
 											<?php endif; ?>
                                             <li><a target="_blank" href="<?php echo $addons->more_details_link ?>"
                                                    class="open-plugin-details-modal" aria-label=""
-                                                   data-title=""><?php _e( 'More Details', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a></li>
+                                                   data-title=""><?php _e( 'More Details', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a></li>
 
                                         </ul>
                                     </div>
@@ -97,7 +97,7 @@ $current_page = 'woofunnels';
 
                                 <div class="plugin-card-bottom woofunnels_plugins_status_div">
                                     <p class="woofunnels_plugins_status"><span
-                                            class="woofunnels_status_text"><strong><?php _e( 'Status:', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong> <span
+                                            class="woofunnels_status_text"><strong><?php _e( 'Status:', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong> <span
                                                 class="woofunnels_current_status woofunnels_available"><?php echo implode( " but ", $addons->status_config ); ?></span></span>
                                     </p>
                                 </div>
@@ -183,5 +183,5 @@ $current_page = 'woofunnels';
 
         <br class="clear">
 	<?php } else { ?>
-        <div class="woofunnels_cannot_connect"> <?php esc_html_e( 'Could not connect to server.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></div><?php } ?>
+        <div class="woofunnels_cannot_connect"> <?php esc_html_e( 'Could not connect to server.', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></div><?php } ?>
 </div>

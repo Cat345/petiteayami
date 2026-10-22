@@ -9,7 +9,7 @@ use MailPoet\API\REST\Request;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Premium\Newsletter\Stats\Bounces;
-use MailPoet\Util\License\Features\CapabilitiesManager;
+use MailPoet\Premium\Util\License\DetailedAnalyticsGuard;
 use MailPoet\WP\Functions as WPFunctions;
 
 class BouncesEndpoint extends AbstractNewsletterStatsListingEndpoint {
@@ -18,11 +18,11 @@ class BouncesEndpoint extends AbstractNewsletterStatsListingEndpoint {
 
   public function __construct(
     NewslettersRepository $newslettersRepository,
-    CapabilitiesManager $capabilitiesManager,
+    DetailedAnalyticsGuard $detailedAnalyticsGuard,
     WPFunctions $wp,
     Bounces $bounces
   ) {
-    parent::__construct($newslettersRepository, $capabilitiesManager, $wp);
+    parent::__construct($newslettersRepository, $detailedAnalyticsGuard, $wp);
     $this->bounces = $bounces;
   }
 

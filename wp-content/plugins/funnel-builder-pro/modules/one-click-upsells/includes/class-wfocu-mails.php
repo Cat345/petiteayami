@@ -238,9 +238,15 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 			$this->maybe_send_pending_emails( $order_id, $funnel_order_behavior, $cancel_original, $send_processing_mail_on_no_batch, $send_processing_mail_on_no_batch_cancel );
 		}
 
-		public function maybe_send_pending_emails( $order, $order_behaviour, $cancel_original, $send_processing_mail_on_no_batch, $send_processing_mail_on_no_batch_cancel ) {
+		public function maybe_send_pending_emails( $order, $order_behaviour, $cancel_original, $send_processing_mail_on_no_batch, $send_processing_mail_on_no_batch_cancel, $flag_order_id = null ) {
 			$get_order = wc_get_order( $order );
-			if ( 'create_order' === $order_behaviour && ( 'no' === $cancel_original && 'end' === $send_processing_mail_on_no_batch ) || ( 'yes' === $cancel_original && 'end' === $send_processing_mail_on_no_batch_cancel ) ) {
+
+			/**
+			 * The payload's order may no longer exist (deleted/trashed). Skip the email in that
+			 * case but still fall through to the flag clearing below — otherwise this entry
+			 * fatals the cron callback on every run and stalls every pending mail on the site.
+			 */
+			if ( $get_order instanceof WC_Order && ( 'create_order' === $order_behaviour && ( 'no' === $cancel_original && 'end' === $send_processing_mail_on_no_batch ) || ( 'yes' === $cancel_original && 'end' === $send_processing_mail_on_no_batch_cancel ) ) ) {
 
 				$status   = $get_order->get_status();
 				$wc_mails = WC()->mailer();
@@ -259,17 +265,29 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 				}
 			}
 
-			$get_order->delete_meta_data( '_wfocu_pending_mails' );
-
 			/**
-			 * we can safely delete that meta that we do not have to take care of emails in case of no cancellation after funnel ends.
+			 * Clear the pending-mail flag from the order that actually carries it. When the cron
+			 * path queried a different order than the payload's order id ($order), it passes the
+			 * queried order's id as $flag_order_id so the flag is removed from the order that was
+			 * selected — otherwise the delete targets a different order, the flag persists and the
+			 * order re-selects on every cron run (infinite resend loop). Defaults to $get_order so
+			 * the funnel-end caller (flag-holder == email-target) keeps its existing behaviour.
 			 */
-			if ( 'create_order' === $order_behaviour && 'no' === $cancel_original ) {
-				$get_order->delete_meta_data( '_wfocu_prevent_mail_paypal' );
+			$flag_order = ( null !== $flag_order_id ) ? wc_get_order( $flag_order_id ) : $get_order;
 
+			if ( $flag_order instanceof WC_Order ) {
+				$flag_order->delete_meta_data( '_wfocu_pending_mails' );
+
+				/**
+				 * we can safely delete that meta that we do not have to take care of emails in case of no cancellation after funnel ends.
+				 */
+				if ( 'create_order' === $order_behaviour && 'no' === $cancel_original ) {
+					$flag_order->delete_meta_data( '_wfocu_prevent_mail_paypal' );
+
+				}
+
+				$flag_order->save_meta_data();
 			}
-
-			$get_order->save_meta_data();
 		}
 
 
@@ -432,6 +450,8 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 					$order = $get_orders[ $i ];
 
 					if ( ! $order instanceof WC_Order ) {
+						unset( $get_orders[ $i ] );
+						++$i;
 						continue;
 					}
 					$get_schedule_meta = $order->get_meta( '_wfocu_pending_mails', true );
@@ -440,6 +460,8 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 					 * additionally check if meta doesn't exist, onto the next order
 					 */
 					if ( empty( $get_schedule_meta ) || ! is_array( $get_schedule_meta ) || ! isset( $get_schedule_meta[0] ) ) {
+						unset( $get_orders[ $i ] );
+						++$i;
 						continue;
 					}
 
@@ -449,7 +471,12 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 					 * check if the funnel end time reached or not
 					 */
 					if ( $time + ( MINUTE_IN_SECONDS * $get_ttl ) <= time() ) {
-						$this->maybe_send_pending_emails( $order_id, $funnel_order_behavior, $cancel_original, $send_processing_mail_on_no_batch, $send_processing_mail_on_no_batch_cancel );
+						/**
+						 * Pass the queried order's id ($order->get_id()) as the flag-holder so the
+						 * _wfocu_pending_mails flag is cleared from the order this cron actually selected,
+						 * not from the payload's order id ($order_id) which may be a different order.
+						 */
+						$this->maybe_send_pending_emails( $order_id, $funnel_order_behavior, $cancel_original, $send_processing_mail_on_no_batch, $send_processing_mail_on_no_batch_cancel, $order->get_id() );
 					}
 					unset( $get_orders[ $i ] );
 					++$i;

@@ -46,40 +46,39 @@ class SpecialActionFieldsFactory implements FieldProvider {
 	 * @return array
 	 */
 	public function get_normalized_cost_fields() {
-		$normalized_cost_fields = array();
+		$normalized_cost_fields = [];
 		$renderer               = new JsonNormalizedRenderer();
 
-		return $renderer->render_fields( $this, array() );
+		return $renderer->render_fields( $this, [] );
 	}
 
 	/**
 	 * @return Field[]
 	 */
 	public function get_built_in_rule_special_actions_fields() {
-		return array(
+		return [
 			( new Field\SelectField() )
 				->set_name( 'special_action' )
 				->set_options( $this->get_special_action_options() )
 				->add_class( 'hs-beacon-search' )
 				->add_class( 'special-action' )
 				->add_data( 'beacon_search', __( 'special action', 'flexible-shipping' ) ),
-		);
+		];
 	}
 
 	/**
 	 * @return array
 	 */
 	private function get_special_action_options() {
-		$options = array();
+		$options = [];
 		foreach ( $this->available_special_actions as $special_action ) {
-			$options[] = array(
+			$options[] = [
 				'value'       => $special_action->get_special_action_id(),
 				'label'       => $special_action->get_name(),
 				'description' => $special_action->get_description(),
-			);
+			];
 		}
 
 		return $options;
 	}
-
 }

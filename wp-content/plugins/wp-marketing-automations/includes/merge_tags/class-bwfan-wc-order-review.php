@@ -155,6 +155,7 @@ class BWFAN_WC_Order_Review extends Merge_Tag_Abstract_Product_Display {
 				'type'     => 'notice',
 				'class'    => '',
 				'status'   => 'info',
+				/* translators: %s: Learn more link */
 				'message'  => sprintf( __( 'The review button is hidden for products where reviews are disabled at the product level. %s', 'wp-marketing-automations' ), '<a href="https://funnelkit.com/docs/autonami-2/troubleshooting/request-reviews-in-the-customers-language/" target="_blank">' . __( 'Learn more', 'wp-marketing-automations' ) . '</a>' ),
 				'dismiss'  => true,
 				'required' => false,

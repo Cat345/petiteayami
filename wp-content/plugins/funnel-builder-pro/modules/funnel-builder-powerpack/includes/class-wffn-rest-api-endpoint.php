@@ -1882,7 +1882,23 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 									}
 
 									if ( $source_revenue->source_id == $step_data['object_id'] && $step_data['type'] === 'landing' ) {
-										$step_data['revenue'] += (float) $source_revenue->amount;
+										$bump_revenue   = (float) ( $source_revenue->bump_revenue ?? 0 );
+										$upsell_revenue = (float) ( $source_revenue->upsell_revenue ?? 0 );
+
+										$step_data['revenue'] += (float) $source_revenue->amount + $bump_revenue + $upsell_revenue;
+
+										if ( isset( $step_data['revenue_breakdown'] ) ) {
+											foreach ( $step_data['revenue_breakdown'] as &$breakdown_item ) {
+												if ( 'checkout' === $breakdown_item['key'] ) {
+													$breakdown_item['amount'] += (float) $source_revenue->amount;
+												} elseif ( 'bump' === $breakdown_item['key'] ) {
+													$breakdown_item['amount'] += $bump_revenue;
+												} elseif ( 'upsell' === $breakdown_item['key'] ) {
+													$breakdown_item['amount'] += $upsell_revenue;
+												}
+											}
+											unset( $breakdown_item );
+										}
 									}
 								}
 							}
@@ -1920,6 +1936,31 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						 */
 						if ( 'checkout' === $step_type ) {
 							$step_data['source_revenue'] = isset( $step['source_revenue'] ) ? $step['source_revenue'] : array();
+						}
+
+						/**
+						 * Seed the Attributed Revenue breakdown for landing/sales steps -- always
+						 * present (even at zero) so the breakdown popover has a stable shape
+						 * regardless of whether this step has any conversions in range.
+						 */
+						if ( 'landing' === $step_type ) {
+							$step_data['revenue_breakdown'] = array(
+								array(
+									'key'    => 'checkout',
+									'title'  => __( 'Checkout', 'funnel-builder' ),
+									'amount' => 0,
+								),
+								array(
+									'key'    => 'bump',
+									'title'  => __( 'Order Bump', 'funnel-builder' ),
+									'amount' => 0,
+								),
+								array(
+									'key'    => 'upsell',
+									'title'  => __( 'One Click Upsell', 'funnel-builder' ),
+									'amount' => 0,
+								),
+							);
 						}
 
 						if ( isset( $step['is_variant'] ) && isset( $step['control'] ) && absint( $step['control'] ) !== 0 ) {
@@ -1992,6 +2033,23 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						$data[ $item['control_id'] ]['conversions']    += $item['conversions'];
 						$data[ $item['control_id'] ]['revenue']        += $item['revenue'];
 						$data[ $item['control_id'] ]['conversion_rate'] = $this->get_percentage( $data[ $item['control_id'] ]['views'], $data[ $item['control_id'] ]['conversions'] );
+
+						/**
+						 * Merge the variant's Attributed Revenue breakdown into the control's,
+						 * key by key, so the control's breakdown stays consistent with its
+						 * (now variant-inclusive) revenue total.
+						 */
+						if ( isset( $item['revenue_breakdown'], $data[ $item['control_id'] ]['revenue_breakdown'] ) ) {
+							foreach ( $item['revenue_breakdown'] as $variant_breakdown_item ) {
+								foreach ( $data[ $item['control_id'] ]['revenue_breakdown'] as &$control_breakdown_item ) {
+									if ( $control_breakdown_item['key'] === $variant_breakdown_item['key'] ) {
+										$control_breakdown_item['amount'] += $variant_breakdown_item['amount'];
+									}
+								}
+								unset( $control_breakdown_item );
+							}
+						}
+
 						unset( $data[ $item['object_id'] ] );
 					}
 				}
@@ -2055,7 +2113,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				global $wpdb;
 
 				$conv_range = ( '' !== $start_date && '' !== $end_date ) ? " AND timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "' " : '';
-				$sql_query  = "SELECT conv.step_id AS 'id', conv.source_id AS 'source_id', SUM(conv.checkout_total) AS 'amount', COUNT(conv.id) AS 'conversions',  conv.timestamp AS 'date', 'wc_checkout' AS 'type' FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . '  AS conv WHERE type=2 AND conv.step_id != 0 AND conv.funnel_id=' . absint( $funnel_id ) . ' ' . $conv_range . ' GROUP BY conv.step_id, conv.source_id ORDER BY conv.step_id ASC';
+				$sql_query  = "SELECT conv.step_id AS 'id', conv.source_id AS 'source_id', SUM(conv.checkout_total) AS 'amount', SUM(conv.bump_total) AS 'bump_revenue', SUM(conv.offer_total) AS 'upsell_revenue', COUNT(conv.id) AS 'conversions',  conv.timestamp AS 'date', 'wc_checkout' AS 'type' FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . '  AS conv WHERE type=2 AND conv.step_id != 0 AND conv.funnel_id=' . absint( $funnel_id ) . ' ' . $conv_range . ' GROUP BY conv.step_id, conv.source_id ORDER BY conv.step_id ASC';
 
 				$aero_result = $wpdb->get_results( $sql_query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
@@ -2102,15 +2160,21 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					}
 
 					if ( isset( $get_all_records[ $object_id ]['source_revenue'][ $entry['source_id'] ] ) ) {
-						$get_all_records[ $object_id ]['source_revenue'][ $entry['source_id'] ]['amount'] += floatval( $entry['amount'] );
-						$get_all_records[ $object_id ]['source_revenue'][ $entry['source_id'] ]['order']  += floatval( $entry['conversions'] );
+						$get_all_records[ $object_id ]['source_revenue'][ $entry['source_id'] ]['amount']         += floatval( $entry['amount'] );
+						$get_all_records[ $object_id ]['source_revenue'][ $entry['source_id'] ]['bump_revenue']   += floatval( $entry['bump_revenue'] );
+						$get_all_records[ $object_id ]['source_revenue'][ $entry['source_id'] ]['upsell_revenue'] += floatval( $entry['upsell_revenue'] );
+						$get_all_records[ $object_id ]['source_revenue'][ $entry['source_id'] ]['order']          += floatval( $entry['conversions'] );
 					} else {
 						$get_all_records[ $object_id ]['source_revenue'][ $entry['source_id'] ] = array(
-							'title'     => ( empty( $entry['source_id'] ) || ( absint( $entry['source_id'] ) === 0 ) ) ? __( 'Other', 'funnel-builder' ) : html_entity_decode( get_the_title( $entry['source_id'] ), ENT_QUOTES, get_bloginfo( 'charset' ) ),
-							'type'      => $tag,
-							'source_id' => ( empty( $entry['source_id'] ) || ( absint( $entry['source_id'] ) === 0 ) ) ? 0 : $entry['source_id'],
-							'amount'    => $entry['amount'],
-							'order'     => $entry['conversions'],
+							'title'          => ( empty( $entry['source_id'] ) || ( absint( $entry['source_id'] ) === 0 ) ) ? __( 'Other', 'funnel-builder' ) : html_entity_decode( get_the_title( $entry['source_id'] ), ENT_QUOTES, get_bloginfo( 'charset' ) ),
+							'type'           => $tag,
+							'source_id'      => ( empty( $entry['source_id'] ) || ( absint( $entry['source_id'] ) === 0 ) ) ? 0 : $entry['source_id'],
+							'amount'         => $entry['amount'],
+							// Landing/sales Attributed Revenue breakdown only -- never fold into 'amount' above,
+							// which the Checkout step's own "Revenue Sources" popover renders as-is.
+							'bump_revenue'   => $entry['bump_revenue'],
+							'upsell_revenue' => $entry['upsell_revenue'],
+							'order'          => $entry['conversions'],
 						);
 
 					}

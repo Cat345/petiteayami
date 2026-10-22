@@ -44,7 +44,7 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 		}
 
 		public function get_columns() {
-			return array(
+			$columns = array(
 				'order_id'          => __( 'Order Id', 'funnel-builder-powerpack' ),
 				'name'              => __( 'Name', 'funnel-builder-powerpack' ),
 				'email'             => __( 'Email', 'funnel-builder-powerpack' ),
@@ -68,14 +68,23 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 				'offer_products'    => __( 'Offer Products', 'funnel-builder-powerpack' ),
 				'offer_total'       => __( 'Offer Total', 'funnel-builder-powerpack' ),
 
-				'device'            => __( 'Device', 'funnel-builder-powerpack' ),
 				'referrers'         => __( 'Referrers', 'funnel-builder-powerpack' ),
+				'device'            => __( 'Device', 'funnel-builder-powerpack' ),
+				'convert_time'      => __( 'Time to Convert', 'funnel-builder-powerpack' ),
 				'utm_campaign'      => __( 'Utm Campaign', 'funnel-builder-powerpack' ),
 				'utm_source'        => __( 'Utm Source', 'funnel-builder-powerpack' ),
 				'utm_medium'        => __( 'Utm Medium', 'funnel-builder-powerpack' ),
 				'utm_term'          => __( 'Utm Term', 'funnel-builder-powerpack' ),
-				'convert_time'      => __( 'Time to Convert', 'funnel-builder-powerpack' ),
+				'utm_content'       => __( 'Utm Content', 'funnel-builder-powerpack' ),
 			);
+
+			// Value is produced by WFFN_Conversion_Data::add_journey_to_row() when
+			// the row is built for export; map_columns() picks it up generically.
+			if ( class_exists( 'WFFN_Journey' ) && WFFN_Journey::is_enabled() ) {
+				$columns['journey_text'] = __( 'Customer Journey', 'funnel-builder-powerpack' );
+			}
+
+			return $columns;
 		}
 
 		public function total_rows( $args ) {

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! is_array( $notifications_list ) || count( $notifications_list ) === 0 ) {
 	return;
 }
@@ -53,7 +54,7 @@ if ( ! is_array( $notifications_list ) || count( $notifications_list ) === 0 ) {
 					?>
                     <div class="wf_notice_dismiss_link_wrap">
                         <a class="notice-dismiss" href="javascript:void(0)">
-							<?php esc_html_e( 'Dismiss', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+							<?php esc_html_e( 'Dismiss', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                         </a>
                     </div>
                     <div class="clearfix"></div>

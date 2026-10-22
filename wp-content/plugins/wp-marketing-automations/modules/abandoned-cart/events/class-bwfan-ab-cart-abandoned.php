@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[AllowDynamicProperties]
 final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
@@ -108,7 +109,7 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 
 		$days_to_check = isset( $global_settings['bwfan_disable_abandonment_days'] ) && intval( $global_settings['bwfan_disable_abandonment_days'] ) > 0 ? intval( $global_settings['bwfan_disable_abandonment_days'] ) : 0;
 		if ( ! empty( $days_to_check ) ) {
-			$after_date = date( 'Y-m-d H:i:s', strtotime( " -$days_to_check day" ) );
+			$after_date = date( 'Y-m-d H:i:s', strtotime( " -$days_to_check day" ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- compared with site-local l_order_date; keep default-tz behaviour until that compare is fixed
 		}
 
 		foreach ( $active_abandoned_carts as $active_abandoned_cart ) {
@@ -129,7 +130,7 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 					)
 					AND customers.l_order_date >= %s
 					LIMIT 1";
-			$last_order = $wpdb->get_var( $wpdb->prepare( $query, $active_abandoned_cart['email'], $after_date ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$last_order = $wpdb->get_var( $wpdb->prepare( $query, $active_abandoned_cart['email'], $after_date ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded query; values bound via prepare()
 
 			if ( ! empty( $last_order ) ) {
 				/** Order found. No need to process the cart */
@@ -492,11 +493,13 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 
 		/** Delete Tasks */
 		$sql_query = "DELETE FROM {table_name} WHERE `ID` IN ($prepare_placeholders)";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; ids bound via prepare() %d
 		$sql_query = $wpdb->prepare( $sql_query, $cart_tasks ); // WPCS: unprepared SQL OK
 		BWFAN_Model_Tasks::query( $sql_query );
 
 		/** Delete Tasks Meta */
 		$sql_query = "Delete FROM {table_name} WHERE `bwfan_task_id` IN ($prepare_placeholders)";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; ids bound via prepare() %d
 		$sql_query = $wpdb->prepare( $sql_query, $cart_tasks ); // WPCS: unprepared SQL OK
 		BWFAN_Model_Taskmeta::query( $sql_query );
 
@@ -688,9 +691,9 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 		$string_placeholder = array_fill( 0, count( $duplicate_entries ), '%d' );
 		$placeholder        = implode( ', ', $string_placeholder );
 
-		$query = $wpdb->prepare( "DELETE FROM `{$wpdb->prefix}bwfan_abandonedcarts` WHERE `ID` IN ({$placeholder})", $duplicate_entries );
+		$query = $wpdb->prepare( "DELETE FROM `{$wpdb->prefix}bwfan_abandonedcarts` WHERE `ID` IN ({$placeholder})", $duplicate_entries ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated; ids bound via prepare() %d
 
-		return ( $wpdb->query( $query ) > 0 ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return ( $wpdb->query( $query ) > 0 ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; ids bound via prepare() %d
 	}
 
 	public function get_fields_schema() {
@@ -701,6 +704,7 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 				'class'    => '',
 				'status'   => 'info',
 				'message'  => sprintf(
+					/* translators: %s: Learn more link */
 					__( 'This automation will automatically end when the contact places an order. %s', 'wp-marketing-automations' ),
 					'<a href="' . esc_url( 'https://funnelkit.com/docs/autonami-2/carts/set-up-abandoned-cart-automation/?utm_source=WordPress&utm_medium=FKA+Event+Notice&utm_campaign=FKA+Abandoned+Notice#how-the-cart-abandonment-feature-works' ) . '" target="_blank">' . __( 'Learn more', 'wp-marketing-automations' ) . '</a>'
 				),

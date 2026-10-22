@@ -8,8 +8,9 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 }
 $id = WFACP_Common::get_id();
 do_action( 'wfacp_meta_added', $id );
+
+// Viewport meta moved to WFACP_Template_Common::print_viewport_meta(), printed last on wp_head.
 ?>
-<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 <meta name="wfacp_aero_checkout_id" id="wfacp_aero_checkout_id" content="<?php echo esc_attr( $id ); ?>"/>
 <script type="text/javascript">
 	if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {

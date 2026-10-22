@@ -22,6 +22,7 @@ if ( ! class_exists( 'WFFN_Pro_Admin' ) ) {
 		public function __construct() {
 			add_filter( 'wffn_funnel_settings', array( $this, 'funnel_settings_localized' ) );
 			add_filter( 'bwf_settings_config', array( $this, 'add_utm_track_setting' ) );
+			add_filter( 'bwf_general_settings_default_config', array( $this, 'add_journey_default' ) );
 			if ( $this->is_app_screen() ) {
 				include_once plugin_dir_path( WFFN_PRO_PLUGIN_FILE ) . 'admin/class-wffn-pro-react-app.php';
 				add_filter( 'wffn_localized_text_admin', array( $this, 'add_license_related_code' ) );
@@ -38,7 +39,6 @@ if ( ! class_exists( 'WFFN_Pro_Admin' ) ) {
 			add_filter( 'wffn_rest_tools_list', array( $this, 'add_license_expiry_email_tool' ) );
 			add_filter( 'wffn_rest_tools_action_args', array( $this, 'add_license_expiry_email_tool_arg' ) );
 			add_filter( 'wffn_rest_tools_action_response', array( $this, 'handle_license_expiry_email_tool' ), 10, 2 );
-
 		}
 
 		/**
@@ -269,7 +269,40 @@ if ( ! class_exists( 'WFFN_Pro_Admin' ) ) {
 				'hint'         => __( 'Uncover the UTMs and traffic sources that bring conversions. Get additional insights such as Time to convert, Device and Browser details.', 'funnel-builder-pro' ),
 			);
 
+			// Child of track_utms — the toggler hides it when UTM tracking is off.
+			$settings['utm_parameter']['fields'][2] = array(
+				'key'          => 'track_journey',
+				'type'         => 'checkbox',
+				'label'        => __( 'Record customer journey', 'funnel-builder-pro' ),
+				'hint'         => __( 'Store the sequence of pages each visitor viewed before converting. Shown on the order Conversion Tracking box and in Analytics › Conversions.', 'funnel-builder-pro' ),
+				'styleClasses' => array( 'wfacp_checkbox_wrap' ),
+				'toggler'      => array(
+					'key'   => 'track_utms',
+					'value' => true,
+				),
+			);
+
 			return $settings;
+		}
+
+		/**
+		 * Default the "Record customer journey" setting to on.
+		 *
+		 * Injected through bwf_general_settings_default_config so existing installs
+		 * read it as enabled without any migration (wp_parse_args fills the default).
+		 *
+		 * @since 3.16.1
+		 *
+		 * @param array $defaults General settings defaults.
+		 *
+		 * @return array
+		 */
+		public function add_journey_default( $defaults ) {
+			if ( is_array( $defaults ) ) {
+				$defaults['track_journey'] = '1';
+			}
+
+			return $defaults;
 		}
 
 		public function add_license_related_code( $texts ) {

@@ -6,7 +6,14 @@
  */
 
 use FSVendor\WPDesk\Beacon\Beacon\WooCommerceSettingsFieldsModifier;
-use WPDesk\FS\Info\Dashboard;
+use WPDesk\FS\Info\FSIE;
+use WPDesk\FS\Info\FSPro;
+use WPDesk\FS\Info\FSWalkthrough;
+use WPDesk\FS\Info\FSWalkthroughPL;
+use WPDesk\FS\Info\Metabox;
+use WPDesk\FS\Info\Video;
+use WPDesk\FS\Info\WooCommerceABC;
+use WPDesk\FS\Info\WooCommerceABCPL;
 
 /**
  * Mainly read only info about FS + debug mode.
@@ -36,7 +43,7 @@ class WPDesk_Flexible_Shipping_Settings extends WC_Shipping_Method {
 
 		$this->id           = self::METHOD_ID;
 		$this->enabled      = 'no';
-		$this->method_title = __( 'Flexible Shipping', 'flexible-shipping' );
+		$this->method_title = __( 'Flexible Shipping Info', 'flexible-shipping' );
 
 		$this->supports = [
 			'settings',
@@ -98,7 +105,6 @@ class WPDesk_Flexible_Shipping_Settings extends WC_Shipping_Method {
 		$this->form_fields[] = [
 			'type'    => 'title',
 			'title'   => __( 'Advanced settings', 'flexible-shipping' ),
-			'class'   => 'fs-dashboard-native-advanced-title',
 			'default' => '',
 		];
 
@@ -133,10 +139,11 @@ class WPDesk_Flexible_Shipping_Settings extends WC_Shipping_Method {
 	 * @return string
 	 */
 	public function generate_flexible_shipping_html( $key, $data ) {
-		$dashboard = new Dashboard(
-			wpdesk_is_plugin_active( 'flexible-shipping-pro/flexible-shipping-pro.php' ),
-			get_user_locale()
-		);
+		$metaboxes = $this->get_metaboxes();
+
+		if ( ! $metaboxes ) {
+			return '';
+		}
 
 		ob_start();
 		include 'views/html-shipping-settings-info-description.php';
@@ -146,4 +153,44 @@ class WPDesk_Flexible_Shipping_Settings extends WC_Shipping_Method {
 		return $notice_content;
 	}
 
+	/**
+	 * @return Metabox[]
+	 */
+	public function get_metaboxes() {
+		$metaboxes = [];
+
+		if ( 'pl_PL' === get_user_locale() ) {
+			$metaboxes[] = new WooCommerceABCPL();
+			$metaboxes[] = new FSWalkthroughPL();
+		} else {
+			$metaboxes[] = new WooCommerceABC();
+			$metaboxes[] = new FSWalkthrough();
+		}
+
+		if ( ! wpdesk_is_plugin_active( 'flexible-shipping-pro/flexible-shipping-pro.php' ) ) {
+			$metaboxes[] = new FSPro();
+		} else {
+			$metaboxes[] = new FSIE();
+		}
+
+		$metaboxes[] = new Video();
+
+		/**
+		 * Can modify metaboxes on FS Info Page.
+		 *
+		 * @param Metabox[] $metaboxes Metaboxes.
+		 *
+		 * @since 4.1.3
+		 */
+		$metaboxes = apply_filters( 'flexible-shipping/page/info/metaboxes', $metaboxes );
+
+		$metaboxes = array_filter(
+			$metaboxes,
+			function ( $metabox ) {
+				return $metabox instanceof Metabox;
+			}
+		);
+
+		return $metaboxes;
+	}
 }

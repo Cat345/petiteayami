@@ -3,12 +3,13 @@
 namespace WPDesk\FS\AdvertMetabox;
 
 use FSVendor\Octolize\Brand\Assets\AdminAssets;
-use FSVendor\Octolize\Brand\UpsellingBox\SettingsSidebar;
+use FSVendor\Octolize\Brand\UpgradeBox\SettingsSidebarBox;
 use FSVendor\Octolize\Brand\UpsellingBox\ShippingMethodInstanceShouldShowStrategy;
 use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
 use FSVendor\WPDesk\PluginBuilder\Plugin\HookableCollection;
 use FSVendor\WPDesk\PluginBuilder\Plugin\HookableParent;
 use WPDesk\FS\TableRate\ShippingMethodSingle;
+use WPDesk\FS\Upselling\FlexibleShippingProOffer;
 
 
 class ProPluginAdvertMetabox implements Hookable, HookableCollection {
@@ -32,23 +33,15 @@ class ProPluginAdvertMetabox implements Hookable, HookableCollection {
 		add_action(
 			'admin_init',
 			function () use ( $should_show_strategy ) {
-				( new SettingsSidebar(
+				( new SettingsSidebarBox(
 					'woocommerce_settings_tabs_shipping',
 					$should_show_strategy,
-					__( 'Get Flexible Shipping PRO!', 'flexible-shipping' ),
+					( new FlexibleShippingProOffer() )->create( get_locale() === 'pl_PL' ? 'https://octol.io/fs-box-upgrade-pl' : 'https://octol.io/fs-box-upgrade' ),
 					[
-						__( 'Shipping Classes support', 'flexible-shipping' ),
-						__( 'Products-based shipping', 'flexible-shipping' ),
-						__( 'Quantity-based shipping', 'flexible-shipping' ),
-						__( 'Additional Cost', 'flexible-shipping' ),
-						__( 'Conditional Logic', 'flexible-shipping' ),
-						__( 'Hide the shipping methods', 'flexible-shipping' ),
-						__( 'Premium 1-on-1 Support', 'flexible-shipping' ),
-						__( 'AI Assistant for shipping configuration', 'flexible-shipping' ),
-					],
-					get_locale() === 'pl_PL' ? 'https://octol.io/fs-box-upgrade-pl' : 'https://octol.io/fs-box-upgrade',
-					__( 'Upgrade Now', 'flexible-shipping' ),
-					1200
+						'min_width'            => 1200,
+						'position_right'       => 20,
+						'align_top_to_element' => '#mainform h2:first',
+					]
 				) )->hooks();
 			}
 		);

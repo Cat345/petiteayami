@@ -49,5 +49,4 @@ class ProgressBarSettings implements Hookable {
 			),
 		];
 	}
-
 }

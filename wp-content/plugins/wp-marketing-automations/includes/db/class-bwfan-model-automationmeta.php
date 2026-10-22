@@ -28,8 +28,9 @@ class BWFAN_Model_Automationmeta extends BWFAN_Model {
 			global $wpdb;
 			$table     = self::_table();
 			$sql_query = "SELECT bwfan_automation_id, meta_key, meta_value FROM {$table} WHERE bwfan_automation_id =%d";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 			$sql_query = $wpdb->prepare( $sql_query, $automation_id ); // WPCS: unprepared SQL OK
-			$result    = $wpdb->get_results( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result    = $wpdb->get_results( $sql_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 			$meta      = [];
 
 			if ( is_array( $result ) && count( $result ) > 0 ) {
@@ -53,10 +54,10 @@ class BWFAN_Model_Automationmeta extends BWFAN_Model {
 		foreach ( $data as $key => $value ) {
 			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update( $table, [
-				'meta_value' => $value
+				'meta_value' => $value // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			], [
 				'bwfan_automation_id' => intval( $automation_id ),
-				'meta_key'            => $key
+				'meta_key'            => $key // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			] );
 		}
 
@@ -73,8 +74,8 @@ class BWFAN_Model_Automationmeta extends BWFAN_Model {
 			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->insert( $table, [
 				'bwfan_automation_id' => intval( $automation_id ),
-				'meta_key'            => $key,
-				'meta_value'          => $value,
+				'meta_key'            => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+				'meta_value'          => $value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			] );
 		}
 
@@ -89,13 +90,13 @@ class BWFAN_Model_Automationmeta extends BWFAN_Model {
 		$table       = self::_table();
 		$aids        = array_map( 'absint', $aids );
 		$placeholder = implode( ', ', array_fill( 0, count( $aids ), '%d' ) );
-		$sql_query   = $wpdb->prepare( "SELECT bwfan_automation_id, meta_key, meta_value FROM {$table} WHERE bwfan_automation_id IN ($placeholder)", $aids );
+		$sql_query   = $wpdb->prepare( "SELECT bwfan_automation_id, meta_key, meta_value FROM {$table} WHERE bwfan_automation_id IN ($placeholder)", $aids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated in code; ids absint()ed
 
 		if ( ! empty( $meta_key ) ) {
 			$sql_query .= " AND meta_key= 'event_meta'";
 		}
 
-		$result = $wpdb->get_results( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_results( $sql_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; ids absint()ed
 		$meta   = [];
 
 		if ( is_array( $result ) && count( $result ) > 0 ) {
@@ -113,6 +114,6 @@ class BWFAN_Model_Automationmeta extends BWFAN_Model {
 		$table = self::_table();
 		$query = "DELETE FROM {$table} WHERE `bwfan_automation_id` = %d AND `meta_key` = %s ";
 
-		$wpdb->query( $wpdb->prepare( $query, $aid, $meta_key ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $wpdb->prepare( $query, $aid, $meta_key ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare()
 	}
 }

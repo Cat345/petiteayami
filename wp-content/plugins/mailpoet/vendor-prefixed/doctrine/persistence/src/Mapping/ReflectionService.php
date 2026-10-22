@@ -6,10 +6,10 @@ use ReflectionClass;
 use ReflectionProperty;
 interface ReflectionService
 {
- public function getParentClasses(string $class);
- public function getClassShortName(string $class);
- public function getClassNamespace(string $class);
- public function getClass(string $class);
- public function getAccessibleProperty(string $class, string $property);
- public function hasPublicMethod(string $class, string $method);
+public function getParentClasses(string $class);
+public function getClassShortName(string $class);
+public function getClassNamespace(string $class);
+public function getClass(string $class);
+public function getAccessibleProperty(string $class, string $property);
+public function hasPublicMethod(string $class, string $method);
 }

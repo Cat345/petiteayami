@@ -8,20 +8,23 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 #[AllowDynamicProperties]
 class BWFAN_Automation_V2 {
-	private static $ins = null;
+	const EDIT_LOCK_PREFIX = 'bwfan_aut_';
+
+	private static $ins = [];
 
 	public $automation_id = 0;
 	public $automation_data = [];
 	public $automation_meta_data = [];
 	public $automation_steps = [];
 	public $step_type = [
-		'wait'        => 1,
-		'action'      => 2,
-		'benchmark'   => 3,
-		'conditional' => 4,
-		'exit'        => 5,
-		'jump'        => 6,
-		'split'       => 7,
+		'wait'              => 1,
+		'action'            => 2,
+		'benchmark'         => 3,
+		'conditional'       => 4,
+		'exit'              => 5,
+		'jump'              => 6,
+		'split'             => 7,
+		'branches'          => 8,
 	];
 	public $error = '';
 	public $split_path_ins = null;
@@ -64,14 +67,26 @@ class BWFAN_Automation_V2 {
 	 * @return BWFAN_Automation_V2|WP_Error|null
 	 */
 	public static function get_instance( $id = 0 ) {
-		if ( intval( $id ) <= 0 ) {
-			return new WP_Error( 'Automation Id not found' );
+		$id = intval( $id );
+		if ( $id <= 0 ) {
+			$error = new WP_Error( 'Automation Id not found' );
+			/** Callers check ->error (as on a not-found instance) before using the object; WP_Error has no such property, so they went on to call methods on it and fatal */
+			$error->error = 'Automation not found with provided ID';
+
+			return $error;
 		}
-		if ( null === self::$ins ) {
-			self::$ins = new self( $id );
+		/**
+		 * One instance per automation: a single cached instance returned the
+		 * first automation's data for every later id in the same request.
+		 * Keyed by id, so the cache is bounded by how many automations exist -
+		 * not by how many contacts a worker processes - and unset_instance()
+		 * empties it.
+		 */
+		if ( ! isset( self::$ins[ $id ] ) ) {
+			self::$ins[ $id ] = new self( $id );
 		}
 
-		return self::$ins;
+		return self::$ins[ $id ];
 	}
 
 	/**
@@ -510,6 +525,20 @@ class BWFAN_Automation_V2 {
 								$step['data']['sidebarValues'] = $data['data']['sidebarData'];
 							}
 							break;
+						case 'branches':
+							if ( isset( $data['data'] ) && isset( $data['data']['sidebarData'] ) ) {
+								$sidebar = $data['data']['sidebarData'];
+								if ( isset( $sidebar->branches ) && is_array( $sidebar->branches ) ) {
+									foreach ( $sidebar->branches as $b_index => $branch ) {
+										if ( isset( $branch->rules ) ) {
+											$sidebar->branches[ $b_index ]->rules = BWFAN_Common::modify_step_admin_data( 'conditional', $branch->rules );
+										}
+									}
+								}
+								$data['data']['sidebarData']   = $sidebar;
+								$step['data']['sidebarValues'] = $data['data']['sidebarData'];
+							}
+							break;
 						case 'jump':
 							if ( isset( $data['data'] ) && isset( $data['data']['sidebarData'] ) ) {
 								/** If jump step is deleted */
@@ -647,6 +676,97 @@ class BWFAN_Automation_V2 {
 		return $array1 == $array2;
 	}
 
+	/**
+	 * Self-heal: every branches step must have an Everyone Else branch node + link.
+	 * Covers API/import-created steps that bypass the builder UI.
+	 *
+	 * @param array $steps
+	 * @param array $links
+	 *
+	 * @return array
+	 */
+	public function ensure_branches_else( $steps, $links ) {
+		if ( ! is_array( $steps ) || ! is_array( $links ) ) {
+			return [ 'steps' => $steps, 'links' => $links ];
+		}
+
+		$node_ids = [];
+		foreach ( $steps as $step ) {
+			if ( isset( $step['id'] ) ) {
+				$node_ids[ $step['id'] ] = true;
+			}
+		}
+
+		/** Lazy: iteration array is only built when a heal is actually needed */
+		$iteration = null;
+
+		foreach ( $steps as $step ) {
+			if ( ! isset( $step['type'] ) || 'branches' !== $step['type'] || empty( $step['id'] ) ) {
+				continue;
+			}
+			$else_id = $step['id'] . '-branch-else';
+			if ( isset( $node_ids[ $else_id ] ) ) {
+				continue;
+			}
+
+			/**
+			 * Healed else must rejoin the flow where the existing branch paths
+			 * converge (their merger point), not jump to 'end' - otherwise
+			 * unmatched contacts skip every shared step after the branches.
+			 * Freshly computed merger (from the surviving chips' paths) wins;
+			 * with fewer than two surviving paths nothing intersects, so fall
+			 * back to the stored merger_points meta from the last good save
+			 * (validated against the current node set), then to 'end'.
+			 */
+			if ( null === $iteration ) {
+				$step_link_data = $this->get_step_iteration_array( $steps, $links );
+				$iteration      = isset( $step_link_data['iteration_array'] ) ? $step_link_data['iteration_array'] : [];
+			}
+			$merger = ! empty( $step['stepId'] ) ? $this->get_steps_merger_point( $step['stepId'], $links, $steps, $iteration ) : [];
+			$target = ! empty( $merger['merger_points'] ) ? $merger['merger_points'] : 0;
+			if ( empty( $target ) ) {
+				$meta_data     = $this->get_automation_meta_data();
+				$stored_merger = isset( $meta_data['merger_points'][ $step['id'] ] ) ? $meta_data['merger_points'][ $step['id'] ] : 0;
+				$target        = ! empty( $stored_merger ) && isset( $node_ids[ $stored_merger ] ) ? $stored_merger : 0;
+			}
+			$target = ! empty( $target ) ? $target : 'end';
+
+			$steps[] = [
+				'id'             => $else_id,
+				'sourcePosition' => 'bottom',
+				'targetPosition' => 'top',
+				'type'           => 'branchpath',
+				'stepId'         => $else_id,
+				'step_status'    => 2,
+				'hidden'         => false,
+				'position'       => [ 'x' => 0, 'y' => 0 ],
+				'data'           => [ 'branchId' => 'else', 'name' => __('Everyone Else', 'wp-marketing-automations'), 'isElse' => true, 'parent' => $step['id'] ],
+			];
+			$links[] = [
+				'id'           => $step['id'] . '-branch-edge-else',
+				'source'       => $step['id'],
+				'label'        => '',
+				'target'       => $else_id,
+				// Must match the BranchesNode source Handle id (`branches-edge`)
+				// and the frontend dispatcher, or React Flow drops the healed
+				// else fork edge and it renders disconnected.
+				'sourceHandle' => 'branches-edge',
+				'animated'     => false,
+			];
+			$links[] = [
+				/** Fixed '-target-end' id suffix matches the frontend chip-link pattern regardless of actual target */
+				'id'           => $else_id . '-target-end',
+				'source'       => $else_id,
+				'label'        => '',
+				'target'       => $target,
+				'sourceHandle' => '',
+				'animated'     => false,
+			];
+			$node_ids[ $else_id ] = true;
+		}
+
+		return [ 'steps' => $steps, 'links' => $links ];
+	}
 
 	/**
 	 * Update Automation meta data
@@ -661,6 +781,9 @@ class BWFAN_Automation_V2 {
 	public function update_automation_meta_data( $meta, $steps, $links, $count ) {
 		$response       = false;
 		$meta_data_arr  = [];
+		$healed         = $this->ensure_branches_else( $steps, $links );
+		$steps          = $healed['steps'];
+		$links          = $healed['links'];
 		$step_link_data = $this->get_step_iteration_array( $steps, $links );
 
 		$iteration_array = $step_link_data['iteration_array'];
@@ -805,16 +928,23 @@ class BWFAN_Automation_V2 {
 
 		/** Step ids present before this save but gone now = removed by the user. */
 		$removed = array_diff_key( $old, $new );
-		foreach ( array_keys( $removed ) as $sid ) {
-			$this->delete_automation_step( $sid );
+
+		/** One aid-scoped UPDATE for all of them, not one per step: a large rewrite can remove 50 steps (same effect as delete_automation_step(), which fires no hooks) */
+		$ids = array_filter( array_map( 'absint', array_keys( $removed ) ) );
+		if ( empty( $ids ) ) {
+			return;
 		}
+
+		global $wpdb;
+		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}bwfan_automation_step SET `status` = 3 WHERE `aid` = %d AND `ID` IN (" . implode( ',', array_fill( 0, count( $ids ), '%d' ) ) . ')', array_merge( array( absint( $this->automation_id ) ), array_values( $ids ) ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQLPlaceholders
 	}
 
 	/**
 	 * Collect real step ids from a graph node list.
 	 *
-	 * Skips start/end and split-path pseudo-nodes ({sid}-path-{n}), which are
-	 * not backed by step table rows.
+	 * Skips start/end, split-path pseudo-nodes ({sid}-path-{n}) and branch
+	 * chip pseudo-nodes ({sid}-branch-{id}), which are not backed by step
+	 * table rows — absint() on a chip id would collide with real step ids.
 	 *
 	 * @param array $steps graph nodes
 	 *
@@ -827,7 +957,7 @@ class BWFAN_Automation_V2 {
 		}
 
 		foreach ( $steps as $node ) {
-			if ( empty( $node['stepId'] ) || false !== strpos( (string) $node['stepId'], '-path-' ) ) {
+			if ( empty( $node['stepId'] ) || false !== strpos( (string) $node['stepId'], '-path-' ) || false !== strpos( (string) $node['stepId'], '-branch-' ) ) {
 				continue;
 			}
 			$sid = absint( $node['stepId'] );
@@ -897,7 +1027,7 @@ class BWFAN_Automation_V2 {
 			if ( isset( $step['type'] ) && $step['type'] == 'benchmark' ) {
 				$benchmark[ $step['stepId'] ] = '';
 			}
-			if ( isset( $step['type'] ) && ! in_array( $step['type'], [ 'yesNoNode', 'splitpath' ] ) && isset( $step['data'] ) && ! empty( $step['data'] ) ) {
+			if ( isset( $step['type'] ) && ! in_array( $step['type'], [ 'yesNoNode', 'splitpath', 'branchpath' ], true ) && isset( $step['data'] ) && ! empty( $step['data'] ) ) {
 				$step['data'] = [];
 			}
 			$result[] = $step;
@@ -944,6 +1074,12 @@ class BWFAN_Automation_V2 {
 	 */
 	public function get_step_iteration_array( $steps = [], $links = [] ) {
 		$automationSteps = [];
+		if ( ! is_array( $steps ) ) {
+			$steps = [];
+		}
+		if ( ! is_array( $links ) ) {
+			$links = [];
+		}
 		foreach ( $steps as $step ) {
 			if ( empty( $step['id'] ) ) {
 				continue;
@@ -999,9 +1135,14 @@ class BWFAN_Automation_V2 {
 	 */
 	public function add_new_automation_step( $type, $api_data = [] ) {
 		$time = current_time( 'mysql', 1 );
+		if ( ! isset( $this->step_type[ $type ] ) ) {
+			$this->error = __( 'Unknown automation step type: ', 'wp-marketing-automations' ) . $type;
+
+			return 0;
+		}
 		$data = [
 			'aid'        => $this->automation_id,
-			'type'       => isset( $this->step_type[ $type ] ) ? $this->step_type[ $type ] : 2,
+			'type'       => $this->step_type[ $type ],
 			'created_at' => $time,
 			'updated_at' => $time,
 			'status'     => isset( $api_data['status'] ) ? $api_data['status'] : 0,
@@ -1178,7 +1319,11 @@ class BWFAN_Automation_V2 {
 			return false;
 		}
 
-		return BWFAN_Model_Automation_Step::update_automation_step_data( $step_id, [ 'status' => 3 ] );
+		/** Scope by automation id so a stray step id can never touch another automation's row */
+		return ! ! BWFAN_Model_Automation_Step::update( [ 'status' => 3 ], [
+			'id'  => absint( $step_id ),
+			'aid' => absint( $this->automation_id ),
+		] );
 	}
 
 	/**
@@ -1325,13 +1470,13 @@ class BWFAN_Automation_V2 {
 		$merger_points = [];
 		$split_steps   = [];
 		foreach ( $steps as $step ) {
-			if ( ! isset( $step['stepId'] ) || ! in_array( $step['type'], [ 'split', 'conditional' ], true ) ) {
+			if ( ! isset( $step['stepId'] ) || ! in_array( $step['type'], [ 'split', 'conditional', 'branches' ], true ) ) {
 				continue;
 			}
 
 			$merger_or_steps              = $this->get_steps_merger_point( $step['stepId'], $links, $steps, $iteration_array );
 			$merger_points[ $step['id'] ] = $merger_or_steps['merger_points'];
-			if ( 'conditional' === $step['type'] ) {
+			if ( in_array( $step['type'], [ 'conditional', 'branches' ], true ) ) {
 				continue;
 			}
 			$split_steps[ $step['stepId'] ] = $merger_or_steps['split_steps'];
@@ -1395,12 +1540,135 @@ class BWFAN_Automation_V2 {
 	}
 
 	/**
-	 * unsetting current instance for automation
+	 * unsetting cached instance(s) for automation
+	 *
+	 * A new instance reads its row through BWFAN_Model_Automations_V2, whose
+	 * per-request cache would hand back the row as it was before the write
+	 * that made the caller forget the instance; so that group goes too.
+	 *
+	 * @param int $id Automation to forget, or 0 for all of them.
 	 *
 	 * @return void
 	 */
-	public static function unset_instance() {
-		self::$ins = null;
+	public static function unset_instance( $id = 0 ) {
+		if ( class_exists( 'WooFunnels_Cache' ) ) {
+			WooFunnels_Cache::get_instance()->reset_cache( 'fka-automation' );
+		}
+
+		$id = intval( $id );
+		if ( $id > 0 ) {
+			unset( self::$ins[ $id ] );
+
+			return;
+		}
+		self::$ins = [];
+	}
+
+	/**
+	 * What a builder save can overwrite, hashed, so a save or an MCP edit made
+	 * from an older read can be refused (409 / fkmcp_stale).
+	 *
+	 * Direct SQL on purpose: self::$ins and WooFunnels_Cache go stale inside a
+	 * request that has just written. Left out because they change without an edit,
+	 * or are written outside the builder: status and category (toggle, list
+	 * screen), updated_at (changes on a no-op save), the webhook sample keys the
+	 * receiver rewrites on every hit, and a split's runtime last_run.
+	 *
+	 * @param int        $aid       Automation id.
+	 * @param array|null $step_rows Rows (ID, status, action, data) the caller already
+	 *                              loaded, any order, deleted ones allowed; saves a query.
+	 *
+	 * @return string md5, or '' when the automation doesn't exist.
+	 */
+	public static function get_revision( $aid, $step_rows = null ) {
+		global $wpdb;
+		$aid  = absint( $aid );
+		$main = $wpdb->get_row( $wpdb->prepare( "SELECT `source`, `event`, `priority`, `start`, `v`, `benchmark`, `title` FROM {$wpdb->prefix}bwfan_automations WHERE `ID` = %d", $aid ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		if ( empty( $main ) ) {
+			return '';
+		}
+
+		$meta = array();
+		foreach ( (array) $wpdb->get_results( $wpdb->prepare( "SELECT `meta_key`, `meta_value` FROM {$wpdb->prefix}bwfan_automationmeta WHERE `bwfan_automation_id` = %d AND `meta_key` IN ( 'steps', 'links', 'count', 'event_meta' ) ORDER BY `ID` ASC", $aid ), ARRAY_A ) as $r ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$value = (string) $r['meta_value'];
+			if ( 'event_meta' === $r['meta_key'] ) {
+				$em = maybe_unserialize( $value );
+				if ( is_array( $em ) ) {
+					unset( $em['webhook_data'], $em['received_at'], $em['referer'] );
+					$value = maybe_serialize( $em );
+				}
+			}
+			$meta[ $r['meta_key'] ] = $value;
+		}
+		ksort( $meta );
+
+		if ( null === $step_rows ) {
+			$step_rows = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `status`, `action`, `data` FROM {$wpdb->prefix}bwfan_automation_step WHERE `aid` = %d AND `status` NOT IN ( 3, 4 )", $aid ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		}
+
+		$rows = array();
+		foreach ( (array) $step_rows as $r ) {
+			if ( ! is_array( $r ) || in_array( (int) $r['status'], array( 3, 4 ), true ) ) {
+				continue;
+			}
+			$data = (string) $r['data'];
+			if ( false !== strpos( $data, '"last_run"' ) ) {
+				$d = json_decode( $data, true );
+				if ( is_array( $d ) && isset( $d['sidebarData'] ) && is_array( $d['sidebarData'] ) ) {
+					unset( $d['sidebarData']['last_run'] );
+					$data = wp_json_encode( $d );
+				}
+			}
+			$rows[ absint( $r['ID'] ) ] = array( (string) $r['status'], (string) $r['action'], $data );
+		}
+		ksort( $rows );
+
+		return md5( (string) wp_json_encode( array( $main, $meta, $rows ) ) );
+	}
+
+	/**
+	 * The edit lock an MCP update ($wait 0) and a builder save that sent a revision
+	 * ($wait 3) share, so neither can write between the other's check and write.
+	 * Per connection: released by edit_unlock(), or when the connection closes.
+	 */
+	public static function edit_lock( $aid, $wait = 0 ) {
+		global $wpdb;
+		if ( method_exists( $wpdb, 'send_reads_to_masters' ) ) {
+			$wpdb->send_reads_to_masters(); // HyperDB / LudicrousDB: lock and release on the same server.
+		}
+
+		return '1' === (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, %d)', self::EDIT_LOCK_PREFIX . absint( $aid ), absint( $wait ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	}
+
+	/**
+	 * A builder write's revision check (spec §17), shared by Lite's routes and Pro's.
+	 * No revision sent (older callers): true, unchanged behaviour. Otherwise takes the
+	 * edit lock for the rest of the request (released on shutdown) and compares.
+	 *
+	 * @param int   $aid  Automation id.
+	 * @param mixed $sent The revision the builder sent.
+	 *
+	 * @return bool false when the caller must answer 409.
+	 */
+	public static function check_revision( $aid, $sent ) {
+		if ( ! is_string( $sent ) || '' === $sent ) {
+			return true;
+		}
+
+		$aid = absint( $aid );
+		if ( ! self::edit_lock( $aid, 3 ) ) {
+			return false;
+		}
+		add_action( 'shutdown', function () use ( $aid ) {
+			self::edit_unlock( $aid );
+		} );
+
+		return hash_equals( self::get_revision( $aid ), $sent );
+	}
+
+	public static function edit_unlock( $aid ) {
+		global $wpdb;
+		$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', self::EDIT_LOCK_PREFIX . absint( $aid ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 }
 

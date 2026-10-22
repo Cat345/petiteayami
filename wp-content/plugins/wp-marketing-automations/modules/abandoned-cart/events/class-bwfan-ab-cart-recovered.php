@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[AllowDynamicProperties]
 final class BWFAN_AB_Cart_Recovered extends BWFAN_Event {
@@ -224,18 +225,19 @@ final class BWFAN_AB_Cart_Recovered extends BWFAN_Event {
 			'trash',
 			'draft'
 		) );
+		$post_statuses = is_array( $post_statuses ) ? esc_sql( $post_statuses ) : $post_statuses; // filter output is placed inside quoted SQL literals
 		$post_statuses = implode( "','", $post_statuses );
 
 		if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 			$hpos_left_join = " LEFT JOIN {$wpdb->prefix}wc_orders_meta as m1 ON p.id = m1.order_id ";
-			$query          = $wpdb->prepare( "SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id $hpos_left_join WHERE p.type = %s AND p.status NOT IN ('$post_statuses') AND m.meta_key = %s AND p.billing_email LIKE %s ORDER BY p.id DESC LIMIT 1", 'shop_order', '_bwfan_ab_cart_recovered_a_id', $email );
+			$query          = $wpdb->prepare( "SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id $hpos_left_join WHERE p.type = %s AND p.status NOT IN ('$post_statuses') AND m.meta_key = %s AND p.billing_email LIKE %s ORDER BY p.id DESC LIMIT 1", 'shop_order', '_bwfan_ab_cart_recovered_a_id', $email ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 		} else {
 			$left_join = " LEFT JOIN {$wpdb->prefix}postmeta as m1 ON p.ID = m1.post_id ";
 			$where     = ' AND m1.meta_key = "_billing_email" ';
-			$query     = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN ('$post_statuses') AND m.meta_key = %s $where AND m1.meta_value LIKE %s ORDER BY p.ID DESC LIMIT 1", 'shop_order', '_bwfan_ab_cart_recovered_a_id', $email );
+			$query     = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN ('$post_statuses') AND m.meta_key = %s $where AND m1.meta_value LIKE %s ORDER BY p.ID DESC LIMIT 1", 'shop_order', '_bwfan_ab_cart_recovered_a_id', $email ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 		}
 
-		return intval( $wpdb->get_var( $query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return intval( $wpdb->get_var( $query ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 	}
 
 }

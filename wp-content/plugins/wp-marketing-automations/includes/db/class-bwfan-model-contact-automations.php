@@ -14,6 +14,7 @@ class BWFAN_Model_Contact_Automations extends BWFAN_Model {
 	public static function get_contact_automation_last_run( $contact_id, $automation_id ) {
 		global $wpdb;
 		$sql_query = 'SELECT time FROM {table_name} WHERE contact_id = %d AND automation_id = %d ORDER BY time DESC LIMIT 1';
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; ids bound via %d in $wpdb->prepare()
 		$sql_query = $wpdb->prepare( $sql_query, $contact_id, $automation_id ); // WPCS: unprepared SQL OK
 		$last_run  = self::get_results( $sql_query );
 
@@ -34,6 +35,7 @@ class BWFAN_Model_Contact_Automations extends BWFAN_Model {
 	public static function get_contact_automations_run_count( $contact_id, $automation_id ) {
 		global $wpdb;
 		$sql_query = 'SELECT count(time) as count FROM {table_name} WHERE contact_id = %d AND automation_id = %d';
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; ids bound via %d in $wpdb->prepare()
 		$sql_query = $wpdb->prepare( $sql_query, $contact_id, $automation_id ); // WPCS: unprepared SQL OK
 		$run_count = self::get_results( $sql_query );
 
@@ -54,6 +56,7 @@ class BWFAN_Model_Contact_Automations extends BWFAN_Model {
 	public static function get_all_automations_for_contact( $contact_id ) {
 		global $wpdb;
 		$sql_query   = 'SELECT automation_id FROM {table_name} WHERE contact_id = %d ';
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; ids bound via %d in $wpdb->prepare()
 		$sql_query   = $wpdb->prepare( $sql_query, $contact_id ); // WPCS: unprepared SQL OK
 		$automations = self::get_results( $sql_query );
 
@@ -74,6 +77,7 @@ class BWFAN_Model_Contact_Automations extends BWFAN_Model {
 	public static function get_all_contacts_for_automation( $automation_id ) {
 		global $wpdb;
 		$sql_query = 'SELECT contact_id FROM {table_name} WHERE automation_id = %d ';
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; ids bound via %d in $wpdb->prepare()
 		$sql_query = $wpdb->prepare( $sql_query, $automation_id ); // WPCS: unprepared SQL OK
 		$contacts  = self::get_results( $sql_query );
 

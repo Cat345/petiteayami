@@ -858,7 +858,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 				}
 			}
 
-			if ( is_null( $post ) || ( ! is_null( $post ) && $post->post_type !== $this->get_post_type() ) ) {
+			if ( ! $post instanceof WP_Post || $post->post_type !== $this->get_post_type() ) {
 				return array();
 			}
 

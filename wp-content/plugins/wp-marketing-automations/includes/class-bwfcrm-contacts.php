@@ -854,7 +854,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				if ( ! is_string( $tag ) && ! is_numeric( $tag ) ) {
 					BWFAN_Common::log_test_data( 'contact id: ' . $this->get_id(), 'remove_tags', true );
 					BWFAN_Common::log_test_data( $tags, 'remove_tags', true );
-					BWFAN_Common::log_test_data( wp_debug_backtrace_summary(), 'remove_tags', true );
+					BWFAN_Common::log_test_data( wp_debug_backtrace_summary(), 'remove_tags', true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- intentional diagnostic logging
 					continue;
 				}
 				$list_key = array_search( strval( $tag ), $applied_tags );
@@ -1510,9 +1510,9 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			try {
 				/** Could be timestamp */
-				if ( is_numeric( $value ) && ( strtotime( date( 'd-m-Y H:i:s', $value ) ) === (int) $value ) ) {
+				if ( is_numeric( $value ) && ( strtotime( date( 'd-m-Y H:i:s', $value ) ) === (int) $value ) ) { // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Paired with strtotime() re-parse in default tz; gmdate breaks the timestamp check
 					/** Valid timestamp */
-					return date( $format, $value );
+					return gmdate( $format, $value );
 				}
 
 				$new = new DateTime( $value, wp_timezone() );
@@ -1572,15 +1572,16 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			global $wpdb;
 
 			$query = $wpdb->prepare( "SELECT {$wpdb->posts}.ID FROM {$wpdb->posts}
-                                WHERE {$wpdb->posts}.post_type = %s AND {$wpdb->posts}.ID in (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_woofunnel_cid' AND meta_value = %d )
-                                ORDER BY {$wpdb->posts}.post_date DESC $limit_query", 'shop_order', $this->get_id() );
+                                WHERE {$wpdb->posts}.post_type = %s AND {$wpdb->posts}.ID in (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_woofunnel_cid' AND meta_value = %s )
+                                ORDER BY {$wpdb->posts}.post_date DESC $limit_query", 'shop_order', (string) absint( $this->get_id() ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- limit/offset cast with absint()/intval()
 			if ( method_exists( 'BWF_WC_Compatibility', 'is_hpos_enabled' ) && BWF_WC_Compatibility::is_hpos_enabled() ) {
 				$order_table      = $wpdb->prefix . 'wc_orders';
 				$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-				$query            = "SELECT ot.id FROM {$order_table} AS ot JOIN {$order_meta_table} AS otm ON ot.id = otm.order_id WHERE otm.meta_key = '_woofunnel_cid' AND ot.type = 'shop_order' AND otm.meta_value = %d ORDER BY ot.id DESC $limit_query";
+				$query            = $wpdb->prepare( "SELECT ot.id FROM {$order_table} AS ot JOIN {$order_meta_table} AS otm ON ot.id = otm.order_id WHERE otm.meta_key = '_woofunnel_cid' AND ot.type = 'shop_order' AND otm.meta_value = %s ORDER BY ot.id DESC $limit_query", (string) absint( $this->get_id() ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- query prepared (a string literal, so the meta_value index is used); tables from $wpdb->prefix; limit values are ints
 			}
 
-			$contact_orders = $wpdb->get_col( $wpdb->prepare( $query, $this->get_id() ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			/** Both branches above are already prepared; preparing again (non-HPOS) had no placeholders left and raised a notice */
+			$contact_orders = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query prepared above in both branches
 
 			if ( empty( $contact_orders ) ) {
 				return array();
@@ -1732,7 +1733,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			foreach ( $db_automations as $a_key => $contact_automation ) {
 				$automation_id                                 = $contact_automation['automation_id'];
 				$contact_automation_data[ $a_key ]['aid']      = $contact_automation['automation_id'];
-				$contact_automation_data[ $a_key ]['run_time'] = date( 'F j, Y', $contact_automation['time'] );
+				$contact_automation_data[ $a_key ]['run_time'] = gmdate( 'F j, Y', $contact_automation['time'] );
 				$automation_title                              = BWFAN_Model_Automationmeta::get_meta( $automation_id, 'title' );
 				$contact_automation_data[ $a_key ]['name']     = false === $automation_title ? 'No Title' : $automation_title;
 
@@ -1846,7 +1847,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$notes_data['body']         = isset( $notes['body'] ) ? $notes['body'] : '';
 			$notes_data['created_by']   = isset( $notes['created_by'] ) ? $notes['created_by'] : $user_id;
 			$notes_data['created_date'] = current_time( 'mysql', 1 );
-			$notes_data['date_time']    = isset( $notes['date_time'] ) ? date( 'Y-m-d H:i:s', strtotime( $notes['date_time'] ) ) : current_time( 'mysql', 1 );
+			$notes_data['date_time']    = isset( $notes['date_time'] ) ? date( 'Y-m-d H:i:s', strtotime( $notes['date_time'] ) ) : current_time( 'mysql', 1 ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Round-trips strtotime($string) in default tz; gmdate would shift the stored note time
 			$notes_data['type']         = isset( $notes['type'] ) ? $notes['type'] : 'general';
 			$notes_data['private']      = isset( $notes['private'] ) ? $notes['private'] : 0;
 
@@ -1956,7 +1957,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			if ( ! empty( $notes['date_time'] ) ) {
-				$notes_data['date_time'] = date( 'Y-m-d H:i:s', strtotime( $notes['date_time'] ) );
+				$notes_data['date_time'] = date( 'Y-m-d H:i:s', strtotime( $notes['date_time'] ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Round-trips strtotime($string) in default tz; gmdate would shift the stored note time
 			}
 
 			if ( ! empty( $notes['type'] ) ) {

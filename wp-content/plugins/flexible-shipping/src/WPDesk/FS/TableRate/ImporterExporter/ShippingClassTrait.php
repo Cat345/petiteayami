@@ -7,7 +7,6 @@
 
 namespace WPDesk\FS\TableRate\ImporterExporter;
 
-use stdClass;
 use WPDesk\FS\TableRate\ImporterExporter\Importer\Exception\ImportCSVException;
 
 /**
@@ -16,12 +15,13 @@ use WPDesk\FS\TableRate\ImporterExporter\Importer\Exception\ImportCSVException;
  * @package WPDesk\FS\TableRate\ImporterExporter
  */
 trait ShippingClassTrait {
+
 	/**
 	 * Hashmap for shipping classes with name->term_id data.
 	 *
-	 * @var stdClass[]
+	 * @var array<string, int>
 	 */
-	public $wc_shipping_classes_hashmap;
+	public array $wc_shipping_classes_hashmap = [];
 
 	/**
 	 * Init action.
@@ -33,10 +33,10 @@ trait ShippingClassTrait {
 	/**
 	 * Prepares hashmap for fast checking the term_id of given shipment class.
 	 *
-	 * @return array
+	 * @return array<string, int>
 	 */
 	public function prepare_shipping_class_hashmap() {
-		$shipping_classes = array();
+		$shipping_classes = [];
 
 		foreach ( WC()->shipping()->get_shipping_classes() as $class ) {
 			$shipping_classes[ html_entity_decode( $class->name ) ] = (int) $class->term_id;
@@ -71,7 +71,7 @@ trait ShippingClassTrait {
 	 * @throws ImportCSVException When can't create the class.
 	 */
 	public function create_shipping_class( $name, $description ) {
-		$term_id = wp_insert_term( $name, 'product_shipping_class', array( 'description' => $description ) );
+		$term_id = wp_insert_term( $name, 'product_shipping_class', [ 'description' => $description ] );
 		if ( is_wp_error( $term_id ) ) {
 			throw new ImportCSVException(
 				sprintf(
@@ -82,7 +82,7 @@ trait ShippingClassTrait {
 				)
 			);
 		}
-		$term_id                                                          = (int) $term_id['term_id'];
+		$term_id = (int) $term_id['term_id'];
 		$this->wc_shipping_classes_hashmap[ html_entity_decode( $name ) ] = $term_id;
 
 		return $term_id;

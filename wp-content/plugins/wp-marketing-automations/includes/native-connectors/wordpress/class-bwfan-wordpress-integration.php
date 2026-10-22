@@ -1,9 +1,15 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 final class BWFAN_WP_Integration extends BWFAN_Integration {
 
 	private static $ins = null;
+
+	/** @var array slug => filename, resolved on demand (see BWFAN_Integration::$action_map) */
+	protected $action_map = [
+		'wp_sendemail' => 'class-bwfan-wp-sendemail.php',
+	];
 
 	private function __construct() {
 		$this->action_dir         = __DIR__;

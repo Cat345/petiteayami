@@ -8,7 +8,7 @@ class Resolver
 {
     protected int $ctime;
 
-    protected string $cache;
+    protected string $cache = '';
 
     protected ?string $key = null;
 

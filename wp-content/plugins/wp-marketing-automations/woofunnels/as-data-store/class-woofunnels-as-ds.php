@@ -55,6 +55,20 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 		 */
 		public function load_files() {
 
+			/**
+			 * These custom AS store/logger classes are only instantiated once change_data_store()
+			 * has swapped AS over to them — which happens exclusively in worker (/woofunnels/v1/worker)
+			 * and CLI contexts. On a plain frontend page view AS uses its default store, so parsing
+			 * ~37KB here is pure waste. Load in every context EXCEPT plain frontend views (admin, cron,
+			 * CLI and all REST requests — incl. the worker — still load them, so the worker path is
+			 * unchanged). BWF_Kernel absent (older/sibling framework copy) => load unconditionally as before.
+			 */
+			if ( class_exists( 'BWF_Kernel' ) && ! BWF_Kernel::is_backend_context() ) {
+				do_action( 'bwf_after_action_scheduler_load' );
+
+				return;
+			}
+
 			foreach ( glob( $this->dir . '/db/class-*.php' ) as $file_name ) {
 				require_once( $file_name );
 			}
@@ -161,7 +175,7 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 		public function add_cron_schedule( $schedules ) {
 			$schedules['bwf_every_minute'] = apply_filters( 'bwf_every_minute_cron', array(
 				'interval' => MINUTE_IN_SECONDS,
-				'display'  => __( 'Every minute', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'display'  => 'Every minute', // not translated: cron_schedules runs before init (WP_Site_Health schedules its weekly check pre-init) and __() there trips _load_textdomain_just_in_time
 			) );
 
 			return $schedules;
@@ -192,9 +206,9 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 		 */
 		public function as_pre_init_cb() {
 			$is_worker_request = false;
-			if ( isset( $_GET['rest_route'] ) && false !== strpos( bwf_clean( $_GET['rest_route'] ), '/woofunnels/v1/worker' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Nonce verification not required for REST API route detection; route paths contain slashes as part of path structure
+			if ( isset( $_GET['rest_route'] ) && false !== strpos( bwf_clean( wp_unslash( $_GET['rest_route'] ) ), '/woofunnels/v1/worker' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read-only REST route detection; bwf_clean() sanitizes
 				$is_worker_request = true;
-			} else if ( isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( bwf_clean( $_SERVER['REQUEST_URI'] ), '/woofunnels/v1/worker' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- REQUEST_URI is part of the URL structure, slashes are intentional
+			} else if ( isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( bwf_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/woofunnels/v1/worker' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read-only route detection; bwf_clean() sanitizes
 				$is_worker_request = true;
 			}
 
@@ -323,6 +337,14 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 			/** Modify Action Scheduler filters */
 			$this->modify_as_filters();;
 
+			/**
+			 * Runs on every worker request, i.e. also on stores where nobody opens wp-admin. Fired after
+			 * modify_as_filters(), which calls remove_all_filters() on 7 AS filter names - firing this
+			 * before that would let it silently strip any of those 7 filters a listener adds here.
+			 * Plugins use this to re-arm their own recurring hooks if the row has gone missing.
+			 */
+			do_action( 'bwf_worker_before_as_run' );
+
 			$as_ins = ActionScheduler_QueueRunner::instance();
 
 			/** Run Action Scheduler worker */
@@ -387,7 +409,11 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 			$args = bwf_get_remote_rest_args( [], 'GET' );
 			wp_remote_post( $url, $args );
 
-			update_option( 'bwf_heartbeat_run', ( time() + 60 ) );
+			/** Value changes every minute — keep it out of alloptions so persistent object caches are not invalidated on every write */
+			if ( function_exists( 'wp_set_option_autoload' ) ) {
+				wp_set_option_autoload( 'bwf_heartbeat_run', false );
+			}
+			update_option( 'bwf_heartbeat_run', ( time() + 60 ), false );
 		}
 
 	}
@@ -406,17 +432,17 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
  */
 function bwf_schedule_single_action( $timestamp, $hook, $args = array(), $group = '' ) {
 	if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
 	if ( ! class_exists( 'ActionScheduler' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Action Scheduler class not found.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Action Scheduler class not found.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
 	if ( empty( $hook ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
@@ -434,7 +460,11 @@ function bwf_schedule_single_action( $timestamp, $hook, $args = array(), $group 
 		$data['group_slug'] = $group;
 	}
 
-	BWF_AS_Actions_Crud::insert( $data );
+	/** $wpdb->insert_id keeps the previous statement's value on failure, so never read it without checking the insert first */
+	if ( false === BWF_AS_Actions_Crud::insert( $data ) ) {
+		return false;
+	}
+
 	$inserted_id = BWF_AS_Actions_Crud::insert_id();
 
 	return $inserted_id;
@@ -453,17 +483,17 @@ function bwf_schedule_single_action( $timestamp, $hook, $args = array(), $group 
  */
 function bwf_schedule_recurring_action( $timestamp, $interval_in_seconds, $hook, $args = array(), $group = '' ) {
 	if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
 	if ( ! class_exists( 'ActionScheduler' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Action Scheduler class not found.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Action Scheduler class not found.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
 	if ( empty( $hook ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
@@ -484,7 +514,11 @@ function bwf_schedule_recurring_action( $timestamp, $interval_in_seconds, $hook,
 		$data['group_slug'] = $group;
 	}
 
-	BWF_AS_Actions_Crud::insert( $data );
+	/** $wpdb->insert_id keeps the previous statement's value on failure, so never read it without checking the insert first */
+	if ( false === BWF_AS_Actions_Crud::insert( $data ) ) {
+		return false;
+	}
+
 	$inserted_id = BWF_AS_Actions_Crud::insert_id();
 
 	return $inserted_id;
@@ -501,12 +535,12 @@ function bwf_schedule_recurring_action( $timestamp, $interval_in_seconds, $hook,
  */
 function bwf_unschedule_actions( $hook, $args = array(), $group = '' ) {
 	if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
 	if ( empty( $hook ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
@@ -522,7 +556,7 @@ function bwf_unschedule_actions( $hook, $args = array(), $group = '' ) {
 
 	$action_ids = BWF_AS_Actions_Crud::find_actions( $arr );
 	if ( false === $action_ids ) {
-		_doing_it_wrong( __FUNCTION__, __( 'No actions found for data: ', 'woofunnels' ) . print_r( $arr, true ), BWF_VERSION ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch, WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		_doing_it_wrong( __FUNCTION__, __( 'No actions found for data: ', 'wp-marketing-automations' ) . print_r( $arr, true ), BWF_VERSION ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch, WordPress.PHP.DevelopmentFunctions.error_log_print_r
 	}
 
 	BWF_AS_Actions_Crud::delete_actions( $action_ids );
@@ -536,12 +570,17 @@ function bwf_unschedule_actions( $hook, $args = array(), $group = '' ) {
  * @param $hook
  * @param array $args
  * @param string $group
+ * @param null|int $status Match only rows in this status. Null (default) matches any status, which is what
+ *                         callers asking "does this hook exist at all" want. Callers deciding whether to
+ *                         re-schedule a hook should pass 0 (pending): a row stuck at 1 (running) or 2
+ *                         (duplicate run detected) will never execute, and treating it as scheduled is what
+ *                         leaves a recurring hook dead.
  *
  * @return bool
  */
-function bwf_has_action_scheduled( $hook, $args = array(), $group = '' ) {
+function bwf_has_action_scheduled( $hook, $args = array(), $group = '', $status = null ) {
 	if ( empty( $hook ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
@@ -563,12 +602,17 @@ function bwf_has_action_scheduled( $hook, $args = array(), $group = '' ) {
 		$sql_params[] = trim( $group );
 	}
 
+	if ( ! is_null( $status ) ) {
+		$sql          .= ' AND `status` = %d';
+		$sql_params[] = (int) $status;
+	}
+
 	$sql .= ' LIMIT 0,1';
 
 	$sql = $wpdb->prepare( $sql, $sql_params ); //phpcs:ignore WordPress.DB.PreparedSQL
 
 
-	$action_ids = $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+	$action_ids = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared at 612; table from prefix, all values bound
 
 	return ( intval( $action_ids ) > 0 );
 }
@@ -584,12 +628,12 @@ function bwf_has_action_scheduled( $hook, $args = array(), $group = '' ) {
  */
 function bwf_is_action_running( $hook, $args = array(), $group = '' ) {
 	if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
 	if ( empty( $hook ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
@@ -621,12 +665,12 @@ function bwf_is_action_running( $hook, $args = array(), $group = '' ) {
  */
 function bwf_delete_action( $action_ids = [] ) {
 	if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
 	if ( empty( $action_ids ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Action ID is required.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Action ID is required.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
@@ -652,12 +696,12 @@ function bwf_delete_action( $action_ids = [] ) {
  */
 function bwf_scheduled_action_count( $hook, $args = array(), $group = '', $status = '0', $recurring = 'all' ) {
 	if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Method is called before plugins_loaded hook.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
 	if ( empty( $hook ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'woofunnels' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'Hook is a required entity.', 'wp-marketing-automations' ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
 
 		return false;
 	}
@@ -706,6 +750,6 @@ function bwf_delete_scheduled_recurring_action( $hook, $status, $exclude_id = ''
 		$query  .= " AND `id` != %d";
 		$args[] = $exclude_id;
 	}
-	$query = $wpdb->prepare( $query, $args );
-	$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$query = $wpdb->prepare( $query, $args ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared: prefixed table, hook/status/exclude_id bound, counts match
+	$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Executes string returned by prepare at 753, nothing appended
 }

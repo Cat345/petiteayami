@@ -100,7 +100,8 @@ class BWFAN_Abandoned_Cart {
 		/** Remove cart item key from session */
 		add_action( 'woocommerce_remove_cart_item', [ $this, 'remove_session' ], 99 );
 
-		add_action( 'shutdown', [ $this, 'add_to_cart' ] );
+		/** Priority 21: run after WC_Session_Handler::save_data (20) so a failure here cannot block the WC session save */
+		add_action( 'shutdown', [ $this, 'add_to_cart' ], 21 );
 	}
 
 	/**
@@ -155,7 +156,7 @@ class BWFAN_Abandoned_Cart {
 	 * @since 1.0.0
 	 */
 	public function disable_geolocation_recovery() {
-		if ( ! isset( $_GET['bwfan-ab-id'] ) && ! isset( $_GET['bwfan-cart-restored'] ) ) {
+		if ( ! isset( $_GET['bwfan-ab-id'] ) && ! isset( $_GET['bwfan-cart-restored'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public link opened from an email; such links cannot carry a nonce
 			return;
 		}
 
@@ -163,7 +164,7 @@ class BWFAN_Abandoned_Cart {
 			return;
 		}
 
-		if ( isset( $_GET['bwfan-cart-restored'] ) && 'success' !== sanitize_text_field( $_GET['bwfan-cart-restored'] ) ) {
+		if ( isset( $_GET['bwfan-cart-restored'] ) && 'success' !== sanitize_text_field( wp_unslash( $_GET['bwfan-cart-restored'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public link opened from an email; such links cannot carry a nonce
 			return;
 		}
 
@@ -305,6 +306,34 @@ class BWFAN_Abandoned_Cart {
 	}
 
 	/**
+	 * Order already credited with recovering the given abandoned cart, if any.
+	 *
+	 * Recovery attribution is written from several places (checkout session, the paid-order cleanup and
+	 * the abandoned event's validation), none of which see each other. Callers use this to avoid crediting
+	 * one cart to a second order, which double counts it in Recovered carts and Cart Analytics.
+	 *
+	 * @param $cart_id - abandoned cart row id
+	 *
+	 * @return int order id already credited with this cart, 0 when none
+	 */
+	public static function get_attributed_order_id( $cart_id ) {
+		global $wpdb;
+
+		$cart_id = absint( $cart_id );
+		if ( 0 === $cart_id ) {
+			return 0;
+		}
+
+		if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
+			$query = $wpdb->prepare( "SELECT `order_id` FROM {$wpdb->prefix}wc_orders_meta WHERE `meta_key` = %s AND `meta_value` = %d LIMIT 1", '_bwfan_recovered_ab_id', $cart_id );
+		} else {
+			$query = $wpdb->prepare( "SELECT `post_id` FROM {$wpdb->prefix}postmeta WHERE `meta_key` = %s AND `meta_value` = %d LIMIT 1", '_bwfan_recovered_ab_id', $cart_id );
+		}
+
+		return absint( $wpdb->get_var( $query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+	}
+
+	/**
 	 * Remove abandoned data from table and also delete it's tasks
 	 *
 	 * @param $order_id
@@ -336,10 +365,13 @@ class BWFAN_Abandoned_Cart {
 		}
 
 		/** Cart recovered attribution code */
+		$recovered_cart_id     = 0;
+		$recovered_cart_cids   = [];
 		$order_meta_automation = $order->get_meta( '_bwfan_ab_cart_recovered_a_id' );
 		if ( ! empty( $order_meta_automation ) ) {
 			$order_recovered_id = $order->get_meta( '_bwfan_recovered_ab_id' );
-			if ( empty( $order_recovered_id ) ) {
+			$attributed_to      = self::get_attributed_order_id( $ab_cart_id );
+			if ( empty( $order_recovered_id ) && ( 0 === $attributed_to || $attributed_to === absint( $order_id ) ) ) {
 				/** save abandoned id in order meta */
 				BWFAN_Common::save_order_meta( $order_id, '_bwfan_recovered_ab_id', $ab_cart_id );
 
@@ -349,36 +381,30 @@ class BWFAN_Abandoned_Cart {
 
 				do_action( 'abandoned_cart_recovered', $cart_details, $order_id, $order );
 			}
-		} else {
-			/** Fallback: attribute recovery when cart exists but no recovery meta was set (e.g., direct purchase without recovery link) */
-			if ( empty( $cart_details ) ) {
-				global $wpdb;
-				$where        = "WHERE status=1 AND ID= %d";
-				$where        = $wpdb->prepare( $where, $ab_cart_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-				$cart_details = BWFAN_Model_Abandonedcarts::get_abandoned_data( $where, 0, 1, 'ID', ARRAY_A );
-
-				if ( is_array( $cart_details ) && count( $cart_details ) > 0 ) {
-					$cart_details = $cart_details[0];
-					BWFAN_Common::save_order_meta( $order_id, '_bwfan_recovered_ab_id', $ab_cart_id );
+		} elseif ( empty( $order->get_meta( '_bwfan_recovered_ab_id' ) ) ) {
+			/**
+			 * Fallback: the session that placed the order carried no recovery link (direct purchase, or the link was
+			 * opened in another browser), so credit the cart an automation was working for this buyer, if any.
+			 * Skipped once the order is credited, since this runs again on every pending/failed/cancelled -> paid change.
+			 */
+			$recovered_cart = $this->get_cart_in_automation_for_order( $order, $ab_cart_id );
+			if ( ! empty( $recovered_cart ) ) {
+				/** Skip when this cart is already credited to another order, otherwise it double counts. */
+				$attributed_to = self::get_attributed_order_id( $recovered_cart['ID'] );
+				if ( 0 === $attributed_to || $attributed_to === absint( $order_id ) ) {
+					$recovered_cart_id   = absint( $recovered_cart['ID'] );
+					$recovered_cart_cids = $this->get_cart_contact_ids( $recovered_cart, $order );
+					BWFAN_Common::save_order_meta( $order_id, '_bwfan_recovered_ab_id', $recovered_cart_id );
 
 					/**
-					 * Persist an automation id meta so that this recovery can be
-					 * listed in the Recovered carts view, which queries orders by
-					 * the '_bwfan_ab_cart_recovered_a_id' meta key. Only write the
-					 * meta when a genuine automation id is known: writing 0 makes
-					 * the order count in the Recovered carts list (key-present)
-					 * while Cart Analytics rejects it (meta_value > 0), causing the
-					 * two views to diverge for non-attributed/imported orders.
+					 * Recovered carts lists orders by this meta. Only write a genuine automation id: 0 would list the
+					 * order there while Cart Analytics (meta_value > 0) skips it, and the two views would diverge.
 					 */
-					$automation_id = 0;
-					if ( is_array( $cart_details ) && isset( $cart_details['automation_id'] ) ) {
-						$automation_id = intval( $cart_details['automation_id'] );
-					}
-
+					$automation_id = BWFAN_Model_Automation_Contact::get_automation_id_by_ab_id( $recovered_cart_id, $recovered_cart_cids );
 					if ( $automation_id > 0 ) {
 						BWFAN_Common::save_order_meta( $order_id, '_bwfan_ab_cart_recovered_a_id', $automation_id );
 					}
-					do_action( 'abandoned_cart_recovered', $cart_details, $order_id, $order );
+					do_action( 'abandoned_cart_recovered', $recovered_cart, $order_id, $order );
 				}
 			}
 		}
@@ -394,24 +420,46 @@ class BWFAN_Abandoned_Cart {
 			}
 		}
 
-		/** Delete cart row */
-		BWFAN_Model_Abandonedcarts::delete( $ab_cart_id );
+		/**
+		 * The order's own cart and, when checkout started a new one, the earlier cart it recovered, each with the
+		 * contacts its automation can sit under. Collected before the rows are deleted.
+		 */
+		$cart_cids = [ absint( $ab_cart_id ) => $this->get_cart_contact_ids( $cart_details, $order ) ];
+		if ( $recovered_cart_id > 0 ) {
+			$cart_cids[ $recovered_cart_id ] = $recovered_cart_cids;
+		}
+		foreach ( array_keys( $cart_cids ) as $cart_id ) {
+			BWFAN_Model_Abandonedcarts::delete( $cart_id );
 
-		/** Delete v1 automation tasks if present */
-		if ( BWFAN_Common::is_automation_v1_active() ) {
-			BWFAN_Common::delete_abandoned_cart_tasks( $ab_cart_id );
+			/** Delete v1 automation tasks if present */
+			if ( BWFAN_Common::is_automation_v1_active() ) {
+				BWFAN_Common::delete_abandoned_cart_tasks( $cart_id );
+			}
 		}
 
 		/** Maybe remove tags and lists after cart is deleted */
 		BWFAN_Common::bwfan_remove_abandoned_cart_tags( $order );
 
-		/** If automation's contact exists, then delete the row or end the automation */
-		$cid = $order->get_meta( '_woofunnel_cid' );
-		if ( empty( $cid ) ) {
-			return;
+		/** If automation's contact exists, then end the automation */
+		foreach ( $cart_cids as $cart_id => $cids ) {
+			$this->end_cart_recovered_automation( $cart_id, $cids );
 		}
+	}
 
-		$result = BWFAN_Model_Automation_Contact::get_automation_contact_by_ab_id( $ab_cart_id, $cid );
+	/**
+	 * End the automation a recovered cart was in, unless it waits on a WooCommerce order goal.
+	 *
+	 * @param int $cart_id - abandoned cart row id
+	 * @param int[] $cids - contact ids the cart's automation can sit under
+	 */
+	protected function end_cart_recovered_automation( $cart_id, $cids ) {
+		$result = [];
+		foreach ( $cids as $cid ) {
+			$result = BWFAN_Model_Automation_Contact::get_automation_contact_by_ab_id( $cart_id, $cid );
+			if ( ! empty( $result ) && isset( $result['ID'] ) ) {
+				break;
+			}
+		}
 		if ( empty( $result ) || ! isset( $result['ID'] ) ) {
 			return;
 		}
@@ -431,6 +479,60 @@ class BWFAN_Abandoned_Cart {
 
 		/** End automation */
 		BWFAN_Common::end_v2_automation( 0, $result );
+	}
+
+	/**
+	 * Cart an abandoned cart automation was working when the order was placed.
+	 *
+	 * Usually the order's own cart. When checkout started a new cart, the order's cart was never abandoned and the
+	 * automation is still working the earlier cart for the same billing email, so that one is returned instead.
+	 *
+	 * @param WC_Order $order
+	 * @param int $ab_cart_id - the order's own cart row id
+	 *
+	 * @return array cart row, empty when none is in an automation
+	 */
+	protected function get_cart_in_automation_for_order( $order, $ab_cart_id ) {
+		$cart = BWFAN_Model_Abandonedcarts::get( absint( $ab_cart_id ) );
+		if ( is_array( $cart ) && 1 === intval( $cart['status'] ) ) {
+			return $cart;
+		}
+
+		$billing_email = BWFAN_Woocommerce_Compatibility::get_billing_email( $order );
+		$date_created  = $order->get_date_created();
+		if ( ! is_email( $billing_email ) || ! $date_created instanceof WC_DateTime ) {
+			return [];
+		}
+
+		global $wpdb;
+		$where = $wpdb->prepare( 'WHERE `status` = 1 AND `email` = %s AND `created_time` <= %s', $billing_email, gmdate( 'Y-m-d H:i:s', $date_created->getTimestamp() ) );
+		$carts = BWFAN_Model_Abandonedcarts::get_abandoned_data( $where, 0, 1, 'ID', ARRAY_A );
+
+		return ( is_array( $carts ) && ! empty( $carts ) ) ? $carts[0] : [];
+	}
+
+	/**
+	 * Contacts the automation for the given cart can sit under.
+	 *
+	 * The cart row stores no automation id; the automation's contact row does. A cart can sit under the order's
+	 * contact, the cart user's or the cart email's (a logged-in cart is stored under the user's, and a logged-in
+	 * order's contact follows the account email, not the billing email), so all are returned.
+	 *
+	 * @param array|null $cart - abandoned cart row, empty when the row is gone
+	 * @param WC_Order $order
+	 *
+	 * @return int[] contact ids, without zeros or duplicates
+	 */
+	protected function get_cart_contact_ids( $cart, $order ) {
+		$cids = [ absint( $order->get_meta( '_woofunnel_cid' ) ) ];
+		if ( is_array( $cart ) && ! empty( $cart['user_id'] ) ) {
+			$cids[] = absint( bwf_get_contact( absint( $cart['user_id'] ), '' )->get_id() );
+		}
+		if ( is_array( $cart ) && ! empty( $cart['email'] ) ) {
+			$cids[] = absint( bwf_get_contact( 0, $cart['email'] )->get_id() );
+		}
+
+		return array_values( array_unique( array_filter( $cids ) ) );
 	}
 
 	/**
@@ -651,7 +753,7 @@ class BWFAN_Abandoned_Cart {
 	 */
 	public function restore_cart() {
 		/** in case of getting cart_restore_test from url then add dummy product to cart **/
-		if ( isset( $_GET['cart_restore_test'] ) && 'yes' === $_GET['cart_restore_test'] ) {
+		if ( isset( $_GET['cart_restore_test'] ) && 'yes' === $_GET['cart_restore_test'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- cart_restore_test flag from a recovery test link; only fills the visitor own cart
 			$args            = array(
 				'posts_per_page' => 2,
 				'orderby'        => 'rand',
@@ -689,6 +791,15 @@ class BWFAN_Abandoned_Cart {
 		$url      = ! empty( $shop_url ) ? $shop_url : home_url();
 
 		if ( false === $restored || 'item_not_added' === $restored ) {
+			/**
+			 * Restore was refused, so drop the recovery attribution stamped by set_session_for_recovered_cart().
+			 * Left in the session it would tag the customer's next unrelated order with
+			 * '_bwfan_ab_cart_recovered_a_id', listing it in Recovered carts and crediting its revenue.
+			 */
+			if ( ! is_null( WC()->session ) ) {
+				WC()->session->set( 'bwfan_abandoned_order_data', [] );
+			}
+
 			if ( false === $restored ) {
 				$global_settings = BWFAN_Common::get_global_settings();
 				if ( ! empty( $global_settings['bwfan_ab_restore_cart_message_failure'] ) ) {
@@ -763,7 +874,7 @@ class BWFAN_Abandoned_Cart {
 			wc_add_notice( $global_settings['bwfan_ab_restore_cart_message_success'] );
 		}
 
-		/** @var $url_utm_args - passing utm parameter if available in cart recovery link */
+		/** @var array $url_utm_args - passing utm parameter if available in cart recovery link */
 
 		$url_utm_args                        = [];
 		$url_utm_args['bwfan-cart-restored'] = 'success';
@@ -785,6 +896,28 @@ class BWFAN_Abandoned_Cart {
 	}
 
 	/**
+	 * Whether an order still leaves its abandoned cart recoverable.
+	 *
+	 * A cart stops being recoverable once its linked order moves past pending/failed/cancelled/trash,
+	 * i.e. the purchase went through. Status list kept in sync with BWFAN_AB_Cart_Abandoned::validate_event().
+	 *
+	 * @param $order - order object or order id linked to the abandoned row
+	 *
+	 * @return bool true when no order is linked, the order no longer exists, or it is still recoverable
+	 */
+	private function is_order_cart_recoverable( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			$order = absint( $order ) > 0 ? wc_get_order( absint( $order ) ) : false;
+		}
+
+		if ( ! $order instanceof WC_Order ) {
+			return true;
+		}
+
+		return in_array( $order->get_status(), [ 'pending', 'failed', 'cancelled', 'trash' ], true );
+	}
+
+	/**
 	 * Restore the cart.
 	 *
 	 * @param $token
@@ -795,6 +928,15 @@ class BWFAN_Abandoned_Cart {
 	public function restore_abandoned_cart( $token ) {
 		$cart_details = $this->get_cart_by_key( 'token', $token, '%s' );
 		if ( false === $cart_details ) {
+			return false;
+		}
+
+		/**
+		 * Don't restore a cart whose linked order is already through; prevents the same recovery link
+		 * from generating a second order/Payment Intent (#4857).
+		 */
+		$linked_order = ! empty( $cart_details['order_id'] ) ? wc_get_order( absint( $cart_details['order_id'] ) ) : false;
+		if ( ! $this->is_order_cart_recoverable( $linked_order ) ) {
 			return false;
 		}
 
@@ -931,12 +1073,8 @@ class BWFAN_Abandoned_Cart {
 		}
 
 		/** If any order_id is found for this abandoned row, then set this order_id in woocommerce session */
-		$order_id = $cart_details['order_id'];
-		if ( absint( $order_id ) > 0 ) {
-			$order = wc_get_order( $order_id );
-			if ( $order instanceof WC_Order && ! is_null( WC()->session ) && in_array( $order->get_status(), [ 'pending', 'wc-pending' ] ) ) {
-				WC()->session->set( 'order_awaiting_payment', $order_id );
-			}
+		if ( $linked_order instanceof WC_Order && ! is_null( WC()->session ) && 'pending' === $linked_order->get_status() ) {
+			WC()->session->set( 'order_awaiting_payment', $linked_order->get_id() );
 		}
 
 		$this->restored_cart_details = $cart_details;
@@ -979,10 +1117,10 @@ class BWFAN_Abandoned_Cart {
 	public function set_session_for_recovered_cart() {
 		if ( isset( $_GET['bwfan-ab-id'] ) && isset( $_GET['automation-id'] ) && ! is_null( WC()->session ) ) { //phpcs:ignore WordPress.Security.NonceVerification
 			$ab_data = array(
-				'automation_id' => sanitize_text_field( $_GET['automation-id'] ), //phpcs:ignore WordPress.Security.NonceVerification
+				'automation_id' => sanitize_text_field( wp_unslash( $_GET['automation-id'] ) ), //phpcs:ignore WordPress.Security.NonceVerification
 			);
 			if ( isset( $_GET['track-id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification
-				$ab_data['track_id'] = sanitize_text_field( $_GET['track-id'] ); //phpcs:ignore WordPress.Security.NonceVerification
+				$ab_data['track_id'] = sanitize_text_field( wp_unslash( $_GET['track-id'] ) ); //phpcs:ignore WordPress.Security.NonceVerification
 			}
 			WC()->session->set( 'bwfan_abandoned_order_data', $ab_data );
 		}
@@ -1004,8 +1142,9 @@ class BWFAN_Abandoned_Cart {
 			return;
 		}
 
-		$ab_cart_id = filter_input( INPUT_POST, 'bwfan_cart_id' );
-		if ( 0 === intval( $ab_cart_id ) ) {
+		/** Cast at the source: the raw POST value used to be saved as order meta and later reach SQL */
+		$ab_cart_id = intval( filter_input( INPUT_POST, 'bwfan_cart_id' ) );
+		if ( 0 === $ab_cart_id ) {
 			$tracking_cookie = BWFAN_Common::get_cookie( 'bwfan_visitor' );
 			$tracking_cookie = empty( $tracking_cookie ) ? WC()->session->get( 'bwfan_visitor' ) : $tracking_cookie;
 			$billing_email   = BWFAN_Woocommerce_Compatibility::get_billing_email( $order );
@@ -1018,7 +1157,26 @@ class BWFAN_Abandoned_Cart {
 			return;
 		}
 
-		BWFAN_Model_Abandonedcarts::update( [ 'order_id' => $order->get_id() ], [ 'ID' => $ab_cart_id ] );
+		$cart_row = BWFAN_Model_Abandonedcarts::get( $ab_cart_id );
+		if ( empty( $cart_row ) ) {
+			/** Row was already recovered and deleted. */
+			return;
+		}
+
+		/**
+		 * Row is already linked to a different order that went through and is only waiting on the async
+		 * cleanup. Re-pointing it at this order would revive the recovery link and smear attribution.
+		 */
+		$linked_order_id = ! empty( $cart_row['order_id'] ) ? absint( $cart_row['order_id'] ) : 0;
+		if ( $linked_order_id > 0 && $linked_order_id !== $order->get_id() && ! $this->is_order_cart_recoverable( $linked_order_id ) ) {
+			return;
+		}
+
+		$row_affected = BWFAN_Model_Abandonedcarts::update( [ 'order_id' => $order->get_id() ], [ 'ID' => $ab_cart_id ] );
+		if ( empty( $row_affected ) ) {
+			/** Row deleted between the fetch above and this update, or this order is already attached (meta written on the earlier call). Either way, don't write a stale cart id. */
+			return;
+		}
 
 		BWFAN_Common::save_order_meta( $order->get_id(), 'bwfan_cart_id', $ab_cart_id );
 	}
@@ -1044,6 +1202,29 @@ class BWFAN_Abandoned_Cart {
 		$abandoned_data = WC()->session->get( 'bwfan_abandoned_order_data', 'no' );
 		if ( ! is_array( $abandoned_data ) || empty( $abandoned_data ) ) {
 			return;
+		}
+
+		/**
+		 * Only credit the order that actually owns the cart row. attach_order_id_to_abandoned_row() runs
+		 * first on this same hook and refuses to re-link a row whose order already went through, so a
+		 * second order placed from the same session (double submit, or a re-opened recovery link) finds
+		 * the row still pointing at the first order and must not be credited too.
+		 */
+		$ab_cart_id = absint( filter_input( INPUT_POST, 'bwfan_cart_id' ) );
+		if ( 0 === $ab_cart_id ) {
+			$restored_details = WC()->session->get( 'restored_cart_details' );
+			$ab_cart_id       = ( is_array( $restored_details ) && isset( $restored_details['ID'] ) ) ? absint( $restored_details['ID'] ) : 0;
+		}
+
+		if ( $ab_cart_id > 0 ) {
+			$cart_row        = BWFAN_Model_Abandonedcarts::get( $ab_cart_id );
+			$linked_order_id = ( is_array( $cart_row ) && ! empty( $cart_row['order_id'] ) ) ? absint( $cart_row['order_id'] ) : 0;
+			if ( $linked_order_id > 0 && $linked_order_id !== $order->get_id() ) {
+				/** Cart already recovered by another order. */
+				WC()->session->set( 'bwfan_abandoned_order_data', [] );
+
+				return;
+			}
 		}
 
 		BWFAN_Common::save_order_meta( $order->get_id(), '_bwfan_ab_cart_recovered_a_id', $abandoned_data['automation_id'] );
@@ -1260,7 +1441,7 @@ class BWFAN_Abandoned_Cart {
 	public function check_aerocheckout_page( $bool, $obj ) {
 		/** This filter hook run on every AeroCheckout page */
 		$this->is_aerocheckout_page = true;
-		if ( isset( $_GET['bwfan-cart-restored'] ) && 'success' === sanitize_text_field( $_GET['bwfan-cart-restored'] ) ) {
+		if ( isset( $_GET['bwfan-cart-restored'] ) && 'success' === sanitize_text_field( wp_unslash( $_GET['bwfan-cart-restored'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public link opened from an email; such links cannot carry a nonce
 			$bool = true;
 		}
 
@@ -1419,7 +1600,7 @@ class BWFAN_Abandoned_Cart {
 	 * @since 1.0.0
 	 */
 	public function insert_abandoned_cart() {
-		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( $_REQUEST['_wpnonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
+		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! wp_verify_nonce( $nonce, 'bwfan-action-public' ) ) {
 			wp_send_json( array( 'status' => false, 'msg' => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ) ) );
 		}
@@ -1459,7 +1640,7 @@ class BWFAN_Abandoned_Cart {
 
 		$exclude_checkout_fields = apply_filters( 'bwfan_ab_exclude_checkout_fields', array() );
 		$data                    = [
-			'fields'               => isset( $_POST['checkout_fields_data'] ) && is_array( $_POST['checkout_fields_data'] ) ? array_map( 'sanitize_text_field', $_POST['checkout_fields_data'] ) : [],
+			'fields'               => isset( $_POST['checkout_fields_data'] ) && is_array( $_POST['checkout_fields_data'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['checkout_fields_data'] ) ) : [],
 			//phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 			'current_page_id'      => isset( $_POST['current_page_id'] ) ? sanitize_text_field( $_POST['current_page_id'] ) : '',
 			//phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
@@ -1518,6 +1699,11 @@ class BWFAN_Abandoned_Cart {
 		$data['fields'] = array_intersect_key( $data['fields'], self::get_woocommerce_default_checkout_nice_names() );
 		$data['fields'] = array_merge( $data['fields'], $dob_fields );
 
+		/** Consent checkbox not rendered (setting off / contact already subscribed): treat as granted, same as the hidden input on classic checkout. Block checkout posts nothing in that case. */
+		if ( ! isset( $data['fields']['bwfan_user_consent'] ) && ! in_array( 'bwfan_user_consent', (array) $exclude_checkout_fields, true ) && BWFAN_Common::is_marketing_consent_implicit() ) {
+			$data['fields']['bwfan_user_consent'] = '1';
+		}
+
 		/**
 		 * Set AeroCheckout session keys
 		 */
@@ -1536,7 +1722,7 @@ class BWFAN_Abandoned_Cart {
 			);
 		}
 
-		$data['fields']['timezone'] = isset( $_POST['timezone'] ) ? sanitize_text_field( $_POST['timezone'] ) : '';
+		$data['fields']['timezone'] = isset( $_POST['timezone'] ) ? sanitize_text_field( wp_unslash( $_POST['timezone'] ) ) : '';
 		$data                       = apply_filters( 'bwfan_ab_change_checkout_data_for_external_use', array_filter( $data ) );
 
 		$lang = self::get_current_language_code();
@@ -1675,6 +1861,7 @@ class BWFAN_Abandoned_Cart {
 			'ship_to_different_address' => __( 'Ship to a different address', 'wp-marketing-automations' ),
 			'shipping_same_as_billing'  => __( 'Shipping same as billing address', 'wp-marketing-automations' ),
 			'billing_same_as_shipping'  => __( 'Billing same as shipping address', 'wp-marketing-automations' ),
+			'bwfan_user_consent'        => __( 'Marketing Consent', 'wp-marketing-automations' ),
 		) );
 	}
 
@@ -1799,7 +1986,7 @@ class BWFAN_Abandoned_Cart {
 		global $wpdb;
 		$column     = '`' . str_replace( '`', '``', $key ) . '`';
 		$value_type = in_array( $value_type, array( '%s', '%d', '%f' ), true ) ? $value_type : '%s';
-		$query        = $wpdb->prepare( "SELECT * FROM {table_name} WHERE {$column} = {$value_type} AND status != 2 ORDER BY `ID` DESC LIMIT 0,1", $value );
+		$query        = $wpdb->prepare( "SELECT * FROM {table_name} WHERE {$column} = {$value_type} AND status != 2 ORDER BY `ID` DESC LIMIT 0,1", $value ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- value type whitelisted; column quoted; value bound via prepare()
 		$cart_details = BWFAN_Model_Abandonedcarts::get_results( $query );
 
 		return ( is_array( $cart_details ) && count( $cart_details ) > 0 ) ? $cart_details[0] : false;
@@ -1933,7 +2120,7 @@ class BWFAN_Abandoned_Cart {
 	 * @since 1.0.0
 	 */
 	public function delete_abandoned_cart() {
-		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( $_REQUEST['_wpnonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
+		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! wp_verify_nonce( $nonce, 'bwfan-action-public' ) ) {
 			wp_send_json( array( 'status' => false, 'msg' => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ) ) );
 		}
@@ -1984,13 +2171,12 @@ class BWFAN_Abandoned_Cart {
 		$where         = 'AND m1.meta_key = "_billing_email"';
 		$where         .= ' AND m1.meta_value = %s';
 		$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array( 'wc-pending', 'wc-failed', 'wc-cancelled', 'wc-refunded', 'trash', 'draft' ) );
-		$post_status   = '(';
-		foreach ( $post_statuses as $status ) {
-			$post_status .= "'" . $status . "',";
-		}
-		$post_status         .= "'')";
-		$prepare_query       = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->prefix}posts p, {$wpdb->prefix}postmeta m1, {$wpdb->prefix}postmeta m2 WHERE p.ID = m1.post_id and p.ID = m2.post_id AND m2.meta_key = '%s' AND p.post_type = '%s' AND p.post_status NOT IN $post_status $where ORDER BY p.post_modified DESC", '_bwfan_ab_cart_recovered_a_id', 'shop_order', $contact_email );
-		$recovered_carts_ids = $wpdb->get_results( $prepare_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		/** Trailing '' keeps NOT IN () valid when the filter returns an empty list */
+		$post_statuses  = array_merge( array_map( 'strval', (array) $post_statuses ), array( '' ) );
+		$status_holders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
+		$query_args     = array_merge( array( '_bwfan_ab_cart_recovered_a_id', 'shop_order' ), $post_statuses, array( $contact_email ) );
+		$prepare_query       = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->prefix}posts p, {$wpdb->prefix}postmeta m1, {$wpdb->prefix}postmeta m2 WHERE p.ID = m1.post_id and p.ID = m2.post_id AND m2.meta_key = %s AND p.post_type = %s AND p.post_status NOT IN ($status_holders) $where ORDER BY p.post_modified DESC", ...$query_args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders generated; filter values bound via prepare(); counts match
+		$recovered_carts_ids = $wpdb->get_results( $prepare_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- placeholders generated; filter values bound via prepare(); counts match
 
 		if ( empty( $recovered_carts_ids ) ) {
 			return array();
@@ -2094,29 +2280,38 @@ class BWFAN_Abandoned_Cart {
 			return;
 		}
 
-		$coupon_data = [];
-		foreach ( WC()->cart->get_applied_coupons() as $coupon_code ) {
-			$coupon_data[ $coupon_code ] = [
-				'discount_incl_tax' => WC()->cart->get_coupon_discount_amount( $coupon_code, false ),
-				'discount_excl_tax' => WC()->cart->get_coupon_discount_amount( $coupon_code ),
-				'discount_tax'      => WC()->cart->get_coupon_discount_tax_amount( $coupon_code ),
-			];
+		try {
+			$coupon_data = [];
+			foreach ( WC()->cart->get_applied_coupons() as $coupon_code ) {
+				$coupon_data[ $coupon_code ] = [
+					'discount_incl_tax' => WC()->cart->get_coupon_discount_amount( $coupon_code, false ),
+					'discount_excl_tax' => WC()->cart->get_coupon_discount_amount( $coupon_code ),
+					'discount_tax'      => WC()->cart->get_coupon_discount_tax_amount( $coupon_code ),
+				];
+			}
+
+			global $cookie_set;
+			$cookie_set = false;
+			$this->set_session_cookies();
+			$tracking_cookie = BWFAN_Common::get_cookie( 'bwfan_visitor' );
+			$tracking_cookie = empty( $tracking_cookie ) ? WC()->session->get( 'bwfan_visitor' ) : $tracking_cookie;
+
+			/** WC has already saved the session on shutdown, persist the keys set above */
+			if ( is_callable( [ WC()->session, 'save_data' ] ) ) {
+				WC()->session->save_data();
+			}
+
+			self::wc_add_to_cart( array(
+				'id'            => get_current_user_id(),
+				'coupon_data'   => $coupon_data,
+				'items'         => WC()->cart->get_cart(),
+				'fees'          => WC()->cart->get_fees(),
+				'bwfan_visitor' => $tracking_cookie,
+				'fk_uid'        => BWFAN_Common::get_cookie( '_fk_contact_uid' ),
+			) );
+		} catch ( Throwable $e ) {
+			BWFAN_Common::log_test_data( 'Add to cart capture failed: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(), 'fka-add-to-cart-capture-failed', true );
 		}
-
-		global $cookie_set;
-		$cookie_set = false;
-		$this->set_session_cookies();
-		$tracking_cookie = BWFAN_Common::get_cookie( 'bwfan_visitor' );
-		$tracking_cookie = empty( $tracking_cookie ) ? WC()->session->get( 'bwfan_visitor' ) : $tracking_cookie;
-
-		self::wc_add_to_cart( array(
-			'id'            => get_current_user_id(),
-			'coupon_data'   => $coupon_data,
-			'items'         => WC()->cart->get_cart(),
-			'fees'          => WC()->cart->get_fees(),
-			'bwfan_visitor' => $tracking_cookie,
-			'fk_uid'        => BWFAN_Common::get_cookie( '_fk_contact_uid' ),
-		) );
 	}
 
 	/**
@@ -2413,8 +2608,8 @@ class BWFAN_Abandoned_Cart {
 		], 'fka-duplicate-cart-captured', true );
 
 		global $wpdb;
-		$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwfan_abandonedcarts  WHERE `ID` IN ($id_placeholders)", $p_keys );
-		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwfan_abandonedcarts  WHERE `ID` IN ($id_placeholders)", $p_keys ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated; ids bound via prepare() %d
+		$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; ids bound via prepare() %d
 
 		return $unique_carts;
 	}
@@ -2431,8 +2626,8 @@ class BWFAN_Abandoned_Cart {
 		$email_placeholders = array_fill( 0, count( $emails ), '%s' );
 		$email_placeholders = implode( ', ', $email_placeholders );
 		$query              = "SELECT `email`, GROUP_CONCAT(`id`) AS `pkey` FROM `{$wpdb->prefix}bwf_contact` WHERE `email` IN ($email_placeholders) GROUP BY `email` HAVING COUNT(`email`) > 1";
-		$query              = $wpdb->prepare( $query, $emails );
-		$results            = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query              = $wpdb->prepare( $query, $emails ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; emails bound via prepare()
+		$results            = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; emails bound via prepare()
 		if ( empty( $results ) ) {
 			return;
 		}
@@ -2457,8 +2652,8 @@ class BWFAN_Abandoned_Cart {
 		$id_placeholders = implode( ', ', $id_placeholders );
 
 		global $wpdb;
-		$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwf_contact  WHERE `id` IN ($id_placeholders)", $to_be_deleted );
-		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwf_contact  WHERE `id` IN ($id_placeholders)", $to_be_deleted ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated; ids bound via prepare() %d
+		$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; ids bound via prepare() %d
 	}
 
 	/**
@@ -2488,7 +2683,7 @@ class BWFAN_Abandoned_Cart {
 		$email_placeholders = array_fill( 0, count( $emails ), '%s' );
 
 		$email_placeholders = implode( ', ', $email_placeholders );
-		$query              = $wpdb->prepare( "SELECT * FROM {table_name} WHERE `email` IN ($email_placeholders) AND `status` IN (1) ORDER BY `ID` ASC", $emails );
+		$query              = $wpdb->prepare( "SELECT * FROM {table_name} WHERE `email` IN ($email_placeholders) AND `status` IN (1) ORDER BY `ID` ASC", $emails ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated; emails bound via prepare()
 
 		$all_existing_carts = BWFAN_Model_Abandonedcarts::get_results( $query );
 
@@ -2563,8 +2758,8 @@ class BWFAN_Abandoned_Cart {
 					'deleted_count'  => count( $ids_to_delete ),
 				], 'fka-duplicate-cart-merged', true );
 
-				$delete_query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwfan_abandonedcarts WHERE `ID` IN ($id_placeholders)", $ids_to_delete ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->query( $delete_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$delete_query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwfan_abandonedcarts WHERE `ID` IN ($id_placeholders)", $ids_to_delete ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders generated; ids bound via prepare() %d
+				$wpdb->query( $delete_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; ids bound via prepare() %d
 
 				/** Collect index to remove after iteration */
 				$indices_to_remove[] = $index;

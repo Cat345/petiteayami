@@ -88,7 +88,7 @@ class ConvertAction implements Hookable {
 
 		do_action( 'flexible-shipping/group-method/converted-method', $shipping_method );
 
-		wp_redirect( $this->get_redirect_url_success_convert( $zone->get_id() ) );
+		wp_safe_redirect( $this->get_redirect_url_success_convert( $zone->get_id() ) );
 		die();
 	}
 
@@ -105,10 +105,6 @@ class ConvertAction implements Hookable {
 		/** @var ShippingMethodSingle $shipping_method . */
 		$shipping_method     = WC_Shipping_Zones::get_shipping_method( $instance_id );
 		$shipping_method_key = $shipping_method->get_instance_option_key();
-
-		if ( ! is_array( $old_shipping_method_settings ) ) {
-			$old_shipping_method_settings = [];
-		}
 
 		$old_shipping_method_settings['tax_status'] = $old_shipping_method->get_instance_option( 'tax_status' );
 

@@ -98,6 +98,10 @@ class OrderStatistics {
   }
 
   /**
+   * Filtering, sorting and paging happen in the reader's SQL, so only the
+   * visible page is loaded. Returns null when the Woo-backed read model is
+   * unavailable and the HPOS/legacy queries should be used instead.
+   *
    * @param NewsletterEntity[] $newsletters
    * @param array{status?: string[], emails?: int[]} $filter
    * @return RawOrderType[]|int|null
@@ -117,94 +121,20 @@ class OrderStatistics {
     $newsletterIds = array_map(function (NewsletterEntity $newsletter): int {
       return (int)$newsletter->getId();
     }, $newsletters);
+    $options = [
+      'search' => $search,
+      'status' => $filter['status'] ?? [],
+      'emails' => $filter['emails'] ?? [],
+      'order_by' => $orderBy,
+      'order' => $order,
+      'limit' => $limit,
+      'offset' => $offset,
+    ];
 
-    $rows = $this->orderAttributionRevenueReader->getNewsletterOrderRows($newsletterIds, $from, $to);
-    if ($rows === null) {
-      return null;
-    }
-
-    $rows = $this->filterWooBackedRows($rows, $search, $filter);
     if ($count) {
-      return count($rows);
+      return $this->orderAttributionRevenueReader->countNewsletterOrderRows($newsletterIds, $from, $to, $options);
     }
-
-    $this->sortWooBackedRows($rows, $orderBy, $order);
-    return array_slice($rows, $offset, $limit);
-  }
-
-  /**
-   * @param RawOrderType[] $rows
-   * @param array{status?: string[], emails?: int[]} $filter
-   * @return RawOrderType[]
-   */
-  private function filterWooBackedRows(array $rows, ?string $search, array $filter): array {
-    if ($search) {
-      $search = substr($search, 0, 100);
-      $rows = array_filter($rows, function(array $row) use ($search): bool {
-        return stripos($row['last_name'], $search) !== false
-          || stripos($row['first_name'], $search) !== false
-          || stripos($row['email'], $search) !== false;
-      });
-    }
-
-    $statusFilter = $filter['status'] ?? [];
-    if (is_array($statusFilter) && !empty($statusFilter)) {
-      $statusFilter = array_values(array_filter(array_map('sanitize_key', $statusFilter)));
-      if ($statusFilter) {
-        $rows = array_filter($rows, function(array $row) use ($statusFilter): bool {
-          return in_array($row['status'], $statusFilter, true);
-        });
-      }
-    }
-
-    $emailsFilter = $filter['emails'] ?? [];
-    if (is_array($emailsFilter) && !empty($emailsFilter)) {
-      $emailsFilter = array_values(array_filter(array_map('intval', $emailsFilter), function(int $id): bool {
-        return $id > 0;
-      }));
-      if ($emailsFilter) {
-        $rows = array_filter($rows, function(array $row) use ($emailsFilter): bool {
-          return in_array($row['newsletter_id'], $emailsFilter, true);
-        });
-      }
-    }
-
-    return array_values($rows);
-  }
-
-  /**
-   * @param RawOrderType[] $rows
-   */
-  private function sortWooBackedRows(array &$rows, string $orderBy, string $order): void {
-    $direction = $order === 'asc' ? 1 : -1;
-    usort($rows, function(array $a, array $b) use ($orderBy, $direction): int {
-      $result = $this->compareWooBackedRows($a, $b, $orderBy);
-      if ($result === 0) {
-        $result = $a['order_id'] <=> $b['order_id'];
-      }
-      if ($result === 0) {
-        $result = $a['newsletter_id'] <=> $b['newsletter_id'];
-      }
-      if ($result === 0) {
-        $result = $a['subscriber_id'] <=> $b['subscriber_id'];
-      }
-      return $result * $direction;
-    });
-  }
-
-  /**
-   * @param RawOrderType $a
-   * @param RawOrderType $b
-   */
-  private function compareWooBackedRows(array $a, array $b, string $orderBy): int {
-    if ($orderBy === 'revenue') {
-      return $a['total'] <=> $b['total'];
-    }
-
-    $field = $orderBy;
-    $aValue = (string)$a[$field];
-    $bValue = (string)$b[$field];
-    return strcasecmp($aValue, $bValue);
+    return $this->orderAttributionRevenueReader->getNewsletterOrderRowsPage($newsletterIds, $from, $to, $options);
   }
 
   /**

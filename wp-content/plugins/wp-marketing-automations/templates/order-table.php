@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /** checking if woocommerce exists other wise return */
 if ( ! function_exists( 'bwfan_is_woocommerce_active' ) || ! bwfan_is_woocommerce_active() ) {
 	return;

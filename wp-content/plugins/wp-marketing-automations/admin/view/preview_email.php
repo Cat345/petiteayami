@@ -16,13 +16,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 </style>
 <div class="bwfan_body">
 	<?php
-	if ( isset( $_GET['type'] ) && 'loading' === sanitize_text_field( $_GET['type'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
+	if ( isset( $_GET['type'] ) && 'loading' === sanitize_text_field( wp_unslash( $_GET['type'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin email preview; capability checked
 		esc_html_e( 'Loading ...', 'wp-marketing-automations' );
 	} else {
 		BWFAN_Merge_Tag_Loader::set_data( array(
 			'is_preview' => true,
 		) );
-		$automation_id = $_GET['edit'];
+		$automation_id = isset( $_GET['edit'] ) ? sanitize_text_field( wp_unslash( $_GET['edit'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only preview inside the FKA admin page (menu capability required)
 		if ( absint( $automation_id ) < 1 ) {
 			echo 'Automation ID missing';
 		}
@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			$action_object = BWFAN_Wp_Sendemail::get_instance();
 		}
 		if ( null === $action_object ) {
-			echo __( 'Email action not found', 'wp-marketing-automations' );
+			esc_html_e( 'Email action not found', 'wp-marketing-automations' );
 
 			return;
 		}

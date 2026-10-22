@@ -212,11 +212,19 @@ abstract class StripeTaxTaxRateMemRepo {
 	}
 
 	/**
-	 * Returns false for a tax rate.
+	 * Finds a tax rate by rate id and returns its compound flag.
 	 *
 	 * @param int $rate_id Tax rate id.
+	 *
+	 * @return bool|null True/false when Stripe rate exists, null otherwise.
 	 */
-	public static function read_rate_compound( $rate_id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
-		return 'no';
+	public static function read_rate_compound( $rate_id ) {
+		$rate = static::read( $rate_id );
+
+		if ( ! $rate ) {
+			return null;
+		}
+
+		return ! empty( $rate['compound'] );
 	}
 }

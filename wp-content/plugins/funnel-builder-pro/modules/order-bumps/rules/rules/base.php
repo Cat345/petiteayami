@@ -65,5 +65,29 @@ if ( ! class_exists( 'wfob_Rule_Base' ) ) {
 		public function return_is_match( $result, $rule_data ) {
 			return apply_filters( 'wfob_rules_is_match', $result, $rule_data );
 		}
+
+		/**
+		 * Split a condition string into a list of comma-separated "OR" tokens.
+		 *
+		 * Values are trimmed and blanks dropped so "Physical, Printed" yields two
+		 * tokens; a single value with no comma yields one, preserving legacy behaviour.
+		 * Shared by every text/SKU match rule that supports comma-separated OR values.
+		 *
+		 * @param string $condition Raw condition string.
+		 *
+		 * @return array
+		 */
+		protected function split_condition( $condition ) {
+			$tokens = array_map( 'trim', explode( ',', (string) $condition ) );
+
+			return array_values(
+				array_filter(
+					$tokens,
+					static function ( $token ) {
+						return '' !== $token;
+					}
+				)
+			);
+		}
 	}
 }

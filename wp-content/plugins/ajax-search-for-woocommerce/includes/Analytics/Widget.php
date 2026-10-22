@@ -38,7 +38,7 @@ class Widget {
 				add_action( 'wp_dashboard_setup', [ $this, 'addWidget' ] );
 
 				if ( Multilingual::isMultilingual() ) {
-					add_action( 'admin_init', [ $this, 'enqueueTabsScript' ], 5 );
+					add_action( 'load-index.php', [ $this, 'enqueueTabsScript' ] );
 				}
 			}
 		}
@@ -190,14 +190,20 @@ class Widget {
 		<script>
 			(function ($) {
 					$(document).ready(function () {
-						const tabs = $('.dgwt-wcas-widget-tab');
+						const tabs = $('#fibosearch_analytics_critical_searches .dgwt-wcas-widget-tab');
 						tabs.on('click', function (event) {
 							event.preventDefault();
 
-							$('.dgwt-wcas-widget-tab.dgwt-wcas-widget-tab-active').removeClass('dgwt-wcas-widget-tab-active');
+							// Never pass the attribute value to $(), it would be parsed as HTML.
+							const href = $(this).attr('href');
+							if (typeof href !== 'string' || !/^#dgwt-wcas-widget-tab-content-[A-Za-z0-9_-]+$/.test(href)) {
+								return;
+							}
+
+							tabs.filter('.dgwt-wcas-widget-tab-active').removeClass('dgwt-wcas-widget-tab-active');
 							$(this).addClass('dgwt-wcas-widget-tab-active');
-							$('.dgwt-wcas-widget-tab-content').hide();
-							$($(this).attr('href')).show();
+							$('#fibosearch_analytics_critical_searches .dgwt-wcas-widget-tab-content').hide();
+							$(document.getElementById(href.slice(1))).show();
 						});
 
 						if (tabs.length > 0) {

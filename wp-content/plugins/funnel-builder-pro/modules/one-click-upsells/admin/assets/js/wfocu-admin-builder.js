@@ -361,6 +361,13 @@
                 inputName: 'scripts_head',
 
             },
+            {
+                type: "textArea",
+                label: "",
+                model: "custom_css",
+                inputName: 'custom_css',
+
+            },
         ];
         let global_settings_emails_fields = [
             /** Head Emails starts **/

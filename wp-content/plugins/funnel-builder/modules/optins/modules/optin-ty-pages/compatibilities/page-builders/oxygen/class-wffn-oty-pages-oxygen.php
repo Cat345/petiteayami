@@ -33,7 +33,7 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Oxygen' ) ) {
 		public function disable_signature_checking() {
 			global $post;
 
-			if ( ! is_null( $post ) && $post->post_type === WFOPP_Core()->optin_ty_pages->get_post_type_slug() ) {
+			if ( $post instanceof WP_Post && $post->post_type === WFOPP_Core()->optin_ty_pages->get_post_type_slug() ) {
 				WFFN_OXYGEN::disable_signature_checking();
 			}
 		}
@@ -64,7 +64,7 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Oxygen' ) ) {
 				$post_id = absint( $_REQUEST['oxy_wffn_lp_id'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 			$post = get_post( $post_id );
-			if ( ! is_null( $post ) && $post->post_type === WFOPP_Core()->optin_ty_pages->get_post_type_slug() ) {
+			if ( $post instanceof WP_Post && $post->post_type === WFOPP_Core()->optin_ty_pages->get_post_type_slug() ) {
 				WFFN_OXYGEN::disable_signature_checking();
 				$this->remove_register_template();
 			}
@@ -125,7 +125,7 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Oxygen' ) ) {
 				if ( ! is_null( $node ) ) {
 					$node = (array) $node;
 					global $post;
-					if ( ! is_null( $post ) && $post->post_type === WFOPP_Core()->optin_ty_pages->get_post_type_slug() ) {
+					if ( $post instanceof WP_Post && $post->post_type === WFOPP_Core()->optin_ty_pages->get_post_type_slug() ) {
 						$wfacp_id     = $post->ID;
 						$href         = $node['href'];
 						$node['href'] = add_query_arg(
@@ -151,7 +151,7 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Oxygen' ) ) {
 
 			$ct_builder = ( isset( $_GET['ct_builder'] ) && $_GET['ct_builder'] === 'true' ) ? true : false;//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			if ( ! is_null( $post ) && $post->post_type === WFOPP_Core()->optin_ty_pages->get_post_type_slug() ) {
+			if ( $post instanceof WP_Post && $post->post_type === WFOPP_Core()->optin_ty_pages->get_post_type_slug() ) {
 				$design = WFOPP_Core()->optin_ty_pages->get_page_design( $post->ID );
 				if ( ( $ct_builder === true ) || ( is_array( $design ) && isset( $design['selected_type'] ) && 'oxy' === $design['selected_type'] ) ) {
 					remove_action( 'template_include', array( WFFN_Optin_TY_Pages::get_instance(), 'may_be_change_template' ), 99 );

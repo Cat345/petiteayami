@@ -57,11 +57,11 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 			// Handling Optin
 			if ( isset( $_GET['woofunnels-optin-choice'] ) && isset( $_GET['_woofunnels_optin_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_woofunnels_optin_nonce'] ) ), 'woofunnels_optin_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'wp-marketing-automations' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				if ( ! current_user_can( 'manage_options' ) ) {
-					wp_die( esc_html__( 'Cheating huh?', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Cheating huh?', 'wp-marketing-automations' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				$optin_choice = sanitize_text_field( wp_unslash( $_GET['woofunnels-optin-choice'] ) );
@@ -109,11 +109,11 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 						?>
 						<div class="woofunnel-notice-message notice notice-warning">
 							<a class="woofunnel-message-close notice-dismiss" href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'woofunnel-update-notice', 'hide' ), 'woofunnel_update_notice_nonce', '_woofunnel_update_notice_nonce' ) ); ?>">
-								<?php esc_html_e( 'Dismiss', 'woofunnels' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+								<?php esc_html_e( 'Dismiss', 'wp-marketing-automations' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
 							</a>
 							<p>
 								<?php
-								_e( sprintf( 'Attention: There is an update available of <strong>%s</strong> plugin. &nbsp;<a href="%s" class="">Go to updates</a>', implode( ', ', array_map( 'esc_html', $plugin_names ) ), esc_url( admin_url( 'plugins.php?s=funnelkit&plugin_status=all' ) ) ), 'woofunnels' ); // phpcs:ignore WordPress.Security.EscapeOutput, WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.NonSingularStringLiteralText
+								_e( sprintf( 'Attention: There is an update available of <strong>%s</strong> plugin. &nbsp;<a href="%s" class="">Go to updates</a>', implode( ', ', array_map( 'esc_html', $plugin_names ) ), esc_url( admin_url( 'plugins.php?s=funnelkit&plugin_status=all' ) ) ), 'wp-marketing-automations' ); // phpcs:ignore WordPress.Security.EscapeOutput, WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.NonSingularStringLiteralText
 								?>
 							</p>
 						</div>
@@ -152,7 +152,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 
 			if ( isset( $_GET['woofunnel-update-notice'] ) && isset( $_GET['_woofunnel_update_notice_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_woofunnel_update_notice_nonce'] ) ), 'woofunnel_update_notice_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'wp-marketing-automations' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 				update_option( 'woofunnel_hide_update_notice', 'yes' );
 				wp_safe_redirect( admin_url( 'index.php' ) );
@@ -283,8 +283,8 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 			/**
 			 * Update session table with the data
 			 */
-			$query = $wpdb->prepare( 'UPDATE `' . $wpdb->prefix . "options` SET `autoload` = %s WHERE (`option_name` LIKE '%wfocu_c_%' OR `option_name` LIKE '%wfacp_c_%') AND `autoload` LIKE 'yes' AND `option_name` NOT LIKE 'wfacp_css_migrated'", 'no' );
-			$wpdb->query( $query );  //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query = $wpdb->prepare( 'UPDATE `' . $wpdb->prefix . "options` SET `autoload` = %s WHERE (`option_name` LIKE '%wfocu_c_%' OR `option_name` LIKE '%wfacp_c_%') AND `autoload` LIKE 'yes' AND `option_name` NOT LIKE 'wfacp_css_migrated'", 'no' ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery, WordPress.DB.PreparedSQLPlaceholders.LikeWithoutWildcards -- hardcoded LIKE literals, one %s arg; no external input
+			$wpdb->query( $query );  // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- runs string fully built by prepare at 286
 			update_option( '_bwf_upgrade_1_9_14', 'yes' );
 		}
 

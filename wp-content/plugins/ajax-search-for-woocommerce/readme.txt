@@ -4,7 +4,7 @@ Tags: woocommerce search, ajax search, search by sku, product search, woocommerc
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.34.2
+Stable tag: 1.34.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -147,6 +147,13 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 9. Sample settings page (Search Analytics tab)
 
 == Changelog ==
+
+= 1.34.3, October 8, 2026 =
+* FIXED: **EAN for WooCommerce plugin**: no results when searching by EAN after updating that plugin
+* FIXED: Database error on the settings page with WooCommerce older than 9.2
+* SECURITY: Stored XSS in the WordPress admin panel. The script can run only in the browser of a logged-in administrator or shop manager. Thanks to daroo and the Wordfence team for the responsible disclosure.
+* UPDATED: The `.pot` file
+* UPDATED: Freemius SDK
 
 = 1.34.2, September 7, 2026 =
 * SECURITY: Stored XSS in search suggestions via product, category, tag, post and vendor names, and via suggestion image URLs. Exploitation requires permissions to edit those items (the Author or Shop Manager role, or a vendor account in marketplace plugins).
@@ -309,6 +316,5 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 * TWEAK: Removed OPcache invalidation for the shortcode template file
 * UPDATED: The `.pot` file
 * UPDATED: Freemius SDK
-
 
 [See changelog for all versions](https://fibosearch.com/changelog/).

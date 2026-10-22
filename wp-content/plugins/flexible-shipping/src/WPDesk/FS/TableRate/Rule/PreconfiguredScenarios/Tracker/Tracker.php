@@ -20,7 +20,7 @@ class Tracker implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_filter( 'wpdesk_tracker_data', array( $this, 'append_data' ), self::TRACKER_DATA_FILTER_PRIORITY );
+		add_filter( 'wpdesk_tracker_data', [ $this, 'append_data' ], self::TRACKER_DATA_FILTER_PRIORITY );
 	}
 
 	/**
@@ -37,5 +37,4 @@ class Tracker implements Hookable {
 
 		return $data;
 	}
-
 }

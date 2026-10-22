@@ -172,7 +172,6 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			add_filter( 'wfacp_the_content', 'shortcode_unautop' );
 			add_filter( 'wfacp_the_content', 'prepend_attachment' );
 			add_filter( 'wfacp_the_content', 'do_shortcode', 11 );
-			add_filter( 'wfacp_the_content', array( 'WFACP_Common', 'strip_scripts_from_content' ), 99 );
 
 			add_filter( 'wfacp_the_content', array( $GLOBALS['wp_embed'], 'run_shortcode' ), 8 );
 			add_filter( 'wfacp_the_content', array( $GLOBALS['wp_embed'], 'autoembed' ), 8 );
@@ -195,6 +194,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			add_action( 'wfacp_form_single_step_start', array( $this, 'preview_field_generate' ), 10, 2 );
 			add_action( 'wfacp_form_two_step_start', array( $this, 'preview_field_generate' ), 10, 2 );
 			add_action( 'wfacp_form_third_step_start', array( $this, 'preview_field_generate' ), 10, 2 );
+			add_action( 'wfacp_form_fourth_step_start', array( $this, 'preview_field_generate' ), 10, 2 );
 
 			add_action( 'wfacp_after_form', array( $this, 'remove_unused_js' ) );
 			add_shortcode( 'wfacp_mini_cart', array( $this, 'shortcode_mini_cart' ) );
@@ -231,8 +231,10 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 			add_filter( 'body_class', array( $this, 'add_body_class' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_script' ), 100 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_builder_style' ), 1000 );
 			add_action( 'wfacp_header_print_in_head', array( $this, 'global_css' ) );
 			add_action( 'wp_head', array( $this, 'add_viewport_meta' ), - 1 );
+			add_action( 'wp_head', array( $this, 'print_viewport_meta' ), PHP_INT_MAX );
 			add_action( 'wp_head', array( $this, 'no_follow_no_index' ), - 1 );
 			add_action( 'wp_head', array( $this, 'add_header_script' ), 99 );
 			add_action( 'wp_print_styles', array( $this, 'remove_woocommerce_js_css' ), 99 );
@@ -310,6 +312,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 			add_filter( 'wfacp_change_next_btn_single_step', array( $this, 'change_single_step_label' ), 10, 2 );
 			add_filter( 'wfacp_change_next_btn_two_step', array( $this, 'change_two_step_label' ), 10, 2 );
+			add_filter( 'wfacp_change_next_btn_third_step', array( $this, 'change_third_step_label' ), 10, 2 );
 			add_filter( 'woocommerce_order_button_text', array( $this, 'change_place_order_button_text' ), 11 );
 			add_filter( 'woocommerce_order_button_text', array( $this, 'replace_merge_tag' ), 12 );
 			add_filter( 'wfacp_change_back_btn', array( $this, 'change_back_step_label' ), 10, 3 );
@@ -410,7 +413,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				}
 
 				$thumbnail      = WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key );
-				$thumbnail      = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
+				$thumbnail      = apply_filters( 'wfacp_cart_image', $thumbnail, $_product, $cart_item, $cart_item_key );
 				$formatted_data = wc_get_formatted_cart_item_data( $cart_item );
 
 				$show_variation_details = apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
@@ -509,12 +512,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		public function get_step_count() {
 			$form_current_step = $this->get_current_step();
 
-			$no_of_fields = 1;
-			if ( isset( $form_current_step ) && $form_current_step == 'two_step' ) {
-				$no_of_fields = 2;
-			} elseif ( isset( $form_current_step ) && $form_current_step == 'third_step' ) {
-				$no_of_fields = 3;
-			}
+			// current_step is the form's last step, so its position is the number of steps.
+			$no_of_fields = WFACP_Common::get_step_number( $form_current_step );
 
 			return apply_filters( 'wfacp_form_step_count', $no_of_fields );
 		}
@@ -557,6 +556,60 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			}
 
 			return $google_map_key;
+		}
+
+		/**
+		 * Load the styles that belong to one page builder only.
+		 *
+		 * These rules used to sit in the shared stylesheets, so an Elementor checkout also
+		 * downloaded the Divi, Bricks and Gutenberg rules it could never match. They now live in
+		 * assets/css/builders/<builder>.css and this enqueues the one that applies.
+		 *
+		 * The same files carry the rules that used to be written as :not(.wfacp_oxygen_template)
+		 * and :not(.oxy) - "every builder except Oxygen". Rather than naming a builder in a shared
+		 * sheet in order to exclude it, each builder that wants the rule now simply has it, and
+		 * Oxygen has no file because it supplies its own.
+		 *
+		 * Every builder reaches this through WFACP_Template, including Bricks, whose template lives
+		 * in the free plugin but extends the same base, so there is nothing to add per builder. A
+		 * builder with no rules of its own simply has no file and is skipped.
+		 *
+		 * Hooked at 1000 so it lands after the builder templates enqueue wfacp-form.min.css at 999.
+		 * These rules used to sit inside that stylesheet, and loading them ahead of it would hand
+		 * every equal-specificity tie to the shared rule instead. The -rtl file follows the same
+		 * rule for the right-to-left sheets and is only loaded when is_rtl().
+		 */
+		public function enqueue_builder_style() {
+			$template_type = $this->get_template_type();
+			// Template types whose name differs from the stylesheet's.
+			$aliases = array(
+				'oxy'        => 'oxygen',
+				'embed_form' => 'customizer',
+				'pre_built'  => 'prebuilt',
+			);
+
+			$builder = isset( $aliases[ $template_type ] ) ? $aliases[ $template_type ] : $template_type;
+			$builder = preg_replace( '/[^a-z0-9_-]/', '', strtolower( (string) $builder ) );
+
+			if ( '' === $builder ) {
+				return;
+			}
+
+			$handles = array( $builder );
+
+			if ( is_rtl() ) {
+				$handles[] = $builder . '-rtl';
+			}
+
+			foreach ( $handles as $handle ) {
+				$relative = 'assets/css/builders/' . $handle . '.min.css';
+
+				if ( ! file_exists( dirname( WFACP_PLUGIN_FILE ) . '/' . $relative ) ) {
+					continue;
+				}
+
+				wp_enqueue_style( 'wfacp-builder-' . $handle, plugin_dir_url( WFACP_PLUGIN_FILE ) . $relative, false, WFACP_VERSION_DEV );
+			}
 		}
 
 		public function enqueue_script() {
@@ -747,6 +800,17 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$advancedFields  = isset( $checkout_fields['advanced'] ) ? $checkout_fields['advanced'] : array();
 			$min_age         = ( isset( $advancedFields['_bwf_dob']['_bwf_dob'] ) && ! empty( $advancedFields['_bwf_dob']['_bwf_dob'] ) ) ? $advancedFields['_bwf_dob']['_bwf_dob'] : '';
 
+			/**
+			 * Filters the extra mailbox domains the email typo suggestion matches a mistyped address against.
+			 *
+			 * @param string[]              $domains  Domains such as 'example.com' or 'example.co.uk', added to the built-in provider list.
+			 * @param WFACP_Template_Common $template The checkout template being rendered.
+			 */
+			$email_suggestion_domains = apply_filters( 'wfacp_email_suggestion_domains', array(), $this );
+
+			/* translators: %s: the suggested email address */
+			$email_suggestion_prompt = ! empty( $page_settings['email_suggestion_prompt'] ) ? $page_settings['email_suggestion_prompt'] : __( 'Did you mean %s?', 'woofunnels-aero-checkout' );
+
 			$data = array(
 				'id'                                    => WFACP_Common::get_id(),
 				'title'                                 => get_the_title( WFACP_Common::get_id() ),
@@ -787,6 +851,9 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				'enable_google_autocomplete'            => $page_settings['enable_google_autocomplete'],
 				'enable_smart_buttons'                  => $page_settings['enable_smart_buttons'],
 				'enable_phone_flag'                     => wc_string_to_bool( $page_settings['enable_phone_flag'] ) ? 'yes' : 'no',
+				'enable_email_suggestion'               => isset( $page_settings['enable_email_suggestion'] ) && wc_string_to_bool( $page_settings['enable_email_suggestion'] ) ? 'yes' : 'no',
+				'email_suggestion_prompt'               => $email_suggestion_prompt,
+				'email_suggestion_domains'              => array_values( array_filter( array_map( 'sanitize_text_field', (array) $email_suggestion_domains ) ) ),
 				'save_phone_number_type'                => wc_string_to_bool( $page_settings['save_phone_number_type'] ) ? 'yes' : 'no',
 				'enable_phone_validation'               => wc_string_to_bool( $page_settings['enable_phone_validation'] ) ? 'yes' : 'no',
 				'intl_util_scripts'                     => plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/utils.js',
@@ -813,7 +880,6 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$data['stripe_smart_show_on_desktop'] = 'yes';
 			$data['smart_button_wrappers']        = $this->smart_button_wrappers();
 			$data['fkwcs_legacy_express']         = $this->is_legacy_fkwcs_express() ? 'yes' : 'no';
-			$data[' ']                            = $this->is_legacy_fkwcs_express() ? 'yes' : 'no';
 			$data['is_user_logged_in']            = $this->is_user_logged_in ? 'yes' : 'no';
 
 			if ( isset( $page_settings['enable_address_field_number_validation'] ) && wc_string_to_bool( $page_settings['enable_address_field_number_validation'] ) ) {
@@ -1004,7 +1070,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( isset( $settings['header_script'] ) && '' != $settings['header_script'] ) {
 				$sanitized = WFACP_Common::sanitize_global_script( $settings['header_script'] );
 				if ( trim( $sanitized ) === trim( $settings['header_script'] ) ) {
-					printf( "\n \n %s \n \n", $sanitized ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					printf( "\n \n %s \n \n", $sanitized );
 				}
 			}
 		}
@@ -1017,7 +1083,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				$this->footer_js_printed = true;
 				$sanitized_footer        = WFACP_Common::sanitize_global_script( $settings['footer_script'] );
 				if ( trim( $sanitized_footer ) === trim( $settings['footer_script'] ) ) {
-					printf( "\n \n %s \n\n", $sanitized_footer ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					printf( "\n \n %s \n\n", $sanitized_footer );
 				}
 			}
 
@@ -1027,7 +1093,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				$global_script    = $_wfacp_global_settings['wfacp_global_external_script'];
 				$sanitized_global = WFACP_Common::sanitize_global_script( $global_script );
 				if ( trim( $sanitized_global ) === trim( $global_script ) ) {
-					echo $sanitized_global; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo $sanitized_global;
 				}
 			}
 		}
@@ -1992,6 +2058,39 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			include WFACP_TEMPLATE_COMMON . '/meta.php';
 		}
 
+		/**
+		 * Viewport meta content for the checkout.
+		 *
+		 * The scale clamp is what stops iOS Safari zooming in when a field takes focus. Filter it to
+		 * loosen the clamp, or return an empty string to leave the viewport tag to the theme.
+		 *
+		 * @return string
+		 */
+		private function get_viewport_meta_content() {
+			return trim( (string) apply_filters( 'wfacp_viewport_meta_content', 'width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=0' ) );
+		}
+
+		/**
+		 * Print the checkout viewport meta after every theme and plugin tag.
+		 *
+		 * Browsers merge duplicate viewport tags last-one-wins per property, so ours does not have
+		 * to be the only tag on the page -- it only has to be the last one. Other tags are left
+		 * alone: block themes keep the one core prints via _block_template_viewport_meta_tag on
+		 * wp_head at priority 0, and classic themes keep the one in header.php.
+		 *
+		 * PHP_INT_MAX is the highest wp_head priority there is, and classic themes print theirs
+		 * before wp_head() even runs, so ours lands last either way.
+		 */
+		public function print_viewport_meta() {
+			$content = $this->get_viewport_meta_content();
+
+			if ( '' === $content ) {
+				return;
+			}
+
+			printf( '<meta name="viewport" id="wfacp_viewport" content="%s"/>' . "\n", esc_attr( $content ) );
+		}
+
 		public function reattach_necessary_hooks() {
 			if ( ! has_action( 'woocommerce_checkout_order_review', 'woocommerce_checkout_payment' ) ) {
 				add_action( 'woocommerce_checkout_order_review', 'woocommerce_checkout_payment' );
@@ -2602,6 +2701,10 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		}
 
 		public function change_two_step_label( $name, $current_action ) {
+			return $name;
+		}
+
+		public function change_third_step_label( $name, $current_action ) {
 			return $name;
 		}
 

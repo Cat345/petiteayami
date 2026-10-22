@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || exit;
+// phpcs:disable Generic.PHP.DisallowAlternativePHPTags -- <% %> below are Underscore.js template delimiters inside HTML output, not PHP tags (asp_tags was removed in PHP 7.0)
 
 /**
  * Author PhpStorm.
@@ -16,7 +18,7 @@ class BWFAN_Dynamic_Option_Base extends BWFAN_Rule_Base {
         parent::__construct( $name );
         $this->rule_type = $name;
 
-        if ( isset( $_POST['ruletype'] ) && ( strtolower( $name ) === $_POST['ruletype'] ) ) {
+        if ( isset( $_POST['ruletype'] ) && ( strtolower( $name ) === $_POST['ruletype'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- only selects the select2 callback; handler bwfan_select2ajax() verifies the nonce
             add_filter( 'bwfan_select2_ajax_callable', array( $this, 'select2_ajax_callback' ), 10, 2 );
         }
     }
@@ -334,13 +336,14 @@ if ( class_exists( 'WooCommerce' ) ) {
          */
         public function get_possible_rule_values() {
             $result = array();
-            $terms  = get_terms( $this->taxonomy_name, array(
+            $terms  = get_terms( array(
+                'taxonomy'   => $this->taxonomy_name,
                 'hide_empty' => false,
             ) );
 
             if ( $terms && ! is_wp_error( $terms ) ) {
                 foreach ( $terms as $term ) {
-                    $result[ $term->term_id ] = $term->name;
+                    $result[ $term->term_id ] = BWFAN_Common::decode_term_name( $term->name );
                 }
             }
 
@@ -357,7 +360,7 @@ if ( class_exists( 'WooCommerce' ) ) {
             if ( count( $values ) > 0 ) {
                 foreach ( $values as $coupon_id ) {
                     $term                 = get_term_by( 'id', $coupon_id, $this->taxonomy_name );
-                    $return[ $coupon_id ] = isset( $term->name ) ? $term->name : '';
+                    $return[ $coupon_id ] = isset( $term->name ) ? BWFAN_Common::decode_term_name( $term->name ) : '';
                 }
             }
 
@@ -371,16 +374,7 @@ if ( class_exists( 'WooCommerce' ) ) {
          */
         public function get_search_results( $term, $v2 = false ) {
             $array = [];
-            $args  = array(
-                'taxonomy'   => array( $this->taxonomy_name ), // taxonomy name
-                'orderby'    => 'id',
-                'order'      => 'ASC',
-                'number'     => 10,
-                'hide_empty' => false,
-                'fields'     => 'all',
-                'name__like' => $term,
-            );
-            $terms = get_terms( $args );
+            $terms = BWFAN_Common::search_terms_by_name( $this->taxonomy_name, $term, 10 );
 
             if ( $v2 ) {
                 if ( count( $terms ) > 0 ) {
@@ -389,11 +383,11 @@ if ( class_exists( 'WooCommerce' ) ) {
                         if ( $term->parent > 0 ) {
                             $parent_term = get_term( $term->parent, $this->taxonomy_name );
                             if ( $parent_term && ! is_wp_error( $parent_term ) ) {
-                                $parent_info = ' (' . $parent_term->name . ' #' . $parent_term->term_id . ')';
+                                $parent_info = ' (' . BWFAN_Common::decode_term_name( $parent_term->name ) . ' #' . $parent_term->term_id . ')';
                             }
                         }
 
-                        $display_text            = $term->name . ' (#' . $term->term_id . ')' . $parent_info;
+                        $display_text            = BWFAN_Common::decode_term_name( $term->name ) . ' (#' . $term->term_id . ')' . $parent_info;
                         $array[ $term->term_id ] = $display_text;
                     }
                 }
@@ -405,7 +399,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                 foreach ( $terms as $term ) {
                     $array[] = array(
                         'id'   => $term->term_id,
-                        'text' => $term->name,
+                        'text' => BWFAN_Common::decode_term_name( $term->name ),
                     );
                 }
             }

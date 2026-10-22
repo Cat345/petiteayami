@@ -54,14 +54,12 @@ class DuplicateAction implements Hookable {
 
 		if ( ! $instance_id ) {
 			wp_die( __( 'Shipping method duplication error. Please try again later.', 'flexible-shipping' ) ); // phpcs:ignore
-
-			return;
 		}
 
 		$title = $this->shipping_method_management->get_shipping_method( $instance_id )->get_title();
 
 		if ( ! $this->duplicator_checker->should_duplicate( $instance_id ) ) {
-			wp_redirect( $this->get_redirect_url( 'error', $title ) );
+			wp_safe_redirect( $this->get_redirect_url( 'error', $title ) );
 			$this->end_request();
 
 			return;
@@ -70,7 +68,7 @@ class DuplicateAction implements Hookable {
 		$zone            = $this->shipping_method_management->get_shipping_zone( $instance_id );
 		$new_instance_id = $zone->add_shipping_method( ShippingMethodSingle::SHIPPING_METHOD_ID );
 
-		$options = $this->get_instance_settings( $instance_id );
+		$options              = $this->get_instance_settings( $instance_id );
 		$new_instance_options = $this->get_instance_settings( $new_instance_id );
 		foreach ( [ 'creation_time_with_free', 'creation_time_with_pro' ] as $creation_time_key ) {
 			if ( isset( $new_instance_options[ $creation_time_key ] ) ) {
@@ -91,7 +89,7 @@ class DuplicateAction implements Hookable {
 
 		$this->update_usage_functionality();
 
-		wp_redirect( $this->get_redirect_url( 'success', $title ) );
+		wp_safe_redirect( $this->get_redirect_url( 'success', $title ) );
 		$this->end_request();
 	}
 
@@ -137,7 +135,7 @@ class DuplicateAction implements Hookable {
 			[
 				self::ACTION   => true,
 				'status'       => $status,
-				'method_title' => urlencode( $method_title ),
+				'method_title' => rawurlencode( $method_title ),
 			],
 			wp_get_referer()
 		);

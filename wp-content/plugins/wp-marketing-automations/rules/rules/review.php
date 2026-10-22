@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || exit;
+// phpcs:disable Generic.PHP.DisallowAlternativePHPTags -- <% %> below are Underscore.js template delimiters inside HTML output, not PHP tags (asp_tags was removed in PHP 7.0)
 
 if ( ! class_exists( 'BWFAN_Rule_Comment_Count' ) ) {
 	#[\AllowDynamicProperties]
@@ -221,18 +223,23 @@ if ( ! class_exists( 'BWFAN_Rule_Comment_Products_Cats' ) ) {
 		 */
 		public function get_possible_rule_values( $search = '' ) {
 			$result = array();
+			$search = sanitize_text_field( $search );
 
-			$args = array(
-				'taxonomy'   => 'product_cat',
-				'hide_empty' => false,
-			);
-			if ( ! empty( $search ) ) {
-				$args['name__like'] = sanitize_text_field( $search );
+			if ( empty( $search ) ) {
+				$terms = get_terms( array(
+					'taxonomy'   => 'product_cat',
+					'hide_empty' => false,
+				) );
+			} else {
+				$terms = BWFAN_Common::search_terms_by_name( 'product_cat', $search, 0 );
 			}
-			$terms = get_terms( $args );
+
+			if ( is_wp_error( $terms ) ) {
+				return $result;
+			}
 
 			foreach ( $terms as $term ) {
-				$result[ $term->term_id ] = $term->name;
+				$result[ $term->term_id ] = BWFAN_Common::decode_term_name( $term->name );
 			}
 
 			return $result;

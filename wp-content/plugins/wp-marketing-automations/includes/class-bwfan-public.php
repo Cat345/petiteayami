@@ -191,7 +191,7 @@ class BWFAN_Public {
 				$custom_css .= "--" . esc_attr( $key ) . ": " . esc_attr( $value ) . "; ";
 			}
 			$custom_css .= "}";
-			wp_register_style( 'bwfan-public-var', false );
+			wp_register_style( 'bwfan-public-var', false, array(), BWFAN_VERSION ); // no src: handle only carries inline CSS
 			wp_enqueue_style( 'bwfan-public-var' );
 			wp_add_inline_style( 'bwfan-public-var', $custom_css );
 		}

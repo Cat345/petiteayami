@@ -30,13 +30,17 @@ foreach ($items as $item) {
 
     // Image
     $image = $view('~theme/templates/menu/image', ['item' => $item]);
+    $imageOnly = $image && $config("$menuitem.image_only");
 
-    if ($image && $config("$menuitem.image_only")) {
+    if ($imageOnly) {
         $title = '';
     }
 
     // Title Suffix, e.g. cart quantity
     if ($suffix = $config("$menuitem.title-suffix")) {
+        if ($imageOnly) {
+            $title = "<span class=\"uk-hidden-visually\">{$item->title}</span>";
+        }
         $title .= " {$suffix}";
     }
 
@@ -63,6 +67,9 @@ foreach ($items as $item) {
             $link = ['role' => 'button'];
             if (!empty($item->anchor_css)) {
                 $link['class'][] = $item->anchor_css;
+            }
+            if ($imageOnly && !$suffix) {
+                $link['aria-label'] = $item->title;
             }
             $title = "<a{$this->attrs($link)}>{$title}</a>";
         } else {
@@ -96,6 +103,10 @@ foreach ($items as $item) {
 
         if (!empty($item->anchor_css)) {
             $link['class'][] = $item->anchor_css;
+        }
+
+        if ($imageOnly && !$suffix) {
+            $link['aria-label'] = $item->title;
         }
 
         $title = "<a{$this->attrs($link)}>{$title}</a>";

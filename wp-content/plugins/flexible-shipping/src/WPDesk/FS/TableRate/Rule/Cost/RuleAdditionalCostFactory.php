@@ -23,7 +23,6 @@ class RuleAdditionalCostFactory {
 	 * @return array
 	 */
 	private function get_built_in_rule_additional_cost_fields() {
-		return array();
+		return [];
 	}
-
 }

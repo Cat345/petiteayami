@@ -1642,6 +1642,16 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			} else {
 				// Add CPT to the list of post types WP will include when it queries based on the post name.
 				$query->set( 'post_type', array( 'post', 'page', self::get_offer_post_type_slug() ) );
+				/**
+				 * Pages are hierarchical, so WordPress only resolves a child page at its full
+				 * path. Adding 'page' above would otherwise let a child page's slug match at the
+				 * site root: /child/ returned the page instead of 404ing, and because there was no
+				 * 404 WordPress never ran redirect_canonical(), so the visitor was never sent on to
+				 * /parent/child/. The step post types this rule exists for are always top level, so
+				 * restricting to top level keeps them resolving at the root and leaves page
+				 * hierarchy, and its canonical redirect, to WordPress.
+				 */
+				$query->set( 'post_parent', 0 );
 			}
 		}
 

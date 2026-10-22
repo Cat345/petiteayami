@@ -388,7 +388,7 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Date' ) ) {
 				var main_chart;
 
 				jQuery(function () {
-					var upsells_data = jQuery.parseJSON('<?php echo wp_json_encode( $chart_data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>');
+					var upsells_data = <?php echo wp_json_encode( $chart_data, JSON_HEX_TAG | JSON_HEX_AMP ); ?>;
 					var drawGraph = function (highlight) {
 						var series = [
 							{

@@ -19,14 +19,14 @@ class MethodTitle implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_action( 'woocommerce_settings_shipping', array( $this, 'add_hook_on_settings_page' ), 10, 2 );
+		add_action( 'woocommerce_settings_shipping', [ $this, 'add_hook_on_settings_page' ], 10, 0 );
 	}
 
 	/**
 	 * .
 	 */
 	public function add_hook_on_settings_page() {
-		add_filter( 'woocommerce_shipping_method_title', array( $this, 'modify_shipping_method_title' ), 10, 2 );
+		add_filter( 'woocommerce_shipping_method_title', [ $this, 'modify_shipping_method_title' ], 10, 2 );
 	}
 
 	/**

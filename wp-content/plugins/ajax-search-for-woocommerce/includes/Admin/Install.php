@@ -210,6 +210,20 @@ class Install {
      */
     public static function checkVersion() {
         if ( !defined( 'IFRAME_REQUEST' ) ) {
+            // One-time removal of Freemius sticky notices that older versions may have stored with
+            // unescaped request data. The escaping filters in fs/config.php only
+            // affect notices written after the update, so previously stored ones are cleared here.
+            if ( get_option( 'dgwt_wcas_security_notices_cleaned' ) !== 'yes' ) {
+                dgoraAsfwFs()->remove_sticky( ['plan_purchased', 'activation_pending'], false );
+                // The call above always targets the current site's storage (also from the network admin). On multisite
+                // the SDK keeps network-level notices in a separate storage, so clear that one explicitly as well.
+                if ( is_multisite() ) {
+                    dgoraAsfwFs()->remove_sticky( ['plan_purchased', 'activation_pending'], true );
+                }
+                // Autoloaded: this flag is read on every admin_init, so keep it in the preloaded
+                // options instead of querying the database on each admin page load.
+                update_option( 'dgwt_wcas_security_notices_cleaned', 'yes', true );
+            }
             if ( !dgoraAsfwFs()->is_premium() && get_option( 'dgwt_wcas_version' ) != DGWT_WCAS_VERSION ) {
                 self::install();
             }

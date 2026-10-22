@@ -5,6 +5,8 @@ namespace MailPoet\Premium\Newsletter\Stats;
 if (!defined('ABSPATH')) exit;
 
 
+use MailPoet\Cron\Workers\StatsNotifications\Worker;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTagManager as FreePersonalizationTagManager;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\StatisticsClickEntity;
@@ -26,14 +28,18 @@ class ClickedLinks {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  private FreePersonalizationTagManager $freePersonalizationTagManager;
+
   public function __construct(
     Listing\Handler $listingHandler,
     EntityManager $entityManager,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    FreePersonalizationTagManager $freePersonalizationTagManager
   ) {
     $this->listingHandler = $listingHandler;
     $this->entityManager = $entityManager;
     $this->newslettersRepository = $newslettersRepository;
+    $this->freePersonalizationTagManager = $freePersonalizationTagManager;
   }
 
   private function parseData($data): Listing\ListingDefinition {
@@ -61,7 +67,8 @@ class ClickedLinks {
     }
 
     $searchParam = $this->sanitizeSearchLike($definition->getSearch());
-    $shortcodeUrls = $this->matchShortcodeLinkUrls($definition->getSearch());
+    $labels = Worker::getShortcodeLinksMapping() + $this->freePersonalizationTagManager->getTokenDisplayNames();
+    $shortcodeUrls = $this->matchLabeledLinkUrls($definition->getSearch(), $labels);
     $baseQuery = $this->getBaseQuery($definition, $newsletter, $searchParam !== null, $shortcodeUrls);
     $params = [];
     $types = [];
@@ -95,7 +102,7 @@ class ClickedLinks {
   }
 
   /**
-   * @param string[] $shortcodeUrls fixed plugin constants from {@see matchShortcodeLinkUrls()}
+   * @param string[] $shortcodeUrls fixed plugin values from {@see matchLabeledLinkUrls()}
    */
   private function getBaseQuery(Listing\ListingDefinition $definition, NewsletterEntity $newsletter, bool $withSearch = false, array $shortcodeUrls = []): string {
     $clicksTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();

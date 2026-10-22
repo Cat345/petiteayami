@@ -1,10 +1,10 @@
 === FunnelKit Automations - Email Marketing Automation and CRM for WordPress & WooCommerce ===
 Contributors: xlplugins, amans2k
 Tags: cart abandonment, follow up emails, email marketing, newsletter, marketing automation
-Requires at least: 5.0
+Requires at least: 6.5
 Tested up to: 7.1
-Requires PHP: 7.0
-Stable tag: 3.8.5.2
+Requires PHP: 7.4
+Stable tag: 3.8.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -414,7 +414,49 @@ FunnelKit Automations is 100% self-hosted and fully GDPR compliant.
 4. Start creating Automations.
 
 
+== External services ==
+
+FunnelKit may connect to the following external services, only when the related feature is used:
+
+* **FunnelKit** provides the recipes, announcements and optional usage tracking. [Terms](https://funnelkit.com/terms-conditions/) and [Privacy Policy](https://funnelkit.com/privacy-policy/)
+* **Google Fonts** may load on manage profile and unsubscribe page if prebuild option is selected. [Terms](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy)
+* **YouTube** may embed tutorial videos on FunnelKit screens. [Terms](https://www.youtube.com/t/terms) and [Privacy Policy](https://policies.google.com/privacy)
+
 == Change log ==
+
+= 3.8.6 (Oct 22, 2026) =
+* Improved: Hardened REST authentication handling for admin browser sessions, reported via Patchstack.(#4911)
+* Added: Introduced a "Marketing Consent" rule for abandoned cart automations to enable consent-based targeting. (#4861)
+* Added: Introduced a minimap in the automation builder for easier navigation of large and complex workflows. (#4844)
+* Added: Added an "Allow one-time purchases" option to the Create Coupon step for Sublium recurring coupons, allowing coupons to apply to one-time purchases. (#4893)
+* Added: Added order status selection to WooCommerce order imports for greater control over imported orders. (#4842)
+* Improved: Optimized admin and front-end loading performance for a faster and smoother experience. (#4844)
+* Improved: Refined the automation canvas with cleaner connector lines and consistent layouts for better workflow visibility. (#4768)
+* Improved: Updated the Notifications panel with clearer labels and a simplified layout for easier navigation. (#4899)
+* Fixed: Improved email footer processing to prevent recursive rendering errors when using the mail footer merge tag. (#4849)
+* Fixed: Improved broadcast audience filtering to reliably handle large filter sets. (#4838)
+* Fixed: Link clicks in A/B split emails are now attributed to the correct email variant for accurate tracking. (#4768)
+* Fixed: Improved background job scheduling to ensure recurring tasks are automatically rescheduled. (#4840)
+* Fixed: Enhanced order resync reliability for contacts with large order histories and improved handling of unpaid orders. (#4842)
+* Fixed: Contact imports now recover correctly from interrupted batches, ensuring reliable import processing. (#4768)
+* Fixed: Remove Tag and Remove From List automation steps now correctly remove terms entered by name. (#4853)
+* Fixed: Automation action Amount fields now correctly accept zero and negative values where applicable. (#4768)
+* Fixed: Restored the condition picker in the legacy automation builder for reliable rule configuration in Lite. (#4902)
+* Fixed: Improved "Is First Order" and "Customer User" rule handling in order-triggered automations for more accurate condition evaluation. (#4870)
+* Fixed: The "Order Item Data" rule now evaluates the specific product being processed in per-product order triggers. (#4878)
+* Fixed: Improved product category and tag searches in automation rules to correctly handle special characters such as "&". (#4885)
+* Fixed: The Create Coupon step now displays the correct percentage symbol for percentage-based discount types provided by third-party plugins. (#4893)
+* Fixed: Improved abandoned cart recovery handling to prevent duplicate orders when recovery links are accessed for already-paid orders. (#4857)
+* Fixed: Enhanced abandoned cart recovery attribution to accurately track purchases completed without directly using the recovery link. (#4891)
+* Fixed: Improved WooCommerce session compatibility during add-to-cart capture to preserve session data used by other plugins. (#4880)
+* Fixed: Date merge tags now consistently use the configured site timezone for accurate date and time display. (#4834)
+* Fixed: Improved WPML compatibility to display the correct language in the `{{order_date}}` merge tag. (#4855)
+* Fixed: Product titles now appear correctly without duplication in the cart items merge tag preview. (#4896)
+* Fixed: Improved Aelia Currency Switcher compatibility to display the correct currency in cart total merge tags. (#4907)
+* Fixed: Improved UTM parameter handling for email and SMS links containing encoded ampersands or special URL formats. (#4887)
+* Security: Strengthened REST API authentication handling for whitelisted endpoints to improve security. (#4917)
+* Security: Improved input validation for worker and event REST endpoints to ensure secure and reliable request processing. (#4911)
+* Security: Enhanced REST API privacy by hiding FunnelKit Automations routes from the public REST index. (#4921)
 
 = 3.8.5.2 (Aug 5, 2026) =
 * Fixed: PHP error with Funnel Builder Pro without WooCommerce, issue resolved. (#4829)

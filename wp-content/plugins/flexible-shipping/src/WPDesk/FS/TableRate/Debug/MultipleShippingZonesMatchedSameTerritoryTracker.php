@@ -22,8 +22,13 @@ class MultipleShippingZonesMatchedSameTerritoryTracker implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_action( 'flexible-shipping/notice/multiple-zone-matches-same-territory', array( $this, 'update_counter_option' ) );
-		add_filter( 'wpdesk_tracker_data', array( $this, 'append_tracker_data' ), self::PRIORITY_AFTER_FLEXIBLE_SHIPPING_TRACKER );
+		add_action(
+			'flexible-shipping/notice/multiple-zone-matches-same-territory',
+			function (): void {
+				$this->update_counter_option();
+			}
+		);
+		add_filter( 'wpdesk_tracker_data', [ $this, 'append_tracker_data' ], self::PRIORITY_AFTER_FLEXIBLE_SHIPPING_TRACKER );
 	}
 
 	/**
@@ -45,5 +50,4 @@ class MultipleShippingZonesMatchedSameTerritoryTracker implements Hookable {
 
 		return $data;
 	}
-
 }

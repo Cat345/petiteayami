@@ -9,6 +9,13 @@ class WFACP_Compatibility_Subscription {
 	private static $instance;
 
 	/**
+	 * The cart row Subscriptions is currently printing the recurring price for, or null.
+	 *
+	 * @var array|null
+	 */
+	private $price_string_cart_item = null;
+
+	/**
 	 * @return mixed
 	 */
 	public static function getInstance() {
@@ -35,6 +42,174 @@ class WFACP_Compatibility_Subscription {
 		add_action( 'woocommerce_before_checkout_shipping_form', array( $this, 'wrap_gift_notice_end' ), 15 );
 
 		add_action( 'wfacp_internal_css', array( $this, 'add_css' ) );
+
+		// Subscriptions 9.0.1+ renders the recurring price itself; see price_string_uses_line_quantity().
+		add_filter( 'woocommerce_checkout_cart_item_quantity', array( $this, 'capture_cart_item_for_price_string' ), 9, 3 );
+		add_filter( 'woocommerce_checkout_cart_item_quantity', array( $this, 'release_cart_item_for_price_string' ), 11, 3 );
+		add_filter( 'woocommerce_subscriptions_product_price_string_inclusions', array( $this, 'price_string_uses_line_quantity' ), 10, 2 );
+		add_filter( 'woocommerce_subscriptions_product_sign_up_fee', array( $this, 'sign_up_fee_uses_line_quantity' ), 10, 2 );
+	}
+
+	/**
+	 * Hold the row while Subscriptions builds its price string.
+	 *
+	 * WC_Subscriptions_Cart::checkout_cart_item_details() runs on this filter at priority 10 and
+	 * calls get_price_string() from inside it. That is the only point where the cart row and the
+	 * price string exist together, so the row is held either side of it.
+	 *
+	 * @param string $quantity_html Quantity markup, returned untouched.
+	 * @param array  $cart_item     Cart item.
+	 * @param string $cart_item_key Cart item key.
+	 *
+	 * @return string
+	 */
+	public function capture_cart_item_for_price_string( $quantity_html, $cart_item, $cart_item_key ) {
+		$this->price_string_cart_item = $cart_item;
+
+		return $quantity_html;
+	}
+
+	/**
+	 * Release the row once Subscriptions is done with it.
+	 *
+	 * @param string $quantity_html Quantity markup, returned untouched.
+	 * @param array  $cart_item     Cart item.
+	 * @param string $cart_item_key Cart item key.
+	 *
+	 * @return string
+	 */
+	public function release_cart_item_for_price_string( $quantity_html, $cart_item, $cart_item_key ) {
+		$this->price_string_cart_item = null;
+
+		return $quantity_html;
+	}
+
+	/**
+	 * Show the recurring price for the whole line instead of for one unit.
+	 *
+	 * Subscriptions sources the amount from wcs_get_price_excluding_tax( $product ), which is the
+	 * price of a single unit, because its own checkout prints "x 2" beside it for the reader to
+	 * multiply. A two-pack therefore read "$49.00 / month" on a line billing $98.00. Multiplying by
+	 * the line quantity puts the string in the same terms as the price column next to it.
+	 *
+	 * The amount is rebuilt from the recurring price rather than taken from line_subtotal on
+	 * purpose: for a free trial or a sign-up fee the cart line holds what is due today, not what
+	 * recurs, and this string describes the recurring charge.
+	 *
+	 * A bundle or composite container is priced by Subscriptions as the aggregate of itself and its
+	 * child items for one container, so that aggregate is what gets multiplied; the container's own
+	 * price is often 0 when the children carry the prices.
+	 *
+	 * @param array      $include Price string parts, with 'price' pre-formatted by Subscriptions.
+	 * @param WC_Product $product Subscription product.
+	 *
+	 * @return array
+	 */
+	public function price_string_uses_line_quantity( $include, $product ) {
+		$cart_item = $this->get_priced_cart_item( $product );
+
+		if ( is_null( $cart_item ) || empty( $include['price'] ) ) {
+			return $include;
+		}
+
+		$quantity = $this->get_line_quantity( $cart_item );
+
+		if ( $quantity <= 1 ) {
+			return $include;
+		}
+
+		$tax_calculation = isset( $include['tax_calculation'] ) ? $include['tax_calculation'] : '';
+		$bundle_type     = $this->get_bundle_type( $cart_item );
+
+		if ( 'container' === $bundle_type && method_exists( 'WCS_ATT_Integration_PB_CP', 'get_container_aggregate_price' ) ) {
+			$line_price = (float) WCS_ATT_Integration_PB_CP::get_container_aggregate_price( $cart_item, $tax_calculation ) * $quantity;
+		} elseif ( '' === $bundle_type ) {
+			// Tax on the whole line, not on one rounded unit, so it matches the cart total.
+			$line_price = ( 'incl' === $tax_calculation ) ? wcs_get_price_including_tax( $product, array( 'qty' => $quantity ) ) : wcs_get_price_excluding_tax( $product, array( 'qty' => $quantity ) );
+		} else {
+			return $include;
+		}
+
+		$include['price'] = wc_price( $line_price );
+
+		return $include;
+	}
+
+	/**
+	 * Put the "Sign-up fee:" line in the same terms as the recurring price: the whole line, not one unit.
+	 *
+	 * A bundle or composite child is left alone: Subscriptions only prints details for the container,
+	 * and passes the container's own fee here, not an aggregate.
+	 *
+	 * @param float|string $sign_up_fee Sign-up fee for one unit.
+	 * @param WC_Product   $product     Subscription product.
+	 *
+	 * @return float|string
+	 */
+	public function sign_up_fee_uses_line_quantity( $sign_up_fee, $product ) {
+		$cart_item = $this->get_priced_cart_item( $product );
+
+		if ( empty( $sign_up_fee ) || is_null( $cart_item ) || 'child' === $this->get_bundle_type( $cart_item ) ) {
+			return $sign_up_fee;
+		}
+
+		$quantity = $this->get_line_quantity( $cart_item );
+
+		return $quantity > 1 ? (float) $sign_up_fee * $quantity : $sign_up_fee;
+	}
+
+	/**
+	 * The held cart row, when Subscriptions is pricing that row's product on a FunnelKit checkout.
+	 *
+	 * wfacp_template() is the signal that holds for both a page load and the update_order_review
+	 * fragment. $is_checkout is only set while a page request resolves the checkout post, and
+	 * _wfacp_post_id is not a request key during the fragment: WooCommerce serialises the whole form
+	 * into a single post_data parameter.
+	 *
+	 * @param WC_Product $product Product Subscriptions is pricing.
+	 *
+	 * @return array|null
+	 */
+	private function get_priced_cart_item( $product ) {
+		$cart_item = $this->price_string_cart_item;
+
+		if ( empty( $cart_item['data'] ) || ! $cart_item['data'] instanceof WC_Product || ! $product instanceof WC_Product || is_null( wfacp_template() ) ) {
+			return null;
+		}
+
+		return $cart_item['data']->get_id() === $product->get_id() ? $cart_item : null;
+	}
+
+	/**
+	 * Quantity of a cart row. wc_stock_amount() keeps a decimal-quantity store's 0.5 instead of zeroing it.
+	 *
+	 * @param array $cart_item Cart item.
+	 *
+	 * @return float|int
+	 */
+	private function get_line_quantity( $cart_item ) {
+		return isset( $cart_item['quantity'] ) ? wc_stock_amount( $cart_item['quantity'] ) : 1;
+	}
+
+	/**
+	 * Whether a row is a bundle/composite container, one of its child items, or neither.
+	 *
+	 * Same test as WC_Subscriptions_Cart::is_bundle_type_cart_line(), which is private.
+	 *
+	 * @param array $cart_item Cart item.
+	 *
+	 * @return string 'container', 'child' or ''.
+	 */
+	private function get_bundle_type( $cart_item ) {
+		if ( ! class_exists( 'WCS_ATT_Integration_PB_CP' ) ) {
+			return '';
+		}
+
+		if ( WCS_ATT_Integration_PB_CP::is_bundle_type_container_cart_item( $cart_item ) ) {
+			return 'container';
+		}
+
+		return WCS_ATT_Integration_PB_CP::is_bundle_type_cart_item( $cart_item ) ? 'child' : '';
 	}
 
 	public function remove_filter() {

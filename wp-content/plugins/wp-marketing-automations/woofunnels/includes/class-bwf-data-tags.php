@@ -60,12 +60,12 @@ if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 				return '';
 			}
 
-			$data = isset( $_COOKIE[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_COOKIE[ $attr['key'] ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading cookie data for display, nonce verification not required
+			$data = isset( $_COOKIE[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_COOKIE[ $attr['key'] ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reading cookie data for display, nonce verification not required; bwf_clean() sanitizes recursively
 
 			/*** read cookie when drop cookie on page **/
 			if ( empty( $data ) ) {
 				$key  = str_replace( 'bwf_', '', $attr['key'] );
-				$data = isset( $_GET[ $key ] ) ? bwf_clean( wp_unslash( $_GET[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for display, nonce verification not required
+				$data = isset( $_GET[ $key ] ) ? bwf_clean( wp_unslash( $_GET[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reading URL parameter for display, nonce verification not required; bwf_clean() sanitizes recursively
 			}
 
 			return esc_html( $data );
@@ -82,7 +82,7 @@ if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 				return '';
 			}
 
-			return esc_html( isset( $_GET[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_GET[ $attr['key'] ] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for display, nonce verification not required
+			return esc_html( isset( $_GET[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_GET[ $attr['key'] ] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reading URL parameter for display, nonce verification not required; bwf_clean() sanitizes recursively
 
 		}
 

@@ -125,7 +125,7 @@ class ActionScheduler_StoreSchema extends ActionScheduler_Abstract_Schema {
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$table_name   = $wpdb->prefix . 'actionscheduler_actions';
-		$table_list   = $wpdb->get_col( "SHOW TABLES LIKE '{$table_name}'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$table_list   = $wpdb->get_col( "SHOW TABLES LIKE '{$table_name}'" ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- bundled Action Scheduler: table name is $wpdb->prefix plus a fixed suffix
 		$default_date = self::DEFAULT_DATE;
 
 		if ( ! empty( $table_list ) ) {
@@ -136,7 +136,7 @@ class ActionScheduler_StoreSchema extends ActionScheduler_Abstract_Schema {
 				MODIFY COLUMN last_attempt_gmt datetime NULL default '{$default_date}',
 				MODIFY COLUMN last_attempt_local datetime NULL default '{$default_date}'
 		";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: schema ALTER on its own table with a fixed default date
 		}
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}

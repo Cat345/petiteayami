@@ -17,6 +17,13 @@ use WPDesk\FS\Shipment\BulkAction\HandleActionStrategyInterface;
  */
 class BulkAction implements Hookable {
 
+	private const BULK_ACTION_QUERY_ARGS = [
+		'bulk_flexible_shipping_send',
+		'bulk_flexible_shipping_labels',
+		'bulk_flexible_shipping_manifests',
+		'bulk_flexible_shipping_no_labels_created',
+	];
+
 	/**
 	 * @var SessionFactory
 	 */
@@ -40,6 +47,17 @@ class BulkAction implements Hookable {
 		// New Screen.
 		add_filter( 'bulk_actions-woocommerce_page_wc-orders', [ $this, 'add_bulk_action_options' ] );
 		add_action( 'admin_init', [ $this, 'handle_bulk_action_new_screen' ] );
+
+		add_filter( 'removable_query_args', [ $this, 'add_bulk_action_query_args_to_removable' ] );
+	}
+
+	/**
+	 * @param string[] $removable_query_args Query arguments removed from admin URLs.
+	 *
+	 * @return string[]
+	 */
+	public function add_bulk_action_query_args_to_removable( array $removable_query_args ): array {
+		return array_values( array_unique( array_merge( $removable_query_args, self::BULK_ACTION_QUERY_ARGS ) ) );
 	}
 
 	public function handle_bulk_action_new_screen() {
@@ -135,5 +153,4 @@ class BulkAction implements Hookable {
 	protected function get_handle_action_strategy( string $action ): HandleActionStrategyInterface {
 		return ( new HandleActionStrategy( $this->session_factory ) )->get( $action );
 	}
-
 }

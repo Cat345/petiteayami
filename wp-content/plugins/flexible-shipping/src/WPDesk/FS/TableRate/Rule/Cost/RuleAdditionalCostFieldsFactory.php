@@ -7,8 +7,6 @@
 
 namespace WPDesk\FS\TableRate\Rule\Cost;
 
-
-
 use FSVendor\WPDesk\Forms\Field;
 use FSVendor\WPDesk\Forms\FieldProvider;
 use FSVendor\WPDesk\Forms\Renderer\JsonNormalizedRenderer;
@@ -50,17 +48,17 @@ class RuleAdditionalCostFieldsFactory implements FieldProvider {
 	 * @return array
 	 */
 	public function get_normalized_cost_fields() {
-		$normalized_cost_fields = array();
+		$normalized_cost_fields = [];
 		$renderer               = new JsonNormalizedRenderer();
 
-		return $renderer->render_fields( $this, array() );
+		return $renderer->render_fields( $this, [] );
 	}
 
 	/**
 	 * @return Field[]
 	 */
 	public function get_built_in_rule_additional_cost_fields() {
-		return array(
+		return [
 			( new Field\InputNumberField() )
 				->set_name( self::ADDITIONAL_COST )
 				->add_class( 'wc_input_decimal' )
@@ -85,22 +83,21 @@ class RuleAdditionalCostFieldsFactory implements FieldProvider {
 				->add_class( 'hs-beacon-search' )
 				->add_class( 'additional-cost-based-on' )
 				->add_data( 'beacon_search', __( 'additional cost per', 'flexible-shipping' ) ),
-		);
+		];
 	}
 
 	/**
 	 * @return array
 	 */
 	private function get_based_on_options() {
-		$options = array();
+		$options = [];
 		foreach ( $this->available_additional_costs as $additional_cost ) {
-			$options[] = array(
+			$options[] = [
 				'value' => $additional_cost->get_based_on(),
 				'label' => $additional_cost->get_name(),
-			);
+			];
 		}
 
 		return $options;
 	}
-
 }

@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) exit;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -17,6 +18,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Premium\API\JSON\v1\ResponseBuilders\StatsResponseBuilder;
 use MailPoet\Premium\Newsletter\StatisticsClicksRepository;
 use MailPoet\Premium\Newsletter\Stats as CampaignStats;
+use MailPoet\Premium\Util\License\DetailedAnalyticsGuard;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 
 class Stats extends APIEndpoint {
@@ -45,6 +47,9 @@ class Stats extends APIEndpoint {
   /** @var StatisticsUnsubscribesRepository */
   private $statisticsUnsubscribesRepository;
 
+  /** @var DetailedAnalyticsGuard */
+  private $detailedAnalyticsGuard;
+
   public function __construct(
     CampaignStats\PurchasedProducts $purchasedProducts,
     NewslettersRepository $newslettersRepository,
@@ -52,7 +57,8 @@ class Stats extends APIEndpoint {
     StatisticsClicksRepository $statisticsClicksRepository,
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
     NewsletterUrl $newsletterUrl,
-    StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository
+    StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository,
+    DetailedAnalyticsGuard $detailedAnalyticsGuard
   ) {
     $this->purchasedProducts = $purchasedProducts;
     $this->newslettersRepository = $newslettersRepository;
@@ -61,9 +67,14 @@ class Stats extends APIEndpoint {
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->newsletterUrl = $newsletterUrl;
     $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
+    $this->detailedAnalyticsGuard = $detailedAnalyticsGuard;
   }
 
   public function get($data = []) {
+    if ($this->detailedAnalyticsGuard->isRestricted()) {
+      return $this->restrictedResponse();
+    }
+
     $newsletter = isset($data['id'])
       ? $this->newslettersRepository->findOneById((int)$data['id'])
       : null;
@@ -124,11 +135,25 @@ class Stats extends APIEndpoint {
   /**
    * @param array<string, int> $data
    *
-   * @return \MailPoet\API\JSON\SuccessResponse
+   * @return \MailPoet\API\JSON\SuccessResponse|\MailPoet\API\JSON\ErrorResponse
    */
   public function getProducts(array $data = []) {
+    if ($this->detailedAnalyticsGuard->isRestricted()) {
+      return $this->restrictedResponse();
+    }
+
     $id = (isset($data['newsletter_id']) ? (int)$data['newsletter_id'] : false);
     return $this->successResponse($this->purchasedProducts->getStats($id));
+  }
+
+  private function restrictedResponse() {
+    return $this->errorResponse(
+      [
+        APIError::FORBIDDEN => $this->detailedAnalyticsGuard->getRestrictedMessage(),
+      ],
+      [],
+      Response::STATUS_FORBIDDEN
+    );
   }
 
   /**
@@ -157,6 +182,6 @@ class Stats extends APIEndpoint {
       return $a['cnt'] > $b['cnt'] ? -1 : 1;
     });
 
-    return array_values($associativeClickedLinks);
+    return $associativeClickedLinks;
   }
 }

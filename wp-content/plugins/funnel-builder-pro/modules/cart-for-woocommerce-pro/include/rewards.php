@@ -109,6 +109,19 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 
 			$cart_items['data']->set_sold_individually( true ); // do not allow quantity increment for free gift
 			$cart_items['data']->set_price( 0 );
+
+			// WooCommerce 11.1.0's ScheduledSalePriceReconciler (woocommerce/woocommerce#65551)
+			// filters `woocommerce_product_get_price` at priority 99 and, when "now" falls outside a
+			// product's scheduled sale window, returns the regular price if the active price still
+			// equals the sale price. A gift priced at 0 matches that whenever the product carries a
+			// 0.00 sale price, and since WooCommerce 10.x a lapsed sale keeps its price and dates
+			// indefinitely - so the gift would be charged at full price in 'view' context, which is
+			// what the cart totals use. Clearing the window on this per-request object makes the
+			// reconciler return at its own "no sale dates" guard. Nothing is saved.
+			if ( $cart_items['data']->get_date_on_sale_from( 'edit' ) || $cart_items['data']->get_date_on_sale_to( 'edit' ) ) {
+				$cart_items['data']->set_date_on_sale_from( '' );
+				$cart_items['data']->set_date_on_sale_to( '' );
+			}
 			$cart_items['data']->update_meta_data( '_fkcart_free_gift', 'yes' );
 			$cart_items['quantity'] = 1;
 
@@ -241,6 +254,9 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			// Restore notices
 			wc_clear_notices();
 			WC()->session->set( 'wc_notices', $previous_notices );
+
+			// Stop blocking redirects once rewards are applied, so later redirects in this request still work.
+			remove_filter( 'wp_redirect', '__return_false', PHP_INT_MAX );
 		}
 
 		/**

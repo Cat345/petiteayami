@@ -11,7 +11,7 @@ use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
 class Tracker implements Hookable {
 
 	public function hooks(): void {
-		add_action(
+		add_filter(
 			'wpdesk_tracker_data',
 			[
 				$this,

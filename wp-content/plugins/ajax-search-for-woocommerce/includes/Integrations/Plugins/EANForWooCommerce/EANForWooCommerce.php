@@ -12,26 +12,72 @@ if ( !defined( 'ABSPATH' ) ) {
  *
  * Plugin URL: https://wordpress.org/plugins/ean-for-woocommerce/
  * Author: WPFactory
+ *
+ * Since v5.5.6 the plugin renamed its prefixes from "alg" to "wpfactory",
+ * so both variants have to be supported.
  */
 class EANForWooCommerce extends AbstractPluginIntegration {
     protected const LABEL = 'EAN for WooCommerce';
 
-    protected const VERSION_CONST = 'ALG_WC_EAN_VERSION';
+    protected const VERSION_CONST = 'WPFACTORY_WC_EAN_VERSION';
 
+    protected const VERSION_CONST_LEGACY = 'ALG_WC_EAN_VERSION';
+
+    // Plugin versions below 5.5.6.
     protected const MIN_VERSION = '4.3';
+
+    public static function pluginVersion() : string {
+        $version = parent::pluginVersion();
+        if ( $version === '' && defined( static::VERSION_CONST_LEGACY ) ) {
+            $legacyVersion = constant( static::VERSION_CONST_LEGACY );
+            if ( is_string( $legacyVersion ) || is_numeric( $legacyVersion ) ) {
+                $version = (string) $legacyVersion;
+            }
+        }
+        return $version;
+    }
 
     public static function isActive() : bool {
         if ( parent::isActive() === false ) {
             return false;
         }
-        return function_exists( 'alg_wc_ean' );
+        return function_exists( 'wpfactory_wc_ean' ) || function_exists( 'alg_wc_ean' );
+    }
+
+    /**
+     * Get the main instance of the EAN for WooCommerce plugin
+     *
+     * @return object|null
+     */
+    private static function ean() {
+        if ( function_exists( 'wpfactory_wc_ean' ) ) {
+            return wpfactory_wc_ean();
+        }
+        if ( function_exists( 'alg_wc_ean' ) ) {
+            return alg_wc_ean();
+        }
+        return null;
+    }
+
+    /**
+     * Get the meta key under which the EAN is stored
+     *
+     * @return string
+     */
+    private static function eanKey() : string {
+        $ean = self::ean();
+        if ( !isset( $ean->core->ean_key ) || !is_string( $ean->core->ean_key ) ) {
+            return '';
+        }
+        return $ean->core->ean_key;
     }
 
     public function init() : void {
+        $ean = self::ean();
         // Disable plugin hook on WP_Query.
         if ( !is_admin() ) {
-            if ( isset( alg_wc_ean()->core->search ) && get_option( 'alg_wc_ean_frontend_search', 'no' ) === 'yes' ) {
-                remove_action( 'pre_get_posts', [alg_wc_ean()->core->search, 'search'], 10 );
+            if ( isset( $ean->core->search ) && get_option( 'alg_wc_ean_frontend_search', 'no' ) === 'yes' ) {
+                remove_action( 'pre_get_posts', [$ean->core->search, 'search'], 10 );
                 if ( !dgoraAsfwFs()->is_premium() ) {
                     add_filter( 'dgwt/wcas/native/search_query/join', [$this, 'searchQueryJoin'] );
                     add_filter(
@@ -70,7 +116,7 @@ class EANForWooCommerce extends AbstractPluginIntegration {
      */
     public function searchQueryOr( $search, $like ) {
         global $wpdb;
-        $field = alg_wc_ean()->core->ean_key ?? '';
+        $field = self::eanKey();
         if ( empty( $field ) ) {
             return $search;
         }

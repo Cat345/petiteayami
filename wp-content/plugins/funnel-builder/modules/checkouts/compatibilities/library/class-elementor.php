@@ -18,7 +18,11 @@ if ( ! class_exists( 'WFACP_Compatibility_elementor' ) ) {
 		}
 
 		public function register_conditions( $conditions_manager ) {
-			require __DIR__ . '/page-builder/class-elementor-exit-intent.php';
+			/** Absent for a moment while WordPress replaces the plugin folder during an update */
+			if ( ! file_exists( __DIR__ . '/page-builder/class-elementor-exit-intent.php' ) ) {
+				return;
+			}
+			require_once __DIR__ . '/page-builder/class-elementor-exit-intent.php';
 			$new_condition = new ElementorPro\Modules\ThemeBuilder\Conditions\WFACP_Elementor_exit_intent( [
 				'post_type' => WFACP_Common::get_post_type_slug(),
 			] );

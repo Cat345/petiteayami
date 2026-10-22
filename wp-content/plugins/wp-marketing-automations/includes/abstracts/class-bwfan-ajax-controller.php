@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class BWFAN_AJAX_Controller
@@ -112,13 +113,13 @@ abstract class BWFAN_AJAX_Controller {
 			$where       = [];
 			$update_data = [
 				'bwfan_automation_id' => $automation_id,
-				'meta_key'            => $meta_key,
-				'meta_value'          => $meta_value,
+				'meta_key'            => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+				'meta_value'          => $meta_value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			];
 			if ( array_key_exists( $meta_key, $automation_meta ) ) {
 				// Update Meta
 				$where['bwfan_automation_id'] = $automation_id;
-				$where['meta_key']            = $meta_key;
+				$where['meta_key']            = $meta_key; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			}
 			if ( count( $where ) > 0 ) {
 				BWFAN_Model_Automationmeta::update( $update_data, $where );
@@ -129,11 +130,11 @@ abstract class BWFAN_AJAX_Controller {
 
 		/** Update the modified date of automation */
 		$meta_data = array(
-			'meta_value' => current_time( 'mysql', 1 ),
+			'meta_value' => current_time( 'mysql', 1 ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		);
 		$where     = array(
 			'bwfan_automation_id' => $automation_id,
-			'meta_key'            => 'm_date',
+			'meta_key'            => 'm_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		);
 		BWFAN_Model_Automationmeta::update( $meta_data, $where );
 		BWFAN_Core()->automations->set_automation_data( 'm_date', $meta_data['meta_value'] );
@@ -141,11 +142,11 @@ abstract class BWFAN_AJAX_Controller {
 
 		// Update requires_update key to 0 on update which implies that user has verified and saved the automation
 		$meta_data = array(
-			'meta_value' => 0,
+			'meta_value' => 0, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		);
 		$where     = array(
 			'bwfan_automation_id' => $automation_id,
-			'meta_key'            => 'requires_update',
+			'meta_key'            => 'requires_update', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		);
 
 		BWFAN_Model_Automationmeta::update( $meta_data, $where );
@@ -190,21 +191,21 @@ abstract class BWFAN_AJAX_Controller {
 			wp_send_json( $resp );
 		}
 
-		$automation_id = sanitize_text_field( $_POST['automation_id'] ); //phpcs:ignore WordPress.Security.NonceVerification
+		$automation_id = sanitize_text_field( wp_unslash( $_POST['automation_id'] ) ); //phpcs:ignore WordPress.Security.NonceVerification
 
 		$where = [
 			'bwfan_automation_id' => $automation_id,
 		];
 		$meta  = array();
 
-		$where['meta_key']  = 'm_date';
-		$meta['meta_key']   = 'm_date';
-		$meta['meta_value'] = current_time( 'mysql', 1 );
+		$where['meta_key']  = 'm_date'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_key']   = 'm_date'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_value'] = current_time( 'mysql', 1 ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		BWFAN_Model_Automationmeta::update( $meta, $where );
 
-		$where['meta_key']  = 'title';
-		$meta['meta_key']   = 'title';
-		$meta['meta_value'] = sanitize_text_field( stripslashes( $_POST['title'] ) ); //phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput
+		$where['meta_key']  = 'title'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_key']   = 'title'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_value'] = sanitize_text_field( stripslashes( $_POST['title'] ) ); // phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		BWFAN_Model_Automationmeta::update( $meta, $where );
 
 		$resp['msg']             = __( 'Automation Successfully Updated', 'wp-marketing-automations' );
@@ -236,7 +237,7 @@ abstract class BWFAN_AJAX_Controller {
 			wp_send_json( $resp );
 		}
 
-		$automation_id        = sanitize_text_field( $_POST['id'] );
+		$automation_id        = sanitize_text_field( wp_unslash( $_POST['id'] ) );
 		$automation           = array();
 		$automation['status'] = 2;
 		if ( isset( $_POST['state'] ) && 'true' === $_POST['state'] ) {
@@ -265,7 +266,7 @@ abstract class BWFAN_AJAX_Controller {
 		BWFAN_Common::check_nonce();
 
 		//phpcs:disable WordPress.Security.NonceVerification
-		$automation_id = sanitize_text_field( $_POST['automation_id'] );
+		$automation_id = isset( $_POST['automation_id'] ) ? sanitize_text_field( wp_unslash( $_POST['automation_id'] ) ) : '';
 
 		if ( absint( $automation_id ) < 1 ) {
 			wp_send_json( array(
@@ -280,8 +281,8 @@ abstract class BWFAN_AJAX_Controller {
 		$post['data']['body_raw'] = stripslashes( $post['data']['body_raw'] );//phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 
 		$meta               = array();
-		$meta['meta_key']   = 'email_preview';
-		$meta['meta_value'] = maybe_serialize( $post );
+		$meta['meta_key']   = 'email_preview'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_value'] = maybe_serialize( $post ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 
 		$current_data = BWFAN_Model_Automationmeta::get_meta( $automation_id, 'email_preview' );
 		if ( false === $current_data ) {
@@ -290,7 +291,7 @@ abstract class BWFAN_AJAX_Controller {
 		} else {
 			$where = [
 				'bwfan_automation_id' => $automation_id,
-				'meta_key'            => 'email_preview',
+				'meta_key'            => 'email_preview', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			];
 			BWFAN_Model_Automationmeta::update( $meta, $where );
 		}
@@ -310,7 +311,7 @@ abstract class BWFAN_AJAX_Controller {
 			'msg'    => __( 'Error', 'wp-marketing-automations' ),
 		);
 
-		if ( ! isset( $_POST['email'] ) || ! filter_var( $_POST['email'], FILTER_VALIDATE_EMAIL ) ) {
+		if ( ! isset( $_POST['email'] ) || ! filter_var( wp_unslash( $_POST['email'] ), FILTER_VALIDATE_EMAIL ) ) {
 			$result['msg'] = __( 'Email not valid', 'wp-marketing-automations' );
 			wp_send_json( $result );
 		}
@@ -336,8 +337,8 @@ abstract class BWFAN_AJAX_Controller {
 		}
 
 		$meta               = array();
-		$meta['meta_key']   = 'email_preview';
-		$meta['meta_value'] = maybe_serialize( $post );
+		$meta['meta_key']   = 'email_preview'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_value'] = maybe_serialize( $post ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 
 		$current_data = BWFAN_Model_Automationmeta::get_meta( $automation_id, 'email_preview' );
 		if ( false === $current_data ) {
@@ -346,7 +347,7 @@ abstract class BWFAN_AJAX_Controller {
 		} else {
 			$where = [
 				'bwfan_automation_id' => $automation_id,
-				'meta_key'            => 'email_preview',
+				'meta_key'            => 'email_preview', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			];
 			BWFAN_Model_Automationmeta::update( $meta, $where );
 		}

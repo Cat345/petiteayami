@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * This class handled all the functions related to Rules that belongs to this plugin only
@@ -174,7 +175,10 @@ class BWFAN_Rules_Loader extends BWFAN_Rules {
 				'cf7_form_field' => __( 'Form Field', 'wp-marketing-automations' ),
 			),
 		);
-
+		$global_settings = BWFAN_Common::get_global_settings();
+		if ( ! empty( $global_settings['bwfan_user_consent'] ) ) {
+			$types['ab_cart']['cart_marketing_consent'] = __( 'Marketing Consent', 'wp-marketing-automations' );
+		}
 		$product_taxonomies = $this->get_product_taxonomies();
 		if ( ! empty( $product_taxonomies ) ) {
 			$types['wc_order'] = array_merge( $types['wc_order'], $product_taxonomies );
@@ -313,7 +317,13 @@ class BWFAN_Rules_Loader extends BWFAN_Rules {
 			foreach ( $data['condition'] as $groups ) {
 				if ( is_array( $groups ) && count( $groups ) > 0 ) {
 					foreach ( $groups as $rulegroups ) {
+						if ( ! is_array( $rulegroups ) ) {
+							continue;
+						}
 						foreach ( $rulegroups as $rules ) {
+							if ( ! is_array( $rules ) ) {
+								continue;
+							}
 							foreach ( $rules as $rule ) {
 								$rule_type       = is_array( $rule ) && isset( $rule['rule_type'] ) ? $rule['rule_type'] : $rule;
 								$get_rule_object = $this->woocommerce_bwfan_rule_get_rule_object( $rule_type );

@@ -30,7 +30,7 @@ return [
             $node->props['height_expand'] = true;
             $node->props['attributes'] = str_replace($search, '', $node->props['attributes']);
 
-            $pattern = '/.el-image\s*\{\s*width: 100%;\s*object-fit: cover;\s*}/';
+            $pattern = '/.el-image\s*{\s*width: 100%;\s*object-fit: cover;\s*}/';
             if (preg_match($pattern, $node->props['css'] ?? '', $matches)) {
                 $node->props['css'] = str_replace($matches[0], '', $node->props['css']);
             }

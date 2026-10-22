@@ -79,6 +79,9 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 			/* for step Two */
 			add_action( 'wfacp_before_step_next_button_two_step', array( $this, 'display_button_icon_step_2' ) );
 
+			/* for step Three, which has a Next button only when a fourth step follows it */
+			add_action( 'wfacp_before_step_next_button_third_step', array( $this, 'display_button_icon_step_3' ) );
+
 			/*--------------------------------Primary Color Handling -------------------------------------------*/
 			add_action( 'wfacp_internal_css', array( $this, 'primary_colors' ), 10 );
 
@@ -112,6 +115,12 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 
 		public function display_button_icon_step_2( $current ) {
 			$class = $this->add_button_icon( 2 );
+
+			$this->button_icon_subheading_styling( $class, $current );
+		}
+
+		public function display_button_icon_step_3( $current ) {
+			$class = $this->add_button_icon( 3 );
 
 			$this->button_icon_subheading_styling( $class, $current );
 		}
@@ -359,6 +368,14 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 			return $name;
 		}
 
+		public function change_third_step_label( $name, $current_action ) {
+			if ( isset( $this->form_data['wfacp_payment_button_3_text'] ) && '' != trim( $this->form_data['wfacp_payment_button_3_text'] ) ) {
+				return trim( $this->form_data['wfacp_payment_button_3_text'] );
+			}
+
+			return $name;
+		}
+
 		public function change_place_order_button_text( $text ) {
 
 			$status = $this->exclude_place_order_text_update_order_review( $text );
@@ -404,12 +421,7 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 
 		public function change_back_step_label( $text, $next_action, $current_action ) {
 
-			$i = 1;
-			if ( 'third_step' == $current_action ) {
-				$i = 3;
-			} elseif ( 'two_step' == $current_action ) {
-				$i = 2;
-			}
+			$i   = WFACP_Common::get_step_number( $current_action );
 			$key = 'payment_button_back_' . $i . '_text';
 
 			if ( isset( $this->form_data[ $key ] ) ) {
@@ -421,12 +433,7 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 
 		public function add_blank_back_text( $label, $step, $current_step ) {
 
-			$i = 1;
-			if ( 'third_step' == $step ) {
-				$i = 3;
-			} elseif ( 'two_step' == $step ) {
-				$i = 2;
-			}
+			$i   = WFACP_Common::get_step_number( $step );
 			$key = 'payment_button_back_' . $i . '_text';
 
 			if ( isset( $this->form_data[ $key ] ) && $this->form_data[ $key ] == '' ) {
@@ -651,6 +658,9 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 				$cls = 'wfacp_two_step';
 			} elseif ( $number_of_steps == 3 ) {
 				$cls = 'wfacp_three_step';
+			} elseif ( $number_of_steps == 4 ) {
+				// Four steps keep the three-step styling and narrow it with wfacp_four_step.
+				$cls = 'wfacp_three_step wfacp_four_step';
 			}
 			$progress_bar_type = isset( $this->form_data['select_type'] ) ? $this->form_data['select_type'] : '';
 			$devices           = array( $progress_bar_type );
@@ -729,7 +739,7 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 							<?php
 							$count          = 1;
 							$count_of_steps = sizeof( $step_form_data );
-							$steps          = array( 'single_step', 'two_step', 'third_step' );
+							$steps          = WFACP_Common::get_all_step_slugs();
 
 							$addfull_width = 'full_width_cls';
 							if ( $count_of_steps == 2 ) {
@@ -737,6 +747,9 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 							}
 							if ( $count_of_steps == 3 ) {
 								$addfull_width = 'wfacpef_third_step';
+							}
+							if ( $count_of_steps == 4 ) {
+								$addfull_width = 'wfacpef_third_step wfacpef_fourth_step';
 							}
 							$active_breadcrumb = apply_filters( 'wfacp_el_bread_crumb_active_class_key', 0, $this );
 							foreach ( $step_form_data as $key => $value ) {
@@ -747,13 +760,7 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 
 								$active        = '';
 								$bread_visited = '';
-								if ( $count == 2 ) {
-									$page_class = 'two_step';
-								} elseif ( $count == 3 ) {
-									$page_class = 'third_step';
-								} else {
-									$page_class = 'single_step';
-								}
+								$page_class    = isset( $steps[ $count - 1 ] ) ? $steps[ $count - 1 ] : 'single_step';
 
 								if ( $active_breadcrumb > $key ) {
 									$bread_visited = 'visited_cls';
@@ -784,7 +791,7 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 
 			}
 
-			$steps_arr = array( 'single_step', 'two_step', 'third_step' );
+			$steps_arr = WFACP_Common::get_all_step_slugs();
 			if ( 'progress_bar' == $progress_bar_type ) {
 				if ( ( is_array( $progress_form_data ) && count( $progress_form_data ) > 0 ) ) {
 
@@ -827,7 +834,7 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 		public function add_form_steps() {
 
 			$number_of_steps = $this->get_step_count();
-			$steps_arr       = array( 'single_step', 'two_step', 'third_step' );
+			$steps_arr       = WFACP_Common::get_all_step_slugs();
 
 			$devices = array();
 
@@ -1036,13 +1043,10 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 				}
 				$back_btn_text = $this->form_data[ $key ];
 
-				$last_step = 'single_step';
-				if ( $this->current_step == 'third_step' ) {
-					$last_step = 'two_step';
-				}
+				$last_step = WFACP_Common::get_previous_step_slug( $this->current_step );
 
 				if ( $back_btn_text != '' ) {
-					$output .= "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . $last_step . "' data-current-step='" . $this->current_step . "' href='javascript:void(0)'>" . __( $back_btn_text, 'woofunnels-aero-checkout' ) . '</a> </div>';
+					$output .= "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . esc_attr( $last_step ) . "' data-current-step='" . esc_attr( $this->current_step ) . "' href='javascript:void(0)'>" . esc_html( __( $back_btn_text, 'woofunnels-aero-checkout' ) ) . '</a> </div>';
 				}
 			}
 

@@ -47,7 +47,7 @@ class TrackingData {
 	 */
 	private function increase_value( string $option ): void {
 		$tracking_data = $this->get_tracking_data();
-		$tracking_data[ $option ]++;
+		++$tracking_data[ $option ];
 		$this->save_tracking_data( $tracking_data );
 	}
 

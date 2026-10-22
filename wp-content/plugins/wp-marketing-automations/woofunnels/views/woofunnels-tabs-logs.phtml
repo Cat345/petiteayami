@@ -11,7 +11,7 @@ $current_page = 'woofunnels';
     }
 </style>
 <div class="woofunnels_plugins_wrap">
-    <h1><?php esc_html_e( 'Logs', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></h1>
+    <h1><?php esc_html_e( 'Logs', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></h1>
 	<?php if ( $model ) { ?>
     <div class="wp-filter">
         <ul class="filter-links woofunnels_plugins_license_links">
@@ -21,12 +21,12 @@ $current_page = 'woofunnels';
 			if ( ! empty( $licenses->plugins_list ) ) {
 				?>
                 <li class="plugin-install-featured <?php echo ( isset( $model->current_tab ) && $model->current_tab === 'licenses' ) ? 'current' : ''; ?>">
-                    <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . '&tab=licenses' ); ?>"><?php esc_html_e( 'Licenses', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                    <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . '&tab=licenses' ); ?>"><?php esc_html_e( 'Licenses', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
                 </li>
 			<?php } ?>
             <li class="plugin-install-popular <?php echo ( isset( $model->current_tab ) && $model->current_tab === 'support' ) ? 'current' : ''; ?>">
                 <a href="<?php echo admin_url( 'admin.php?page=' . $current_page . '&tab=support' ); ?>"
-                   class=""><?php esc_html_e( 'Support', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                   class=""><?php esc_html_e( 'Support', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
             </li>
 			<?php if ( isset( $model->additional_tabs ) && is_array( $model->additional_tabs ) && count( $model->additional_tabs ) > 0 ): ?>
 				<?php foreach ( $model->additional_tabs as $tab ): ?>
@@ -71,7 +71,7 @@ $current_page = 'woofunnels';
         <form method="post">
             <div class="woofunnels_row">
                 <select name="log_selected" required>
-                    <option value=""><?php echo esc_html__( 'Select log file', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></option>
+                    <option value=""><?php echo esc_html__( 'Select log file', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></option>
 					<?php
 					foreach ( $final_logs_result as $plugin_folder => $plugin_log_files ) {
 						$optgroup_head = str_replace( '-', ' ', $plugin_folder );
@@ -91,8 +91,8 @@ $current_page = 'woofunnels';
 					?>
                 </select>
 
-                <input type="submit" value="<?php echo esc_attr__( 'View log', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>" name="view_log" class="button"/>
-                <input type="submit" onclick="return confirm('Are you sure you want to permanently delete this file?')" value="<?php echo esc_attr__( 'Delete log', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>" name="delete_log" class="button" style="float: right;"/>
+                <input type="submit" value="<?php echo esc_attr__( 'View log', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>" name="view_log" class="button"/>
+                <input type="submit" onclick="return confirm('Are you sure you want to permanently delete this file?')" value="<?php echo esc_attr__( 'Delete log', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>" name="delete_log" class="button" style="float: right;"/>
             </div>
             <div class="woofunnels_row">
                 <div style="padding: 10px; min-height: 400px;background: white;border: 1px solid #d3cdcd;margin-top: 5px;">

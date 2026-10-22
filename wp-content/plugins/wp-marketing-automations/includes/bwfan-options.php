@@ -22,9 +22,13 @@ if ( ! function_exists( 'bwf_options_get' ) ) {
 			return '';
 		}
 		$column = empty( $column ) ? 'value' : $column;
+		/** Column name is placed in the SQL as an identifier, so allow only real bwf_options columns (an unknown column used to fail the query and fall back to default) */
+		if ( ! in_array( $column, array( 'id', 'key', 'value' ), true ) ) {
+			return ! is_null( $default ) ? $default : '';
+		}
 		$query  = "SELECT `{$column}` FROM {$wpdb->prefix}bwf_options WHERE `key` = %s";
 
-		$value = $wpdb->get_var( $wpdb->prepare( $query, $key ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$value = $wpdb->get_var( $wpdb->prepare( $query, $key ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- column whitelisted to id/key/value above; key bound via %s
 		if ( is_null( $value ) ) {
 			return ! is_null( $default ) ? $default : '';
 		}

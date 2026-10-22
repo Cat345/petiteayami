@@ -16,8 +16,8 @@ class FreeShippingStoreEndpointData implements Hookable {
 	}
 
 	public function hooks() {
-		add_filter( 'octolize-checkout-block-integration-' . $this->integration_name .  '-data', [ $this, 'integration_data' ] );
-		add_filter( 'octolize-checkout-block-integration-' . $this->integration_name .  '-schema', [ $this, 'integration_schema' ] );
+		add_filter( 'octolize-checkout-block-integration-' . $this->integration_name . '-data', [ $this, 'integration_data' ] );
+		add_filter( 'octolize-checkout-block-integration-' . $this->integration_name . '-schema', [ $this, 'integration_schema' ] );
 	}
 
 	/**
@@ -45,5 +45,4 @@ class FreeShippingStoreEndpointData implements Hookable {
 
 		return $schema;
 	}
-
 }

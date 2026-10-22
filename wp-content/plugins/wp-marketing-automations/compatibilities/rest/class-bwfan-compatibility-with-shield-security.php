@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Shield Security (WP Simple Firewall)
@@ -53,8 +54,8 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Shield_Security' ) ) {
 		 * @return string
 		 */
 		private static function get_rest_route() {
-			if ( isset( $_GET['rest_route'] ) ) {
-				return sanitize_text_field( wp_unslash( $_GET['rest_route'] ) );
+			if ( isset( $_GET['rest_route'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- request detection only; decides which code loads, changes nothing
+				return sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- request detection only; decides which code loads, changes nothing
 			}
 			if ( isset( $_SERVER['REQUEST_URI'] ) ) {
 				return esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
@@ -112,7 +113,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Shield_Security' ) ) {
 				if ( '' === $rest_route ) {
 					return $status;
 				}
-				if ( false === strpos( $rest_route, 'autonami' ) && false === strpos( $rest_route, 'woofunnel' ) && false === strpos( $rest_route, 'funnelkit' ) ) {
+				if ( false === strpos( $rest_route, 'autonami' ) && false === strpos( $rest_route, 'woofunnel' ) && false === strpos( $rest_route, 'funnelkit-automations' ) ) {
 					return $status;
 				}
 

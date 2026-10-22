@@ -6,18 +6,17 @@ use YOOtheme\Builder;
 use YOOtheme\Builder\Wordpress\PostHelper;
 use YOOtheme\Config;
 use YOOtheme\View;
+use function YOOtheme\app;
 
 class RenderBuilderPage
 {
     public View $view;
     public Config $config;
-    public Builder $builder;
 
-    public function __construct(Config $config, Builder $builder, View $view)
+    public function __construct(Config $config, View $view)
     {
         $this->view = $view;
         $this->config = $config;
-        $this->builder = $builder;
     }
 
     /**
@@ -39,10 +38,13 @@ class RenderBuilderPage
                 $content = !empty($page['content']) ? json_encode($page['content']) : null;
             }
 
+            /** @var Builder $builder */
+            $builder = app(Builder::class);
+
             $this->config->add('customizer.page', [
                 'id' => $post->ID,
                 'title' => $post->post_title,
-                'content' => $content ? $this->builder->load($content) : $content,
+                'content' => $content ? $builder->load($content) : $content,
                 'preview' => !empty($page),
                 'collision' => PostHelper::getCollision($post),
             ]);
@@ -50,10 +52,12 @@ class RenderBuilderPage
 
         // Render builder output
         if ($content) {
+            $builder ??= app(Builder::class);
+
             // Delay rendering to ensure regular WordPress content flow (wp_enqueue_scripts hook before shortcode hooks)
             $this->view['sections']->set(
                 'builder',
-                fn() => $this->builder->render($content, ['prefix' => 'page', 'post' => $post]),
+                fn() => $builder->render($content, ['prefix' => 'page', 'post' => $post]),
             );
         }
 

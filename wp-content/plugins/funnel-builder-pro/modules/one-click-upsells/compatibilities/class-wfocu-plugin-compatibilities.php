@@ -37,6 +37,7 @@ if ( ! class_exists( 'WFOCU_Plugin_Compatibilities' ) ) {
 				'class-wfocu-compatibility-with-pys.php'   => class_exists( 'PixelYourSite\EventsManager' ),
 				'class-wfocu-cloudflare-turnstile-compatibility.php' => function_exists( 'cfturnstile_settings_redirect' ),
 				'class-wfocu-compatibility-with-cookieyes.php' => defined( 'CLI_VERSION' ),
+				'class-wfocu-compatibility-with-zamp-tax.php' => class_exists( 'Zamp_Calculations' ) && class_exists( 'Zamp_Tax_Rate_Manager' ),
 
 			);
 			self::add_files( $paths );
@@ -52,6 +53,7 @@ if ( ! class_exists( 'WFOCU_Plugin_Compatibilities' ) ) {
 				'class-wfocu-compatibility-theme-oceanwp.php' => class_exists( 'OCEANWP_Theme_Class' ),
 				'class-wfocu-compatibility-with-aelia-cs.php' => class_exists( 'Aelia\WC\CurrencySwitcher\WC_Aelia_CurrencySwitcher' ),
 				'class-wfocu-compatibility-with-avada.php' => class_exists( 'FusionBuilder' ),
+				'class-wfocu-compatibility-with-spectra.php' => defined( 'SPECTRA_BLOCKS_VER' ),
 				'class-wfocu-compatibility-with-beaver.php' => class_exists( 'FLBuilderLoader' ),
 				'class-wfocu-themes-compatibility.php'     => true,
 				'class-wfocu-compatibility-with-cog.php'   => class_exists( 'WC_COG' ),

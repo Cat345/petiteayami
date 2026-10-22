@@ -104,7 +104,20 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Germanized' ) ) {
 				remove_action( 'woocommerce_review_order_after_cart_contents', 'woocommerce_gzd_template_checkout_table_product_hide_filter_removal' );
 				remove_filter( 'woocommerce_checkout_cart_item_quantity', 'wc_gzd_cart_product_units', wc_gzd_get_hook_priority( 'checkout_product_units' ) );
 				remove_filter( 'woocommerce_checkout_cart_item_quantity', 'wc_gzd_cart_product_delivery_time', wc_gzd_get_hook_priority( 'checkout_product_delivery_time' ) );
-				remove_filter( 'woocommerce_checkout_cart_item_quantity', 'wc_gzd_cart_product_item_desc', wc_gzd_get_hook_priority( 'checkout_product_item_desc' ) );
+				/*
+				 * Hide Germanized's product "Cart Description" (item_desc) in the checkout order summary.
+				 * Germanized 4.x moved shopmarks into its own system, so wc_gzd_get_hook_priority(
+				 * 'checkout_product_item_desc' ) now returns false (priority 0) and the description was never
+				 * removed. Resolve the live priority (has_filter) and cover every render path: the checkout
+				 * quantity filter, the mini-cart name filter, and the block / Store-API item-data row.
+				 */
+				if ( $this->is_item_meta_hidden() ) {
+					$this->remove_gzd_cart_filter( 'woocommerce_checkout_cart_item_quantity', 'wc_gzd_cart_product_item_desc' );
+					$this->remove_gzd_cart_filter( 'woocommerce_cart_item_name', 'wc_gzd_cart_product_item_desc' );
+					if ( false === has_filter( 'woocommerce_get_item_data', array( $this, 'strip_gzd_item_data' ) ) ) {
+						add_filter( 'woocommerce_get_item_data', array( $this, 'strip_gzd_item_data' ), 10001, 2 );
+					}
+				}
 				remove_action( 'woocommerce_checkout_order_review', 'woocommerce_order_review', wc_gzd_get_hook_priority( 'checkout_order_review' ) );
 				remove_action( 'woocommerce_checkout_order_review', 'woocommerce_checkout_payment', wc_gzd_get_hook_priority( 'checkout_payment' ) );
 				// FunnelKit renders submit button in checkout payment templates.
@@ -127,6 +140,61 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Germanized' ) ) {
 			}
 
 			return $fragments;
+		}
+
+		/**
+		 * Whether Germanized's product description / meta should be hidden in the order summary.
+		 *
+		 * FunnelKit renders its own summary, so Germanized's item description is stripped by default.
+		 * Merchants can show it again with add_filter( 'wfacp_germanized_hide_item_meta', '__return_false' ),
+		 * and a per-checkout Order Summary toggle can hook this filter later.
+		 *
+		 * @return bool
+		 */
+		private function is_item_meta_hidden() {
+			return (bool) apply_filters( 'wfacp_germanized_hide_item_meta', true );
+		}
+
+		/**
+		 * Remove a Germanized cart filter at the priority it is actually registered with.
+		 *
+		 * Germanized 4.x registers its shopmark callbacks at version-specific priorities, so the priority
+		 * must be resolved at runtime rather than assumed.
+		 *
+		 * @param string $hook     Filter tag.
+		 * @param string $callback Callback name.
+		 * @return void
+		 */
+		private function remove_gzd_cart_filter( $hook, $callback ) {
+			$priority = has_filter( $hook, $callback );
+			if ( false !== $priority ) {
+				remove_filter( $hook, $callback, $priority );
+			}
+		}
+
+		/**
+		 * Strip Germanized's "gzd-item_desc" entry from the formatted cart-item data.
+		 *
+		 * Germanized's block / Store-API integration injects it via an anonymous closure at priority 10000
+		 * that cannot be removed, so the row is dropped here (registered at 10001).
+		 *
+		 * @param array $item_data Formatted item-data entries.
+		 * @param array $cart_item Cart item.
+		 * @return array
+		 */
+		public function strip_gzd_item_data( $item_data, $cart_item ) {
+			if ( ! is_array( $item_data ) ) {
+				return $item_data;
+			}
+			$hidden_keys = apply_filters( 'wfacp_germanized_hidden_item_data_keys', array( 'gzd-item_desc' ), $cart_item );
+			foreach ( $item_data as $index => $entry ) {
+				$key = ( is_array( $entry ) && isset( $entry['key'] ) ) ? $entry['key'] : '';
+				if ( in_array( $key, $hidden_keys, true ) ) {
+					unset( $item_data[ $index ] );
+				}
+			}
+
+			return array_values( $item_data );
 		}
 
 		private function remove_button_hiding_filters() {

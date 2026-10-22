@@ -259,7 +259,7 @@ abstract class File
         $path = Path::resolveAlias($path);
 
         return function_exists('finfo_file')
-            ? finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path)
+            ? (new \finfo(FILEINFO_MIME_TYPE))->file($path)
             : mime_content_type($path);
     }
 

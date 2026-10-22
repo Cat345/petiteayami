@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /** \WP_Upgrader class */
 require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -343,11 +344,11 @@ class BWFAN_Plugin_Silent_Upgrader extends Plugin_Upgrader {
 		}
 
 		// Unzip package to working directory
-		$result = unzip_file( $package, $working_dir );
+		$result = unzip_file( $package, $working_dir ); // phpcs:ignore PluginCheck.CodeAnalysis.WriteFile.PluginDirectoryWrite -- unzips into wp-content/upgrade/, not the plugin folder
 
 		// Once extracted, delete the package if required.
 		if ( $delete_package ) {
-			unlink( $package );
+			wp_delete_file( $package );
 		}
 
 		if ( is_wp_error( $result ) ) {

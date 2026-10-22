@@ -39,7 +39,10 @@ abstract class Admin_Order_Tax_Calculation extends Hook_Handlers {
 		'saved_order_items',
 		'show_tax_configuration_notice',
 	);
-	const FILTERS = array();
+	const FILTERS = array(
+		'order_discount_to_display',
+		'order_get_total_discount',
+	);
 
 	const ACTIVATION_OPTIONS = array();
 
@@ -191,6 +194,18 @@ abstract class Admin_Order_Tax_Calculation extends Hook_Handlers {
 			$tax_location     = null;
 			$customer_user_id = null;
 
+			foreach ( $order->get_items( 'fee' ) as $fee_item ) {
+				$fee_reference = $fee_item->get_meta( Order_Input::CART_ITEM_REFERENCE_META_NAME );
+
+				if ( '' !== $fee_reference ) {
+					continue;
+				}
+
+				$fee_reference = Order_Input::build_item_reference_by_type( $fee_item );
+				$fee_item->add_meta_data( Order_Input::CART_ITEM_REFERENCE_META_NAME, $fee_reference, true );
+				$fee_item->save();
+			}
+
 			if ( is_admin() ) {
 				if ( ( ! $args || isset( $_REQUEST['stripe_tax_for_woocommerce_customer_user'] ) ) && isset( $_REQUEST['security'] ) ) {
 					$nonce_ok        = false;
@@ -210,6 +225,24 @@ abstract class Admin_Order_Tax_Calculation extends Hook_Handlers {
 						$shipping_address = map_deep( wp_unslash( $_POST['stripe_tax_for_woocommerce_customer_details_shipping_address'] ?? array() ), 'sanitize_text_field' );
 						$billing_address  = map_deep( wp_unslash( $_POST['stripe_tax_for_woocommerce_customer_details_billing_address'] ?? array() ), 'sanitize_text_field' );
 
+						$shipping_has_data = count(
+							array_filter(
+								$shipping_address,
+								static function ( $field ) {
+									return '' !== trim( (string) $field );
+								}
+							)
+						) > 0;
+						$billing_has_data  = count(
+							array_filter(
+								$billing_address,
+								static function ( $field ) {
+									return '' !== trim( (string) $field );
+								}
+							)
+						) > 0;
+						$source            = ( $shipping_has_data || ! $billing_has_data ) ? 'shipping' : 'billing';
+
 						$line1 = trim( (string) ( $shipping_address['line1'] ?? '' ) );
 						if ( '' === $line1 ) {
 							$line1 = trim( (string) ( $billing_address['line1'] ?? '' ) );
@@ -221,12 +254,13 @@ abstract class Admin_Order_Tax_Calculation extends Hook_Handlers {
 						}
 
 						$tax_location = array(
-							'country'  => sanitize_text_field( wp_unslash( $_POST['country'] ) ),
-							'state'    => sanitize_text_field( wp_unslash( $_POST['state'] ) ),
-							'postcode' => sanitize_text_field( wp_unslash( $_POST['postcode'] ) ),
-							'city'     => sanitize_text_field( wp_unslash( $_POST['city'] ) ),
-							'line1'    => $line1,
-							'line2'    => $line2,
+							'country'       => sanitize_text_field( wp_unslash( $_POST['country'] ) ),
+							'state'         => sanitize_text_field( wp_unslash( $_POST['state'] ) ),
+							'postcode'      => sanitize_text_field( wp_unslash( $_POST['postcode'] ) ),
+							'city'          => sanitize_text_field( wp_unslash( $_POST['city'] ) ),
+							'line1'         => $line1,
+							'line2'         => $line2,
+							'_tax_based_on' => $source,
 						);
 
 						if ( isset( $_POST['line1'] ) ) {
@@ -485,6 +519,87 @@ abstract class Admin_Order_Tax_Calculation extends Hook_Handlers {
 		}
 
 		return $rate_label;
+	}
+
+	/**
+	 * Calculates order line-items discount from item subtotal/total values.
+	 *
+	 * @param object $order The order.
+	 *
+	 * @return float
+	 */
+	private static function get_order_line_items_discount( $order ) {
+		if ( ! $order || ! method_exists( $order, 'get_items' ) ) {
+			return 0.0;
+		}
+
+		$discount = 0.0;
+
+		foreach ( $order->get_items( 'line_item' ) as $item ) {
+			if ( ! method_exists( $item, 'get_subtotal' ) || ! method_exists( $item, 'get_total' ) ) {
+				continue;
+			}
+
+			$line_discount = (float) $item->get_subtotal() - (float) $item->get_total();
+
+			if ( $line_discount > 0 ) {
+				$discount += $line_discount;
+			}
+		}
+
+		return round( $discount, wc_get_price_decimals() );
+	}
+
+	/**
+	 * "woocommerce_order_discount_to_display" filter handler.
+	 *
+	 * @param string $discount_to_display Discount amount formatted for display.
+	 * @param object $order The order.
+	 */
+	public static function order_discount_to_display( $discount_to_display, $order ) {
+		if ( ! is_admin() || ! wc_tax_enabled() ) {
+			return $discount_to_display;
+		}
+
+		if ( ! $order || ! method_exists( $order, 'get_prices_include_tax' ) ) {
+			return $discount_to_display;
+		}
+
+		if ( ! $order->get_prices_include_tax() ) {
+			return $discount_to_display;
+		}
+
+		$line_items_discount = self::get_order_line_items_discount( $order );
+
+		if ( $line_items_discount > 0 ) {
+			return wc_price( $line_items_discount, array( 'currency' => $order->get_currency() ) );
+		}
+
+		return wc_price( $order->get_total_discount( false ), array( 'currency' => $order->get_currency() ) );
+	}
+
+	/**
+	 * "woocommerce_order_get_total_discount" filter handler.
+	 *
+	 * @param float  $total_discount Discount amount.
+	 * @param object $order The order.
+	 */
+	public static function order_get_total_discount( $total_discount, $order ) {
+		if ( ! is_admin() || ! wc_tax_enabled() ) {
+			return $total_discount;
+		}
+
+		if ( ! $order || ! method_exists( $order, 'get_prices_include_tax' ) || ! $order->get_prices_include_tax() ) {
+			return $total_discount;
+		}
+
+		$line_items_discount = self::get_order_line_items_discount( $order );
+
+		if ( $line_items_discount > 0 ) {
+			return $line_items_discount;
+		}
+
+		return $total_discount;
 	}
 
 	/**

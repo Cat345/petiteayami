@@ -322,6 +322,25 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		return $args;
 	}
 
+	/**
+	 * 409 when the builder sent a revision that is no longer current (spec §17); null
+	 * when none was sent (older builders, recipes and imports keep working) or it
+	 * matches. Takes the shared edit lock (3 s) and holds it until this request ends,
+	 * so an MCP update can't write between this check and this handler's write.
+	 */
+	private function revision_conflict( $automation_id, $args ) {
+		if ( BWFAN_Automation_V2::check_revision( $automation_id, isset( $args['revision'] ) ? $args['revision'] : '' ) ) {
+			return null;
+		}
+
+		return $this->error_response( __( 'This Automation changed since you opened it. Reload to see the latest version.', 'wp-marketing-automations' ), null, 409 );
+	}
+
+	/** The revision after this handler's writes, for the builder's next save. */
+	private function current_revision( $automation_id ) {
+		return BWFAN_Automation_V2::get_revision( absint( $automation_id ) );
+	}
+
 	// ─── GET /automation/{id} ───────────────────────────────────────
 	// Originally: BWFAN_API_Automation_Single::get_items()
 
@@ -349,6 +368,8 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 			$automation = $automation_data['data'];
 		}
 
+		$automation['revision'] = $this->current_revision( $automation_id ); // last: get_automation_API_data() can itself write.
+
 		$this->response_code = 200;
 
 		return $this->success_response( $automation, ! empty( $automation_data['message'] ) ? $automation_data['message'] : __( 'Successfully fetched automation', 'wp-marketing-automations' ) );
@@ -369,6 +390,11 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		/** Check for automation exists */
 		if ( ! empty( $automation_obj->error ) ) {
 			return $this->error_response( [], $automation_obj->error );
+		}
+
+		$conflict = $this->revision_conflict( $automation_id, $this->args );
+		if ( null !== $conflict ) {
+			return $conflict;
 		}
 
 		$data    = $steps = $links = $meta = [];
@@ -461,7 +487,8 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 			}
 
 			return $this->success_response( [
-				'meta' => $automation_meta,
+				'meta'     => $automation_meta,
+				'revision' => $this->current_revision( $automation_id ),
 			], __( 'Automation Data Updated', 'wp-marketing-automations' ) );
 		} else {
 			$this->response_code = 404;
@@ -487,12 +514,21 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 			return $this->error_response( [], $automation_obj->error );
 		}
 
+		$conflict = $this->revision_conflict( $automation_id, $this->args );
+		if ( null !== $conflict ) {
+			return $conflict;
+		}
+
 		/** Add new step and get id */
 		$step_id = $automation_obj->add_new_automation_step( $type, $data );
 
+		if ( empty( $step_id ) ) {
+			return $this->error_response( ! empty( $automation_obj->error ) ? $automation_obj->error : __( 'Unable to create automation step', 'wp-marketing-automations' ), null, 400 );
+		}
+
 		$this->response_code = 200;
 
-		return $this->success_response( [ 'step_id' => $step_id ], __( 'Data updated', 'wp-marketing-automations' ) );
+		return $this->success_response( [ 'step_id' => $step_id, 'revision' => $this->current_revision( $automation_id ) ], __( 'Data updated', 'wp-marketing-automations' ) );
 	}
 
 	// ─── PUT /automation/{id}/step/{sid} ────────────────────────────
@@ -514,6 +550,11 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		/** Check for automation exists */
 		if ( ! empty( $automation_obj->error ) ) {
 			return $this->error_response( [ "Step Not Updated" ], $automation_obj->error );
+		}
+
+		$conflict = $this->revision_conflict( $automation_id, $arg_data ); // $arg_data already has `content` merged in.
+		if ( null !== $conflict ) {
+			return $conflict;
 		}
 
 		// Update step data
@@ -626,6 +667,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 						BWFAN_Automation_Controller::$TYPE_WAIT,
 						BWFAN_Automation_Controller::$TYPE_CONDITIONAL,
 						BWFAN_Automation_Controller::$TYPE_SPLIT,
+						BWFAN_Automation_Controller::$TYPE_BRANCHES,
 					];
 					if ( ! in_array( $current_type, $disable_allowed_types, true ) ) {
 						return $this->error_response( __( 'This step type cannot be disabled', 'wp-marketing-automations' ), null, 400 );
@@ -644,6 +686,8 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 
 			$this->response_code = 200;
 
+			$return_val['revision'] = $this->current_revision( $automation_id );
+
 			return $this->success_response( $return_val, __( 'Step Updated', 'wp-marketing-automations' ) );
 		}
 
@@ -652,13 +696,13 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		$action_name    = isset( $action['action'] ) ? $action['action'] : '';
 		$benchmark_name = isset( $action['benchmark'] ) ? $action['benchmark'] : '';
 
-		if ( in_array( $action_name, [ 'crm_add_to_list', 'crm_add_tag' ] ) ) {
+		if ( in_array( $action_name, [ 'crm_add_to_list', 'crm_add_tag', 'crm_rmv_tag', 'crm_rmv_from_list' ], true ) ) {
 			/** Create List/tags if not exists */
 			$terms = [];
 			if ( class_exists( 'BWFCRM_Term_Type' ) ) {
 				$term_type = BWFCRM_Term_Type::$TAG;
 				$terms     = isset( $data['data']['sidebarData']['tags'] ) ? $data['data']['sidebarData']['tags'] : [];
-				if ( empty( $terms ) && 'crm_add_to_list' === $action_name ) {
+				if ( empty( $terms ) && ( 'crm_add_to_list' === $action_name || 'crm_rmv_from_list' === $action_name ) ) {
 					$term_type = BWFCRM_Term_Type::$LIST;
 					$terms     = isset( $data['data']['sidebarData']['list_id'] ) ? $data['data']['sidebarData']['list_id'] : [];
 				}
@@ -680,9 +724,9 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 			$terms = array_merge( $terms, $terms_with_mergetags );
 
 			/** Checking action is Added to List and Add Tag */
-			if ( 'crm_add_to_list' === $action_name && ! empty( $terms ) ) {
+			if ( ( 'crm_add_to_list' === $action_name || 'crm_rmv_from_list' === $action_name ) && ! empty( $terms ) ) {
 				$data['data']['sidebarData']['list_id'] = $terms;
-			} elseif ( 'crm_add_tag' === $action_name && ! empty( $terms ) ) {
+			} elseif ( ( 'crm_add_tag' === $action_name || 'crm_rmv_tag' === $action_name ) && ! empty( $terms ) ) {
 				$data['data']['sidebarData']['tags'] = $terms;
 			}
 		}
@@ -715,6 +759,8 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 			}
 			$this->response_code = 200;
 
+			$return_val['revision'] = $this->current_revision( $automation_id );
+
 			return $this->success_response( $return_val, __( 'Step Updated', 'wp-marketing-automations' ) );
 		} else {
 			return $this->error_response( [ __( "Step Not Updated", 'wp-marketing-automations' ) ], __( 'Unable to update action data', 'wp-marketing-automations' ) );
@@ -737,6 +783,14 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		if ( ! empty( $automation_obj->error ) ) {
 			return $this->error_response( [], $automation_obj->error );
 		}
+
+		$conflict = $this->revision_conflict( $automation_id, $arg_data );
+		if ( null !== $conflict ) {
+			return $conflict;
+		}
+
+		$steps = $links = [];
+		$count = 0;
 
 		/** Step data */
 		if ( isset( $arg_data['steps'] ) && ! empty( $arg_data['steps'] ) ) {
@@ -762,7 +816,12 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		$response = $automation_obj->delete_automation_step( $step_id );
 
 		if ( ! $response ) {
-			return $this->error_response( [], 'Unable to delete the node' );
+			// The builder saves the graph without the node first, and that save already
+			// soft-deleted this step (status 3): a success, not the old error path.
+			$row = BWFAN_Model_Automation_Step::get_step_data_by_id( $step_id );
+			if ( empty( $row ) || 3 !== (int) $row['status'] || absint( $row['aid'] ) !== absint( $automation_id ) ) {
+				return $this->error_response( [], 'Unable to delete the node' );
+			}
 		}
 
 		if ( 'benchmark' === $node_type || 'wait' === $node_type ) {
@@ -802,7 +861,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 
 		$this->response_code = 200;
 
-		return $this->success_response( [ 'meta' => $automation_meta ], __( 'Data updated', 'wp-marketing-automations' ) );
+		return $this->success_response( [ 'meta' => $automation_meta, 'revision' => $this->current_revision( $automation_id ) ], __( 'Data updated', 'wp-marketing-automations' ) );
 	}
 
 	// ─── POST /automation/add-contact ───────────────────────────────
@@ -868,14 +927,14 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 			case 're_run' === $to:
 				global $wpdb;
 				$query        = "SELECT `ID`,`cid`,`aid`,`trail`,`event`,`data` FROM {$wpdb->prefix}bwfan_automation_complete_contact WHERE `ID` = %d";
-				$query_result = $wpdb->get_results( $wpdb->prepare( $query, $a_cid ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$query_result = $wpdb->get_results( $wpdb->prepare( $query, $a_cid ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; id absint() and bound via %d
 				BWFAN_Common::insert_automations( $query_result );
 				$result = true;
 				break;
 			case 'startbegin' === $to:
 				global $wpdb;
 				$query        = "SELECT `ID`,`cid`,`aid`,`trail` FROM {$wpdb->prefix}bwfan_automation_contact WHERE `ID` = %d";
-				$query_result = $wpdb->get_results( $wpdb->prepare( $query, $a_cid ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$query_result = $wpdb->get_results( $wpdb->prepare( $query, $a_cid ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; id absint() and bound via %d
 				$trails       = array_column( $query_result, 'trail' );
 				BWFAN_Common::update_automation_status( array( $a_cid ), 1, $trails, current_time( 'timestamp', 1 ), true );
 				$result = true;
@@ -1023,7 +1082,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 			$start_date = $row['c_date'];
 			$end_date   = absint( $row['last_time'] );
 			$end_date   = ( $end_date > 0 ) ? $end_date : time();
-			$end_date   = date( 'Y-m-d H:i:s', $end_date + 120 );
+			$end_date   = gmdate( 'Y-m-d H:i:s', $end_date + 120 );
 		}
 
 		try {
@@ -1193,8 +1252,6 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 				'title' => $title,
 				'event' => $event
 			) );
-
-			BWFAN_Automation_V2::unset_instance(); //unsetting the current instance
 		}
 
 		$countdata['all'] = $all;
@@ -1300,7 +1357,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		foreach ( $this->trail as $index => $data ) {
 			/** Set time in start node if not set */
 			if ( isset( $trail_data[0]['data']['date'] ) && empty( $trail_data[0]['data']['date'] ) ) {
-				$trail_data[0]['data']['date'] = date( 'Y-m-d H:i:s', $data['c_time'] );
+				$trail_data[0]['data']['date'] = gmdate( 'Y-m-d H:i:s', $data['c_time'] );
 			}
 			/** Get data trail data by step type */
 			$tdata = $this->get_trail_data_by_step_type( $data, $event_slug, $index );
@@ -1387,10 +1444,13 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		if ( ! empty( $automation_obj->error ) ) {
 			return $this->error_response( [], $automation_obj->error );
 		}
-		$step = BWFAN_Model_Automation_Step::get( $step_id );
-		$path = isset( $step['type'] ) && 7 === intval( $step['type'] ) ? $path : '';
+		$step      = BWFAN_Model_Automation_Step::get( $step_id );
+		$step_type = isset( $step['type'] ) ? intval( $step['type'] ) : 0;
+		/** `path` filters trail data: split paths use the `path` JSON key, branches branches use `branch` */
+		$path     = in_array( $step_type, [ BWFAN_Automation_Controller::$TYPE_SPLIT, BWFAN_Automation_Controller::$TYPE_BRANCHES ], true ) ? $path : '';
+		$data_key = BWFAN_Automation_Controller::$TYPE_BRANCHES === $step_type ? 'branch' : 'path';
 
-		$data = BWFAN_Common::get_completed_contacts( $automation_id, $step_id, $type, $offset, $limit, $path );
+		$data = BWFAN_Common::get_completed_contacts( $automation_id, $step_id, $type, $offset, $limit, $path, $data_key );
 
 		if ( ! isset( $data['contacts'] ) || ! is_array( $data['contacts'] ) ) {
 			return $this->error_response( [], __( 'No data found', 'wp-marketing-automations' ) );
@@ -1492,6 +1552,14 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 			return $this->error_response( [], $automation_obj->error );
 		}
 
+		$conflict = $this->revision_conflict( $automation_id, $arg_data );
+		if ( null !== $conflict ) {
+			return $conflict;
+		}
+
+		$steps = $links = [];
+		$count = 0;
+
 		/** Step data */
 		if ( ! empty( $arg_data['steps'] ) ) {
 			$steps = $arg_data['steps'];
@@ -1516,11 +1584,12 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 
 		$automation_meta = $automation_obj->get_automation_meta_data();
 
-		if ( ! empty( $automation_meta['merger_points'] ) ) {
-			$this->response_code = 200;
+		$this->response_code = 200;
 
-			return $this->success_response( [ 'merger_points' => $automation_meta['merger_points'] ], __( 'Merger Points Updated', 'wp-marketing-automations' ) );
-		}
+		return $this->success_response( [
+			'merger_points' => ! empty( $automation_meta['merger_points'] ) ? $automation_meta['merger_points'] : [],
+			'revision'      => $this->current_revision( $automation_id ),
+		], __( 'Merger Points Updated', 'wp-marketing-automations' ) );
 	}
 
 	// ─── GET /automation/actions/{action}/suggestions ───────────────
@@ -1686,7 +1755,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		$args = array_merge( $args, [ $status, $version, '%' . $search . '%', $offset, $limit ] );
 
 		global $wpdb;
-		$automations = $wpdb->get_results( $wpdb->prepare( "SELECT `ID` as `key`,`title` as `value` FROM `{$wpdb->prefix}bwfan_automations` WHERE `event` IN($placeholder) AND `status`=%d AND `v`=%d AND `title` LIKE %s LIMIT %d, %d", $args ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$automations = $wpdb->get_results( $wpdb->prepare( "SELECT `ID` as `key`,`title` as `value` FROM `{$wpdb->prefix}bwfan_automations` WHERE `event` IN($placeholder) AND `status`=%d AND `v`=%d AND `title` LIKE %s LIMIT %d, %d", $args ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholder is built at runtime so the sniff undercounts; wpdb unwraps the $args array itself.; placeholders generated via array_fill; all values bound in prepare()
 
 		if ( empty( $automations ) ) {
 			return $this->success_response( [], __( 'No automations found in which contact can be added manually', 'wp-marketing-automations' ) );
@@ -1745,6 +1814,9 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 		$split_steps = isset( $meta['split_steps'] ) ? $meta['split_steps'] : [];
 
 		$data = $this->get_split_steps_stats( $split_steps, $data );
+
+		/** Per-branch contact counts for branches steps, keyed by chip node id */
+		$data = $this->get_branch_steps_stats( isset( $meta['steps'] ) ? $meta['steps'] : [], $data );
 
 		return $this->success_response( $data, __( 'Automation stats found', 'wp-marketing-automations' ) );
 	}
@@ -1937,7 +2009,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 								'type'      => 1,
 								'delayData' => $delay_data,
 							],
-							'date'        => date( 'Y-m-d H:i:s', $time ),
+							'date'        => date( 'Y-m-d H:i:s', $time ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Mixed origin: gmdate OK only if line 2269 strtotime(c_date) is pinned to UTC
 							'status'      => $status,
 							'msg'         => $res_msg,
 							'step_status' => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -1960,7 +2032,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 								'selected'    => '',
 								'nice_name'   => __( 'Not Configured', 'wp-marketing-automations' ),
 								'integration' => '',
-								'date'        => date( 'Y-m-d H:i:s', $time ),
+								'date'        => gmdate( 'Y-m-d H:i:s', $time ),
 								'status'      => $status,
 								'msg'         => $res_msg,
 								'step_status' => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -1981,7 +2053,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 								'selected'    => '',
 								'nice_name'   => __( 'Action Not Found', 'wp-marketing-automations' ),
 								'integration' => '',
-								'date'        => date( 'Y-m-d H:i:s', $time ),
+								'date'        => gmdate( 'Y-m-d H:i:s', $time ),
 								'status'      => $status,
 								'msg'         => $res_msg,
 								'step_status' => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -2003,7 +2075,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 							'selected'    => $action_slug,
 							'nice_name'   => $action_name,
 							'integration' => $integration_name,
-							'date'        => date( 'Y-m-d H:i:s', $time ),
+							'date'        => gmdate( 'Y-m-d H:i:s', $time ),
 							'status'      => $status,
 							'msg'         => $res_msg,
 							'step_status' => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -2030,7 +2102,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 							'benchmark'   => $benchmark,
 							'nice_name'   => $event_name,
 							'source'      => $source_name,
-							'date'        => date( 'Y-m-d H:i:s', $time ),
+							'date'        => date( 'Y-m-d H:i:s', $time ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Mixed origin: gmdate OK only if line 2269 strtotime(c_date) is pinned to UTC
 							'status'      => $status,
 							'msg'         => $res_msg,
 							'step_status' => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -2051,7 +2123,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 							'sidebarValues' => $sidebar_data,
 							'event'         => $event,
 							'aid'           => $aid,
-							'date'          => date( 'Y-m-d H:i:s', $time ),
+							'date'          => gmdate( 'Y-m-d H:i:s', $time ),
 							'status'        => $status,
 							'msg'           => $res_msg,
 							'step_status'   => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -2067,7 +2139,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 						'data' => [
 							'direction' => $direction,
 							'parent'    => $data['sid'],
-							'date'      => date( 'Y-m-d H:i:s', $time ),
+							'date'      => gmdate( 'Y-m-d H:i:s', $time ),
 						]
 					];
 					$trail_data[] = [
@@ -2080,13 +2152,70 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 				}
 
 				break;
+			case BWFAN_Automation_Controller::$TYPE_BRANCHES :
+				$type_data    = isset( $data['step_data'] ) ? json_decode( $data['step_data'], true ) : [];
+				$sidebar_data = isset( $type_data['sidebarData'] ) ? $type_data['sidebarData'] : [];
+				$branch_id    = isset( $response['branch'] ) ? $response['branch'] : '';
+				$eval_errors  = isset( $response['errors'] ) ? $response['errors'] : [];
+
+				/** Resolve branch id to name from the step's current sidebarData (`step_data` is joined live config, not a snapshot) */
+				$branch_name    = __( 'Everyone Else', 'wp-marketing-automations' );
+				$branch_deleted = false;
+				$branch_rules   = [];
+				if ( 'else' !== $branch_id ) {
+					$branch_deleted = true;
+					$branch_name    = __( 'Deleted branch', 'wp-marketing-automations' );
+					$snap_branches  = isset( $sidebar_data['branches'] ) && is_array( $sidebar_data['branches'] ) ? $sidebar_data['branches'] : [];
+					foreach ( $snap_branches as $snap_branch ) {
+						if ( isset( $snap_branch['id'] ) && $snap_branch['id'] === $branch_id ) {
+							$branch_name    = isset( $snap_branch['name'] ) ? $snap_branch['name'] : $branch_name;
+							$branch_rules   = isset( $snap_branch['rules'] ) ? $snap_branch['rules'] : [];
+							$branch_deleted = false;
+							break;
+						}
+					}
+				}
+
+				$node_data = [
+					'sidebarValues' => $sidebar_data,
+					'event'         => $event,
+					'aid'           => $aid,
+					'date'          => gmdate( 'Y-m-d H:i:s', $time ),
+					'status'        => $status,
+					'msg'           => $res_msg,
+					'errors'        => $eval_errors,
+					'step_status'   => isset( $data['step_status'] ) ? $data['step_status'] : 0,
+				];
+				/** Merge the matched branch into the single journey card
+				 * (name + the rules it evaluated) instead of a separate
+				 * branch node. Skipped when the step didn't run — failed
+				 * (status 3) or skipped/disabled (status 4), matching the
+				 * conditional and split cases; a skipped run has no branch
+				 * in its response and would wrongly render "Deleted branch". */
+				if ( 3 !== $status && 4 !== $status ) {
+					$node_data['branch'] = [
+						'name'          => $branch_name,
+						'isElse'        => ( 'else' === $branch_id ),
+						'deleted'       => $branch_deleted,
+						'sidebarValues' => $branch_rules,
+					];
+				}
+				$trail_data = [
+					[
+						'id'   => $data['sid'] . '-' . $data['ID'],
+						'type' => 'branches',
+						'data' => $node_data,
+					],
+				];
+
+				break;
 			case BWFAN_Automation_Controller::$TYPE_EXIT :
 				$trail_data = [
 					[
 						'id'   => $data['sid'] . '-' . $data['ID'],
 						'type' => 'exit',
 						'data' => [
-							'date'        => date( 'Y-m-d H:i:s', $time ),
+							'date'        => gmdate( 'Y-m-d H:i:s', $time ),
 							'status'      => $status,
 							'msg'         => $res_msg,
 							'step_status' => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -2100,7 +2229,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 						'id'   => $data['sid'] . '-' . $data['ID'],
 						'type' => 'jump',
 						'data' => [
-							'date'        => date( 'Y-m-d H:i:s', $time ),
+							'date'        => gmdate( 'Y-m-d H:i:s', $time ),
 							'status'      => $status,
 							'msg'         => $res_msg,
 							'step_status' => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -2123,7 +2252,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 						'data' => [
 							'sidebarValues' => $sidebar_data,
 							'event'         => $event,
-							'date'          => date( 'Y-m-d H:i:s', $data['c_time'] ),
+							'date'          => gmdate( 'Y-m-d H:i:s', $data['c_time'] ),
 							'status'        => $status,
 							'msg'           => $msg,
 							'step_status'   => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -2138,7 +2267,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 						'data' => [
 							'path'   => $path,
 							'parent' => $data['sid'],
-							'date'   => date( 'Y-m-d H:i:s', $data['c_time'] ),
+							'date'   => gmdate( 'Y-m-d H:i:s', $data['c_time'] ),
 						]
 					];
 					$trail_data[] = [
@@ -2156,7 +2285,7 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 						'id'   => $data['sid'] . '-' . $data['ID'],
 						'type' => 'unknown',
 						'data' => [
-							'date'        => date( 'Y-m-d H:i:s', $time ),
+							'date'        => gmdate( 'Y-m-d H:i:s', $time ),
 							'status'      => $status,
 							'msg'         => $res_msg,
 							'step_status' => isset( $data['step_status'] ) ? $data['step_status'] : 0
@@ -2495,6 +2624,63 @@ class BWFAN_API_Automation_Controller extends BWFAN_API_Controller {
 	}
 
 	// ─── Single automation stats helpers (from BWFAN_API_Get_Single_Automation_Stats) ──
+
+	/**
+	 * Per-branch contact counts for branches steps.
+	 *
+	 * Keyed by the branch chip node id (`{node}-branch-{branchId}`) so the
+	 * frontend BranchPathNode can read statData[node.id] — the same way split
+	 * paths and other steps read their stat entry. The trail rows are keyed by
+	 * the parent branches step's DB id, so we map node id -> stepId first.
+	 *
+	 * @param array $steps Persisted flow nodes (from automation meta).
+	 * @param array $data  Stats map being assembled.
+	 *
+	 * @return array
+	 */
+	public function get_branch_steps_stats( $steps, $data ) {
+		if ( empty( $steps ) || ! is_array( $steps ) ) {
+			return $data;
+		}
+
+		/** Map branches node id -> DB step id (trail sid). */
+		$parent_step_ids = [];
+		foreach ( $steps as $step ) {
+			if ( isset( $step['type'], $step['id'], $step['stepId'] ) && 'branches' === $step['type'] ) {
+				$parent_step_ids[ $step['id'] ] = intval( $step['stepId'] );
+			}
+		}
+
+		if ( empty( $parent_step_ids ) ) {
+			return $data;
+		}
+
+		/** One grouped query for every branches step, then chips read from the map */
+		$branch_counts = BWFAN_Model_Automation_Contact_Trail::get_branch_contact_counts( array_values( $parent_step_ids ) );
+
+		foreach ( $steps as $step ) {
+			if ( ! isset( $step['type'] ) || 'branchpath' !== $step['type'] || empty( $step['id'] ) || empty( $step['data'] ) ) {
+				continue;
+			}
+			$parent    = isset( $step['data']['parent'] ) ? $step['data']['parent'] : '';
+			$branch_id = isset( $step['data']['branchId'] ) ? $step['data']['branchId'] : '';
+			if ( '' === $branch_id || ! isset( $parent_step_ids[ $parent ] ) ) {
+				continue;
+			}
+
+			$sid                 = $parent_step_ids[ $parent ];
+			$count               = isset( $branch_counts[ $sid ][ $branch_id ] ) ? $branch_counts[ $sid ][ $branch_id ] : 0;
+			$data[ $step['id'] ] = [
+				'queued'    => 0,
+				'active'    => 0,
+				'completed' => intval( $count ),
+				'skipped'   => 0,
+				'failed'    => 0,
+			];
+		}
+
+		return $data;
+	}
 
 	public function get_split_steps_stats( $split_steps, $data ) {
 		/** Get split step's step ids */

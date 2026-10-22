@@ -51,41 +51,64 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 	}
 
 	protected function register_routes() {
+		/** Shared by both get_contacts() routes (GET /v3/contacts and POST /v3/contacts/query) so the two schemas cannot drift. */
+		$get_contacts_args = array(
+			'search'         => array(
+				'description' => __( 'Search from email, first_name or last_name', 'wp-marketing-automations' ),
+				'type'        => 'string',
+			),
+			'offset'         => array(
+				'description' => __( 'Contacts list Offset', 'wp-marketing-automations' ),
+				'type'        => 'integer',
+			),
+			'limit'          => array(
+				'description' => __( 'Per page limit', 'wp-marketing-automations' ),
+				'type'        => 'integer',
+			),
+			'get_wc'         => array(
+				'description' => __( 'Get WC Data as well', 'wp-marketing-automations' ),
+				'type'        => 'boolean',
+			),
+			'grab_totals'    => array(
+				'description' => __( 'Grab total contact count as well', 'wp-marketing-automations' ),
+				'type'        => 'boolean',
+			),
+			'start_indexing' => array(
+				'description' => __( 'Start Indexing of Contacts in case indexing is pending', 'wp-marketing-automations' ),
+				'type'        => 'boolean',
+			),
+		);
+
 		// /v3/contacts (GET+POST+DELETE)
 		$this->add_route( '/v3/contacts', array(
-			array( 'GET', 'get_contacts', array(
-				'search'         => array(
-					'description' => __( 'Search from email, first_name or last_name', 'wp-marketing-automations' ),
-					'type'        => 'string',
-				),
-				'offset'         => array(
-					'description' => __( 'Contacts list Offset', 'wp-marketing-automations' ),
-					'type'        => 'integer',
-				),
-				'limit'          => array(
-					'description' => __( 'Per page limit', 'wp-marketing-automations' ),
-					'type'        => 'integer',
-				),
-				'get_wc'         => array(
-					'description' => __( 'Get WC Data as well', 'wp-marketing-automations' ),
-					'type'        => 'boolean',
-				),
-				'grab_totals'    => array(
-					'description' => __( 'Grab total contact count as well', 'wp-marketing-automations' ),
-					'type'        => 'boolean',
-				),
-				'start_indexing' => array(
-					'description' => __( 'Start Indexing of Contacts in case indexing is pending', 'wp-marketing-automations' ),
-					'type'        => 'boolean',
-				),
-			) ),
+			array( 'GET', 'get_contacts', $get_contacts_args ),
 			array( 'POST', 'create_contact' ),
 			array( 'DELETE', 'delete_contacts' ),
 		) );
 
-		// /v3/contacts/listing (GET)
+		/**
+		 * /v3/contacts/query (POST) — same handler as GET /v3/contacts, filters travel in the body.
+		 *
+		 * An audience with several OR groups produces a filter tree of tens of kilobytes. On a GET
+		 * it rides in the query string, where it meets two ceilings: PHP's max_input_vars, which
+		 * truncates it silently so the count comes back wrong, and the web server's URL limit,
+		 * which answers 414 before PHP is reached at all. Neither can be raised from PHP, so the
+		 * payload has to leave the URL.
+		 *
+		 * POST is already taken on /v3/contacts by create_contact, hence a separate path. The GET
+		 * route stays exactly as it was, so existing callers are unaffected.
+		 *
+		 * `filters` is not the only payload that can grow: `include_ids` carries one entry per
+		 * selected contact and blows the same ceiling on a large selection.
+		 */
+		$this->add_route( '/v3/contacts/query', array(
+			array( 'POST', 'get_contacts', $get_contacts_args ),
+		) );
+
+		// /v3/contacts/listing (GET+POST) — POST for large filter payloads, see /v3/contacts/query above.
 		$this->add_route( '/v3/contacts/listing', array(
 			array( 'GET', 'get_listing' ),
+			array( 'POST', 'get_listing' ),
 		) );
 
 		// /v3/contacts/{id} (GET+PUT+DELETE)
@@ -202,8 +225,8 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 			array( 'GET', 'get_contact_orders' ),
 		) );
 
-		// v3/contacts/{id}/sendmessage (POST) — note: no leading /
-		$this->add_route( 'v3/contacts/(?P<contact_id>[\\d]+)/sendmessage', array(
+		// /v3/contacts/{id}/sendmessage (POST)
+		$this->add_route( '/v3/contacts/(?P<contact_id>[\\d]+)/sendmessage', array(
 			array( 'POST', 'send_message', array(
 				'contact_id' => array(
 					'description' => __( 'Contact ID to send message', 'wp-marketing-automations' ),
@@ -212,13 +235,13 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 			) ),
 		) );
 
-		// /contact/{id}/resync-order/ (GET) — note: /contact not /v3/contacts
-		$this->add_route( '/contact/(?P<contact_id>[\\d]+)/resync-order/', array(
+		// /contact/{id}/resync-order (GET) — note: /contact not /v3/contacts
+		$this->add_route( '/contact/(?P<contact_id>[\\d]+)/resync-order', array(
 			array( 'GET', 'resync_contact_order' ),
 		) );
 
-		// v3/contacts/{id}/engagement/{engagement_id} (GET) — note: no leading /
-		$this->add_route( 'v3/contacts/(?P<contact_id>[\\d]+)/engagement/(?P<engagement_id>[\\d]+)', array(
+		// /v3/contacts/{id}/engagement/{engagement_id} (GET)
+		$this->add_route( '/v3/contacts/(?P<contact_id>[\\d]+)/engagement/(?P<engagement_id>[\\d]+)', array(
 			array( 'GET', 'get_conversation', array(
 				'contact_id'    => array(
 					'description' => __( 'Contact ID', 'wp-marketing-automations' ),
@@ -231,8 +254,8 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 			) ),
 		) );
 
-		// v3/contacts/{id}/engagements (GET) — note: no leading /
-		$this->add_route( 'v3/contacts/(?P<contact_id>[\\d]+)/engagements', array(
+		// /v3/contacts/{id}/engagements (GET)
+		$this->add_route( '/v3/contacts/(?P<contact_id>[\\d]+)/engagements', array(
 			array( 'GET', 'get_conversations', array(
 				'contact_id' => array(
 					'description' => __( 'Contact ID for which engagements to retrieve', 'wp-marketing-automations' ),
@@ -414,6 +437,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -507,6 +531,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact instanceof BWFCRM_Contact || 0 === $contact->get_id() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -539,12 +564,14 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
 		$contact_terms = $contact->get_all_lists();
 		if ( empty( $contact_terms ) ) {
 			$this->response_code = 404;
+			/* translators: %1$s: Search term */
 			$error_message       = ! empty( $search ) ? sprintf( __( 'No Searched lists found for contact with name %1$s', 'wp-marketing-automations' ), " '$search'" ) : __( 'No contacts lists found', 'wp-marketing-automations' );
 
 			return $this->error_response( $error_message );
@@ -573,6 +600,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -612,6 +640,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 
 			$added_lists_names   = implode( ', ', $added_lists_names );
 			$this->response_code = 200;
+			/* translators: %1$s: Comma-separated list names */
 			$message             = sprintf( __( 'Some lists are applied already. Applied Lists are: %1$s', 'wp-marketing-automations' ), $added_lists_names );
 		}
 		$result['list_added']    = is_array( $lists_added ) ? array_values( $lists_added ) : $lists_added;
@@ -637,6 +666,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -661,6 +691,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		$response = __( 'Lists Unassigned', 'wp-marketing-automations' );
 		if ( ! empty( $lists_not_removed ) ) {
 			$removed_lists_text = implode( ', ', $removed_lists );
+			/* translators: %1$s: Comma-separated list names */
 			$response           = sprintf( __( 'Some lists removed: %1$s', 'wp-marketing-automations' ), $removed_lists_text );
 		}
 		$result['last_modified'] = $contact->contact->get_last_modified();
@@ -682,6 +713,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -707,6 +739,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found related with contact id : %1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -742,6 +775,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 			}, $added_tags );
 			$applied_tags_names  = implode( ', ', $applied_tags_names );
 			$this->response_code = 200;
+			/* translators: %1$s: Comma-separated tag names */
 			$message             = sprintf( __( 'Some tags are applied already. Applied Tags are: %1$s', 'wp-marketing-automations' ), $applied_tags_names );
 		}
 		$result['tags_added']    = is_array( $tags_added ) ? array_values( $tags_added ) : $tags_added;
@@ -767,6 +801,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -802,6 +837,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		$response = __( 'Tag removed', 'wp-marketing-automations' );
 		if ( ! empty( $tags_not_removed ) ) {
 			$removed_tags_text = implode( ', ', $removed_tags );
+			/* translators: %1$s: Comma-separated tag names */
 			$response          = sprintf( __( 'Some tags removed: %1$s', 'wp-marketing-automations' ), $removed_tags_text );
 		}
 		$result['last_modified'] = $contact->contact->get_last_modified();
@@ -825,6 +861,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -833,12 +870,14 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( empty( $contact_notes ) ) {
 			$this->response_code = 200;
 
+			/* translators: %1$d: Contact ID */
 			return $this->success_response( [], sprintf( __( 'No contact notes found related with contact id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 		$all_contact_notes   = $contact->get_contact_notes_array( 0, 0 );
 		$this->total_count   = count( $all_contact_notes );
 		$this->response_code = 200;
 
+		/* translators: %1$d: Contact ID */
 		return $this->success_response( $contact_notes, sprintf( __( 'Contact notes related to contact id : #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 	}
 
@@ -864,6 +903,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -908,6 +948,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact->is_contact_exists() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -937,6 +978,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $contact instanceof BWFCRM_Contact || 0 === $contact->get_id() ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 		$note_id                    = intval( $this->get_sanitized_arg( 'note_id', 'key' ) );
@@ -945,6 +987,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		if ( ! $delete_contact_note_result ) {
 			$this->response_code = 404;
 
+			/* translators: %1$d: Contact ID */
 			return $this->error_response( sprintf( __( 'Unable to delete the note for contact #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
@@ -1742,6 +1785,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 			'contact_id'   => $contact->get_id(),
 			'contact_mode' => $mode
 		) );
+		$title        = BWFAN_Common::decode_merge_tags( $title );
 		$message      = BWFAN_Common::decode_merge_tags( ( 1 === $mode ? wpautop( $message ) : $message ) );
 		$template     = [
 			'subject'  => ( empty( $title ) ? '' : $title ),
@@ -2085,7 +2129,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 	}
 
 	// =========================================================================
-	// 16. /contact/{id}/resync-order/ — GET (from class-bwfan-api-update-contact-order.php process_api_call)
+	// 16. /contact/{id}/resync-order — GET (from class-bwfan-api-update-contact-order.php process_api_call)
 	// =========================================================================
 	public function resync_contact_order() {
 		$cid = $this->get_sanitized_arg( 'contact_id', 'key' );
@@ -2109,6 +2153,27 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		$args = [ 'cid' => $cid ];
 		$hook = 'bwf_reindex_contact_orders';
 
+		/**
+		 * Stale completion sentinel: '-1' with no cleanup action queued (AS
+		 * trimmed/failed). Reset the cursor options only — actionscheduler rows are
+		 * never touched from an HTTP request — so the inline loop below runs a real
+		 * reindex now instead of reporting instant success. Leftover recurring
+		 * occurrences finish via the normal '-1' + end-action flow after this run.
+		 * GET_LOCK guard: skip the reset while a reindex pass is executing.
+		 */
+		if ( intval( get_option( "bwf_contact_orders_{$cid}", 0 ) ) < 0 && ! as_has_scheduled_action( 'bwf_reindex_contact_orders_end', $args, 'funnelkit' ) ) {
+			global $wpdb;
+			$lock_name = "bwf_reindex_{$cid}";
+			$got_lock  = $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 0)', $lock_name ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			if ( '1' === (string) $got_lock ) {
+				delete_option( "bwf_contact_orders_{$cid}" );
+				delete_option( "bwf_contact_orders_runs_{$cid}" );
+				$bwf_contact = new WooFunnels_Contact( '', '', '', $cid );
+				$bwf_contact->delete_meta( 'processed_order_ids' );
+				$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock_name ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			}
+		}
+
 		// If already scheduled
 		if ( as_has_scheduled_action( $hook, $args, 'funnelkit' ) ) {
 			return $this->success_response( [], __( 'Action already scheduled for the user', 'wp-marketing-automations' ) );
@@ -2117,13 +2182,28 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 		// Start the indexing for 10 seconds
 		$start_time = time();
 		$ins        = WooFunnels_DB_Updater::get_instance();
+		$batches    = 0;
+
+		/**
+		 * Hard cap independent of the time budget. Each batch is 10 orders via a fast, indexed
+		 * lookup, so on a contact with a very large order history this loop can run through far
+		 * more batches than 10s of wall clock implies - accumulating WC_Order objects in the
+		 * request-lifetime cache with no ceiling, since nothing here ever flushes it. That's a
+		 * fatal (memory or execution-time kill) with no log line, since a hard kill never reaches
+		 * PHP's own fatal-error handler. Once the cap is hit $response is still 0 (not complete),
+		 * so the existing fallback below schedules the recurring background action for the
+		 * remainder - same outcome as hitting the time budget, just reached sooner for these
+		 * contacts instead of crashing the request.
+		 */
+		$max_batches = (int) apply_filters( 'bwf_resync_contact_order_max_batches', 10, $cid );
 
 		do {
 			$response = $ins->bwf_reindex_contact_orders( $cid );
+			$batches ++;
 			if ( 1 === intval( $response ) || false === $response ) {
 				break;
 			}
-		} while ( ( time() - $start_time ) < 10 );
+		} while ( ( time() - $start_time ) < 10 && $batches < $max_batches );
 
 		switch ( $response ) {
 			case 0:

@@ -28,23 +28,23 @@ class WooCommerceABCPL extends Links {
 	 * @return array[]
 	 */
 	protected function get_links() {
-		return array(
-			array(
+		return [
+			[
 				'label' => __( 'Shipping configuration', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-info-wysylka',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Shipping Zones', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-info-strefy',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Shipping Classes', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-info-klasy',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Free Shipping', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-info-darmowa-wysylka',
-			),
-		);
+			],
+		];
 	}
 }

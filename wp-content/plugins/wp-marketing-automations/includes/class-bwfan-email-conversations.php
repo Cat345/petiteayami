@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0() ) {
 
@@ -11,6 +12,9 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 	class BWFAN_Email_Conversations {
 
 		private static $ins = null;
+
+		/** Lookups prefetched for the list being built: messages by track id, merge tags by engagement, sources by owner. */
+		private $batch = null;
 		public $track_open_url = '';
 		public $track_click_utm_parameters = array();
 		public $body;
@@ -494,7 +498,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 			if ( empty( $global_settings['__db_update_3_6_5_completed'] ) ) {
 				$last_id = bwf_options_get( 'last_template_hash_id' );
 				/** Check if template_hash column exists (for backward compatibility) */
-				$column_exists = $wpdb->get_row( "SHOW COLUMNS FROM {$table_name} LIKE 'template_hash'", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$column_exists = $wpdb->get_row( "SHOW COLUMNS FROM {$table_name} LIKE 'template_hash'", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; rest hardcoded
 				if ( ! empty( $column_exists ) && '' === $last_id ) {
 					$global_settings['__db_update_3_6_5_completed'] = true;
 					update_option( 'bwfan_global_settings', $global_settings );
@@ -504,17 +508,17 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 			/** Use hash for lookup if database update is complete, otherwise fallback to old method */
 			if ( ! empty( $global_settings['__db_update_3_6_5_completed'] ) ) {
 				$templates_data['template_hash'] = $template_hash;
-				$query = $wpdb->prepare( 'SELECT `ID` FROM ' . $table_name . ' WHERE `template_hash` = %s AND `subject` = %s' . $canned_query . ' LIMIT 1', $template_hash, $template_subject ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$query = $wpdb->prepare( 'SELECT `ID` FROM ' . $table_name . ' WHERE `template_hash` = %s AND `subject` = %s' . $canned_query . ' LIMIT 1', $template_hash, $template_subject ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; canned clause hardcoded; values via %s
 			} else {
 				/** Fallback to old method for backward compatibility */
-				$query = $wpdb->prepare( 'SELECT `ID` FROM ' . $table_name . ' WHERE `template` = %s AND `subject` = %s' . $canned_query . ' LIMIT 1', $template_body, $template_subject ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$query = $wpdb->prepare( 'SELECT `ID` FROM ' . $table_name . ' WHERE `template` = %s AND `subject` = %s' . $canned_query . ' LIMIT 1', $template_body, $template_subject ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; canned clause hardcoded; values via %s
 			}
 
 			$core_cache_obj = WooFunnels_Cache::get_instance();
 
 			$template_id = $core_cache_obj->get_cache( md5( $query ), 'fka-automation' );
 			if ( false === $template_id ) {
-				$template_data = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$template_data = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 
 				/** Fix collation issue */
 				if ( false !== strpos( $wpdb->last_error, 'collations' ) ) {
@@ -529,7 +533,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 
 					$charset = ( ! empty( $wpdb->charset ) && 'utf8mb3' !== $wpdb->charset ) ? $wpdb->charset : 'utf8mb4';
 					$wpdb->query( $wpdb->prepare( "SET NAMES %s COLLATE %s", $charset, $wp_collation ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-					$template_data = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$template_data = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 				}
 
 				if ( ! empty( $template_data[0]['ID'] ) ) {
@@ -612,8 +616,8 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 			foreach ( $meta as $key => $value ) {
 				$data = array(
 					'eid'        => $track_id,
-					'meta_key'   => $key,
-					'meta_value' => is_array( $value ) ? wp_json_encode( $value ) : $value,
+					'meta_key'   => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+					'meta_value' => is_array( $value ) ? wp_json_encode( $value ) : $value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 				);
 
 				BWFAN_Model_Engagement_Trackingmeta::insert( $data );
@@ -720,7 +724,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
             header( 'Content-Disposition: attachment; filename="blank.gif"' );
             header( 'Content-Transfer-Encoding: binary' );
             header( 'Content-Length: ' . filesize( $image_path ) ); // provide file size
-            readfile( $image_path );
+            readfile( $image_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- serves the 1x1 email open-tracking GIF; WP_Filesystem has no streaming read
 
             exit;
         }
@@ -952,13 +956,18 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 				 */
 				if ( $updated > 0 ) {
 					if ( has_action( 'bwfcrm_after_contact_subscribed' ) ) {
-						do_action( 'bwfcrm_after_contact_subscribed', $get_contact->contact );
+						do_action( 'bwfcrm_after_contact_subscribed', $get_contact->contact, array(
+							'restored_from_bounce' => 1,
+							'last_status'          => $last_status,
+						) );
 					} else {
 						BWFAN_Model_Automation_Events::insert_data( array(
-							'source'     => 'autonami',
-							'event'      => 'crm_contact_subscribed',
-							'contact_id' => $get_contact->contact->get_id(),
-							'email'      => $get_contact->contact->get_email(),
+							'source'               => 'autonami',
+							'event'                => 'crm_contact_subscribed',
+							'contact_id'           => $get_contact->contact->get_id(),
+							'email'                => $get_contact->contact->get_email(),
+							'restored_from_bounce' => 1,
+							'last_status'          => $last_status,
 						) );
 					}
 				}
@@ -1012,7 +1021,8 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 					$link     = str_replace( 'http://?', $home_url, $link );
 					$link     = str_replace( 'https://?', $home_url, $link );
 					if ( false !== BWFAN_Common::bwfan_is_valid_link( $link ) ) {
-						$home_url = add_query_arg( $_GET, home_url( '/' ) );
+						/** Re-encode the incoming query: add_query_arg() does not encode values, so a decoded bwfan-link containing & or # used to leak into the redirect */
+						$home_url = add_query_arg( rawurlencode_deep( wp_unslash( $_GET ) ), home_url( '/' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public link opened from an email; such links cannot carry a nonce
 						$home_url = add_query_arg( array(
 							'bwfan-link' => rawurlencode( $link )
 						), $home_url );
@@ -1171,9 +1181,38 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
                 return array();
             }
 
-            return array_map( function ( $con ) {
-                return $this->get_conversation_array( $con );
-            }, $cons );
+            /** One query per lookup for the page, not three per row */
+            $ids         = array();
+            $untemplated = array();
+            foreach ( $cons as $con ) {
+                $ids[] = absint( $con['ID'] );
+                if ( 0 === absint( $con['tid'] ) ) {
+                    $untemplated[] = absint( $con['ID'] );
+                }
+            }
+
+            $messages = array();
+            if ( ! empty( $untemplated ) ) {
+                foreach ( (array) BWFAN_Model_Message::get_message_by_track_id( $untemplated ) as $message ) {
+                    if ( ! isset( $messages[ (int) $message['track_id'] ] ) ) {
+                        $messages[ (int) $message['track_id'] ] = $message;
+                    }
+                }
+            }
+
+            $this->batch = array(
+                'messages'   => $messages,
+                'merge_tags' => BWFAN_Model_Engagement_Trackingmeta::get_merge_tags_for( $ids ),
+                'sources'    => array(),
+            );
+
+            try {
+                return array_map( function ( $con ) {
+                    return $this->get_conversation_array( $con );
+                }, $cons );
+            } finally {
+                $this->batch = null;
+            }
         }
 
 		/**
@@ -1366,7 +1405,15 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 				return array();
 			}
 
-            $source = $this->get_source( $con );
+            if ( null === $this->batch ) {
+                $source = $this->get_source( $con );
+            } else {
+                $key = absint( $con['type'] ) . ':' . absint( $con['oid'] ) . ':' . ( isset( $con['author_id'] ) ? absint( $con['author_id'] ) : 0 );
+                if ( ! array_key_exists( $key, $this->batch['sources'] ) ) {
+                    $this->batch['sources'][ $key ] = $this->get_source( $con );
+                }
+                $source = $this->batch['sources'][ $key ];
+            }
             if ( is_array( $source ) && ! empty( $source ) ) {
                 $con['source'] = $source;
             }
@@ -1386,12 +1433,20 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
             }
 
             if ( 0 === absint( $con['tid'] ) ) {
-                $template       = BWFAN_Model_Message::get_message_by_track_id( $con['ID'] );
+                if ( null === $this->batch ) {
+                    $template = BWFAN_Model_Message::get_message_by_track_id( $con['ID'] );
+                } else {
+                    $template = isset( $this->batch['messages'][ absint( $con['ID'] ) ] ) ? $this->batch['messages'][ absint( $con['ID'] ) ] : array();
+                }
                 $con['subject'] = ! empty( $template ) ? $template['subject'] : '';
                 $con['message'] = ! empty( $template ) ? $template['template'] : '';
             }
 
-            $merge_tags = BWFAN_Model_Engagement_Trackingmeta::get_merge_tags( $con['ID'] );
+            if ( null === $this->batch ) {
+                $merge_tags = BWFAN_Model_Engagement_Trackingmeta::get_merge_tags( $con['ID'] );
+            } else {
+                $merge_tags = isset( $this->batch['merge_tags'][ absint( $con['ID'] ) ] ) ? $this->batch['merge_tags'][ absint( $con['ID'] ) ] : array();
+            }
             if ( is_array( $merge_tags ) && 0 < count( $merge_tags ) ) {
                 $con['subject'] = $this->parse_email_merge_tags( $con['subject'], $merge_tags, $con['cid'] );
             }
@@ -1709,7 +1764,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
                 return false;
             }
 
-			$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( $_SERVER['HTTP_USER_AGENT'] ) : '';
+			$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 			foreach ( $skip_user_agents as $skip_user_agent ) {
 				if ( false !== strpos( $user_agent, $skip_user_agent ) ) {
 					return true;
@@ -1747,7 +1802,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 				$data = [
 					'link_id'    => self::$link_id,
 					'contact_id' => $engagement['cid'] ?? 0,
-					'ip_address' => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( $_SERVER['REMOTE_ADDR'] ) : '',
+					'ip_address' => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
 					'count'      => 1,
 					'created_at' => current_time( 'mysql', 1 ),
 				];

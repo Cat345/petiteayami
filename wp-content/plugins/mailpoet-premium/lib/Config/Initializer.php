@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) exit;
 
 
 use MailPoet\Cron\Workers\StatsNotifications\Worker;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTagManager as FreePersonalizationTagManager;
 use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
 use MailPoet\Premium\Automation\Engine\Engine;
 use MailPoet\Premium\Config\Hooks as ConfigHooks;
@@ -43,6 +44,8 @@ class Initializer {
 
   private PersonalizationTagManager $personalizationTagManager;
 
+  private FreePersonalizationTagManager $freePersonalizationTagManager;
+
   /** @var RecipientsExporter */
   private $recipientsExporter;
 
@@ -57,6 +60,7 @@ class Initializer {
     RendererFactory $rendererFactory,
     Subscribers $subscribers,
     PersonalizationTagManager $personalizationTagManager,
+    FreePersonalizationTagManager $freePersonalizationTagManager,
     RecipientsExporter $recipientsExporter
   ) {
     $this->wp = $wp;
@@ -67,6 +71,7 @@ class Initializer {
     $this->rendererFactory = $rendererFactory;
     $this->subscribers = $subscribers;
     $this->personalizationTagManager = $personalizationTagManager;
+    $this->freePersonalizationTagManager = $freePersonalizationTagManager;
     $this->recipientsExporter = $recipientsExporter;
   }
 
@@ -190,17 +195,25 @@ class Initializer {
   }
 
   public function newslettersCampaignStats() {
-    // shortcode URLs to substitute with user-friendly names
-    $data['shortcode_links'] = Worker::getShortcodeLinksMapping();
+    $data['shortcode_links'] = $this->getLinkLabels();
 
     $this->renderView('newsletters/campaign_stats.html', $data);
   }
 
   public function subscribersStats() {
-    // shortcode URLs to substitute with user-friendly names
-    $data['shortcode_links'] = Worker::getShortcodeLinksMapping();
+    $data['shortcode_links'] = $this->getLinkLabels();
 
     $this->renderView('subscribers/stats.html', $data);
+  }
+
+  /**
+   * Stored link URLs to substitute with user-friendly names: legacy shortcodes
+   * and personalization tag tokens.
+   *
+   * @return array<string, string>
+   */
+  private function getLinkLabels(): array {
+    return Worker::getShortcodeLinksMapping() + $this->freePersonalizationTagManager->getTokenDisplayNames();
   }
 
   public function includePremiumStyles() {

@@ -69,7 +69,8 @@ class BeaconClickedAjax implements Hookable {
 			$handle,
 			trailingslashit( $this->assets_url ) . 'js/beacon-clicked' . $suffix . '.js',
 			[ 'jquery' ],
-			$this->scripts_version
+			$this->scripts_version,
+			false
 		);
 
 		wp_localize_script(

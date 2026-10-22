@@ -174,6 +174,20 @@ class WFOB_Public {
 			$item['data']->set_price( $parse_data['price'] );
 			$item['data']->set_sale_price( $parse_data['price'] );
 
+			// WooCommerce 11.1.0's ScheduledSalePriceReconciler (woocommerce/woocommerce#65551)
+			// returns the regular price from `woocommerce_product_get_price` whenever "now" is outside
+			// a product's sale window and the active price still equals the sale price - which is always
+			// true here, because the two lines above write the same value to both. Since WooCommerce 10.x
+			// a lapsed sale keeps its price and dates forever, so this affects every product that ever ran
+			// one, and a sale scheduled to start later trips the same branch. Dropping the window from this
+			// per-request object makes the reconciler return at its own "no sale dates" guard. Deliberately
+			// outside the wfob_set_bump_product_price_params gate: Price Based on Country and YayCurrency
+			// return false there, and those sites need this just as much. Nothing is saved.
+			if ( $item['data']->get_date_on_sale_from( 'edit' ) || $item['data']->get_date_on_sale_to( 'edit' ) ) {
+				$item['data']->set_date_on_sale_from( '' );
+				$item['data']->set_date_on_sale_to( '' );
+			}
+
 			do_action( 'wfob_after_discount_calculated_per_item', $item, $parse_data );
 
 		}

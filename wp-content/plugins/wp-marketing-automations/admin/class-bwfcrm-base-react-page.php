@@ -15,6 +15,12 @@ abstract class BWFCRM_Base_React_Page {
 		/** Menu Data */
 		$this->page_data['header_data'] = apply_filters( 'bwfan_filter_app_header_data', $this->get_header_data() );
 
+		/** Compact page validations for the header notice; replaces the header's dependency on the full settings schema (which now prints only on settings screens) */
+		$this->page_data['page_validations'] = array(
+			'bwfan_unsubscribe_page' => BWFAN_Common::is_unsubscribe_page_valid(),
+			'bwfan_profile_page'     => BWFAN_Common::is_profile_page_valid(),
+		);
+
 		/** Forms */
 		$this->page_data['form_nice_names'] = $this->get_formatted_form_data();
 		$this->page_data['available_forms'] = class_exists( 'BWFCRM_Core' ) ? BWFCRM_Core()->forms->get_available_forms() : array();
@@ -58,18 +64,6 @@ abstract class BWFCRM_Base_React_Page {
 		if ( is_ssl() ) {
 			$this->page_data['app_path'] = preg_replace( "/^http:/i", "https:", $this->page_data['app_path'] );
 		}
-
-		$this->page_data['icons'] = array(
-			'error'   => '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2" class="wffn_loader wffn_loader_error">
-                        <circle fill="none" stroke="#ffb7bf" stroke-width="6" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1" class="path circle"></circle>
-                        <line fill="none" stroke="#e64155" stroke-width="8" stroke-linecap="round" stroke-miterlimit="10" x1="34.4" y1="37.9" x2="95.8" y2="92.3" class="path line"></line>
-                        <line fill="none" stroke="#e64155" stroke-width="8" stroke-linecap="round" stroke-miterlimit="10" x1="95.8" y1="38" x2="34.4" y2="92.2" class="path line"></line>
-                    </svg>',
-			'success' => '<svg class="wffn_loader wffn_loader_ok" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
-                                <circle class="path circle" fill="none" stroke="#baeac5" stroke-width="5" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"></circle>
-                                <polyline class="path check" fill="none" stroke="#39c359" stroke-width="9" stroke-linecap="round" stroke-miterlimit="10" points="100.2,40.2 51.5,88.8 29.8,67.5 "></polyline>
-                            </svg>',
-		);
 
 		$first_contact_id = $first_broadcast_id = $first_form_id = $first_automation_id = $first_export_id = $first_template_id = $first_link_trigger_id = $first_bulk_action_id = $first_audience_id = null;
 		if ( apply_filters( 'bwf_set_zero_state', true ) ) {
@@ -249,7 +243,11 @@ abstract class BWFCRM_Base_React_Page {
 		$this->page_data['feature_enabled']              = [
 			'categories' => class_exists('BWFCRM_Category' ),
 			'contact_filters' => class_exists('BWFCRM_Load_Filters' ),
+			'announcements'   => BWFAN_Announcements::is_enabled(),
 		];
+
+		/** Automation canvas edge style: squared (step) edges by default; return false to restore the older curved UI */
+		$this->page_data['squared_edges'] = apply_filters( 'bwfan_automation_squared_edges', true ) ? 1 : 0;
 
 		$this->page_data['bwf_review_count'] = 330;
 
@@ -367,7 +365,7 @@ abstract class BWFCRM_Base_React_Page {
 		}
 
 		wp_enqueue_style( 'wp-components' );
-		wp_enqueue_style( 'bwfcrm_material_icons', 'https://fonts.googleapis.com/icon?family=Material+Icons+Outlined' );
+		wp_enqueue_style( 'bwfcrm_material_icons', 'https://fonts.googleapis.com/icon?family=Material+Icons+Outlined', array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- external Google Fonts URL; null skips the meaningless ?ver= WordPress would append
 
 		$deps    = $this->get_deps( $app_name );
 		$version = ( isset( $deps['version'] ) ? $deps['version'] : time() );

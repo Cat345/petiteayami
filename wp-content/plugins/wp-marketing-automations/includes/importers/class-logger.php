@@ -26,7 +26,7 @@ class Logger {
 	 */
 	public function log( $message, $data = array() ) {
 		$default_args = array(
-			'timestamp'     => date( 'Y-m-d H:i:s' ),
+			'timestamp'     => gmdate( 'Y-m-d H:i:s' ),
 			'message'       => empty( $message ) ? __( 'An error occurred during import.', 'wp-marketing-automations' ) : $message,
 			'contact_id'    => 0,
 			'contact_email' => '',
@@ -51,7 +51,7 @@ class Logger {
 		try {
 			$file_exists = file_exists( $this->file_path );
 
-			$file = fopen( $this->file_path, 'a' );
+			$file = fopen( $this->file_path, 'a' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- appends to the importer log file; WP_Filesystem has no append API
 
 			// Add header if the file is newly created
 			if ( ! $file_exists ) {
@@ -73,10 +73,10 @@ class Logger {
 
 			fputcsv( $file, $data, ',', '"', '\\' );
 
-			fclose( $file );
+			fclose( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the stream opened above
 		} catch ( Exception $e ) {
 			/* translators: 1: Error message */
-			error_log( sprintf( __( 'Error writing to log file: %1$s', 'wp-marketing-automations' ), $e->getMessage() ) );
+			error_log( sprintf( __( 'Error writing to log file: %1$s', 'wp-marketing-automations' ), $e->getMessage() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- fallback when writing the importer log file fails
 		}
 	}
 }

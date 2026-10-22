@@ -62,12 +62,12 @@ class StripeTaxTaxRateHooks extends Hook_Handlers {
 	/**
 	 * Override compound if present; else passthrough.
 	 *
-	 * @param string $rate_compound Rate label.
-	 * @param int    $rate_id Rate id.
+	 * @param mixed $rate_compound Rate compound value.
+	 * @param int   $rate_id Rate id.
 	 */
 	public static function rate_compound( $rate_compound, $rate_id ) {
 		$stripe_compound = StripeTaxTaxRateMemRepo::read_rate_compound( $rate_id );
 
-		return $stripe_compound ? $stripe_compound : $rate_compound;
+		return is_null( $stripe_compound ) ? $rate_compound : $stripe_compound;
 	}
 }

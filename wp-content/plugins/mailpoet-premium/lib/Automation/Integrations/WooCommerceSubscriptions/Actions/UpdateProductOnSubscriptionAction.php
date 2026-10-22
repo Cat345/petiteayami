@@ -49,9 +49,11 @@ class UpdateProductOnSubscriptionAction extends AbstractSubscriptionAction imple
   public function validate(StepValidationArgs $args): void {
     $this->validateWooCommerceSubscriptionsActive();
     $this->validateStepArgs($args->getStep()->getArgs());
+    $this->authorizeSave($args->getAutomation());
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
+    $this->authorizeRun($args->getAutomation());
     $this->runtimeWooCommerceSubscriptionsActive();
     $stepArgs = $args->getStep()->getArgs();
     $this->validateStepArgs($stepArgs);

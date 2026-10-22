@@ -18,7 +18,7 @@ class ImporterData implements Hookable {
 	 * @return void|null
 	 */
 	public function hooks() {
-		add_filter( 'flexible-shipping/importer/json/data', array( $this, 'prepare_import_data' ), 10, 3 );
+		add_filter( 'flexible-shipping/importer/json/data', [ $this, 'prepare_import_data' ], 10, 3 );
 	}
 
 	/**
@@ -40,7 +40,7 @@ class ImporterData implements Hookable {
 				}
 
 				foreach ( $condition['shipping_class'] as $shipping_class_id => $shipping_class ) {
-					if ( in_array( $shipping_class, array( 'all', 'any', 'none' ), true ) ) {
+					if ( in_array( $shipping_class, [ 'all', 'any', 'none' ], true ) ) {
 						continue;
 					}
 

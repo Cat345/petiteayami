@@ -262,10 +262,10 @@ class BWFAN_Importer {
 	 * @return false|resource
 	 */
 	public static function create_importer_log_file( $file, $file_header ) {
-		$file_source = fopen( $file, 'a' );
+		$file_source = fopen( $file, 'a' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- appends to the export/import file; WP_Filesystem has no append API
 		if ( ! empty( $file_source ) ) {
 			fputcsv( $file_source, $file_header, ',', '"', '\\' );
-			fclose( $file_source );
+			fclose( $file_source ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the stream opened above
 		}
 
 		return $file_source;
@@ -278,11 +278,11 @@ class BWFAN_Importer {
 	 * @param $file_name
 	 */
 	public static function append_data_to_log_file( $file_name, $data ) {
-		$file = fopen( $file_name, 'a' );
+		$file = fopen( $file_name, 'a' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- appends to the export/import file; WP_Filesystem has no append API
 
 		if ( ! empty( $file ) ) {
 			fputcsv( $file, $data, ',', '"', '\\' );
-			fclose( $file );
+			fclose( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the stream opened above
 		}
 	}
 

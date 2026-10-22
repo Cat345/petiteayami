@@ -22,8 +22,9 @@ class BWFAN_Model_Taskmeta extends BWFAN_Model {
 		global $wpdb;
 		$table     = self::_table();
 		$sql_query = "SELECT * FROM $table WHERE bwfan_task_id =%d";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		$sql_query = $wpdb->prepare( $sql_query, $task_id ); // WPCS: unprepared SQL OK
-		$result    = $wpdb->get_results( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result    = $wpdb->get_results( $sql_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		$meta      = [];
 
 		if ( is_array( $result ) && count( $result ) > 0 ) {

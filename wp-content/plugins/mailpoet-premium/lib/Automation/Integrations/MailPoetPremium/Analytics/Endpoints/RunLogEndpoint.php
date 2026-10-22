@@ -12,21 +12,25 @@ use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Analytics\Controller\RunLogController;
+use MailPoet\Premium\Util\License\DetailedAnalyticsGuard;
 use MailPoet\Validator\Builder;
 
 class RunLogEndpoint extends Endpoint {
   private AutomationRunStorage $automationRunStorage;
   private AutomationStorage $automationStorage;
   private RunLogController $runLogController;
+  private DetailedAnalyticsGuard $detailedAnalyticsGuard;
 
   public function __construct(
     AutomationRunStorage $automationRunStorage,
     AutomationStorage $automationStorage,
-    RunLogController $runLogController
+    RunLogController $runLogController,
+    DetailedAnalyticsGuard $detailedAnalyticsGuard
   ) {
     $this->automationRunStorage = $automationRunStorage;
     $this->automationStorage = $automationStorage;
     $this->runLogController = $runLogController;
+    $this->detailedAnalyticsGuard = $detailedAnalyticsGuard;
   }
 
   public static function getRequestSchema(): array {
@@ -36,6 +40,8 @@ class RunLogEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
+    $this->detailedAnalyticsGuard->guardRestAccess();
+
     $runId = absint(is_numeric($request->getParam('id')) ? $request->getParam('id') : 0);
     $automationRun = $this->automationRunStorage->getAutomationRun($runId);
     if (!$automationRun) {

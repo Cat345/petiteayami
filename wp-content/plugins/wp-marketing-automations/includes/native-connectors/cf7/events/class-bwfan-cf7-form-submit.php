@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[AllowDynamicProperties]
 final class BWFAN_CF7_Form_Submit extends BWFAN_Event {
@@ -208,14 +209,14 @@ final class BWFAN_CF7_Form_Submit extends BWFAN_Event {
 
 	public function bwfan_get_cf7_form_fields() {
 		BWFAN_Common::check_nonce();
-		$form_id = absint( sanitize_text_field( $_POST['id'] ) );
+		$form_id = isset( $_POST['id'] ) ? absint( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified by BWFAN_Common::check_nonce() above
 		$fields  = [];
 		if ( ! empty( $form_id ) ) {
 			$fields = $this->get_form_fields( $form_id );
 		}
 
 		/** handling form fields for the v2 automations */
-		if ( isset( $_POST['fromApp'] ) && $_POST['fromApp'] ) {
+		if ( isset( $_POST['fromApp'] ) && sanitize_text_field( wp_unslash( $_POST['fromApp'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified by BWFAN_Common::check_nonce() above
 			$finalarr = [];
 			foreach ( $fields as $key => $value ) {
 				$finalarr[] = [
@@ -288,9 +289,9 @@ final class BWFAN_CF7_Form_Submit extends BWFAN_Event {
 
 			$pipes = $tag->pipes;
 
-			$value = ( ! empty( $_POST[ $tag->name ] ) ) ? $_POST[ $tag->name ] : '';
+			$value = ( ! empty( $_POST[ $tag->name ] ) ) ? wp_unslash( $_POST[ $tag->name ] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- public CF7 submission captured on the wpcf7_submit hook; CF7 forms carry no nonce by design. Raw value must reach do_pipe() unmodified; sanitized below before storing
 			if ( ! WPCF7_USE_PIPE || ! $pipes instanceof \WPCF7_Pipes || $pipes->zero() ) {
-				$data[ $tag->name ] = $value;
+				$data[ $tag->name ] = map_deep( $value, 'sanitize_textarea_field' );
 			}
 
 			//Select field pipes
@@ -298,16 +299,16 @@ final class BWFAN_CF7_Form_Submit extends BWFAN_Event {
 				$new_value = [];
 
 				foreach ( $value as $v ) {
-					$new_value[] = $pipes->do_pipe( wp_unslash( $v ) );
+					$new_value[] = $pipes->do_pipe( $v );
 				}
 
 				$value = $new_value;
 			} else {
-				$value = $pipes->do_pipe( wp_unslash( $value ) );
+				$value = $pipes->do_pipe( $value );
 			}
 
 
-			$data[ $tag->name ] = $value;
+			$data[ $tag->name ] = map_deep( $value, 'sanitize_textarea_field' );
 		}
 
 		return $data;

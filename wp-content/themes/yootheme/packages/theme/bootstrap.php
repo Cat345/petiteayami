@@ -10,6 +10,7 @@ return [
 
     'events' => [
         'metadata.load' => [Listener\LoadThemeVersion::class => ['handle', -10]],
+        'theme.init' => [Listener\LoadChildTheme::class => ['@handle', -10]],
 
         'theme.head' => [
             Listener\LoadThemeHead::class => ['@handle', -10],

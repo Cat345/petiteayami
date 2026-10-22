@@ -385,7 +385,7 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 			);
 
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
-				$results['msg'] = __( 'You do not have permission to perform this action.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				$results['msg'] = __( 'You do not have permission to perform this action.', 'wp-marketing-automations' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				wp_send_json( $results, 403 );
 			}
 

@@ -18,13 +18,11 @@ final class Ajax implements Hookable {
 	public function handle(): void {
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( $this->post_string( 'nonce' ), self::ACTION ) ) {
 			wp_send_json_error( [ 'message' => __( 'You are not allowed to perform this action. Please reload the page.', 'flexible-shipping' ) ], 403 );
-			return;
 		}
 		$state = new PetitionState( (array) get_option( PetitionState::OPTION, [] ) );
 		$now   = time();
 		if ( ! $state->is_due( (int) get_option( PetitionState::COUNT_OPTION, 0 ), (int) get_option( PetitionState::LEGACY_OPTION, 0 ) === 1, $now ) ) {
 			wp_send_json_error( [ 'message' => __( 'This rating request is no longer active. Please reload the page.', 'flexible-shipping' ) ], 409 );
-			return;
 		}
 		$operation = $this->post_string( 'operation' );
 		if ( $operation === 'snooze' && in_array( $this->post_string( 'minutes' ), [ '15', '30', '60' ], true ) ) {
@@ -37,7 +35,6 @@ final class Ajax implements Hookable {
 			$state->complete( $rating, $now );
 		} else {
 			wp_send_json_error( [ 'message' => __( 'Invalid rating or postponement value.', 'flexible-shipping' ) ], 400 );
-			return;
 		}
 		update_option( PetitionState::OPTION, $state->to_array(), false );
 		$result = array_intersect_key( $state->to_array(), array_flip( [ 'completed', 'muted' ] ) );
@@ -52,7 +49,6 @@ final class Ajax implements Hookable {
 		$length   = function_exists( 'mb_strlen' ) ? mb_strlen( $feedback, 'UTF-8' ) : preg_match_all( '/./us', $feedback );
 		if ( $length < 10 ) {
 			wp_send_json_error( [ 'message' => __( 'Please enter at least 10 characters of feedback.', 'flexible-shipping' ) ], 400 );
-			return false;
 		}
 		$user    = wp_get_current_user();
 		$email   = $user ? sanitize_email( $user->user_email ) : '';

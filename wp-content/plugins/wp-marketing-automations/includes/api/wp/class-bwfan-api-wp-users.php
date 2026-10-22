@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 class BWFAN_Api_Get_WP_User extends BWFAN_API_Base {

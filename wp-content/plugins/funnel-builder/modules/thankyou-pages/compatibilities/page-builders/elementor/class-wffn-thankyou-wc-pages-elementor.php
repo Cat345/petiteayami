@@ -382,7 +382,11 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Elementor' ) ) {
 		}
 
 		public function register_conditions( $conditions_manager ) {
-			require plugin_dir_path( WFFN_PLUGIN_FILE ) . 'modules/thankyou-pages/compatibilities/page-builders/elementor/conditions/class-wffn-ty-pages.php';
+			/** Absent for a moment while WordPress replaces the plugin folder during an update */
+			if ( ! file_exists( __DIR__ . '/conditions/class-wffn-ty-pages.php' ) ) {
+				return;
+			}
+			require_once __DIR__ . '/conditions/class-wffn-ty-pages.php';
 			$new_condition = new ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_TY_Pages(
 				array(
 					'post_type' => WFFN_Core()->thank_you_pages->get_post_type_slug(),

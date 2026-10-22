@@ -13,7 +13,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Util\License\Features\CapabilitiesManager;
+use MailPoet\Premium\Util\License\DetailedAnalyticsGuard;
 use MailPoet\Validator\Builder;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -25,19 +25,19 @@ abstract class AbstractNewsletterStatsListingEndpoint extends Endpoint {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  /** @var CapabilitiesManager */
-  private $capabilitiesManager;
+  /** @var DetailedAnalyticsGuard */
+  private $detailedAnalyticsGuard;
 
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
     NewslettersRepository $newslettersRepository,
-    CapabilitiesManager $capabilitiesManager,
+    DetailedAnalyticsGuard $detailedAnalyticsGuard,
     WPFunctions $wp
   ) {
     $this->newslettersRepository = $newslettersRepository;
-    $this->capabilitiesManager = $capabilitiesManager;
+    $this->detailedAnalyticsGuard = $detailedAnalyticsGuard;
     $this->wp = $wp;
   }
 
@@ -60,7 +60,7 @@ abstract class AbstractNewsletterStatsListingEndpoint extends Endpoint {
 
   public function handle(Request $request): Response {
     $newsletter = $this->getNewsletter($request);
-    $this->guardDetailedAnalyticsAccess();
+    $this->detailedAnalyticsGuard->guardRestAccess('mailpoet_stats_detailed_analytics_restricted');
     $this->guardNewsletterIsSent($newsletter);
 
     $perPage = $this->getPerPage($request);
@@ -162,17 +162,6 @@ abstract class AbstractNewsletterStatsListingEndpoint extends Endpoint {
     }
 
     return $newsletter;
-  }
-
-  private function guardDetailedAnalyticsAccess(): void {
-    $capability = $this->capabilitiesManager->getCapability('detailedAnalytics');
-    if ($capability && $capability->isRestricted) {
-      throw new ApiException(
-        __('Detailed analytics are not available for this site.', 'mailpoet-premium'),
-        403,
-        'mailpoet_stats_detailed_analytics_restricted'
-      );
-    }
   }
 
   private function guardNewsletterIsSent(NewsletterEntity $newsletter): void {

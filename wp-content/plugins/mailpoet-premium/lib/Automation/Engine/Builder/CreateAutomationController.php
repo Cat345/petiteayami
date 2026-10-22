@@ -44,6 +44,7 @@ class CreateAutomationController {
     }
 
     $automation = new Automation($data['name'], $steps, wp_get_current_user());
+    $this->hooks->doAutomationBeforeSave($automation);
     $this->automationValidator->validate($automation);
     $automationId = $this->storage->createAutomation($automation);
     $automation = $this->storage->getAutomation($automationId);

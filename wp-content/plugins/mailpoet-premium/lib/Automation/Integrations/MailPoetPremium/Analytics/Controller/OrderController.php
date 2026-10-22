@@ -97,7 +97,7 @@ class OrderController {
     $allOrders = array_values(array_filter(
       is_array($allOrders) ? $allOrders : [],
       function ($order): bool {
-        /** @phpstan-ignore-next-line instanceof.alwaysTrue -- defends against 3rd-party filters on wc_get_orders. */
+        // Defends against 3rd-party filters on wc_get_orders.
         return $order instanceof WC_Order;
       }
     ));

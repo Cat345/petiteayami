@@ -21,7 +21,7 @@ class ConvertNotice implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_action( 'woocommerce_settings_shipping', array( $this, 'add_admin_notice' ) );
+		add_action( 'woocommerce_settings_shipping', [ $this, 'add_admin_notice' ] );
 	}
 
 	/**
@@ -127,16 +127,16 @@ class ConvertNotice implements Hookable {
 	 * @param bool   $is_limited_notice_width .
 	 */
 	private function add_notice( $message, $type = 'error', $is_limited_notice_width = false ) {
-		$classes = array( 'fs-notice js--move-notice inline' );
+		$classes = [ 'fs-notice js--move-notice inline' ];
 
 		if ( $is_limited_notice_width ) {
 			$classes[] = 'is-limited-width';
 		}
 
-		new Notice( $message, $type, false, 10, array( 'class' => implode( ' ', $classes ) ) );
+		new Notice( $message, $type, false, 10, [ 'class' => implode( ' ', $classes ) ] );
 
-		if ( ! has_action( 'admin_footer', array( $this, 'move_notice_script' ) ) ) {
-			add_action( 'admin_footer', array( $this, 'move_notice_script' ) );
+		if ( ! has_action( 'admin_footer', [ $this, 'move_notice_script' ] ) ) {
+			add_action( 'admin_footer', [ $this, 'move_notice_script' ] );
 		}
 	}
 

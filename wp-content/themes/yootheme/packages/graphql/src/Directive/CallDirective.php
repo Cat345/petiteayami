@@ -2,16 +2,13 @@
 
 namespace YOOtheme\GraphQL\Directive;
 
-use YOOtheme\Container;
 use YOOtheme\GraphQL\Type\Definition\Directive;
 use YOOtheme\GraphQL\Type\Definition\Type;
 use YOOtheme\GraphQL\Utils\Middleware;
 
 class CallDirective extends Directive
 {
-    protected Container $container;
-
-    public function __construct(Container $container)
+    public function __construct()
     {
         parent::__construct([
             'name' => 'call',
@@ -27,8 +24,6 @@ class CallDirective extends Directive
             ],
             'locations' => ['ENUM_VALUE', 'FIELD_DEFINITION'],
         ]);
-
-        $this->container = $container;
     }
 
     /**
@@ -39,11 +34,11 @@ class CallDirective extends Directive
     public function __invoke(array $params, Middleware $resolver): ?\Closure
     {
         // override default resolver
-        $resolver->setHandler($this->container->callback($params['func']));
+        $resolver->setHandler($params['func']);
 
         // merge additional arguments
         if (isset($params['args']) && is_array($arguments = json_decode($params['args'], true))) {
-            return fn($value, $args, $context, $info, $next) => $next(
+            return static fn($value, $args, $context, $info, $next) => $next(
                 $value,
                 $args + $arguments,
                 $context,

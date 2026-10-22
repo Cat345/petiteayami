@@ -28,14 +28,12 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			add_filter( 'wffn_conversion_tracking_localize_data', array( $this, 'update_data_localize_data' ) );
 
 			/**
-			 * Legacy framework (Lite not yet updated) still contains and runs the
-			 * whole visitor pipeline itself — stand down entirely to avoid double
-			 * rendering, double journey writes or a second meta box. Detected by
-			 * feature (method presence), never by version or constant.
+			 * Newer framework copies register the same visitor pipeline, which would
+			 * render the tracker twice, migrate the journey column twice, append the
+			 * upsell view twice and add a second meta box. This class owns that work,
+			 * so stand the framework's copy down instead of standing down ourselves.
 			 */
-			if ( method_exists( 'BWF_Ecomm_Tracking_Common', 'get_common_tracking_data' ) ) {
-				return;
-			}
+			add_action( 'wp_loaded', array( $this, 'unhook_framework_tracking' ), 0 );
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'render_utm_tracker' ), 1 );
 			/** Upsell offer pages render a custom template head — enqueue there too (idempotent by handle) */
@@ -47,8 +45,37 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			add_filter( 'bwf_insert_conversion_tracking_data', array( $this, 'maybe_populate_referrer_from_utm' ), 10, 1 );
 
 			add_action( 'wc_ajax_wfocu_front_register_views', array( __CLASS__, 'update_upsell_journey' ) );
+			add_action( 'wffn_optin_ty_page_setup_completed', array( $this, 'append_optin_ty_to_journey' ), 10, 1 );
 			add_action( 'admin_init', array( $this, 'maybe_update_conversion_journey_column' ) );
 			add_action( 'add_meta_boxes', array( $this, 'add_single_order_meta_box' ), 50, 2 );
+		}
+
+		/**
+		 * Detach the framework copy from the hooks this class handles.
+		 *
+		 * Runs on wp_loaded: the framework registers at load time, and every hook
+		 * removed here fires later, so the removal always lands in between. Each
+		 * callback is addressed exactly as it was added — same instance, same
+		 * priority — and a copy that never registered simply does not match.
+		 *
+		 * @since 3.16.1
+		 *
+		 * @return void
+		 */
+		public function unhook_framework_tracking() {
+			if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) || ! method_exists( 'BWF_Ecomm_Tracking_Common', 'get_instance' ) ) {
+				return;
+			}
+
+			$framework = BWF_Ecomm_Tracking_Common::get_instance();
+			if ( ! $framework instanceof BWF_Ecomm_Tracking_Common ) {
+				return;
+			}
+
+			remove_action( 'wp_enqueue_scripts', array( $framework, 'render' ), 1 );
+			remove_action( 'add_meta_boxes', array( $framework, 'add_single_order_meta_box' ), 50 );
+			remove_action( 'admin_init', array( $framework, 'maybe_update_conversion_journey_column' ) );
+			remove_action( 'wc_ajax_wfocu_front_register_views', array( 'BWF_Ecomm_Tracking_Common', 'update_upsell_journey' ) );
 		}
 
 		/**
@@ -78,6 +105,47 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 		}
 
 		/**
+		 * Whether customer-journey collection is enabled.
+		 *
+		 * Self-contained (reads the options directly) and memoised per request so it
+		 * is safe to call from the static write points even when the Pro visitor
+		 * pipeline has stood down for a legacy framework. AND-combines track_utms and
+		 * track_journey: when UTM tracking is off the tracker never loads, so journey
+		 * is implicitly off (decision D2).
+		 *
+		 * @since 3.16.1
+		 *
+		 * @return bool
+		 */
+		/**
+		 * Whether either tracking option is on.
+		 *
+		 * The order meta box carries the UTM/insight data and the journey, so it
+		 * has nothing to show once both are switched off.
+		 *
+		 * @since 3.16.1
+		 *
+		 * @return bool
+		 */
+		public static function is_tracking_meta_enabled() {
+			$settings = BWF_Admin_General_Settings::get_instance();
+
+			return wffn_string_to_bool( $settings->get_option( 'track_utms' ) ) || wffn_string_to_bool( $settings->get_option( 'track_journey' ) );
+		}
+
+		public static function is_journey_enabled() {
+			static $enabled = null;
+			if ( null !== $enabled ) {
+				return $enabled;
+			}
+
+			$settings = BWF_Admin_General_Settings::get_instance();
+			$enabled  = wffn_string_to_bool( $settings->get_option( 'track_utms' ) ) && wffn_string_to_bool( $settings->get_option( 'track_journey' ) );
+
+			return $enabled;
+		}
+
+		/**
 		 * Render the first-party tracker (utm-tracker.js). Controlled by the
 		 * track_utms setting; never loads twice (handle guard covers this
 		 * method's two hooks firing on the same request).
@@ -102,7 +170,7 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			 * The offer view is appended to the journey server-side in update_upsell_journey().
 			 */
 			$journey_control = 'enable';
-			if ( class_exists('WooCommerce') && class_exists( 'WFFN_Common' ) && WFFN_Common::wffn_is_funnel_pro_active() && function_exists( 'WFOCU_Core' ) && WFOCU_Core()->public->if_is_offer() ) {
+			if ( class_exists( 'WooCommerce' ) && class_exists( 'WFFN_Common' ) && WFFN_Common::wffn_is_funnel_pro_active() && function_exists( 'WFOCU_Core' ) && WFOCU_Core()->public->if_is_offer() ) {
 				$journey_control = 'disable';
 			}
 
@@ -123,10 +191,19 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			}
 
 			/**
+			 * When journey recording is turned off the tracker still loads for UTMs,
+			 * but any existing cookie must be dropped on the next view. 'remove' wins
+			 * over the offer-page 'disable' so the cookie does not linger while off.
+			 */
+			if ( ! self::is_journey_enabled() ) {
+				$journey_control = 'remove';
+			}
+
+			/**
 			 * On the thank-you page the journey has already been persisted onto the order,
 			 * so the tracker drops the cookie to start the next journey clean.
 			 */
-			$is_thankyou_page = ( class_exists('WooCommerce') && class_exists( 'WFFN_Core' ) && isset( WFFN_Core()->thank_you_pages ) && is_callable( array( WFFN_Core()->thank_you_pages, 'is_wfty_page' ) ) && true === WFFN_Core()->thank_you_pages->is_wfty_page() ) ? 1 : 0;
+			$is_thankyou_page = ( class_exists( 'WooCommerce' ) && class_exists( 'WFFN_Core' ) && isset( WFFN_Core()->thank_you_pages ) && is_callable( array( WFFN_Core()->thank_you_pages, 'is_wfty_page' ) ) && true === WFFN_Core()->thank_you_pages->is_wfty_page() ) ? 1 : 0;
 
 			/**
 			 * Cookie domain for the tracking/journey cookies. Empty by default → the JS
@@ -275,7 +352,7 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND table_name = %s AND column_name = 'journey'", $wpdb->dbname, $table_name ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			if ( empty( $is_col ) ) {
-				$wpdb->query( "ALTER TABLE `{$table_name}` ADD `journey` longtext AFTER `referrer`" ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( "ALTER TABLE `{$table_name}` ADD `journey` longtext AFTER `referrer`" ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $table_name is $wpdb->prefix + an internal constant, never user input; table/column identifiers can't be passed through $wpdb->prepare() placeholders.
 				if ( ! empty( $wpdb->last_error ) ) {
 					return;
 				}
@@ -298,7 +375,10 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 				}
 				$store = $data;
 			} else {
-				$store = array( 'j' => is_array( $data ) ? $data : array(), 's' => array() );
+				$store = array(
+					'j' => is_array( $data ) ? $data : array(),
+					's' => array(),
+				);
 			}
 
 			/**
@@ -307,9 +387,46 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			 * the order meta nor the conversion row carries them.
 			 */
 			foreach ( $store['j'] as $key => $entry ) {
-				if ( is_array( $entry ) && array_key_exists( 't', $entry ) ) {
+				if ( ! is_array( $entry ) ) {
+					continue;
+				}
+				if ( array_key_exists( 't', $entry ) ) {
 					unset( $store['j'][ $key ]['t'] );
 				}
+				// Normalise the page id to an int on every write so new rows are
+				// uniform (the browser writer stores it as a string).
+				if ( isset( $entry['i'] ) ) {
+					$store['j'][ $key ]['i'] = absint( $entry['i'] );
+				}
+			}
+
+			/**
+			 * The 2000-byte/20-entry cap in utm-tracker.js only bounds what a
+			 * well-behaved browser sends -- a forged Cookie header reaches this
+			 * method directly, bypassing it entirely. Every other cookie field in
+			 * get_common_tracking_data() is clamped server-side via string_length();
+			 * journey needs the same treatment, enforced here so it applies
+			 * uniformly on every write path that funnels through this method
+			 * (cookie decode, thank-you/offer/optin appends), not just one of them.
+			 * Same filters the JS tracker's own cap already uses, so both sides
+			 * agree by default. Sort oldest-first once so both caps below can drop
+			 * from the front and reliably mean "drop the oldest entry".
+			 */
+			ksort( $store['j'], SORT_NUMERIC );
+
+			$max_entries = absint( apply_filters( 'wffn_journey_max_entries', 20 ) );
+			if ( $max_entries > 0 && count( $store['j'] ) > $max_entries ) {
+				$store['j'] = array_slice( $store['j'], -$max_entries, null, true );
+			}
+
+			$max_bytes = min( absint( apply_filters( 'wffn_journey_cookie_max_bytes', 2000 ) ), 3800 );
+			while ( $max_bytes > 0 && count( $store['j'] ) > 1 && strlen( wp_json_encode( $store, JSON_UNESCAPED_SLASHES ) ) > $max_bytes ) {
+				// Still oversized after the entry-count cap (e.g. an inflated
+				// forged path/title per entry) -- drop the oldest entry and
+				// re-check. Numeric-string timestamp keys are cast to real int
+				// keys by PHP, so array_shift() would silently renumber every
+				// remaining entry from 0 -- unset() by key leaves them intact.
+				unset( $store['j'][ array_key_first( $store['j'] ) ] );
 			}
 
 			return $store;
@@ -325,31 +442,21 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 		 * for a post. Falls back to a legacy stored title, then to the path itself.
 		 *
 		 * @param array  $entry    journey entry (u, i, s and, for legacy rows, t)
-		 * @param string $path     decoded path from entry['u']
+		 * @param string $path     decoded path from entry['u'], query stripped — it is
+		 *                         the last-resort label, so a query here would surface
+		 *                         raw UTM parameters as the step title
 		 * @param mixed  $site_idx entry['s'] (v2) or null
 		 * @param array  $sites    the journey 's' map
 		 * @return string
 		 */
-		public static function journey_entry_title( $entry, $path, $site_idx, $sites ) {
-			$is_local = ( null === $site_idx || ! isset( $sites[ $site_idx ] ) || untrailingslashit( $sites[ $site_idx ] ) === self::site_origin() );
-			$post_id  = ( isset( $entry['i'] ) && is_numeric( $entry['i'] ) ) ? absint( $entry['i'] ) : 0;
-
-			if ( $is_local && $post_id > 0 && get_post( $post_id ) instanceof WP_Post ) {
-				$entry_path = wp_parse_url( 'http://x' . '/' . ltrim( $path, '/' ), PHP_URL_PATH );
-				$post_path  = wp_parse_url( get_permalink( $post_id ), PHP_URL_PATH );
-				$entry_path = '/' . trim( is_string( $entry_path ) ? $entry_path : '', '/' );
-				$post_path  = '/' . trim( is_string( $post_path ) ? $post_path : '', '/' );
-
-				if ( $entry_path === $post_path ) {
-					$title = get_the_title( $post_id );
-					if ( '' !== $title ) {
-						return $title;
-					}
-				}
+		public static function journey_entry_title($entry, $path, $all_titles_by_id = [])
+		{
+			if (! empty($entry['t'])) {
+				return rawurldecode($entry['t']);
 			}
-
-			if ( ! empty( $entry['t'] ) ) {
-				return rawurldecode( $entry['t'] );
+			$post_id  = (isset($entry['i']) && is_numeric($entry['i'])) ? absint($entry['i']) : 0;
+			if (array_key_exists($post_id, $all_titles_by_id)) {
+				return $all_titles_by_id[$post_id];
 			}
 
 			return $path;
@@ -391,6 +498,18 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			return $scheme . '://' . $host . $port;
 		}
 
+
+		public static function removeScheme($url)
+		{
+			// Check if the URL has a scheme (// format or scheme://)
+			if (preg_match('#^([a-z][a-z0-9+\-.]*:)?//#i', $url)) {
+				return preg_replace('#^([a-z][a-z0-9+\-.]*:)?//#i', '', $url);
+			}
+			return $url;
+		}
+
+
+
 		/**
 		 * Reconstruct a full URL for a journey entry across the three supported shapes.
 		 *
@@ -419,6 +538,13 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 		 * @return void
 		 */
 		public static function update_upsell_journey() {
+			// Journey recording turned off — do not append the offer view. Static
+			// gate call because this method is callable even when the constructor
+			// stood down for a legacy framework.
+			if ( ! self::is_journey_enabled() ) {
+				return;
+			}
+
 			if ( ! isset( $_POST['data'] ) || ! function_exists( 'WFOCU_Core' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				return;
 			}
@@ -464,6 +590,9 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 		 * @return void
 		 */
 		public function update_upsell_order_journey_data( $order, $tracking_data, $upsell_order = false ) {
+			if ( ! self::is_journey_enabled() ) {
+				return;
+			}
 			if ( ! $order instanceof WC_Order || ! is_array( $tracking_data ) || ! isset( $tracking_data['journey'] ) ) {
 				return;
 			}
@@ -472,7 +601,7 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			$get_meta = $order->get_meta( '_wfocu_sibling_order', false );
 			if ( is_array( $get_meta ) && ! empty( $get_meta ) ) {
 				foreach ( $get_meta as $meta ) {
-					$value = $meta->get_data()['value'];
+					$value    = $meta->get_data()['value'];
 					$orders[] = ( $value instanceof WC_Order ) ? $value->get_id() : absint( $value );
 				}
 			}
@@ -483,7 +612,14 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 
 			global $wpdb;
 			foreach ( $orders as $order_id ) {
-				$wpdb->update( $wpdb->prefix . $this->conv_table, array( 'journey' => $tracking_data['journey'] ), array( 'type' => 2, 'source' => $order_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->update(
+					$wpdb->prefix . $this->conv_table,
+					array( 'journey' => $tracking_data['journey'] ),
+					array(
+						'type'   => 2,
+						'source' => $order_id,
+					)
+				); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			}
 		}
 
@@ -496,6 +632,9 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 		 * @return array
 		 */
 		public function maybe_add_thankyou_data( $tracking_data ) {
+			if ( ! self::is_journey_enabled() ) {
+				return $tracking_data;
+			}
 			if ( ! is_array( $tracking_data ) || empty( $tracking_data['journey'] ) ) {
 				return $tracking_data;
 			}
@@ -518,6 +657,105 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			return $tracking_data;
 		}
 
+		/**
+		 * Append the optin confirmation page to the optin's stored journey.
+		 *
+		 * An order's thank-you page joins the journey through
+		 * maybe_add_thankyou_data(), because the row is written while that page
+		 * renders. An optin row is written on wffn_optin_form_submit, one request
+		 * earlier, so its confirmation page has nowhere to land and the
+		 * "Pages Visited" filter can never match it. Append it here instead, the
+		 * same way an upsell offer view is appended after the fact.
+		 *
+		 * @since 3.16.1
+		 *
+		 * @param int $page_id Optin confirmation page id.
+		 *
+		 * @return void
+		 */
+		public function append_optin_ty_to_journey( $page_id ) {
+			if ( ! self::is_journey_enabled() ) {
+				return;
+			}
+
+			$page_id = absint( $page_id );
+			if ( $page_id <= 0 ) {
+				return;
+			}
+
+			$row = $this->get_optin_tracking_row();
+			if ( empty( $row ) ) {
+				return;
+			}
+
+			$store = self::journey_normalize( json_decode( $row['journey'], true ) );
+
+			// The page is reachable on refresh and on a back-navigation, so a row
+			// that already names it is left alone.
+			foreach ( $store['j'] as $entry ) {
+				if ( is_array( $entry ) && isset( $entry['i'] ) && absint( $entry['i'] ) === $page_id ) {
+					return;
+				}
+			}
+
+			$permalink = get_permalink( $page_id );
+			if ( ! is_string( $permalink ) || '' === $permalink ) {
+				return;
+			}
+
+			$idx = self::journey_site_index( $store, self::site_origin() );
+
+			$store['j'][ (int) round( microtime( true ) * 1000 ) ] = array(
+				'u' => '/' . ltrim( substr( $permalink, strlen( home_url( '/' ) ) ), '/' ),
+				'i' => $page_id,
+				's' => $idx,
+			);
+
+			global $wpdb;
+			$wpdb->update( //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->prefix . $this->conv_table,
+				array( 'journey' => wp_json_encode( $store, JSON_UNESCAPED_SLASHES ) ),
+				array( 'id' => absint( $row['id'] ) ),
+				array( '%s' ),
+				array( '%d' )
+			);
+		}
+
+		/**
+		 * The conversion row for the optin submission that led to this page.
+		 *
+		 * The submission's `opid` travels to the confirmation page in the query
+		 * string, and falls back to the funnel session when a template links to the
+		 * page without it. It names an entry in the optin table, whose id the
+		 * conversion row carries as its `source`.
+		 *
+		 * @since 3.16.1
+		 *
+		 * @return array Row with `id` and `journey`, or empty when it cannot be identified.
+		 */
+		private function get_optin_tracking_row() {
+			$opid = sanitize_text_field( (string) filter_input( INPUT_GET, 'opid', FILTER_UNSAFE_RAW ) ); //phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
+
+			if ( '' === $opid && class_exists( 'WFFN_Core' ) ) {
+				$opid = (string) WFFN_Core()->data->get( 'opid' );
+			}
+
+			if ( '' === $opid ) {
+				return array();
+			}
+
+			global $wpdb;
+
+			$entry_id = absint( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}bwf_optin_entries WHERE opid = %s ORDER BY id DESC LIMIT 1", $opid ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			if ( $entry_id <= 0 ) {
+				return array();
+			}
+
+			$row = $wpdb->get_row( $wpdb->prepare( "SELECT id, journey FROM {$wpdb->prefix}{$this->conv_table} WHERE type = %d AND source = %d ORDER BY id DESC LIMIT 1", 1, $entry_id ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+			return ( is_array( $row ) && ! empty( $row['journey'] ) ) ? $row : array();
+		}
+
 		public function get_common_tracking_data( $is_optin = false ) {
 			$click_id = '';
 			$get_data = $_COOKIE; //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
@@ -537,10 +775,24 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			 * The journey cookie holds the page-by-page path as JSON. The browser stores it
 			 * with addslashes() applied (see utm-tracker.js), so strip those before decoding.
 			 * Stored in the existing `journey` column — no schema change.
+			 *
+			 * journey_normalize()'s own entry/byte caps trim a *decoded* journey down to
+			 * size, but a single forged entry whose own field (e.g. `u`) is huge slips
+			 * through them entirely: the trimming loop stops once one entry remains, so
+			 * that lone entry's size is never checked. Reject an oversized *raw* cookie
+			 * value outright, before decoding it at all -- this bounds every entry count,
+			 * including one, and avoids json_decode() on an arbitrarily large forged
+			 * string. Checked against the outer safety ceiling (3800), not the tighter
+			 * 2000-byte target the client aims for -- the raw value carries addslashes()
+			 * escaping overhead on top of the JSON the client actually measured against
+			 * its own cap, so a legitimate cookie can land above 2000 raw bytes without
+			 * being oversized.
 			 */
-			$journey_data = isset( $get_data['wffn_journey'] ) ? json_decode( stripcslashes( $get_data['wffn_journey'] ), true ) : array();
-			$journey_data = is_array( $journey_data ) ? $journey_data : array();
-			$journey_data = self::journey_normalize( $journey_data );
+			$journey_raw   = isset( $get_data['wffn_journey'] ) ? $get_data['wffn_journey'] : '';
+			$journey_limit = 3800;
+			$journey_data  = ( '' !== $journey_raw && strlen( $journey_raw ) <= $journey_limit ) ? json_decode( stripcslashes( $journey_raw ), true ) : array();
+			$journey_data  = is_array( $journey_data ) ? $journey_data : array();
+			$journey_data  = self::journey_normalize( $journey_data );
 
 			$args = array(
 				'utm_source'        => isset( $get_data['wffn_utm_source'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_source'] ) ) ) : '',
@@ -560,7 +812,7 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 				'click_id'          => $click_id,
 				'referrer'          => isset( $get_data['wffn_referrer'] ) ? $this->filter_referrer( $get_data['wffn_referrer'] ) : '',
 				'referrer_last'     => isset( $get_data['wffn_referrer_last'] ) ? $this->filter_referrer( $get_data['wffn_referrer_last'] ) : '',
-				'journey'           => ( ! empty( $journey_data['j'] ) ) ? wp_json_encode( $journey_data, JSON_UNESCAPED_SLASHES ) : '',
+				'journey'           => ( self::is_journey_enabled() && ! empty( $journey_data['j'] ) ) ? wp_json_encode( $journey_data, JSON_UNESCAPED_SLASHES ) : '',
 				'source_id'         => $source_id,
 			);
 
@@ -725,6 +977,11 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 				return;
 			}
 
+			// Nothing left to show once both tracking options are off.
+			if ( ! self::is_tracking_meta_enabled() ) {
+				return;
+			}
+
 			if ( 'shop_order' !== $post_type && 'woocommerce_page_wc-orders' !== $post_type ) {
 				return;
 			}
@@ -746,8 +1003,8 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			 * @todo we will update code showing for funnel meta box currently not have exact mata for check order create by funnel
 			 * so we run query in conversion table and check order created by funnel
 			 */ global $wpdb;
-			$query    = $wpdb->prepare( 'SELECT * from ' . $wpdb->prefix . $this->conv_table . ' WHERE type = %s AND source = %d', 2, $order_id );
-			$get_data = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$query    = $wpdb->prepare( 'SELECT * from ' . $wpdb->prefix . $this->conv_table . ' WHERE type = %s AND source = %d', 2, $order_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix + an internal constant, never user input; the %s/%d placeholders cover every actual value.
+			$get_data = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- $query was already built via $wpdb->prepare() on the line above.
 			if ( empty( $get_data ) ) {
 				return;
 			}
@@ -808,9 +1065,18 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 				'value' => $funnel,
 			);
 			if ( '' !== $first_click ) {
-				$data['first_click'] = array(
+				// $first_click is a bwf_conversion_tracking column, already a
+				// site-local MySQL string (written via current_time('mysql')).
+				// strtotime() has no timezone context of its own and would parse
+				// it as UTC, then wp_date() shifts it to site-local again on top
+				// -- double-converting. mysql2date() parses it in the site's own
+				// timezone first, so there is nothing left to shift.
+				$first_click_formatted = function_exists( 'mysql2date' )
+					? mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $first_click )
+					: $first_click;
+				$data['first_click']   = array(
 					'name'  => __( 'First Interaction', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'value' => $first_click,
+					'value' => $first_click_formatted ? $first_click_formatted : $first_click,
 				);
 			}
 			if ( '' !== $diff ) {
@@ -821,38 +1087,37 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			}
 			if ( isset( $get_data['utm_source'] ) && '' !== $get_data['utm_source'] ) {
 				$data['utm_source'] = array(
-					'name'  => __( 'UTM Source', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Source', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => ucfirst( $get_data['utm_source'] ),
+					'group' => 'utm',
 				);
 			}
 			if ( isset( $get_data['utm_medium'] ) && '' !== $get_data['utm_medium'] ) {
 				$data['utm_medium'] = array(
-					'name'  => __( 'UTM Medium', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Medium', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => ucfirst( $get_data['utm_medium'] ),
+					'group' => 'utm',
 				);
 			}
 			if ( isset( $get_data['utm_campaign'] ) && '' !== $get_data['utm_campaign'] ) {
 				$data['utm_campaign'] = array(
-					'name'  => __( 'UTM Campaign', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Campaign', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $get_data['utm_campaign'],
+					'group' => 'utm',
 				);
 			}
 			if ( isset( $get_data['utm_term'] ) && '' !== $get_data['utm_term'] ) {
 				$data['utm_term'] = array(
-					'name'  => __( 'UTM Term', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Term', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $get_data['utm_term'],
+					'group' => 'utm',
 				);
 			}
 			if ( isset( $get_data['utm_content'] ) && '' !== $get_data['utm_content'] ) {
 				$data['utm_content'] = array(
-					'name'  => __( 'UTM Content', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'  => __( 'Content', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $get_data['utm_content'],
-				);
-			}
-			if ( isset( $get_data['referrer'] ) && '' !== $get_data['referrer'] ) {
-				$data['referrer'] = array(
-					'name'  => __( 'Referrer', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'value' => ( is_array( $ref ) && isset( $ref[0] ) ) ? '<a href="' . esc_url( $ref[0] ) . '" target="_blank">' . esc_html( $ref[0] ) . '</a>' : '',
+					'group' => 'utm',
 				);
 			}
 			if ( isset( $get_data['click_id'] ) ) {
@@ -871,6 +1136,16 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 				$data['browser'] = array(
 					'name'  => __( 'Browser', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'value' => $get_data['browser'],
+				);
+			}
+			if ( isset( $get_data['referrer'] ) && '' !== $get_data['referrer'] ) {
+				$ref_url   = ( is_array( $ref ) && isset( $ref[0] ) ) ? $ref[0] : '';
+				$ref_host  = ( '' !== $ref_url ) ? wp_parse_url( $ref_url, PHP_URL_HOST ) : '';
+				$ref_label = ( is_string( $ref_host ) && '' !== $ref_host ) ? $ref_host : $ref_url;
+
+				$data['referrer'] = array(
+					'name'  => __( 'Referrer', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'value' => ( '' !== $ref_url ) ? '<a href="' . esc_url( $ref_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $ref_label ) . '</a>' : '',
 				);
 			}
 
@@ -904,40 +1179,120 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			/**
 			 * Customer journey — the page-by-page path that led to the conversion.
 			 *
-			 * Hidden by default. Return true from the wffn_show_customer_journey_meta
-			 * filter to surface the Customer Journey row on the order UTM metabox.
+			 * Shown whenever a journey exists. The wffn_show_customer_journey_meta
+			 * filter remains as an override, now defaulting to true.
 			 */
-			if ( ! empty( $get_data['journey'] ) && true === apply_filters( 'wffn_show_customer_journey_meta', false, $post, $meta_data ) ) {
-				$journey = json_decode( $get_data['journey'], true );
-				if ( is_array( $journey ) && ! empty( $journey ) ) {
-					$entries  = ( isset( $journey['j'] ) && is_array( $journey['j'] ) ) ? $journey['j'] : $journey;
-					$sites    = ( isset( $journey['s'] ) && is_array( $journey['s'] ) ) ? $journey['s'] : array();
-					$home_url = home_url( '/' );
-					ksort( $entries, SORT_NUMERIC );
-					$journey_count = 0;
-					$journey_html  = '<ol class="bwf-journey-list">';
-					foreach ( $entries as $entry ) {
-						if ( ! is_array( $entry ) || empty( $entry['u'] ) ) {
-							continue;
+			if ( ! empty( $get_data['journey'] ) && self::is_journey_enabled() && true === apply_filters( 'wffn_show_customer_journey_meta', true, $post, $meta_data ) ) {
+
+				$all_found_ids = [];
+
+
+
+				$single_journey = WFFN_Journey::decode($get_data['journey']);
+
+				// Check if decoded journey exists and contains valid 'j' data
+				if (!empty($single_journey['j']) && is_array($single_journey['j'])) {
+					$extracted_ids = wp_list_pluck($single_journey['j'], 'i');
+
+					// Filter out any null, empty, or non-numeric IDs
+					$clean_ids = array_filter($extracted_ids, fn($id) => !empty($id) && is_numeric($id));
+
+					if (!empty($clean_ids)) {
+						$all_found_ids = array_merge($all_found_ids, array_values($clean_ids));
+					}
+				}
+
+			// Remove duplicate IDs and sanitize to integer values
+			$all_found_ids = array_values(array_unique(array_map('intval', $all_found_ids)));
+			$titles_by_id = [];
+
+			// Query database ONLY if we have valid IDs to prevent SQL errors
+			if (!empty($all_found_ids)) {
+				global $wpdb;
+
+				$placeholders = implode(',', array_fill(0, count($all_found_ids), '%d'));
+
+
+
+					$db_results = $wpdb->get_results($wpdb->prepare(
+						"SELECT ID, post_title FROM {$wpdb->posts} WHERE ID IN ($placeholders) AND post_status = 'publish'",
+						$all_found_ids
+					), OBJECT_K);
+
+					if (!empty($db_results) && is_array($db_results)) {
+						$titles_by_id = array_map(fn($item) => $item->post_title ?? '', $db_results);
+					}
+				}
+
+
+
+
+			$journey_steps = WFFN_Journey::resolve( $get_data['journey'],$titles_by_id );
+				if ( ! empty( $journey_steps ) ) {
+					$date_format = get_option( 'date_format' );
+					$time_format = get_option( 'time_format' );
+					$has_wp_date = function_exists( 'wp_date' );
+
+					$journey_html = '<ol class="bwf-ct-journey">';
+					$step_count   = count( $journey_steps );
+					$current_day  = '';
+
+
+
+					foreach ( $journey_steps as $index => $step ) {
+						// A heading whenever the visit crosses into another day.
+						$day = ( $step['ts'] > 0 && $has_wp_date ) ? wp_date( $date_format, $step['ts'] ) : '';
+						if ( '' !== $day && $day !== $current_day ) {
+							$journey_html .= '<li class="bwf-ct-journey-day">' . esc_html( $day ) . '</li>';
+							$current_day   = $day;
 						}
-						$path     = stripslashes( rawurldecode( $entry['u'] ) );
-						$site_idx = isset( $entry['s'] ) ? $entry['s'] : null;
-						$title    = self::journey_entry_title( $entry, $path, $site_idx, $sites );
-						$url      = self::journey_resolve_url( $path, $site_idx, $sites, $home_url );
 
-						$journey_html .= '<li><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $title ) . '</a></li>';
-						++$journey_count;
-					}
-					$journey_html .= '</ol>';
+						$when = ( $step['ts'] > 0 && $has_wp_date ) ? wp_date( $time_format, $step['ts'] ) : '';
 
-					// Only surface the Customer Journey row when at least one entry was rendered;
-					// a normalized-but-empty journey ({"j":[],"s":[]}) must not show an empty list.
-					if ( $journey_count > 0 ) {
-						$data['journey'] = array(
-							'name'  => __( 'Customer Journey', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-							'value' => $journey_html,
-						);
+						// Time on this page is the gap until the next visit; the final
+						// page has no following visit to measure against.
+						$next  = ( $index + 1 < $step_count ) ? $journey_steps[ $index + 1 ] : null;
+						$spent = ( is_array( $next ) && ! empty( $next['ts'] ) && ! empty( $step['ts'] ) && $next['ts'] > $step['ts'] ) ? human_time_diff( $step['ts'], $next['ts'] ) : '';
+
+						// Non-local steps carry a muted host suffix so the origin is clear.
+						$host_suffix = '';
+						if ( empty( $step['is_local'] ) && ! empty( $step['site'] ) ) {
+							$host        = wp_parse_url( $step['site'], PHP_URL_HOST );
+							$host_suffix = is_string( $host ) ? ' <span class="bwf-ct-journey-host">(' . esc_html( $host ) . ')</span>' : '';
+						}
+
+						$journey_html .= '<li>';
+						$journey_html .= '<span class="bwf-ct-journey-time">' . esc_html( $when ) . '</span>';
+						$journey_html .= '<span class="bwf-ct-journey-body">';
+						$journey_html .= '<i class="bwf-ct-journey-dot"></i>';
+						$journey_html .= '<a href="' . esc_url( $step['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $step['title'] ) . '</a>' . $host_suffix;
+						$journey_html .= '<span class="bwf-ct-journey-path"> - ' . esc_html( $step['path'] ) . '</span>';
+						if ( '' !== $spent ) {
+							$journey_html .= '<span class="bwf-ct-journey-spent">' . esc_html( $spent ) . '</span>';
+						}
+						$journey_html .= '</span></li>';
 					}
+
+					// Final non-link node marking the conversion itself. $timestamp
+					// is bwf_conversion_tracking.timestamp -- already a site-local
+					// MySQL string (current_time('mysql')). mysql2date() parses it
+					// in the site's own timezone, unlike strtotime()+wp_date(),
+					// which double-converts (see the first_click fix above).
+					$converted_at  = ( ! empty( $timestamp ) && function_exists( 'mysql2date' ) ) ? mysql2date( $time_format, $timestamp ) : '';
+					$journey_html .= '<li class="bwf-ct-journey-done">';
+					$journey_html .= '<span class="bwf-ct-journey-time">' . esc_html( $converted_at ) . '</span>';
+					$journey_html .= '<span class="bwf-ct-journey-body">';
+					$journey_html .= '<i class="bwf-ct-journey-dot bwf-ct-journey-tick"></i>';
+					$journey_html .= esc_html__( 'Conversion completed', 'funnel-builder-pro' );
+					$journey_html .= '</span></li></ol>';
+
+					$data['journey'] = array(
+						// Pro feature string — use the Pro text domain (phpcs-allowed, no suppression needed).
+						'name'  => __( 'Customer Journey', 'funnel-builder-pro' ),
+						'value' => $journey_html,
+						'group' => 'journey',
+						'count' => count( $journey_steps ),
+					);
 				}
 			}
 
@@ -945,56 +1300,252 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			if ( empty( $data ) ) {
 				return;
 			}
+			$groups = array(
+				'details' => array(),
+				'utm'     => array(),
+				'journey' => array(),
+			);
+			foreach ( $data as $item ) {
+				if ( ! is_array( $item ) || ! isset( $item['name'] ) ) {
+					continue;
+				}
+				// Rows added through the filter carry no group and read as details.
+				$group = ( isset( $item['group'] ) && isset( $groups[ $item['group'] ] ) ) ? $item['group'] : 'details';
+
+				$groups[ $group ][] = $item;
+			}
 			?>
 			<style>
-				.bwf-utm-box-data {
-					margin: 10px 0;
+				.bwf-ct-box {
+					margin: 6px 0 0;
+					color: #353030;
+					font-size: 13px;
+					line-height: 20px;
 				}
 
-				.bwf-utm-box-data > div > span:nth-child(1) {
-					font-weight: 500;
-					width: 80px;
-					display: inline-block;
-					min-width: 105px;
+				/* Dragged into a full-width column the box would stretch, stranding
+					the page count against the far edge. With a journey to show
+					there is enough room to sit it beside the insights instead. */
+				#normal-sortables .bwf-ct-box,
+				#advanced-sortables .bwf-ct-box {
+					max-width: 420px;
 				}
 
-				.bwf-utm-box-data > div {
+				#normal-sortables .bwf-ct-box.bwf-ct-has-journey,
+				#advanced-sortables .bwf-ct-box.bwf-ct-has-journey {
+					display: grid;
+					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+					gap: 0 32px;
+					max-width: 880px;
+				}
+
+				/* Divider between the columns. Drawn rather than bordered so it can
+					start level with the content instead of the heading; the offset
+					is the heading's line-height plus its bottom margin. */
+				#normal-sortables .bwf-ct-has-journey .bwf-ct-col-insights,
+				#advanced-sortables .bwf-ct-has-journey .bwf-ct-col-insights {
+					position: relative;
+					padding-left: 32px;
+				}
+
+				#normal-sortables .bwf-ct-has-journey .bwf-ct-col-insights:before,
+				#advanced-sortables .bwf-ct-has-journey .bwf-ct-col-insights:before {
+					content: "";
+					position: absolute;
+					left: 0;
+					top: 34px;
+					bottom: 0;
+					width: 1px;
+					background: #dedfea;
+				}
+
+				#normal-sortables .bwf-ct-has-journey .bwf-ct-col-journey,
+				#advanced-sortables .bwf-ct-has-journey .bwf-ct-col-journey {
+					order: -1;
+				}
+
+				/* The rule only separates the stacked sections. */
+				#normal-sortables .bwf-ct-has-journey .bwf-ct-sep-journey,
+				#advanced-sortables .bwf-ct-has-journey .bwf-ct-sep-journey {
+					display: none;
+				}
+
+				.bwf-ct-row {
+					display: grid;
+					grid-template-columns: 104px 1fr;
+					gap: 4px 12px;
 					margin-bottom: 8px;
-					display: flex;
-					word-break: break-all;
+					word-break: break-word;
 				}
 
-				.bwf-utm-box-data .bwf-utm-data-gap {
-					display: block;
-					clear: both;
+				.bwf-ct-label {
+					font-weight: 500;
+				}
+
+				.bwf-ct-box a {
+					color: #0073aa;
+					text-decoration: none;
+				}
+
+				.bwf-ct-sep {
 					height: 1px;
-					border-bottom: 1px solid #eee;
+					background: #dedfea;
+					margin: 14px 0;
+				}
+
+				.bwf-ct-section {
+					display: flex;
+					align-items: baseline;
+					justify-content: space-between;
+					gap: 12px;
 					margin-bottom: 10px;
+					color: #353030;
+					font-size: 11px;
+					font-weight: 500;
+					letter-spacing: .04em;
+					text-transform: uppercase;
 				}
 
-				.bwf-utm-box-data .bwf-journey-list {
-					margin: 4px 0 0;
-					padding-left: 18px;
+				.bwf-ct-heading {
+					margin: 0;
+					padding: 0;
+					color: #353030;
+					font-size: 14px;
+					line-height: 22px;
+					font-weight: 500;
+					text-transform: none;
+					letter-spacing: 0;
 				}
 
-				.bwf-utm-box-data .bwf-journey-list li {
-					margin-bottom: 4px;
+				.bwf-ct-col-insights .bwf-ct-heading {
+					margin-bottom: 12px;
 				}
+
+				/* One grid for the whole list, so every row shares the same time
+					column and the connector stays on a single vertical line. */
+				.bwf-ct-journey {
+					display: grid;
+					grid-template-columns: max-content minmax(0, 1fr);
+					column-gap: 8px;
+					margin: 0;
+					padding: 0;
+					list-style: none;
+				}
+
+				.bwf-ct-journey li {
+					display: contents;
+				}
+
+				.bwf-ct-journey li.bwf-ct-journey-day {
+					display: block;
+					grid-column: 1 / -1;
+					margin-bottom: 10px;
+					color: #353030;
+					font-size: 12px;
+				}
+
+				.bwf-ct-journey-time {
+					color: #82838e;
+					font-size: 11px;
+					line-height: 20px;
+					white-space: nowrap;
+				}
+
+				.bwf-ct-journey-body {
+					position: relative;
+					min-width: 0;
+					margin-left: 5px;
+					padding: 0 0 14px 18px;
+					word-break: break-word;
+				}
+
+				/* Runs from this row's dot centre to the next one's, so the last
+					segment reaches the closing dot instead of stopping at the row. */
+				.bwf-ct-journey-body:before {
+					content: "";
+					position: absolute;
+					left: 0;
+					top: 10px;
+					bottom: -10px;
+					width: 1px;
+					background: #dedfea;
+				}
+
+				.bwf-ct-journey li:last-child .bwf-ct-journey-body {
+					padding-bottom: 0;
+				}
+
+				/* A day heading closes the group above it, so the connector stops
+					there rather than running through the date. */
+				.bwf-ct-journey li:last-child .bwf-ct-journey-body:before,
+				.bwf-ct-journey li:has(+ .bwf-ct-journey-day) .bwf-ct-journey-body:before {
+					display: none;
+				}
+
+				.bwf-ct-journey-dot {
+					position: absolute;
+					left: -2.5px;
+					top: 7px;
+					width: 6px;
+					height: 6px;
+					border-radius: 50%;
+					background: #82838e;
+					/* Halo, so the dot reads above the connector running behind it.
+						Core plus ring measures 12px across. */
+					box-shadow: 0 0 0 3px #dedfea;
+				}
+
+				.bwf-ct-journey-tick {
+					background: #09b29c;
+					box-shadow: 0 0 0 3px #dcf2ed;
+				}
+
+				.bwf-ct-journey-spent {
+					display: block;
+					color: #82838e;
+					font-size: 11px;
+					font-style: italic;
+				}
+
+				.bwf-ct-journey-path,
+				.bwf-ct-journey-host {
+					color: #82838e;
+				}
+
 			</style>
-			<div class="bwf-utm-box-data">
-				<div class="bwf-utm-data-gap"></div>
+			<div class="bwf-ct-box<?php echo ! empty( $groups['journey'] ) ? ' bwf-ct-has-journey' : ''; ?>">
+				<div class="bwf-ct-col bwf-ct-col-insights">
+					<h3 class="bwf-ct-heading"><?php esc_html_e( 'Insights', 'funnel-builder-pro' ); ?></h3>
+					<?php foreach ( $groups['details'] as $item ) { ?>
+						<div class="bwf-ct-row">
+							<span class="bwf-ct-label"><?php echo esc_html( $item['name'] ); ?></span>
+							<span class="bwf-ct-value"><?php echo wp_kses_post( $item['value'] ); ?></span>
+						</div>
+					<?php } ?>
+
+					<?php if ( ! empty( $groups['utm'] ) ) { ?>
+						<div class="bwf-ct-sep"></div>
+						<div class="bwf-ct-section"><span><?php esc_html_e( 'UTM', 'funnel-builder-pro' ); ?></span></div>
+						<?php foreach ( $groups['utm'] as $item ) { ?>
+							<div class="bwf-ct-row">
+								<span class="bwf-ct-label"><?php echo esc_html( $item['name'] ); ?></span>
+								<span class="bwf-ct-value"><?php echo wp_kses_post( $item['value'] ); ?></span>
+							</div>
+						<?php } ?>
+					<?php } ?>
+				</div>
+
 				<?php
-				foreach ( $data as $item ) {
+				foreach ( $groups['journey'] as $item ) {
 					?>
-
-					<div>
-						<span class="bwf-utm-lable"><?php echo esc_html( $item['name'] ) . ': '; ?></span>
-						<span class="bwf-utm-text"><?php echo wp_kses_post( $item['value'] ); ?></span>
+					<div class="bwf-ct-col bwf-ct-col-journey">
+						<div class="bwf-ct-sep bwf-ct-sep-journey"></div>
+						<div class="bwf-ct-section">
+							<h3 class="bwf-ct-heading"><?php echo esc_html( $item['name'] ); ?></h3>
+						</div>
+						<?php echo wp_kses_post( $item['value'] ); ?>
 					</div>
-
-					<?php
-				}
-				?>
+				<?php } ?>
 			</div>
 			<?php
 		}

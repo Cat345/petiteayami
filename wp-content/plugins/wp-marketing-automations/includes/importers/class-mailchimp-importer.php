@@ -2,6 +2,8 @@
 
 namespace BWFAN\Importers;
 
+defined( 'ABSPATH' ) || exit;
+
 use BWFAN\Importers\Mailchimp\Calls\Connect;
 use BWFAN\Importers\Mailchimp\Calls\Get_Lists;
 use BWFAN\Importers\Mailchimp\Calls\Get_Members;

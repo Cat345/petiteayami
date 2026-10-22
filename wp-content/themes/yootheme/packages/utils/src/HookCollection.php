@@ -139,12 +139,10 @@ class HookCollection
 
         return function (...$arguments) use ($method, $callback) {
             try {
-                $result = $method(...$arguments);
+                return $method(...$arguments);
             } catch (\Throwable $error) {
-                $result = $callback($error, ...$arguments);
+                return $callback($error, ...$arguments);
             }
-
-            return $result;
         };
     }
 }

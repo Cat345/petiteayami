@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! bwfan_is_autonami_pro_active() && ! class_exists( 'BWFAN_OptinForm_Source' ) ) {
 

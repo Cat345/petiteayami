@@ -1,12 +1,13 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 $all_actions     = BWFAN_Common::get_actions_filter_data();
 $all_automations = BWFAN_Common::get_automations_filter_data();
-$automation_id   = ( isset( $_GET['filter_aid'] ) && ! empty( $_GET['filter_aid'] ) ) ? absint( sanitize_text_field( $_GET['filter_aid'] ) ) : null; // WordPress.CSRF.NonceVerification.NoNonceVerification
-$log_action      = ( isset( $_GET['filter_action'] ) && ! empty( $_GET['filter_action'] ) ) ? sanitize_text_field( $_GET['filter_action'] ) : null; // WordPress.CSRF.NonceVerification.NoNonceVerification
+$automation_id   = ( isset( $_GET['filter_aid'] ) && ! empty( $_GET['filter_aid'] ) ) ? absint( sanitize_text_field( wp_unslash( $_GET['filter_aid'] ) ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+$log_action      = ( isset( $_GET['filter_action'] ) && ! empty( $_GET['filter_action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['filter_action'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 
 // Don't show automation filter when single automation screen is opened
-if ( ! isset( $_GET['edit'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
+if ( ! isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 	?>
     <div class="bwfan_filter_section">
         <select name="filter_aid" class="bwfan_filter_select">

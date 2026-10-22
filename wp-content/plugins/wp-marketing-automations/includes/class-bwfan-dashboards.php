@@ -56,7 +56,7 @@ class BWFAN_Dashboards {
 
 		$base_query = "SELECT  count(id) as contact_counts" . $interval_query . "  FROM `" . $table . "` WHERE 1=1 " . $where . "" . $group_by . " ORDER BY " . $order_by . " ASC";
 
-		return $wpdb->get_var( $base_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_var( $base_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval format stripped to date-format chars in date_format(); tables from $wpdb->prefix
 	}
 
 	/**
@@ -232,7 +232,10 @@ class BWFAN_Dashboards {
 				break;
 		}
 
-		return apply_filters( 'bwfan_api_date_format_' . $interval, $format, $interval );
+		$format = apply_filters( 'bwfan_api_date_format_' . $interval, $format, $interval );
+
+		/** Placed inside DATE_FORMAT( col, '...' ) in SQL, so keep only MySQL date-format characters */
+		return is_string( $format ) ? preg_replace( '/[^%A-Za-z0-9 :\/._,-]/', '', $format ) : $format;
 	}
 
 	/**
@@ -268,13 +271,13 @@ class BWFAN_Dashboards {
 
 		$query  = "SELECT count(`ID`) FROM `" . $table . "` WHERE 1 = 1 " . $where . " AND `mode` = 1 AND `c_status` = 2 " . $interval_query;
 		$query  .= ( ! empty( $group_by ) ) ? " " . $group_by . " ORDER BY " . $order_by . " ASC" : '';
-		$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval format stripped to date-format chars in date_format(); tables from $wpdb->prefix
 
 		$arr[0]['email_sents'] = $result;
 
 		$query  = "SELECT count(`ID`) FROM `" . $table . "` WHERE 1 = 1 " . $where . " AND `mode` = 2 AND `c_status` = 2 " . $interval_query;
 		$query  .= ( ! empty( $group_by ) ) ? " " . $group_by . " ORDER BY " . $order_by . " ASC" : '';
-		$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval format stripped to date-format chars in date_format(); tables from $wpdb->prefix
 
 		$arr[0]['sms_sent'] = $result;
 
@@ -313,7 +316,7 @@ class BWFAN_Dashboards {
 
 		$base_query = "SELECT  sum( open ) as email_open" . $interval_query . "  FROM `" . $table . "` WHERE 1 = 1 " . $where . " and c_status = 2 " . $group_by . " ORDER BY " . $order_by . " ASC";
 
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval format stripped to date-format chars in date_format(); tables from $wpdb->prefix
 	}
 
 	/**
@@ -349,7 +352,7 @@ class BWFAN_Dashboards {
 
 		$base_query = "SELECT  sum( click ) as email_click" . $interval_query . "  FROM `" . $table . "` WHERE 1 = 1 " . $where . " and c_status = 2 " . $group_by . " ORDER BY " . $order_by . " ASC";
 
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval format stripped to date-format chars in date_format(); tables from $wpdb->prefix
 	}
 
 	/**
@@ -385,7 +388,7 @@ class BWFAN_Dashboards {
 
 		$base_query = "SELECT  count( c.id ) as total_orders, sum( c.wctotal ) as total_revenue " . $interval_query . "  FROM  $table as c WHERE 1 = 1 " . $where . " and c.wcid != 0 " . $group_by . " ORDER BY " . $order_by . " ASC";
 
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval format stripped to date-format chars in date_format(); tables from $wpdb->prefix
 	}
 
 	/**
@@ -535,7 +538,7 @@ class BWFAN_Dashboards {
 
 		$query = "SELECT `ID`, `f_name`, `l_name`, `email`, `contact_no`, `creation_date` FROM $table_name WHERE $where ORDER BY `creation_date` DESC LIMIT 0,9";
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 	}
 
 
@@ -547,7 +550,7 @@ class BWFAN_Dashboards {
 
 		$query = "SELECT sub.recipient as email, COALESCE(con.id, 0) as ID, COALESCE(con.f_name, '') as f_name, COALESCE(con.l_name, '') as l_name, sub.c_date AS creation_date from $unsubscribe_table as sub LEFT JOIN $contact_table as con ON sub.recipient = con.email ORDER BY sub.ID DESC LIMIT 0,9";
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table names from $wpdb->prefix
 	}
 
 	/**
@@ -594,6 +597,6 @@ class BWFAN_Dashboards {
 
 		$query = "SELECT con.cid AS ID, c.email,c.f_name,c.l_name,con.date AS creation_date FROM {$wpdb->prefix}bwfan_conversions AS con JOIN {$wpdb->prefix}bwf_contact AS c ON con.cid = c.id ORDER BY con.ID DESC LIMIT 0, 9";
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table names from $wpdb->prefix
 	}
 }

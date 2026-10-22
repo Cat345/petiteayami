@@ -340,7 +340,8 @@ function wffnJourneySiteIndex(store, origin) {
 /**
  * Append the current page to the journey cookie.
  *
- * Each entry is keyed by epoch second and stores { u: path, i: page_id, s: site_idx }.
+ * Each entry is keyed by epoch millisecond (Date.now()) and stores
+ * { u: path, i: page_id (int), s: site_idx }.
  * No title is stored: the admin resolves it from page_id via WordPress at render
  * time. Consecutive duplicate URLs are skipped and the cookie is capped both by
  * entry count and by bytes (oldest entries are dropped first).
@@ -385,7 +386,8 @@ function wffnJourney() {
 
     let pageData = {};
     pageData.u = encodeURIComponent(wffnAddSlashes(fullPath));
-    pageData.i = wffnUtm.page_id;
+    // wp_localize_script casts page_id to a string; store it as an int so rows stay uniform.
+    pageData.i = parseInt(wffnUtm.page_id, 10) || 0;
     pageData.s = siteIdx;
 
     // Dedup on the (path, site) pair so the same path on two sites is not collapsed.
@@ -393,7 +395,8 @@ function wffnJourney() {
         return;
     }
 
-    let wffnTime = Math.round(Date.now() / 1000);
+    // Key in epoch milliseconds so browser and server entries share one unit.
+    let wffnTime = Date.now();
     store.j[wffnTime] = pageData;
 
     // Both caps are server-configurable (filterable) via localized data; keep safe defaults.
@@ -532,6 +535,17 @@ function wffnAddTrafficParamsToEvent(params) {
 
             params[ki] = getUTMs[ki];
 
+        }
+
+        /**
+         * Attach the real page URL to every pixel event as event_url. Events fired with
+         * empty/minimal data (e.g. PageView) otherwise carry no URL, and on CAPI the server
+         * then falls back to HTTP_REFERER, which collapses to the homepage under a
+         * Referrer-Policy header. window.location.href is the actual page and immune to that.
+         * Only set when the caller hasn't already provided one (e.g. ViewContent's server data).
+         */
+        if (typeof params.event_url === 'undefined' || params.event_url === '') {
+            params.event_url = window.location.href;
         }
         return params;
 

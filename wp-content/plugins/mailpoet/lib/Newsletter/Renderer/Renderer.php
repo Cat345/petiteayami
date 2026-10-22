@@ -180,6 +180,9 @@ class Renderer {
       $renderedBody = "";
       try {
         $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingQueue);
+        if (is_array($content)) {
+          $content = StylesHelper::sanitizeBlockStyles($content);
+        }
         $renderedBody = $this->bodyRenderer->renderBody($newsletter, $content, $isRtl);
       } catch (NewsletterProcessingException $e) {
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
@@ -250,7 +253,7 @@ class Renderer {
    */
   private function injectContentIntoTemplate($template, $content) {
     return preg_replace_callback('/{{\w+}}/', function($matches) use (&$content) {
-      return array_shift($content);
+      return array_shift($content) ?? '';
     }, $template);
   }
 

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * All-In-One Security (AIOS) - Security and Firewall

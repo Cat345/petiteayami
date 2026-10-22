@@ -2,9 +2,9 @@
 
 namespace YOOtheme\Theme\Wordpress\Listener;
 
+use YOOtheme\Config;
 use YOOtheme\Builder\Wordpress\PostHelper;
 use YOOtheme\File;
-use YOOtheme\Metadata;
 use YOOtheme\Url;
 use function YOOtheme\app;
 
@@ -21,17 +21,19 @@ class LoadClassicEditor
             return;
         }
 
-        /** @var Metadata $metadata */
-        $metadata = app(Metadata::class);
-        $metadata->set('script:posts-classic', [
-            'src' => '~assets/admin/js/posts-classic.js',
-            'type' => 'module',
-        ]);
+        wp_enqueue_script(
+            'posts-classic',
+            Url::to('~assets/admin/js/posts-classic.js', [], is_ssl()),
+            ['jquery', 'wp-components', 'wp-element'],
+            app(Config::class)->get('theme.version'),
+            true,
+        );
+        wp_enqueue_style('wp-components');
 
         add_action('edit_form_after_title', function ($post) {
             if (current_user_can('edit_theme_options')) {
                 printf(
-                    '<div class="tm-editor" hidden><a href="%s" class="tm-button">%s</a><a href class="tm-link">%s</a></div>',
+                    '<div class="tm-editor" hidden><a href="%s" class="tm-button">%s</a><button type="button" class="button-link tm-link">%s</button></div>',
                     static::getLink(),
                     __('YOOtheme', 'yootheme'),
                     __('&#8592; Back to Classic Editor', 'yootheme'),

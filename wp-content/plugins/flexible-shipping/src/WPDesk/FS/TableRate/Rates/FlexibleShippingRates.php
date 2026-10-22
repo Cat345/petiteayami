@@ -7,7 +7,6 @@
 
 namespace WPDesk\FS\TableRate\Rates;
 
-use WC_Shipping_Zone;
 use WC_Shipping_Zones;
 use WPDesk\FS\TableRate\ShippingMethodSingle;
 use WPDesk_Flexible_Shipping;
@@ -53,7 +52,7 @@ class FlexibleShippingRates {
 	}
 
 	/**
-	 * @return WC_Shipping_Zone[]
+	 * @return array<int, array>
 	 */
 	private static function get_shipping_zones() {
 		if ( WC()->countries === null ) {
@@ -93,9 +92,9 @@ class FlexibleShippingRates {
 	 * @return array
 	 */
 	private static function append_flexible_shipping_single_rate( array $rates, ShippingMethodSingle $woo_shipping_method ) {
-		$shipping_method                                                = $woo_shipping_method->instance_settings;
-		$shipping_method['instance_id']                                 = $woo_shipping_method->instance_id;
-		$rates[ $woo_shipping_method->get_rate_id() ]                   = $shipping_method;
+		$shipping_method                              = $woo_shipping_method->instance_settings;
+		$shipping_method['instance_id']               = $woo_shipping_method->instance_id;
+		$rates[ $woo_shipping_method->get_rate_id() ] = $shipping_method;
 		$rates[ $woo_shipping_method->get_rate_id() ]['method_id']      = ShippingMethodSingle::SHIPPING_METHOD_ID;
 		$rates[ $woo_shipping_method->get_rate_id() ]['method_enabled'] = $woo_shipping_method->enabled;
 

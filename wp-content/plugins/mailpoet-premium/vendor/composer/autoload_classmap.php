@@ -15,6 +15,7 @@ return array(
     'MailPoet\\Premium\\API\\JSON\\v1\\ResponseBuilders\\SubscriberDetailedStatsResponseBuilder' => $baseDir . '/lib/API/JSON/v1/ResponseBuilders/SubscriberDetailedStatsResponseBuilder.php',
     'MailPoet\\Premium\\API\\JSON\\v1\\Stats' => $baseDir . '/lib/API/JSON/v1/Stats.php',
     'MailPoet\\Premium\\API\\JSON\\v1\\SubscriberDetailedStats' => $baseDir . '/lib/API/JSON/v1/SubscriberDetailedStats.php',
+    'MailPoet\\Premium\\Automation\\Engine\\AutomationAuthorization' => $baseDir . '/lib/Automation/Engine/AutomationAuthorization.php',
     'MailPoet\\Premium\\Automation\\Engine\\Builder\\CreateAutomationController' => $baseDir . '/lib/Automation/Engine/Builder/CreateAutomationController.php',
     'MailPoet\\Premium\\Automation\\Engine\\Builder\\UpdateAutomationController' => $baseDir . '/lib/Automation/Engine/Builder/UpdateAutomationController.php',
     'MailPoet\\Premium\\Automation\\Engine\\Endpoints\\Automations\\AutomationsPostEndpoint' => $baseDir . '/lib/Automation/Engine/Endpoints/Automations/AutomationsPostEndpoint.php',
@@ -38,6 +39,7 @@ return array(
     'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Analytics\\Storage\\OrderStatistics' => $baseDir . '/lib/Automation/Integrations/MailPoetPremium/Analytics/Storage/OrderStatistics.php',
     'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Analytics\\Storage\\SubscriberStatistics' => $baseDir . '/lib/Automation/Integrations/MailPoetPremium/Analytics/Storage/SubscriberStatistics.php',
     'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\ContextFactory' => $baseDir . '/lib/Automation/Integrations/MailPoetPremium/ContextFactory.php',
+    'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\CustomHookChain' => $baseDir . '/lib/Automation/Integrations/MailPoetPremium/CustomHookChain.php',
     'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\MailPoetPremiumIntegration' => $baseDir . '/lib/Automation/Integrations/MailPoetPremium/MailPoetPremiumIntegration.php',
     'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Payloads\\CustomDataPayload' => $baseDir . '/lib/Automation/Integrations/MailPoetPremium/Payloads/CustomDataPayload.php',
     'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Payloads\\TagPayload' => $baseDir . '/lib/Automation/Integrations/MailPoetPremium/Payloads/TagPayload.php',
@@ -139,4 +141,5 @@ return array(
     'MailPoet\\Premium\\Segments\\DynamicSegments\\SegmentCombinations' => $baseDir . '/lib/Segments/DynamicSegments/SegmentCombinations.php',
     'MailPoet\\Premium\\Subscriber\\Stats\\SubscriberActivityEvent' => $baseDir . '/lib/Subscriber/Stats/SubscriberActivityEvent.php',
     'MailPoet\\Premium\\Subscriber\\Stats\\SubscriberNewsletterStatsRepository' => $baseDir . '/lib/Subscriber/Stats/SubscriberNewsletterStatsRepository.php',
+    'MailPoet\\Premium\\Util\\License\\DetailedAnalyticsGuard' => $baseDir . '/lib/Util/License/DetailedAnalyticsGuard.php',
 );

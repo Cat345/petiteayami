@@ -42,7 +42,7 @@ class BWFAN_Automations {
 		global $wpdb;
 		if ( empty( $automation_id ) ) {
 			$automation_table = $wpdb->prefix . 'bwfan_automations';
-			$query            = $wpdb->prepare( "SELECT ID FROM $automation_table WHERE v = %d", $version );
+			$query            = $wpdb->prepare( "SELECT ID FROM $automation_table WHERE v = %d", $version ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix; value bound via %d
 			if ( ! empty( $status ) ) {
 				$query .= $wpdb->prepare( " AND status = %d", intval( $status ) );
 			}
@@ -50,7 +50,7 @@ class BWFAN_Automations {
 				$query .= $wpdb->prepare( " AND title LIKE %s", '%' . $wpdb->esc_like( $search ) . '%' );
 			}
 			$query         .= $wpdb->prepare( " ORDER BY ID DESC LIMIT %d OFFSET %d", $limit, $offset );
-			$automation_id = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$automation_id = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built only from $wpdb->prepare() fragments
 			if ( empty( $automation_id ) ) {
 				return;
 			}
@@ -111,6 +111,7 @@ class BWFAN_Automations {
 		global $wpdb;
 		$where         = '';
 		$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array( 'wc-pending', 'wc-failed', 'wc-cancelled', 'wc-refunded', 'trash', 'draft' ) );
+		$post_statuses = is_array( $post_statuses ) ? esc_sql( $post_statuses ) : $post_statuses; // filter output is placed inside quoted SQL literals
 		$post_status   = '(';
 		foreach ( $post_statuses as $status ) {
 			$post_status .= "'" . $status . "',";
@@ -119,11 +120,11 @@ class BWFAN_Automations {
 		$post_status .= "'')";
 
 		if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-			$query = $wpdb->prepare( "SELECT p.id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.date_updated_gmt DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) );
+			$query = $wpdb->prepare( "SELECT p.id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.date_updated_gmt DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 		} else {
-			$query = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) );
+			$query = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 		}
-		$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 		if ( empty( $recovered_carts ) ) {
 			return array();
 		}
@@ -136,12 +137,12 @@ class BWFAN_Automations {
 
 		$found_posts['items'] = $items;
 		if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-			$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.id) as total FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.date_updated_gmt DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.id) as total FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.date_updated_gmt DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 
 			return $found_posts;
 		}
 
-		$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.ID) as total FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.ID) as total FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 
 		return $found_posts;
 	}
@@ -158,7 +159,7 @@ class BWFAN_Automations {
 		$where  = " WHERE abandon.status IN ($status)";
 
 		$query  = "SELECT abandon.email, abandon.checkout_data, abandon.total AS revenue, abandon.currency AS currency, COALESCE(con.id, 0) AS id, COALESCE(con.f_name, '') AS f_name, COALESCE(con.l_name, '') AS l_name,abandon.created_time AS created_on from $abandoned_table AS abandon LEFT JOIN $contact_table AS con ON abandon.email = con.email $where ORDER BY abandon.ID DESC LIMIT 5 OFFSET 0";
-		$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; status list absint()ed
 
 		return array_map( function ( $cart ) {
 			if ( empty( $cart['f_name'] ) || empty( $cart['l_name'] ) ) {
@@ -353,20 +354,20 @@ class BWFAN_Automations {
 			'bwfan_automation_id' => $automation_id,
 		];
 
-		$meta['meta_key']   = 'title';
-		$meta['meta_value'] = $title;
+		$meta['meta_key']   = 'title'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_value'] = $title; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		BWFAN_Model_Automationmeta::insert( $meta );
 
-		$meta['meta_key']   = 'c_date';
-		$meta['meta_value'] = current_time( 'mysql', 1 );
+		$meta['meta_key']   = 'c_date'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_value'] = current_time( 'mysql', 1 ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		BWFAN_Model_Automationmeta::insert( $meta );
 
-		$meta['meta_key']   = 'm_date';
-		$meta['meta_value'] = current_time( 'mysql', 1 );
+		$meta['meta_key']   = 'm_date'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_value'] = current_time( 'mysql', 1 ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		BWFAN_Model_Automationmeta::insert( $meta );
 
-		$meta['meta_key']   = 'requires_update';
-		$meta['meta_value'] = 1;
+		$meta['meta_key']   = 'requires_update'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta['meta_value'] = 1; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		BWFAN_Model_Automationmeta::insert( $meta );
 
 		do_action( 'bwfan_automation_saved', $automation_id );
@@ -385,6 +386,7 @@ class BWFAN_Automations {
 		$string_placeholders   = array_fill( 0, $automation_count, '%s' );
 		$prepared_placeholders = implode( ', ', $string_placeholders );
 		$sql_query             = "Delete FROM {table_name} WHERE ID IN ($prepared_placeholders)";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated via array_fill; ids bound in prepare()
 		$sql_query             = $wpdb->prepare( $sql_query, $automation_ids ); // WPCS: unprepared SQL OK
 
 		if ( class_exists( 'BWFCRM_Category' ) && method_exists( 'BWFCRM_Category', 'handle_category_count_decrease' ) ) {
@@ -407,6 +409,7 @@ class BWFAN_Automations {
 		$string_placeholders   = array_fill( 0, $automation_count, '%s' );
 		$prepared_placeholders = implode( ', ', $string_placeholders );
 		$sql_query             = "Delete FROM {table_name} WHERE bwfan_automation_id IN ($prepared_placeholders)";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated via array_fill; ids bound in prepare()
 		$sql_query             = $wpdb->prepare( $sql_query, $automation_ids ); // WPCS: unprepared SQL OK
 
 		BWFAN_Model_Automationmeta::delete_multiple( $sql_query );
@@ -476,8 +479,8 @@ class BWFAN_Automations {
 		if ( is_null( $no_limit ) && ( false === $this->return_all && false === $return_all ) ) {
 			$query = $wpdb->prepare( 'SELECT * FROM {table_name} WHERE v = %d ORDER BY ID DESC LIMIT %d OFFSET %d', $v, $this->per_page, $offset );
 
-			if ( isset( $_GET['status'] ) && 'all' !== sanitize_text_field( $_GET['status'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
-				$status = sanitize_text_field( $_GET['status'] ); // WordPress.CSRF.NonceVerification.NoNonceVerification
+			if ( isset( $_GET['status'] ) && 'all' !== sanitize_text_field( wp_unslash( $_GET['status'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+				$status = sanitize_text_field( wp_unslash( $_GET['status'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 				$status = ( 'active' === $status ) ? 1 : 2;
 				$query  = $wpdb->prepare( 'SELECT * FROM {table_name} WHERE status = %d AND v = %d ORDER BY ID DESC', $status, $v );
 			}
@@ -631,17 +634,17 @@ class BWFAN_Automations {
 
 		if ( $update ) {
 			$meta_data               = array();
-			$meta_data['meta_value'] = $run_count;
+			$meta_data['meta_value'] = $run_count; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			$where                   = array(
 				'bwfan_automation_id' => $automation_id,
-				'meta_key'            => 'run_count',
+				'meta_key'            => 'run_count', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			);
 			BWFAN_Model_Automationmeta::update( $meta_data, $where );
 		} else {
 			$meta_data                        = array();
 			$meta_data['bwfan_automation_id'] = $automation_id;
-			$meta_data['meta_key']            = 'run_count';
-			$meta_data['meta_value']          = $run_count;
+			$meta_data['meta_key']            = 'run_count'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+			$meta_data['meta_value']          = $run_count; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			BWFAN_Model_Automationmeta::insert( $meta_data );
 		}
 	}
@@ -664,7 +667,7 @@ class BWFAN_Automations {
 		$post['event']     = isset( $automation_meta['event'] ) ? $automation_meta['event'] : '';
 		$post['priority']  = 0;
 		$post['v']         = isset( $automation_meta['v'] ) ? $automation_meta['v'] : 1;
-		$post['title']     = isset( $automation_meta['title'] ) ? $automation_meta['title'] . ' (Copy) ' : '';
+		$post['title']     = isset( $automation_meta['title'] ) ? $automation_meta['title'] . ' (Copy)' : '';
 		$post['benchmark'] = isset( $automation_meta['benchmark'] ) ? $automation_meta['benchmark'] : '';
 		$post['category']  = isset( $automation_meta['category'] ) ? $automation_meta['category'] : '';
 
@@ -678,7 +681,7 @@ class BWFAN_Automations {
 		BWFAN_Model_Automations::insert( $post );
 		$automation_id = BWFAN_Model_Automations::insert_id();
 		if ( 0 === $automation_id || is_wp_error( $automation_id ) ) {
-			wp_send_json( [ 'status' => 0 ] );
+			return false;
 		}
 
 		BWFAN_Core()->automations->set_automation_id( $automation_id );
@@ -730,8 +733,8 @@ class BWFAN_Automations {
 			}
 			$meta                        = array();
 			$meta['bwfan_automation_id'] = $automation_id;
-			$meta['meta_key']            = $key;
-			$meta['meta_value']          = $auto_meta;
+			$meta['meta_key']            = $key; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+			$meta['meta_value']          = $auto_meta; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			BWFAN_Model_Automationmeta::insert( $meta );
 			BWFAN_Core()->automations->set_automation_data( $key, $meta['meta_value'] );
 		}
@@ -739,13 +742,13 @@ class BWFAN_Automations {
 		/** for inserting created and modify date of automation **/
 		$meta = array(
 			'bwfan_automation_id' => $automation_id,
-			'meta_key'            => 'c_date',
-			'meta_value'          => current_time( 'mysql', 1 ),
+			'meta_key'            => 'c_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+			'meta_value'          => current_time( 'mysql', 1 ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		);
 		BWFAN_Model_Automationmeta::insert( $meta );
 		BWFAN_Core()->automations->set_automation_data( 'c_date', $meta['meta_value'] );
 
-		$meta['meta_key'] = 'm_date';
+		$meta['meta_key'] = 'm_date'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		BWFAN_Model_Automationmeta::insert( $meta );
 		BWFAN_Core()->automations->set_automation_data( 'm_date', $meta['meta_value'] );
 
@@ -816,6 +819,20 @@ class BWFAN_Automations {
 
 		foreach ( $steps as $step ) {
 			if ( isset( $step['stepId'] ) ) {
+				/**
+				 * Split path ({sid}-path-{n}) and branch chip ({sid}-branch-{id}) nodes are
+				 * pseudo-nodes with no step table row — their stepId IS their node id. Sending
+				 * them through the create/remap below inserted an empty junk step row per chip
+				 * and (for branch chips) overwrote stepId with that junk id, which silently
+				 * disabled every `-path-`/`-branch-` pseudo-node guard on the copied automation.
+				 */
+				if ( isset( $step['type'] ) && in_array( $step['type'], [ 'splitpath', 'branchpath' ], true ) ) {
+					$step['data']['completed'] = 0;
+					$step['data']['queued']    = 0;
+					$new_steps[]               = $step;
+					continue;
+				}
+
 				$step_data = isset( $steps_data[ $step['stepId'] ] ) ? $steps_data[ $step['stepId'] ] : [];
 				$action    = isset( $step_data['action'] ) ? json_decode( $step_data['action'], true ) : [];
 
@@ -835,9 +852,7 @@ class BWFAN_Automations {
 					BWFAN_Model_Automations::update( [ 'start' => $new_step_id ], [ 'ID' => $aid ] );
 				}
 				$mapped_step[ $step['stepId'] ] = $new_step_id;
-				if ( $step['type'] !== 'splitpath' ) {
-					$step['stepId'] = $new_step_id;
-				}
+				$step['stepId']                = $new_step_id;
 				$step['data']['completed'] = 0;
 				$step['data']['queued']    = 0;
 				$new_steps[]               = $step;
@@ -874,14 +889,21 @@ class BWFAN_Automations {
 			return;
 		}
 
-		$value_changed = false;
 		foreach ( $sidebar_data as $step_id => $data ) {
+			/** Per step: one jump must not re-write every step after it. A target missing from the map stays as it is. */
+			$value_changed = false;
 			if ( isset( $data['sidebarData']['data']['skip_to_step']['step'] ) ) {
-				$data['sidebarData']['data']['skip_to_step']['step'] = $mapped_step[ $data['sidebarData']['data']['skip_to_step']['step'] ];
-				$value_changed                                       = true;
+				$old = $data['sidebarData']['data']['skip_to_step']['step'];
+				if ( isset( $mapped_step[ $old ] ) ) {
+					$data['sidebarData']['data']['skip_to_step']['step'] = $mapped_step[ $old ];
+					$value_changed                                       = true;
+				}
 			} elseif ( isset( $data['sidebarData']['jump_to']['step'] ) ) {
-				$data['sidebarData']['jump_to']['step'] = $mapped_step[ $data['sidebarData']['jump_to']['step'] ];
-				$value_changed                          = true;
+				$old = $data['sidebarData']['jump_to']['step'];
+				if ( isset( $mapped_step[ $old ] ) ) {
+					$data['sidebarData']['jump_to']['step'] = $mapped_step[ $old ];
+					$value_changed                          = true;
+				}
 			}
 			if ( true === $value_changed ) {
 				BWFAN_Model_Automation_Step::update( [ 'data' => wp_json_encode( $data ) ], [
@@ -1004,8 +1026,8 @@ class BWFAN_Automations {
 					}
 					$meta                        = array();
 					$meta['bwfan_automation_id'] = $automation_id;
-					$meta['meta_key']            = $key;
-					$meta['meta_value']          = $auto_meta;
+					$meta['meta_key']            = $key; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+					$meta['meta_value']          = $auto_meta; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 					BWFAN_Model_Automationmeta::insert( $meta );
 					BWFAN_Core()->automations->set_automation_data( $key, $meta['meta_value'] );
 				}
@@ -1015,13 +1037,13 @@ class BWFAN_Automations {
 
 			$meta = array(
 				'bwfan_automation_id' => $automation_id,
-				'meta_key'            => 'c_date',
-				'meta_value'          => current_time( 'mysql', 1 ),
+				'meta_key'            => 'c_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+				'meta_value'          => current_time( 'mysql', 1 ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			);
 			BWFAN_Model_Automationmeta::insert( $meta );
 			BWFAN_Core()->automations->set_automation_data( 'c_date', $meta['meta_value'] );
 
-			$meta['meta_key'] = 'm_date';
+			$meta['meta_key'] = 'm_date'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 			BWFAN_Model_Automationmeta::insert( $meta );
 			BWFAN_Core()->automations->set_automation_data( 'm_date', $meta['meta_value'] );
 
@@ -1100,7 +1122,7 @@ class BWFAN_Automations {
 
 		$result = $core_cache_obj->get_cache( md5( $query ), 'fka-automations' );
 		if ( false === $result ) {
-			$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table names from $wpdb->prefix
 			$core_cache_obj->set_cache( md5( $query ), $result, 'fka-automations' );
 		}
 
@@ -1144,7 +1166,7 @@ class BWFAN_Automations {
 		$core_cache_obj       = WooFunnels_Cache::get_instance();
 		$migrated_automations = $core_cache_obj->get_cache( md5( $query ), 'fka-automations' );
 		if ( false === $migrated_automations ) {
-			$migrated_automations = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$migrated_automations = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 			$core_cache_obj->set_cache( md5( $query ), $migrated_automations, 'fka-automations' );
 		}
 

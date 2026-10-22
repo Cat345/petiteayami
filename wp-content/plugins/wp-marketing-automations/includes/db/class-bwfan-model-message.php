@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFAN_Model_Message' ) && BWFAN_Common::is_pro_3_0() ) {
 
@@ -12,7 +13,7 @@ if ( ! class_exists( 'BWFAN_Model_Message' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			$sql = "SELECT * FROM {$table}";
 			if ( ! is_array( $args ) || empty( $args ) ) {
-				return $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				return $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; hardcoded SQL
 			}
 
 			$where_sql  = ' WHERE 1=1';
@@ -52,7 +53,7 @@ if ( ! class_exists( 'BWFAN_Model_Message' ) && BWFAN_Common::is_pro_3_0() ) {
 				$sql = $wpdb->prepare( $sql, ...$where_args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			}
 
-			return $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- values spread into prepare(); limit/offset absint()ed
 		}
 
 		public static function get_message_by_track_id( $track_id ) {
@@ -63,12 +64,12 @@ if ( ! class_exists( 'BWFAN_Model_Message' ) && BWFAN_Common::is_pro_3_0() ) {
 				$placeholders = implode( ', ', $placeholders );
 				$sql          = "SELECT ID,sub as subject, body as template, data, track_id FROM {$table} WHERE track_id IN ($placeholders)";
 
-				return $wpdb->get_results( $wpdb->prepare( $sql, $track_id ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				return $wpdb->get_results( $wpdb->prepare( $sql, $track_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated in code; ids bound as %d
 			}
 
 			$sql = "SELECT ID,sub as subject, body as template, data FROM {$table} WHERE track_id = %d LIMIT 0, 1";
 
-			return $wpdb->get_row( $wpdb->prepare( $sql, $track_id ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_row( $wpdb->prepare( $sql, $track_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; value bound via prepare()
 		}
 	}
 }

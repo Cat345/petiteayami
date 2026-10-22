@@ -225,12 +225,12 @@ abstract class Merge_Tag_Abstract_Product_Display extends BWFAN_Merge_Tag {
 			'fields'              => 'ids',
 			'orderby'             => $orderby,
 			'order'               => $order,
-			'tax_query'           => $this->get_taxonomy_query(),
-			'meta_query'          => WC()->query->get_meta_query(),
+			'tax_query'           => $this->get_taxonomy_query(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
+			'meta_query'          => WC()->query->get_meta_query(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 		];
 
 		if ( 'popularity' === $orderby ) {
-			$args['meta_key'] = 'total_sales';
+			$args['meta_key'] = 'total_sales'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- WooCommerce product catalog query for email product blocks; same query WooCommerce runs, limited
 			$args['orderby']  = 'meta_value_num';
 		}
 		$query = new WP_Query( $args );

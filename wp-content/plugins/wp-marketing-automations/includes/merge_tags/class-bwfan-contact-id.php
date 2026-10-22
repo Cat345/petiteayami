@@ -90,8 +90,25 @@ if ( ! bwfan_is_autonami_pro_active() || version_compare( BWFAN_PRO_VERSION, '2.
 
 	/**
 	 * Register this merge tag to a group.
+	 *
+	 * Deliberately unconditional. This used to be gated on
+	 * `! class_exists( 'BWFAN_BWF_Contact_ID' )`, which only ever evaluated
+	 * true because the eager glob loaded Lite's merge-tag files before
+	 * Pro's. Under lazy loading a file loads when its shortcode is first
+	 * parsed, so an email body carrying {{bwf_contact_id}} ahead of
+	 * {{contact_id}} loaded Pro's file first and flipped the guard —
+	 * and register() is what calls get_instance(), so skipping it meant
+	 * the constructor never ran and add_shortcode( 'bwfan_contact_id' )
+	 * never fired. The tag rendered as literal text.
+	 *
+	 * Pro's own file cannot register in Lite's place: its tail guard is
+	 * `! class_exists( 'BWFAN_Contact_ID' )` and it passes 'BWFAN_Contact_ID'
+	 * to register(), which returns early on that same class being absent.
+	 * There is therefore no double-registration to protect against — Lite
+	 * is the only registrant for this tag on every supported Pro version.
+	 *
+	 * Pro < 2.0.3 never reaches this line; the version guard at the top of
+	 * the file skips the whole block.
 	 */
-	if ( ! class_exists( 'BWFAN_BWF_Contact_ID' ) ) {
-		BWFAN_Merge_Tag_Loader::register( 'bwf_contact', 'BWFAN_Contact_ID', null, __( 'Contact', 'wp-marketing-automations' ) );
-	}
+	BWFAN_Merge_Tag_Loader::register( 'bwf_contact', 'BWFAN_Contact_ID', null, __( 'Contact', 'wp-marketing-automations' ) );
 }

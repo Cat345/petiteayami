@@ -1,8 +1,17 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 	#[AllowDynamicProperties]
 	class BWF_AS_Action_Store extends ActionScheduler_Store {
 		public $bwf_action_data = [];
+		/**
+		 * Action ids whose next occurrence could not be inserted, mapped to the row that should have been
+		 * created. Request-scoped only: if the process dies between the failed insert and mark_complete()/
+		 * mark_failure() (e.g. the host killing the request, one of the triggers this exists for), this map
+		 * is lost and the row is picked up as a plain failure on the next run instead of being recycled.
+		 * bwf_worker_before_as_run is the backstop for that gap, not this property.
+		 */
+		public $recurring_reschedule_failed = [];
 		public $action_table = '';
 		public $claim_table = '';
 		public $p_key = '';
@@ -36,7 +45,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 			 */
 			if ( true === BWF_AS::is_execution_started() ) {
 				/** Changing status to running i.e. 1 on action */
-				$wpdb->update( $this->action_table, [ 'status' => 1 ], [ $this->p_key => $action_id ], [ '%s' ], [ '%d' ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->update( $this->action_table, [ 'status' => 1 ], [ $this->p_key => $action_id ], [ '%d' ], [ '%d' ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			}
 
 			$data = $this->get_action_data( $action_id );
@@ -115,7 +124,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 				$this->log( __FUNCTION__ . ' id ' . $action_id . ', recurring action already running count: ' . $count );
 
 				/** Changing status to failed i.e. 2 on action */
-				$wpdb->update( $this->action_table, [ 'status' => 2 ], [ $this->p_key => $action_id ], [ '%s' ], [ '%d' ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->update( $this->action_table, [ 'status' => 2 ], [ $this->p_key => $action_id ], [ '%d' ], [ '%d' ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 				/** Modify action object cache data status */
 				if ( isset( $this->bwf_action_data[ $action_id ] ) ) {
@@ -152,7 +161,133 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 				$new_data['group_slug'] = $data->group_slug;
 			}
 
-			BWF_AS_Actions_Crud::insert( $new_data );
+			/**
+			 * The current row is deleted once this action finishes (mark_complete/mark_failure). If this INSERT
+			 * is silently dropped - deadlock, lost connection, host killing the request - the recurring chain
+			 * ends here and nothing ever re-creates it. Check it, retry once, and if it still fails remember
+			 * the action so the row we are about to consume can be recycled instead of deleted.
+			 */
+			$inserted = BWF_AS_Actions_Crud::insert( $new_data );
+			if ( false === $inserted ) {
+				/**
+				 * A retry can duplicate the row if the first INSERT committed and only the response was lost.
+				 * That is the safe direction to fail in: the duplicate is picked up by the non-running count
+				 * check above on the next run and removed by bwf_delete_scheduled_recurring_action().
+				 */
+				$this->log_forced( __FUNCTION__ . ' id ' . $action_id . ', next occurrence insert failed for hook ' . $data->hook . ', retrying. DB error: ' . $wpdb->last_error );
+				$inserted = BWF_AS_Actions_Crud::insert( $new_data );
+			}
+
+			if ( false === $inserted ) {
+				/** Keep the payload, the recycle step falls back to a fresh insert when the row is already gone */
+				$this->recurring_reschedule_failed[ $action_id ] = $new_data;
+				$this->log_forced( 'Failed to schedule next occurrence of recurring hook ' . $data->hook . ' (action id ' . $action_id . '). DB error: ' . $wpdb->last_error );
+			}
+		}
+
+		/**
+		 * Helper method. Re-arms the row we were about to consume when its replacement could not be created.
+		 * Returns true when the current row has been turned into the next occurrence and must not be deleted.
+		 *
+		 * @param $action_id
+		 *
+		 * @return bool
+		 */
+		protected function maybe_recycle_recurring_action( $action_id ) {
+			if ( ! isset( $this->recurring_reschedule_failed[ $action_id ] ) ) {
+				return false;
+			}
+
+			global $wpdb;
+
+			$pending = $this->recurring_reschedule_failed[ $action_id ];
+			unset( $this->recurring_reschedule_failed[ $action_id ] );
+
+			$updated = $wpdb->update( $this->action_table, [ //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				'status'   => 0,
+				'e_time'   => $pending['e_time'],
+				'claim_id' => 0,
+			], [ $this->p_key => $action_id ], [ '%d', '%d', '%d' ], [ '%d' ] );
+
+			if ( false === $updated ) {
+				$this->log_forced( 'Could not recycle recurring action id ' . $action_id . ' after a failed reschedule. DB error: ' . $wpdb->last_error );
+
+				return $this->recreate_after_failed_recycle( $pending, $action_id );
+			}
+
+			/**
+			 * Zero rows changed. The status always moves here (1 running, or 2 when a duplicate run was
+			 * detected, down to 0 pending), so the row either no longer exists or already holds these exact
+			 * values. A concurrent worker can delete an in-flight row: ActionScheduler_QueueCleaner::mark_failures()
+			 * selects status 1 rows whose `modified` is past action_scheduler_failure_period, and this store maps
+			 * `modified` onto `e_time` (see get_query_actions_sql()). `e_time` is the time the action was due,
+			 * not the time it started, so on a backed-up queue a row can already be past that cutoff the moment
+			 * it begins running. Confirm which of the two it is instead of reporting success blindly.
+			 */
+			if ( 0 === (int) $updated ) {
+				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT `{$this->p_key}` FROM {$this->action_table} WHERE `{$this->p_key}` = %d", $action_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table from prefix, pkey constant 'id', action_id bound via %d
+
+				/**
+				 * get_var() returns null both when the row is gone and when the SELECT itself failed. A DB
+				 * error is not confirmation the row still holds the right values, so it is treated the same
+				 * as "gone" rather than falling through to report success on an unverified row - recreate is
+				 * the safe direction to fail in here, same reasoning as the retry above.
+				 */
+				if ( null === $exists ) {
+					$this->log_forced( 'Recurring action id ' . $action_id . ( '' === $wpdb->last_error ? ' disappeared' : ' could not be verified (DB error: ' . $wpdb->last_error . ')' ) . ' before it could be recycled.' );
+
+					return $this->recreate_after_failed_recycle( $pending, $action_id );
+				}
+			}
+
+			$this->log_forced( 'Recycled recurring action id ' . $action_id . ' as its own next occurrence after a failed reschedule.' );
+
+			/** Row is alive again, drop the stale cached copy */
+			unset( $this->bwf_action_data[ $action_id ] );
+			wp_cache_delete( 'bwf_fetch_action_' . $action_id, __CLASS__ );
+
+			return true;
+		}
+
+		/**
+		 * Helper method. Last resort once the current row could not be turned into the next occurrence:
+		 * create the replacement row on its own. Always returns false so the caller keeps its usual delete,
+		 * the replacement carries a different id and is not affected by it.
+		 *
+		 * Reached from the failed-UPDATE path this can duplicate the row, for the same reason the INSERT retry
+		 * in schedule_recurring_action() can: if that UPDATE committed and only the response was lost, the row
+		 * is recycled and a replacement is written on top of it. Same safe direction to fail in, and the same
+		 * cleanup picks it up - the non-running count check in schedule_recurring_action() removes the extra
+		 * row through bwf_delete_scheduled_recurring_action() on the next run.
+		 *
+		 * @param $new_data
+		 * @param $action_id
+		 *
+		 * @return bool
+		 */
+		protected function recreate_after_failed_recycle( $new_data, $action_id ) {
+			global $wpdb;
+
+			if ( false !== BWF_AS_Actions_Crud::insert( $new_data ) ) {
+				$this->log_forced( 'Re-created the next occurrence of recurring hook ' . $new_data['hook'] . ' after action id ' . $action_id . ' could not be recycled.' );
+
+				return false;
+			}
+
+			$this->log_forced( 'Failed to re-create the next occurrence of recurring hook ' . $new_data['hook'] . ' (action id ' . $action_id . '); the hook is now unscheduled. DB error: ' . $wpdb->last_error );
+
+			return false;
+		}
+
+		/**
+		 * Helper method. Writes to the failed-actions log regardless of the site's logging setting.
+		 *
+		 * @param $msg
+		 */
+		protected function log_forced( $msg ) {
+			add_filter( 'bwf_logs_allowed', array( $this, 'overriding_bwf_logging' ), 99999, 2 );
+			BWF_Logger::get_instance()->log( $msg, 'woofunnel-failed-actions' );
+			remove_filter( 'bwf_logs_allowed', array( $this, 'overriding_bwf_logging' ), 99999 );
 		}
 
 		/**
@@ -252,7 +387,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 			/** Code will through in case of pending status i.e. 0 */
 			$sql = $this->get_query_actions_sql( $query, $query_type );
 
-			$value = ( 'count' === $query_type ) ? $wpdb->get_var( $sql ) : $wpdb->get_col( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$value = ( 'count' === $query_type ) ? $wpdb->get_var( $sql ) : $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Built by get_query_actions_sql: values bound, comparator/order whitelisted
 			if ( empty( $value ) ) {
 				return array();
 			}
@@ -527,7 +662,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 					$sql = $wpdb->prepare( $sql, array_merge( array( $claim_id ), $params ) ); //phpcs:ignore WordPress.DB.PreparedSQL
 				}
 
-				$rows_affected = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+				$rows_affected = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared at 659/662; only table/pkey identifiers interpolated
 				if ( false !== $rows_affected ) {
 					return (int) $rows_affected; // Zero claimable rows is a valid result, not an error.
 				}
@@ -542,7 +677,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 
 			$db_error = empty( $wpdb->last_error ) ? esc_html_x( 'unknown', 'database error', 'action-scheduler' ) : esc_html( $wpdb->last_error ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			/* translators: %s: database error message. */
-			throw new RuntimeException( sprintf( esc_html__( 'Unable to claim actions. Database error: %s.', 'action-scheduler' ), $db_error ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			throw new RuntimeException( sprintf( esc_html__( 'Unable to claim actions. Database error: %s.', 'action-scheduler' ), $db_error ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.Security.EscapeOutput.ExceptionNotEscaped -- message already escaped with esc_html() / esc_html__() above
 		}
 
 		/**
@@ -574,7 +709,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		 *
 		 * @param string $claim_id
 		 *
-		 * @return $array
+		 * @return array
 		 */
 		public function find_actions_by_claim_id( $claim_id ) {
 			global $wpdb;
@@ -588,7 +723,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 
 			$sql        = "SELECT `{$this->p_key}` FROM {$this->action_table} WHERE claim_id=%d ORDER BY e_time ASC";
 			$sql        = $wpdb->prepare( $sql, $claim_id ); //phpcs:ignore WordPress.DB.PreparedSQL
-			$action_ids = $wpdb->get_col( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$action_ids = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared at 725; table from prefix, pkey constant
 
 			$return = array_map( 'intval', $action_ids );
 			wp_cache_set( $cache_key, $return, __CLASS__, ( HOUR_IN_SECONDS / 4 ) );
@@ -609,7 +744,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 			/** status 0 have actions which are executable */
 			$sql = "SELECT COUNT(DISTINCT claim_id) FROM {$this->action_table} WHERE claim_id != 0 AND status = 0";
 
-			return (int) $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return (int) $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Static query; only prefixed table name interpolated
 		}
 
 		/**
@@ -664,7 +799,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 			$this->log( __FUNCTION__ . ' id ' . $action_id );
 
 			global $wpdb;
-			$wpdb->update( $this->action_table, [ 'claim_id' => 0 ], [ $this->p_key => $action_id ], [ '%s' ], [ '%d' ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( $this->action_table, [ 'claim_id' => 0 ], [ $this->p_key => $action_id ], [ '%d' ], [ '%d' ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 
 		/**
@@ -676,6 +811,11 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 
 			/** Log failure data */
 			$this->log_failure_data( $action_id );
+
+			/** Keep the row as the next occurrence if its replacement could not be created */
+			if ( true === $this->maybe_recycle_recurring_action( $action_id ) ) {
+				return;
+			}
 
 			/** Deleting existing action */
 			BWF_AS_Actions_Crud::delete( $action_id );
@@ -702,10 +842,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 					'error'          => error_get_last(),
 				);
 
-				/** updating logs force */
-				add_filter( 'bwf_logs_allowed', array( $this, 'overriding_bwf_logging' ), 99999, 2 );
-				BWF_Logger::get_instance()->log( print_r( $log_arr, true ), 'woofunnel-failed-actions' );
-				remove_filter( 'bwf_logs_allowed', array( $this, 'overriding_bwf_logging' ), 99999, 2 );
+				$this->log_forced( print_r( $log_arr, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- forced diagnostic log when claiming actions fails
 			}
 
 		}
@@ -724,6 +861,11 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		 */
 		public function mark_complete( $action_id ) {
 			$this->log( __FUNCTION__ . ' for action id ' . $action_id );
+
+			/** Keep the row as the next occurrence if its replacement could not be created */
+			if ( true === $this->maybe_recycle_recurring_action( $action_id ) ) {
+				return;
+			}
 
 			/** Deleting existing action */
 			BWF_AS_Actions_Crud::delete( $action_id );

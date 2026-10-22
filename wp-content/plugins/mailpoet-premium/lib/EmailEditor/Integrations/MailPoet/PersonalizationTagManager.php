@@ -220,7 +220,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getId'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Created', 'mailpoet-premium'),
@@ -229,7 +230,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getCreated'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Modified Date', 'mailpoet-premium'),
@@ -238,7 +240,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getModified'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Title', 'mailpoet-premium'),
@@ -247,7 +250,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getTitle'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Status', 'mailpoet-premium'),
@@ -256,7 +260,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getStatus'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Failed Payment Count', 'mailpoet-premium'),
@@ -265,7 +270,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getFailedPaymentCount'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Payment Count', 'mailpoet-premium'),
@@ -274,7 +280,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getPaymentCount'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Total Initial Payment', 'mailpoet-premium'),
@@ -283,7 +290,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getTotalInitialPayment'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Billing Period', 'mailpoet-premium'),
@@ -292,7 +300,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getBillingPeriod'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Billing Interval', 'mailpoet-premium'),
@@ -301,7 +310,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getBillingInterval'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Requires Manual Renewal', 'mailpoet-premium'),
@@ -310,7 +320,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getIsManual'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Cancel Email Sent', 'mailpoet-premium'),
@@ -319,7 +330,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getCancelEmailSent'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Subscription Is in Trial Period', 'mailpoet-premium'),
@@ -328,7 +340,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceSubscription, 'getIsTrial'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
   }
 
@@ -349,7 +362,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceBooking, 'getId'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Booking Created', 'mailpoet-premium'),
@@ -358,7 +372,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceBooking, 'getCreated'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Booking Modified Date', 'mailpoet-premium'),
@@ -367,7 +382,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceBooking, 'getModified'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Booking Status', 'mailpoet-premium'),
@@ -376,7 +392,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceBooking, 'getStatus'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Booking Persons Count', 'mailpoet-premium'),
@@ -385,7 +402,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceBooking, 'getPersonsCount'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Booking Start Date', 'mailpoet-premium'),
@@ -394,7 +412,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceBooking, 'getStartDate'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Booking End Date', 'mailpoet-premium'),
@@ -403,7 +422,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceBooking, 'getEndDate'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Booking Product Name', 'mailpoet-premium'),
@@ -412,7 +432,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceBooking, 'getProductName'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
     $registry->register(new Personalization_Tag(
       __('Booking All Day', 'mailpoet-premium'),
@@ -421,7 +442,8 @@ class PersonalizationTagManager {
       [$this->wooCommerceBooking, 'getAllDay'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+      Personalization_Tag::VALUE_TYPE_TEXT
     ));
   }
 

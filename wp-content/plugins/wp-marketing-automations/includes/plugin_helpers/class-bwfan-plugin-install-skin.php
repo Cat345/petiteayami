@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 // include the required file
 require_once BWFAN_PLUGIN_DIR . '/includes/plugin_helpers/class-bwfan-plugin-silent-upgrader-skin.php';
 

@@ -86,7 +86,7 @@ class Helper
     }
 
     /**
-     * @param array<string, string> $query
+     * @param array<string, mixed> $query
      */
     public static function orderAlphanum(array $query): Closure
     {

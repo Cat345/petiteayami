@@ -13,6 +13,12 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 		public $api_events    = array();
 		public $gtag_rendered = false;
 		/**
+		 * Page URL sent by the page that fired the CAPI events (wfocu_fire_conv_api_event).
+		 *
+		 * @var string
+		 */
+		public $conv_api_event_url = '';
+		/**
 		 * @var BWF_Admin_General_Settings|null
 		 */
 		public $admin_general_settings = null;
@@ -25,6 +31,11 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			add_action( 'wfocu_footer_before_print_scripts', array( $this, 'render_global_external_scripts' ), 999 );
 			add_action( 'wp_head', array( $this, 'render_global_external_scripts_head' ), 999 );
 			add_action( 'wfocu_header_print_in_head', array( $this, 'render_global_external_scripts_head' ), 999 );
+
+			// Global Custom CSS prints in the head on both render paths: plugin offer templates
+			// (wfocu_header_print_in_head) and real-theme / thank-you pages (wp_head).
+			add_action( 'wp_head', array( $this, 'render_global_custom_css' ), 999 );
+			add_action( 'wfocu_header_print_in_head', array( $this, 'render_global_custom_css' ), 999 );
 
 			if ( true === WFOCU_Core()->template_loader->is_customizer_preview() ) {
 				return;
@@ -71,6 +82,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			 */
 			add_action( 'woocommerce_checkout_order_processed', array( $this, 'maybe_save_order_data' ), 999, 3 );
 			add_action( 'woocommerce_before_pay_action', array( $this, 'maybe_save_order_data' ), 11, 1 );
+			add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'maybe_save_order_data_store_api' ), 999, 1 );
 			add_action( 'wfocu_offer_accepted_and_processed', array( $this, 'maybe_save_data_offer_accepted' ), 10, 4 );
 
 			/**
@@ -78,6 +90,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			 */
 			add_action( 'woocommerce_checkout_order_processed', array( $this, 'maybe_save_order_data_general' ), 999, 3 );
 			add_action( 'woocommerce_before_pay_action', array( $this, 'maybe_save_order_data_general' ), 11, 1 );
+			add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'maybe_save_order_data_general_store_api' ), 999, 1 );
 			add_action( 'wfocu_offer_accepted_and_processed', array( $this, 'maybe_save_data_offer_accepted_general' ), 10, 4 );
 
 			add_action( 'wfocu_header_print_in_head', array( $this, 'render_js_to_track_referer' ), 10 );
@@ -169,7 +182,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 								foreach ( $get_each_pixel_id as $pixel_id ) {
 									?>
 									<?php if ( true === $this->is_fb_advanced_tracking_on() && count( $fb_advanced_pixel_data ) > 0 ) { ?>
-							var wfocuPixelData = JSON.parse('<?php echo wp_json_encode( $fb_advanced_pixel_data ); ?>');
+							var wfocuPixelData = <?php echo wp_json_encode( $fb_advanced_pixel_data, JSON_HEX_TAG | JSON_HEX_AMP ); ?>;
 
 							if ('' !== WfocuGetCookie('_fbp') && (typeof wfocuPixelData.external_id === "undefined")) {
 								wfocuPixelData.external_id = WfocuGetCookie('_fbp');
@@ -844,11 +857,29 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			$do_track_fb_purchase_event = $this->admin_general_settings->get_option( 'is_fb_purchase_event' );
 
 			if ( is_array( $do_track_fb_purchase_event ) && count( $do_track_fb_purchase_event ) > 0 && 'yes' === $do_track_fb_purchase_event[0] ) {
+				/**
+				 * The renewal decision lives in the free plugin so both trackers stay in step.
+				 * Guarded because an older free plugin will not have it - then we track as before.
+				 */
+				if ( class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'is_renewal_purchase_excluded' ) ) {
+					$order = WFOCU_Core()->data->get_current_order();
+
+					if ( WFFN_Common::is_renewal_purchase_excluded( $order ) ) {
+						$order_id = ( $order instanceof WC_Order ) ? $order->get_id() : 0;
+						WFOCU_Core()->log->log( 'Order #' . $order_id . ': Meta Purchase event skipped - "Exclude Manual Renewals & Order Pay Page Purchases" setting is enabled (manual/renewal charge or Order Pay page payment, not counted as a new conversion).' );
+
+						return false;
+					}
+
+					return true;
+				}
+
 				return true;
 			}
 
 			return false;
 		}
+
 
 		public function do_track_fb_general_event() {
 
@@ -1096,6 +1127,20 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			}
 
 			return false;
+		}
+
+		/**
+		 * @hooked over `woocommerce_store_api_checkout_order_processed`
+		 * The Store API (express/wallet checkout) hook passes a single WC_Order argument,
+		 * so normalize it before delegating to the standard order data builder.
+		 *
+		 * @param WC_Order $order
+		 */
+		public function maybe_save_order_data_store_api( $order ) {
+			if ( ! $order instanceof WC_Order ) {
+				return;
+			}
+			$this->maybe_save_order_data( $order->get_id(), array(), $order );
 		}
 
 		/**
@@ -1977,6 +2022,35 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 		}
 
 		/**
+		 * Prints the merchant's global Custom CSS inside a <style> block in the page head.
+		 *
+		 * Runs on both upsell head render paths (wp_head and wfocu_header_print_in_head) but
+		 * only on actual offer pages via the should_render() gate, so it never leaks onto
+		 * unrelated site pages. The stored value is re-sanitised at print time as
+		 * defence-in-depth; an empty value prints nothing.
+		 *
+		 * @since {VERSION}
+		 *
+		 * @return void
+		 */
+		public function render_global_custom_css() {
+
+			$css = WFOCU_Core()->data->get_option( 'custom_css' );
+			if ( '' === $css ) {
+				return;
+			}
+
+			if ( ! $this->should_render( false, true ) ) {
+				return;
+			}
+
+			$clean = WFOCU_AJAX_Controller::sanitize_global_css( $css );
+			if ( '' !== $clean ) {
+				echo '<style>' . $clean . '</style>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized via sanitize_global_css
+			}
+		}
+
+		/**
 		 * Render Offer View script
 		 */
 		public function render_offer_view_script() {
@@ -2166,6 +2240,20 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			}
 
 			return $js;
+		}
+
+		/**
+		 * @hooked over `woocommerce_store_api_checkout_order_processed`
+		 * The Store API (express/wallet checkout) hook passes a single WC_Order argument,
+		 * so normalize it before delegating to the general order data builder.
+		 *
+		 * @param WC_Order $order
+		 */
+		public function maybe_save_order_data_general_store_api( $order ) {
+			if ( ! $order instanceof WC_Order ) {
+				return;
+			}
+			$this->maybe_save_order_data_general( $order->get_id(), array(), $order );
 		}
 
 		/**
@@ -2622,7 +2710,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 								window.wfocuCapiEvents.push({'event': event, 'event_id': eventID, 'args': args});
 							}
 							window.wfocuGetCapiEvents = function () {
-								var server = JSON.parse('<?php echo wp_json_encode( $this->api_events ); ?>');
+								var server = <?php echo wp_json_encode( $this->api_events, JSON_HEX_TAG | JSON_HEX_AMP ); ?>;
 								return server.concat(window.wfocuCapiEvents);
 							}
 							window.addEventListener('load', (event) => {
@@ -2635,6 +2723,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 
 								var finalq = 'data=' + JSON.stringify(window.wfocuGetCapiEvents());
 								var finalq = finalq + '&_wpnonce=' + '<?php echo esc_attr( wp_create_nonce( 'wfocu_fire_conv_api_event' ) ); ?>';
+								finalq = finalq + '&event_url=' + encodeURIComponent(window.location.href);
 								xhr.send(finalq);
 							});
 						}
@@ -2728,11 +2817,12 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			}
 
 			$getEventparams = $this->get_generic_event_params_for_conv_api();
+			$fallback_url   = '';
 			switch ( $type ) {
 				case 'PageView':
 					$instance->set_event_id( $event_id );
 					$instance->set_user_data( $this->get_user_data( $type ) );
-					$instance->set_event_source_url( WFOCU_Core()->offers->get_the_link( WFOCU_Core()->data->get_current_offer() ) );
+					$fallback_url = WFOCU_Core()->offers->get_the_link( WFOCU_Core()->data->get_current_offer() );
 					$instance->set_event_data( 'PageView', $getEventparams );
 					break;
 				case 'Purchase':
@@ -2740,10 +2830,10 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 					if ( is_array( $get_data_from_session ) && isset( $get_data_from_session['fb'] ) ) {
 						$get_offer = WFOCU_Core()->data->get_current_offer();
 						if ( ! empty( $get_offer ) ) {
-							$instance->set_event_source_url( WFOCU_Core()->offers->get_the_link( $get_offer ) );
+							$fallback_url = WFOCU_Core()->offers->get_the_link( $get_offer );
 						} else {
 
-							$instance->set_event_source_url( wc_get_order( $get_data_from_session['fb']['is_order'] )->get_checkout_order_received_url() );
+							$fallback_url = wc_get_order( $get_data_from_session['fb']['is_order'] )->get_checkout_order_received_url();
 
 						}
 						$instance->set_event_id( $event_id );
@@ -2755,7 +2845,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 				case 'trackCustom':
 					$instance->set_event_id( $event_id );
 					$instance->set_user_data( $this->get_user_data( $type ) );
-					$instance->set_event_source_url( WFOCU_Core()->offers->get_the_link( WFOCU_Core()->data->get_current_offer() ) );
+					$fallback_url = WFOCU_Core()->offers->get_the_link( WFOCU_Core()->data->get_current_offer() );
 					$getEventName = $this->admin_general_settings->get_option( 'general_event_name' );
 					$instance->set_event_data( $getEventName, $getEventparams );
 					break;
@@ -2764,17 +2854,32 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 				case 'WooFunnels_Downsell':
 					$instance->set_event_id( $event_id );
 					$instance->set_user_data( $this->get_user_data( $type ) );
-					$instance->set_event_source_url( WFOCU_Core()->offers->get_the_link( WFOCU_Core()->data->get_current_offer() ) );
+					$fallback_url = WFOCU_Core()->offers->get_the_link( WFOCU_Core()->data->get_current_offer() );
 
 					$instance->set_event_data( $type, $getEventparams );
 					break;
 				default:
 					$instance->set_event_id( $event_id );
 					$instance->set_user_data( $this->get_user_data( 'purchase' ) );
-					$instance->set_event_source_url( WFOCU_Core()->offers->get_the_link( WFOCU_Core()->data->get_current_offer() ) );
+					$fallback_url   = WFOCU_Core()->offers->get_the_link( WFOCU_Core()->data->get_current_offer() );
 					$getEventparams = is_array( $args ) && count( $args ) > 0 ? $args : $getEventparams;
 					$instance->set_event_data( $type, $getEventparams );
 			}
+
+			$event_url = $this->get_conv_api_event_url();
+
+			/**
+			 * Filters the event_source_url sent to the Meta Conversions API for an upsell event.
+			 *
+			 * Defaults to the page the event fired on, as sent by that page; the offer link or order-received URL
+			 * is the fallback. An accepted offer's Purchase fires on the page that follows the offer (the next
+			 * offer or the thank-you page), so it reports that page, the same page the offer-link fallback names.
+			 *
+			 * @param string $event_source_url Resolved event source URL.
+			 * @param string $type             Event name (PageView, Purchase, WooFunnels_Upsell, ...).
+			 * @param array  $event            Full event payload.
+			 */
+			$instance->set_event_source_url( apply_filters( 'wfocu_conversion_api_event_source_url', '' !== $event_url ? $event_url : (string) $fallback_url, $type, $event ) );
 
 			if ( empty( $instance->get_event_id() ) ) {
 				return null;
@@ -2925,7 +3030,11 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 				'event_hour'     => $this->getHour(),
 				'traffic_source' => $this->get_traffic_source(),
 			);
-			$utms       = $this->get_utms();
+			$event_url = $this->get_conv_api_event_url();
+			if ( '' !== $event_url ) {
+				$event_data = array( 'event_url' => $event_url ) + $event_data;
+			}
+			$utms = $this->get_utms();
 			if ( is_array( $utms ) ) {
 				$event_data = array_merge( $event_data, $utms );
 			}
@@ -2964,13 +3073,31 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 				return $event . '_' . $transaction_id;
 			}
 
-			return $event . '_' . time();
+			// A bare timestamp collides across concurrent visitors within the same second, and Meta
+			// dedupes by event name + event_id — so colliding IDs silently drop real events. Callers
+			// generate the ID once and reuse it for both the pixel and the CAPI copy, so uniqueness
+			// here cannot break browser/server matching.
+			return $event . '_' . time() . '_' . wp_rand( 100000, 999999 );
 		}
 
 		public function get_order_id_from_transaction_id( $id ) {
 			$expl = explode( '-', $id );
 
 			return $expl[0];
+		}
+
+		/**
+		 * The page the event happened on: sent by the page with the CAPI request, else the current page request.
+		 * Read from the page itself because HTTP_REFERER collapses to the homepage under a Referrer-Policy header.
+		 *
+		 * @return string
+		 */
+		public function get_conv_api_event_url() {
+			if ( ! empty( $this->conv_api_event_url ) ) {
+				return $this->conv_api_event_url;
+			}
+
+			return wp_doing_ajax() ? '' : sanitize_url( (string) $this->getRequestUri() );
 		}
 
 		public function getRequestUri( $removeQuery = false ) {

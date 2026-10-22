@@ -259,6 +259,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 					WFOCU_Core()->log->log( 'Creating Subscription For:' . $rp );
 					$product->set_price( $rp );
+					WooFunnels_UpStroke_PowerPack::detach_sale_schedule( $product );
 					$subscription_item_id = $subscription->add_product( $product, $qty ); // $args
 
 					if ( defined( 'WC_PB_ABSPATH' ) ) {

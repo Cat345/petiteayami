@@ -148,7 +148,7 @@ class TaxRegistrations {
 	 *
 	 * @return void
 	 */
-	protected function clear_cache(): void {
+	public function clear_cache(): void {
 		unset( self::$tax_registrations[ $this->get_cache_key( false ) ] );
 		unset( self::$tax_registrations[ $this->get_cache_key( true ) ] );
 		delete_transient( $this->get_persistent_cache_key( false ) );

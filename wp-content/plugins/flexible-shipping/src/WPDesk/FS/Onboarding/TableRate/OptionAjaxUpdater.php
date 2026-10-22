@@ -13,8 +13,8 @@ use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
  * Can update option when onboarding is clicked.
  */
 class OptionAjaxUpdater implements Hookable {
-	const AJAX_ACTION_CLICK = 'flexible_shipping_onboarding_table_rate_click';
-	const AJAX_ACTION_EVENT = 'flexible_shipping_onboarding_table_rate_event';
+	const AJAX_ACTION_CLICK           = 'flexible_shipping_onboarding_table_rate_click';
+	const AJAX_ACTION_EVENT           = 'flexible_shipping_onboarding_table_rate_event';
 	const AJAX_ACTION_AUTO_SHOP_POPUP = 'flexible_shipping_onboarding_table_rate_auto_show_popup';
 
 	const NONCE_ACTION = 'flexible_shipping_onboarding_table_rate';

@@ -36,7 +36,7 @@ class SettingsFields implements Hookable {
 				return false;
 			}
 		}
-		if ( in_array( $shipping_method->id ?? '', $this->get_allowed_shipping_methods_instance_settings(), true ) ) {
+		if ( in_array( $shipping_method->id, $this->get_allowed_shipping_methods_instance_settings(), true ) ) {
 			if ( $feature === 'instance-settings-modal' ) {
 				return false;
 			}

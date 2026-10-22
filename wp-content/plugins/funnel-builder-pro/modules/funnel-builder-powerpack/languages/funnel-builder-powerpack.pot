@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T10:38:54+00:00\n"
+"POT-Creation-Date: 2026-10-21T13:15:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: funnel-builder-powerpack\n"
@@ -71,7 +71,7 @@ msgstr ""
 msgid "Snapchat Pixel ID"
 msgstr ""
 
-#: includes/class-wffn-conversion-data.php:414
+#: includes/class-wffn-conversion-data.php:520
 msgid "No Referrer Founds"
 msgstr ""
 
@@ -80,7 +80,7 @@ msgid "steps"
 msgstr ""
 
 #: includes/class-wffn-rest-api-endpoint.php:1763
-#: includes/class-wffn-rest-api-endpoint.php:3056
+#: includes/class-wffn-rest-api-endpoint.php:3120
 msgid "success"
 msgstr ""
 
@@ -373,47 +373,52 @@ msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-leads.php:54
 #: includes/exporter/export-actions/class-wffn-export-orders.php:71
-msgid "Device"
-msgstr ""
-
-#: includes/exporter/export-actions/class-wffn-export-leads.php:55
-#: includes/exporter/export-actions/class-wffn-export-orders.php:72
 #: includes/exporter/export-actions/class-wffn-export-referrers.php:23
 msgid "Referrers"
 msgstr ""
 
+#: includes/exporter/export-actions/class-wffn-export-leads.php:55
+#: includes/exporter/export-actions/class-wffn-export-orders.php:72
+msgid "Device"
+msgstr ""
+
 #: includes/exporter/export-actions/class-wffn-export-leads.php:56
 #: includes/exporter/export-actions/class-wffn-export-orders.php:73
-msgid "Utm Campaign"
+msgid "Time to Convert"
 msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-leads.php:57
 #: includes/exporter/export-actions/class-wffn-export-orders.php:74
-msgid "Utm Source"
+msgid "Utm Campaign"
 msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-leads.php:58
 #: includes/exporter/export-actions/class-wffn-export-orders.php:75
-msgid "Utm Medium"
+msgid "Utm Source"
 msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-leads.php:59
 #: includes/exporter/export-actions/class-wffn-export-orders.php:76
-msgid "Utm Term"
+msgid "Utm Medium"
 msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-leads.php:60
-msgid "Contact ID"
+#: includes/exporter/export-actions/class-wffn-export-orders.php:77
+msgid "Utm Term"
 msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-leads.php:61
-#: includes/exporter/export-actions/class-wffn-export-orders.php:52
-msgid "Funnel"
+#: includes/exporter/export-actions/class-wffn-export-orders.php:78
+msgid "Utm Content"
 msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-leads.php:62
-#: includes/exporter/export-actions/class-wffn-export-orders.php:77
-msgid "Time to Convert"
+msgid "Contact ID"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:63
+#: includes/exporter/export-actions/class-wffn-export-orders.php:52
+msgid "Funnel"
 msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-orders.php:55
@@ -450,6 +455,10 @@ msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-orders.php:69
 msgid "Offer Total"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:84
+msgid "Customer Journey"
 msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-referrers.php:48

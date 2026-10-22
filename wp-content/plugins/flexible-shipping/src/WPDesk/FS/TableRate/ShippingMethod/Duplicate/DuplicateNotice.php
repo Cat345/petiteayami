@@ -29,7 +29,7 @@ class DuplicateNotice implements Hookable {
 			return;
 		}
 
-		$status = in_array( $_GET['status'], [ 'success', 'error' ] ) ? $_GET['status'] : 'warning'; // phpcs:ignore
+		$status = in_array( $_GET['status'], [ 'success', 'error' ], true ) ? $_GET['status'] : 'warning'; // phpcs:ignore
 		$title  = sanitize_text_field( urldecode( wp_unslash( $_GET['method_title'] ) ) ); // phpcs:ignore
 
 		if ( $status === 'success' ) {

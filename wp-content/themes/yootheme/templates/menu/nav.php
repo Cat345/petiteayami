@@ -41,13 +41,17 @@ foreach ($items as $item) {
 
     // Image
     $image = $view('~theme/templates/menu/image', ['item' => $item]);
+    $imageOnly = $image && $config("$menuitem.image_only");
 
-    if ($image && $config("$menuitem.image_only")) {
+    if ($imageOnly) {
         $title = '';
     }
 
     // Title Suffix, e.g. cart quantity
     if ($suffix = $config("$menuitem.title-suffix")) {
+        if ($imageOnly) {
+            $title = "<span class=\"uk-hidden-visually\">{$item->title}</span>";
+        }
         $title .= " {$suffix}";
     }
 
@@ -68,7 +72,11 @@ foreach ($items as $item) {
             $title = '';
             $attrs['class'][] = 'uk-nav-divider';
         } elseif ($children && $level === 1 && $config('~menu.accordion')) {
-            $title = "<a href>{$title}</a>";
+            $link = ['href' => true];
+            if ($imageOnly && !$suffix) {
+                $link['aria-label'] = $item->title;
+            }
+            $title = "<a{$this->attrs($link)}>{$title}</a>";
             $attrs['class'][] = 'js-accordion';
             if ($hasActiveChild($item)) {
                 $attrs['class'][] = 'uk-open';
@@ -112,6 +120,10 @@ foreach ($items as $item) {
 
         if (!empty($item->anchor_css)) {
             $link['class'][] = $item->anchor_css;
+        }
+
+        if ($imageOnly && !$suffix) {
+            $link['aria-label'] = $item->title;
         }
 
         if ($config('~menu.text_align') == 'right') {

@@ -167,6 +167,7 @@ return [
                 'Use an optional minimum height to prevent the slider from becoming smaller than its content on small devices.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 200,
                 'max' => 800,
                 'step' => 50,
@@ -315,6 +316,7 @@ return [
             'description' => 'Set the velocity in pixels per millisecond.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 0.2,
                 'max' => 3,
                 'step' => 0.1,
@@ -338,6 +340,7 @@ return [
             'description' => 'Set the autoplay interval in seconds.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => 5,
                 'max' => 15,
                 'step' => 1,
@@ -357,6 +360,7 @@ return [
                 'Set the animation easing. Zero transitions at an even speed, a negative value starts off quickly while a positive value starts off slowly.',
             'type' => 'range',
             'attrs' => [
+                'type' => 'number',
                 'min' => -2,
                 'max' => 2,
                 'step' => 0.1,

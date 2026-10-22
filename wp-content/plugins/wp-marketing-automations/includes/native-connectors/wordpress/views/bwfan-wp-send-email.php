@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 $unique_slug = $this->get_slug();
 $wc_enabled  = apply_filters( 'bwfan_enable_wc_email_template', false );
 ?>

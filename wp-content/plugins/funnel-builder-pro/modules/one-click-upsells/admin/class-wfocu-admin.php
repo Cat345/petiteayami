@@ -1052,6 +1052,12 @@ In such scenarios a separate order is created for your record and is created and
 							'label'       => __( 'External Scripts in head tag', 'woofunnels-upstroke-one-click-upsell' ),
 							'placeholder' => __( 'Type here...', 'woofunnels-upstroke-one-click-upsell' ),
 						),
+						array(
+							'key'         => 'custom_css',
+							'type'        => 'textArea',
+							'label'       => __( 'Custom CSS', 'woofunnels-upstroke-one-click-upsell' ),
+							'placeholder' => __( 'Type here...', 'woofunnels-upstroke-one-click-upsell' ),
+						),
 					),
 					'priority' => 20,
 				),

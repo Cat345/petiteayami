@@ -22,9 +22,9 @@ class MethodDescription implements Hookable {
 	/**
 	 * Renderer.
 	 *
-	 * @var Renderer;
+	 * @var Renderer
 	 */
-	private $renderer;
+	private Renderer $renderer;
 
 	/**
 	 * MethodDescription constructor.
@@ -133,7 +133,7 @@ class MethodDescription implements Hookable {
 
 		if ( isset( $meta_data[ RateCalculator::DESCRIPTION_BASE64ENCODED ] ) && ! empty( $meta_data[ RateCalculator::DESCRIPTION_BASE64ENCODED ] ) ) {
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
-			$description = base64_decode( $meta_data[ RateCalculator::DESCRIPTION_BASE64ENCODED ] );
+			$description = base64_decode( $meta_data[ RateCalculator::DESCRIPTION_BASE64ENCODED ], true );
 
 			if ( $description ) {
 				return wp_kses_post( $description );

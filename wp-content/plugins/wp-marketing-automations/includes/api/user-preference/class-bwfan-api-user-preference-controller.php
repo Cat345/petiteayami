@@ -278,19 +278,34 @@ class BWFAN_API_User_Preference_Controller extends BWFAN_API_Controller {
 		}
 
 		// Generate secure filename
-		$new_file_name = wp_generate_password( 32, false ) . '.csv';
-		$new_file      = $real_path . '/' . $new_file_name;
+		$file['name'] = wp_generate_password( 32, false ) . '.csv';
 
-		// Move uploaded file
-		$move_new_file = move_uploaded_file( $file['tmp_name'], $new_file );
-
-		if ( false === $move_new_file ) {
-			$this->response_code = 500;
-
-			return $this->error_response( __( 'Unable to upload file', 'wp-marketing-automations' ) );
+		if ( ! function_exists( 'wp_handle_upload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
 
-		$file_data['file'] = $new_file;
+		/** Point this one upload at the import folder; PHP_INT_MAX so other upload_dir filters can't redirect it */
+		$upload_dir_cb = function ( $uploads ) use ( $real_path ) {
+			$uploads['path']   = $real_path;
+			$uploads['subdir'] = '';
+
+			return $uploads;
+		};
+		add_filter( 'upload_dir', $upload_dir_cb, PHP_INT_MAX );
+		/** Type already validated above, so skip core's second (upload_mimes-dependent) check */
+		$uploaded = wp_handle_upload( $file, array(
+			'test_form' => false,
+			'test_type' => false,
+		) );
+		remove_filter( 'upload_dir', $upload_dir_cb, PHP_INT_MAX );
+
+		if ( ! is_array( $uploaded ) || empty( $uploaded['file'] ) || isset( $uploaded['error'] ) ) {
+			$this->response_code = 500;
+
+			return $this->error_response( ! empty( $uploaded['error'] ) ? $uploaded['error'] : __( 'Unable to upload file', 'wp-marketing-automations' ) );
+		}
+
+		$file_data['file'] = $uploaded['file'];
 
 		return $this->success_response( $file_data, __( 'File uploaded successfully', 'wp-marketing-automations' ) );
 	}

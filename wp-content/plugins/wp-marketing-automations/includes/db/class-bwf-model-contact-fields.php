@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 
 if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
@@ -74,7 +75,7 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 			global $wpdb;
 			$table = self::_table();
 			$query = "SELECT * from $table where cid = $contact_id LIMIT 0, 1";
-			$field = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$field = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; contact id absint()ed by only caller
 
 			return ! empty( $field ) ? $field : '';
 		}
@@ -83,9 +84,9 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 			global $wpdb;
 			$table  = self::_table();
 			$column = "f{$field_id}";
-			$query  = $wpdb->prepare( "SHOW COLUMNS FROM {$table} LIKE %s", $column );
+			$query  = $wpdb->prepare( "SHOW COLUMNS FROM {$table} LIKE %s", $column ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; column name bound with prepare()
 
-			return $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; column name bound with prepare()
 		}
 
 		public static function add_column_field( $field_id, $searchable = 2 ) {
@@ -112,7 +113,7 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 			}
 
 			$query = "ALTER TABLE $table ADD $column $data_type{$length} $unsigned DEFAULT NULL $indexing";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- types from hardcoded map; field id is DB insert_id at all callers
 
 			return empty( $wpdb->last_error ) ? true : $wpdb->last_error;
 		}
@@ -124,7 +125,7 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 
 			if ( ! empty( self::column_already_exists( $field_id ) ) ) {
 				$query = "ALTER TABLE $table DROP COLUMN $column";
-				$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- field id digits-only via route regex or absint(); column must exist
 			}
 		}
 
@@ -134,7 +135,7 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 
 			$query = "SELECT * FROM $table WHERE cid = $contact_id LIMIT 0, 1";
 
-			return $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; contact id is DB int id
 		}
 
 		public static function update_contact_field_column_indexing( $field_id, $searchable = 1 ) {
@@ -157,7 +158,7 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 			}
 
 			$query = "ALTER TABLE $table $indexing";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- field id digits-only via route regex; column must exist
 
 			return empty( $wpdb->last_error ) ? true : false;
 		}
@@ -188,7 +189,7 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 
 			$sql = "INSERT IGNORE INTO `$table` (`" . implode( '`,`', $columns ) . "`) VALUES (" . implode( ',', $placeholders ) . ")";
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- columns are cid/f<numeric>; values bound via prepare()
 			$result = $wpdb->query( $wpdb->prepare( $sql, array_values( $data ) ) );
 			if ( ! empty( $result ) ) {
 				return $result;

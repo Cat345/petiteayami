@@ -156,5 +156,4 @@ class PredefinedScenario implements \JsonSerializable {
 
 		return count( $rules );
 	}
-
 }

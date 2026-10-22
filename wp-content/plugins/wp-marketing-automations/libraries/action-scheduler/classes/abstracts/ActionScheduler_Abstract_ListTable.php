@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -495,10 +496,10 @@ abstract class ActionScheduler_Abstract_ListTable extends WP_List_Table {
 
 		$sql = "SELECT $columns FROM {$this->table_name} {$where} {$order} {$limit} {$offset}";
 
-		$this->set_items( $wpdb->get_results( $sql, ARRAY_A ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$this->set_items( $wpdb->get_results( $sql, ARRAY_A ) ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: columns are fixed, WHERE parts are built with $wpdb->prepare(), ORDER BY/LIMIT/OFFSET are whitelisted or cast
 
 		$query_count = "SELECT COUNT({$this->ID}) FROM {$this->table_name} {$where}";
-		$total_items = $wpdb->get_var( $query_count ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$total_items = $wpdb->get_var( $query_count ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- bundled Action Scheduler: same prepared WHERE clause as the list query
 		$per_page    = $this->get_items_per_page( $this->get_per_page_option_name(), $this->items_per_page );
 		$this->set_pagination_args(
 			array(

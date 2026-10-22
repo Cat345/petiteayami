@@ -275,15 +275,13 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
                     'uk-modal-close-full uk-close-large' => $config("$header.search_modal.width") == 'full',
                 ],
 
-                'uk-toggle' => [
+                'uk-toggle' => json_encode([
                     'mode' => 'media',
                     'media' =>'@s',
                     'cls' => $config("$header.search_modal.width") == 'full' ? 'uk-modal-close-full uk-close-large uk-modal-close-default' : 'uk-close-large uk-modal-close-outside',
-                ]
+                ]),
 
             ];
-
-            $modal_close['uk-toggle'] = json_encode(array_filter($modal_close['uk-toggle']));
 
         }
 

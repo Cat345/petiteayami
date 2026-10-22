@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 class BWFAN_WooFunnels_Support {
@@ -64,7 +65,7 @@ class BWFAN_WooFunnels_Support {
 	}
 
 	public function woofunnels_page() {
-		if ( ! isset( $_GET['tab'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( ! isset( $_GET['tab'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			WooFunnels_dashboard::$selected = 'support';
 		}
 		WooFunnels_dashboard::load_page();

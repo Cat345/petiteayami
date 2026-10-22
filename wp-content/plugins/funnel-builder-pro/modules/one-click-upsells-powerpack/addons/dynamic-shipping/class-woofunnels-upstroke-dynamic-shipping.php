@@ -261,6 +261,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 				 * If order total mismatches with the total showing user to the cart then, there might be free shipping offered right away even when offer total doesn't reach threshold
 				 */
 				WC()->cart->get_cart_contents()[ $cart_item_id ]['data']->set_price( $price );
+				WooFunnels_UpStroke_PowerPack::detach_sale_schedule( WC()->cart->cart_contents[ $cart_item_id ]['data'] );
 			}
 
 			WC()->session->set( 'chosen_shipping_methods', isset( $body_data['chosen_shipping'] ) ? wc_clean( $body_data['chosen_shipping'] ) : '' );

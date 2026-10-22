@@ -7,8 +7,6 @@
   "powered-by-mailpoet-block.php": "powered-by-mailpoet-block.asset.php",
   "latest-posts-block.js": "latest-posts-block.js",
   "latest-posts-block.php": "latest-posts-block.asset.php",
-  "mailpoet.js": "mailpoet.js",
-  "mailpoet.php": "mailpoet.asset.php",
   "./style-powered-by-mailpoet-block.css": "./style-powered-by-mailpoet-block.css",
   "./style-latest-posts-block.css": "./style-latest-posts-block.css",
   "latest-posts/block.json": "latest-posts/block.json",

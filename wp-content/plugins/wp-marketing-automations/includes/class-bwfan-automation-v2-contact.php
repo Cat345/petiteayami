@@ -74,7 +74,7 @@ final class BWFAN_Automation_V2_Contact {
 			return;
 		}
 
-		$msg = is_array( $msg ) ? print_r( $msg, true ) : $msg;
+		$msg = is_array( $msg ) ? print_r( $msg, true ) : $msg; // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- intentional diagnostic logging
 		BWFAN_Common::log_test_data( $msg, 'automation_contact_execution', true );
 	}
 }

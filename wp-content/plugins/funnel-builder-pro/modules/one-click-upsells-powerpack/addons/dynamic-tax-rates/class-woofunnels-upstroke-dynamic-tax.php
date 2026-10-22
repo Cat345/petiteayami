@@ -45,6 +45,18 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Tax' ) ) {
 
 			WC()->customer->set_location( $country, $state, $postcode, $city );
 
+			// set_location() only sets country/state/postcode/city — it does not set the street(address_1/address_2). Address-precise tax providers (e.g. Zamp)
+			if ( $order instanceof WC_Order ) {
+				$street_1 = $order->get_shipping_address_1() ? $order->get_shipping_address_1() : $order->get_billing_address_1();
+				$street_2 = $order->get_shipping_address_2() ? $order->get_shipping_address_2() : $order->get_billing_address_2();
+				if ( ! empty( $street_1 ) ) {
+					WC()->customer->set_shipping_address_1( $street_1 );
+					WC()->customer->set_billing_address_1( $street_1 );
+					WC()->customer->set_shipping_address_2( $street_2 );
+					WC()->customer->set_billing_address_2( $street_2 );
+				}
+			}
+
 			// Store original cart contents
 			$original_cart = WC()->cart->get_cart_contents();
 			WC()->cart->empty_cart();
@@ -101,13 +113,19 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Tax' ) ) {
 				foreach ( WC()->cart->cart_contents as $cart_item_key => $cart_item ) {
 					if ( isset( $cart_item['wfocu_offer_price'] ) && $cart_item['wfocu_offer_price'] > 0 && isset( $cart_item['data'] ) && is_object( $cart_item['data'] ) ) {
 						$cart_item['data']->set_price( (float) $cart_item['wfocu_offer_price'] );
+						WooFunnels_UpStroke_PowerPack::detach_sale_schedule( $cart_item['data'] );
 						WC()->cart->cart_contents[ $cart_item_key ]['data'] = $cart_item['data'];
 					}
 				}
 			}
 
-			// Calculate totals
+			// Calculate totals. Announce the window with the parent order so tax-provider
+			// compatibilities that need the order's full address (e.g. Zamp, which otherwise
+			// reads the streetless customer location off this temp cart and returns 0) can
+			// inject the correct rate during this recalculation.
+			do_action( 'wfocu_dynamic_tax_before_calculate_totals', $order );
 			WC()->cart->calculate_totals();
+			do_action( 'wfocu_dynamic_tax_after_calculate_totals', $order );
 			$cart_contents = WC()->cart->get_cart_contents();
 			// Extract tax data from cart with proper key mapping
 			$tax_data        = array();

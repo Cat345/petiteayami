@@ -38,7 +38,7 @@ class HandleActionManifest implements HandleActionStrategyInterface {
 		foreach ( $post_ids as $post_id ) {
 			$shipments = fs_get_order_shipments( $post_id );
 			foreach ( $shipments as $shipment ) {
-				/* @var $shipment WPDesk_Flexible_Shipping_Shipment|WPDesk_Flexible_Shipping_Shipment_Interface */
+				/** @var WPDesk_Flexible_Shipping_Shipment&WPDesk_Flexible_Shipping_Shipment_Interface $shipment */
 				if ( $shipment->get_status() !== 'fs-confirmed' || $shipment->get_meta( '_manifest', '' ) !== '' ) {
 					continue;
 				}

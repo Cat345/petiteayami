@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * WooCommerce Product Add-Ons Compatibility
  * https://wpml.org/

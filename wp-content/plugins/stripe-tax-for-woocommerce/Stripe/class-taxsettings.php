@@ -109,7 +109,9 @@ class TaxSettings {
 	protected function get_from_api_call(): object {
 		$stripe_client                         = $this->get_stripe_client( $this->api_key );
 		$settings                              = StripeTaxPluginHelper::fill_stripe_tax_settings_object( $stripe_client->tax->settings->retrieve( array() ) );
-		$settings->head_office->address->state = $this->convert_state_name_into_state_code( $settings->head_office->address->country, $settings->head_office->address->state );
+		$state                                 = $settings->head_office->address->state ?? null;
+		$converted_state                       = is_string( $state ) ? $this->convert_state_name_into_state_code( $settings->head_office->address->country, $state ) : null;
+		$settings->head_office->address->state = '' === $converted_state ? null : $converted_state;
 
 		return $settings;
 	}

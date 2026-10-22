@@ -26,27 +26,26 @@ class FieldsType
      */
     public static function config(Source $source, array $fields): array
     {
-        return [
-            'fields' => array_reduce(
-                $fields,
-                fn($fields, $field) => $fields +
-                    static::configFields(
-                        $field,
-                        [
-                            'type' => 'String',
-                            'name' => ctype_digit($field['slug'])
-                                ? "_{$field['slug']}"
-                                : strtr($field['slug'], '-', '_'),
-                            'metadata' => [
-                                'label' => $field['name'],
-                                'group' => $field['group'] ?: trans('Fields'),
-                            ],
-                        ],
-                        $source,
-                    ),
-                [],
-            ),
-        ];
+        $configs = [];
+
+        foreach ($fields as $field) {
+            $configs += static::configFields(
+                $field,
+                [
+                    'type' => 'String',
+                    'name' => ctype_digit($field['slug'])
+                        ? "_{$field['slug']}"
+                        : strtr($field['slug'], '-', '_'),
+                    'metadata' => [
+                        'label' => $field['name'],
+                        'group' => $field['group'] ?: trans('Fields'),
+                    ],
+                ],
+                $source,
+            );
+        }
+
+        return ['fields' => $configs];
     }
 
     /**

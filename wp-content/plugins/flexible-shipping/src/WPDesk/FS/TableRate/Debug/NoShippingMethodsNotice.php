@@ -33,7 +33,7 @@ class NoShippingMethodsNotice implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_action( 'woocommerce_load_shipping_methods', array( $this, 'display_notice_if_needed_for_package' ) );
+		add_action( 'woocommerce_load_shipping_methods', [ $this, 'display_notice_if_needed_for_package' ] );
 	}
 
 	/**
@@ -125,5 +125,4 @@ class NoShippingMethodsNotice implements Hookable {
 
 		return 0;
 	}
-
 }

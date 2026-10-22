@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Advanced Coupons for WooCommerce Free plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Advanced Coupons for WooCommerce Free 4.7.5\n"
+"Project-Id-Version: Advanced Coupons for WooCommerce Free 4.7.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/advanced-coupons-for-woocommerce-free\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-14T03:27:35+00:00\n"
+"POT-Creation-Date: 2026-10-19T08:32:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: advanced-coupons-for-woocommerce-free\n"
@@ -1636,7 +1636,7 @@ msgstr ""
 #: Models/BOGO/Admin.php:362
 #: Models/Cart_Conditions.php:642
 #: Models/Emails.php:270
-#: Models/Store_Credits/Checkout.php:1309
+#: Models/Store_Credits/Checkout.php:1366
 msgid "Invalid AJAX call"
 msgstr ""
 
@@ -1672,7 +1672,7 @@ msgstr ""
 #: Models/BOGO/Admin.php:305
 #: Models/BOGO/Admin.php:372
 #: Models/Cart_Conditions.php:652
-#: Models/Store_Credits/Checkout.php:1327
+#: Models/Store_Credits/Checkout.php:1384
 msgid "Missing required post data"
 msgstr ""
 
@@ -3992,53 +3992,57 @@ msgstr ""
 msgid "There was an error trying to apply the store credit discount. Please try again."
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:380
+#: Models/Store_Credits/Checkout.php:405
 msgid "Store Credit Discount"
 msgstr ""
 
 #. translators: %1$s: opening link tag, %2$s: closing link tag.
-#: Models/Store_Credits/Checkout.php:511
+#: Models/Store_Credits/Checkout.php:539
 #, php-format
 msgid "The total of your order changed, please click here to %1$sreapply the store credit discount%2$s."
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:953
+#: Models/Store_Credits/Checkout.php:989
 msgid "Discount (Store Credit)"
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:1004
-#: Models/Store_Credits/Checkout.php:1042
+#: Models/Store_Credits/Checkout.php:1040
+#: Models/Store_Credits/Checkout.php:1078
 msgid "Paid with Store Credits"
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:1051
+#: Models/Store_Credits/Checkout.php:1087
 msgid "Pending Amount"
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:1097
+#: Models/Store_Credits/Checkout.php:1133
 msgid "Refund (Store Credits):"
 msgstr ""
 
 #. Translators: 1: residual unpaid amount, 2: customer's available store credit balance, 3: order total after tax recalculation
-#: Models/Store_Credits/Checkout.php:1161
+#: Models/Store_Credits/Checkout.php:1197
 #, php-format
 msgid "Store credit balance (%2$s) is insufficient to fully cover the order total (%3$s) after tax recalculation. Residual unpaid amount: %1$s — please collect via another payment method or top up the customer's store credit balance."
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:1314
+#: Models/Store_Credits/Checkout.php:1371
 msgid "You must be logged in to redeem store credits."
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:1322
+#: Models/Store_Credits/Checkout.php:1379
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:1341
+#: Models/Store_Credits/Checkout.php:1398
 msgid "Store credit discount was applied successfully."
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:1342
+#: Models/Store_Credits/Checkout.php:1399
 msgid "Store credit discount has been removed."
+msgstr ""
+
+#: Models/Store_Credits/Checkout.php:1572
+msgid "Order resumed after a failed payment. Status reset to pending payment to apply the store credit again."
 msgstr ""
 
 #: Models/Store_Credits/My_Account.php:277

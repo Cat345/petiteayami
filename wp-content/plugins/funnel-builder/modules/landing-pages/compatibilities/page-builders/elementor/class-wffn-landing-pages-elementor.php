@@ -119,7 +119,11 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Elementor' ) ) {
 		}
 
 		public function register_conditions( $conditions_manager ) {
-			require plugin_dir_path( WFFN_PLUGIN_FILE ) . 'modules/landing-pages/compatibilities/page-builders/elementor/conditions/class-wffn-lp-pages.php';
+			/** Absent for a moment while WordPress replaces the plugin folder during an update */
+			if ( ! file_exists( __DIR__ . '/conditions/class-wffn-lp-pages.php' ) ) {
+				return;
+			}
+			require_once __DIR__ . '/conditions/class-wffn-lp-pages.php';
 			$new_condition = new ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_LP_Pages( [
 				'post_type' => WFFN_Core()->landing_pages->get_post_type_slug(),
 			] );

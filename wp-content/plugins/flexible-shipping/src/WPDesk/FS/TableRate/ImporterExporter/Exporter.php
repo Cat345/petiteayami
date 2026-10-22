@@ -18,7 +18,7 @@ class Exporter implements Hookable {
 	 * @return void|null
 	 */
 	public function hooks() {
-		add_action( 'wp_ajax_flexible_shipping_export', array( $this, 'flexible_shipping_export' ) );
+		add_action( 'wp_ajax_flexible_shipping_export', [ $this, 'flexible_shipping_export' ] );
 	}
 
 	/**
@@ -31,7 +31,12 @@ class Exporter implements Hookable {
 		}
 
 		$instance_id = filter_input( INPUT_GET, 'instance_id' );
-		$methods     = array_filter( wp_parse_id_list( filter_input( INPUT_GET, 'methods' ) ) );
+		$methods     = array_filter(
+			wp_parse_id_list( filter_input( INPUT_GET, 'methods' ) ),
+			static function ( $method_id ): bool {
+				return 0 !== $method_id;
+			}
+		);
 
 		$exporter    = new JSON( sanitize_key( $instance_id ), $methods );
 		$export_data = $exporter->get_exported_data();

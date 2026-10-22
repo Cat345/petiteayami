@@ -50,6 +50,4 @@ class AjaxTracker implements Hookable {
 
 		wp_send_json_success();
 	}
-
-
 }

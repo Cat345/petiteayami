@@ -43,7 +43,7 @@ class ShippingRate implements Hookable {
 	}
 
 	public function hooks() {
-		add_filter( 'woocommerce_shipping_method_add_rate_args', [ $this, 'add_table_rate_shipping_rate' ], 10, 3 );
+		add_filter( 'woocommerce_shipping_method_add_rate_args', [ $this, 'add_table_rate_shipping_rate' ], 10, 2 );
 		add_action( 'woocommerce_before_get_rates_for_package', [ $this, 'save_package' ], 10 );
 		add_filter( 'woocommerce_package_rates', [ $this, 'remove_canceled_rates' ] );
 	}
@@ -148,7 +148,7 @@ class ShippingRate implements Hookable {
 		$method_debug_mode     = $shipping_method_settings->get_debug_mode();
 		$shipping_method_title = $shipping_method_settings->get_title();
 		$shipping_method_url   = admin_url(
-			'admin.php?page=wc-settings&tab=shipping&instance_id=' . sanitize_key( $instance_id ) . '&action=edit&method_id=' . sanitize_key( $shipping_method_settings->get_id() )
+			'admin.php?page=wc-settings&tab=shipping&instance_id=' . sanitize_key( (string) $instance_id ) . '&action=edit&method_id=' . sanitize_key( $shipping_method_settings->get_id() )
 		);
 		if ( null !== static::$fs_logger ) {
 			$fs_logger = static::$fs_logger;

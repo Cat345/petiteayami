@@ -123,6 +123,14 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Divi' ) ) {
 
 		<style>
 
+				/* #page-container is the Divi THEME's page wrapper, so this belongs here rather
+					than in the shared stylesheets: it is inert without Divi and it is not tied to
+					the Divi Builder, which our canvas and full-width templates do not use. */
+				body.wfacp_checkout-template-wfacp-canvas-php div#page-container,
+				body.wfacp_checkout-template-wfacp-full-width-php div#page-container {
+					padding-top: 0 !important;
+				}
+
 				#wfacp-e-form .wfacp-form .woocommerce-form-login-toggle .woocommerce-info a.showlogin,
 				#wfacp-e-form .wfacp-form .woocommerce-form-login-toggle .woocommerce-info a {
 					color: #dd7575 !important;;

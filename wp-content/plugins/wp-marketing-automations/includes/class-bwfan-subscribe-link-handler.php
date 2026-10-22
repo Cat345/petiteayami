@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 class BWFAN_Subscribe_Link_Handler {
@@ -124,6 +125,7 @@ class BWFAN_Subscribe_Link_Handler {
 			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 			<?php wp_print_styles(); ?>
 			<title><?php esc_html_e( 'Subscribe', 'wp-marketing-automations' ); ?></title>
+<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- standalone page prints its own head without wp_head(), so an enqueued style would never print ?>
 			<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 		</head>
 		<body class="bwfan-manage-profile-page-body <?php echo is_rtl() ? 'is-rtl' : ''; ?>">

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'BWF_AS_Log_Store' ) ) {
 	/**
 	 * Not saving any log as no do_action left in action data store

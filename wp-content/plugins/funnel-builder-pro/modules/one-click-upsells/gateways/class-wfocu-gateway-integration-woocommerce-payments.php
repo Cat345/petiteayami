@@ -73,6 +73,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 					add_action( 'woocommerce_blocks_loaded', array( $this, 'maybe_declare_express_future_usage' ), 100 );
 				}
 				add_filter( 'wcpay_express_checkout_js_params', array( $this, 'declare_express_future_usage_on_product_page' ) );
+				add_filter( 'wcpay_express_checkout_setup_future_usage', array( $this, 'declare_express_setup_future_usage' ), 10, 2 );
 			} else {
 				add_action( 'wp_footer', array( $this, 'maybe_render_script_to_allow_tokenization' ) );
 			}
@@ -943,7 +944,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 			 */
 			foreach ( array( 'wcpay-confirmation-token', 'wcpay-payment-method' ) as $pm_key ) {
 				if ( ! empty( $payment_data[ $pm_key ] ) && is_string( $payment_data[ $pm_key ] ) && 0 === strpos( $payment_data[ $pm_key ], 'ctoken_' ) ) {
-					if ( true !== $this->express_future_usage_declared ) {
+					if ( ! $this->is_express_token_authorized_for_saving() ) {
 						return;
 					}
 					break;
@@ -953,6 +954,37 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 			$payment_data[ 'wc-' . $this->get_key() . '-new-payment-method' ] = 'true';
 
 			$context->set_payment_data( $payment_data );
+		}
+
+		/**
+		 * Whether an express confirmation token was minted with setup_future_usage=off_session,
+		 * so forcing the save cannot fail the payment.
+		 *
+		 * WooPayments 11.2.0+ hands the client its value from
+		 * WC_Payments_Express_Checkout_Button_Helper::get_setup_future_usage(), so ask that same
+		 * method instead of assuming our declarations were read. Older versions read our
+		 * Store API / localized declarations. Anything unknown skips the force, so the payment
+		 * completes and only the upsell is skipped.
+		 *
+		 * @return bool
+		 */
+		protected function is_express_token_authorized_for_saving() {
+			if ( class_exists( 'WC_Payments' ) && method_exists( 'WC_Payments', 'get_express_checkout_helper' ) ) {
+				$helper = WC_Payments::get_express_checkout_helper();
+				if ( is_object( $helper ) && method_exists( $helper, 'get_setup_future_usage' ) ) {
+					try {
+						return 'off_session' === $helper->get_setup_future_usage( 'cart' );
+					} catch ( Throwable $e ) {
+						return false;
+					}
+				}
+			}
+
+			if ( ! defined( 'WCPAY_VERSION_NUMBER' ) || version_compare( WCPAY_VERSION_NUMBER, '11.2.0', '>=' ) ) {
+				return false;
+			}
+
+			return true === $this->express_future_usage_declared;
 		}
 
 		/**
@@ -1085,6 +1117,37 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 			}
 
 			return $params;
+		}
+
+		/**
+		 * WooPayments 11.2.0+ no longer reads `extensions.subscriptions` or `has_subscription` to
+		 * decide the express checkout setup_future_usage; it asks this filter instead and passes
+		 * the result to the client as `extensions.wcpay.setup_future_usage`. Answer it with the
+		 * same decision the two declarations above make, so the confirmation token is authorized
+		 * for the forced save whenever an upsell funnel applies.
+		 *
+		 * @param string|null $setup_future_usage 'off_session' or null.
+		 * @param string      $context            Button context: 'product', 'cart', 'checkout', 'pay_for_order' or ''.
+		 *
+		 * @return string|null
+		 */
+		public function declare_express_setup_future_usage( $setup_future_usage, $context = '' ) {
+			if ( 'off_session' === $setup_future_usage || ! $this->is_enabled() ) {
+				return $setup_future_usage;
+			}
+
+			if ( 'product' === $context ) {
+				return 'off_session';
+			}
+
+			if ( 'cart' === $context || 'checkout' === $context ) {
+				$have_funnel = WFOCU_Core()->funnels->setup_funnels();
+				if ( is_array( $have_funnel ) && count( $have_funnel ) > 0 ) {
+					return 'off_session';
+				}
+			}
+
+			return $setup_future_usage;
 		}
 
 		public function get_nw_card_html() {

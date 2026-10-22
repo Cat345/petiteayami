@@ -15,6 +15,7 @@ use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
+use MailPoet\Premium\Automation\Engine\AutomationAuthorization;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 
@@ -24,10 +25,15 @@ class ChangeOrderStatusAction implements Action {
   /** @var WooCommerce */
   private $woocommerce;
 
+  /** @var AutomationAuthorization */
+  private $authorization;
+
   public function __construct(
-    WooCommerce $woocommerce
+    WooCommerce $woocommerce,
+    AutomationAuthorization $authorization
   ) {
     $this->woocommerce = $woocommerce;
+    $this->authorization = $authorization;
   }
 
   public function getKey(): string {
@@ -53,9 +59,11 @@ class ChangeOrderStatusAction implements Action {
 
   public function validate(StepValidationArgs $args): void {
     $this->validateTargetStatus((string)($args->getStep()->getArgs()['target_status'] ?? ''));
+    $this->authorization->authorizeSave($args->getAutomation(), [AutomationAuthorization::CAPABILITY_MANAGE_WOOCOMMERCE], $this->getAuthorizationMessage());
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
+    $this->authorization->authorizeRun($args->getAutomation(), [AutomationAuthorization::CAPABILITY_MANAGE_WOOCOMMERCE], $this->getAuthorizationMessage());
     $targetStatus = (string)($args->getStep()->getArgs()['target_status'] ?? '');
     $this->validateTargetStatus($targetStatus);
 
@@ -84,6 +92,10 @@ class ChangeOrderStatusAction implements Action {
       throw ValidationException::create()
         ->withError('target_status', __('Select a valid order status.', 'mailpoet-premium'));
     }
+  }
+
+  private function getAuthorizationMessage(): string {
+    return __('The user who last saved this automation is not allowed to change order statuses.', 'mailpoet-premium');
   }
 
   private function normalizeStatus(string $status): string {

@@ -528,7 +528,7 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Product' ) ) {
 					var main_chart;
 
 					jQuery(function () {
-						var upsells_data = jQuery.parseJSON('<?php echo( $chart_data ); ?>');
+						var upsells_data = <?php echo $chart_data; ?>;
 						var drawGraph = function (highlight) {
 
 							var series = [

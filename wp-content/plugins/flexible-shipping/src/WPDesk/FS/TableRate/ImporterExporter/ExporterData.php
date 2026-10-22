@@ -17,7 +17,7 @@ class ExporterData implements Hookable {
 	 * @return void|null
 	 */
 	public function hooks() {
-		add_filter( 'flexible-shipping/exporter/data', array( $this, 'prepare_export_data' ), 10, 4 );
+		add_filter( 'flexible-shipping/exporter/data', [ $this, 'prepare_export_data' ], 10, 4 );
 	}
 
 	/**
@@ -40,7 +40,7 @@ class ExporterData implements Hookable {
 
 					foreach ( $condition['shipping_class'] as $shipping_class_id => $shipping_class ) {
 
-						if ( in_array( $shipping_class, array( 'all', 'any', 'none' ), true ) ) {
+						if ( in_array( $shipping_class, [ 'all', 'any', 'none' ], true ) ) {
 							continue;
 						}
 

@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; ?>
 <script type="text/template" id="tmpl-bwfan-task-popup">
 
     <div class="bwfan-task_pop_cont"><?php esc_html_e( 'Details', 'wp-marketing-automations' ); ?></div>

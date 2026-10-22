@@ -316,6 +316,15 @@ class PluginActivate {
 	}
 
 	/**
+	 * Enable WooCommerce tax calculations on plugin activation.
+	 *
+	 * @return void
+	 */
+	protected static function maybe_enable_woocommerce_tax_calculations() {
+		update_option( 'woocommerce_calc_taxes', 'yes' );
+	}
+
+	/**
 	 * Function called on plugin activate event.
 	 * Does nothing if function already called once and $force equals false (default).
 	 *
@@ -329,6 +338,7 @@ class PluginActivate {
 		}
 		static::$activate_triggered = true;
 		static::create_necessary_tables();
+		static::maybe_enable_woocommerce_tax_calculations();
 		static::add_plugin_activate_notices();
 	}
 }

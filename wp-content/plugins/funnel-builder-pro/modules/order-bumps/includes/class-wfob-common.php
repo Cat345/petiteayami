@@ -2033,6 +2033,20 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				$pro->set_price( $parse_data['price'] );
 				$pro->set_sale_price( $parse_data['price'] );
 
+				// WooCommerce 11.1.0's ScheduledSalePriceReconciler (woocommerce/woocommerce#65551)
+				// returns the regular price from `woocommerce_product_get_price` whenever "now" is outside
+				// a product's sale window and the active price still equals the sale price - which is always
+				// true here, because the two lines above write the same value to both. Since WooCommerce 10.x
+				// a lapsed sale keeps its price and dates forever, so this affects every product that ever ran
+				// one, and a sale scheduled to start later trips the same branch. Dropping the window from this
+				// per-request object makes the reconciler return at its own "no sale dates" guard. Deliberately
+				// outside the wfob_set_bump_product_price_params gate: Price Based on Country and YayCurrency
+				// return false there, and those sites need this just as much. Nothing is saved.
+				if ( $pro->get_date_on_sale_from( 'edit' ) || $pro->get_date_on_sale_to( 'edit' ) ) {
+					$pro->set_date_on_sale_from( '' );
+					$pro->set_date_on_sale_to( '' );
+				}
+
 			}
 
 			return $pro;
@@ -2878,11 +2892,27 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						$swap_product = array_column( $settings['selected_replace_product'], 'id' );
 					}
 				}
-				if ( empty( $swap_product ) ) {
-					return $cart_item;
-				}
 			} else {
 				$swap_product = 'all';
+			}
+
+			/**
+			 * Filter the cart products this bump replaces.
+			 *
+			 * Mirrors wfob_bump_products on the offer side, so a store can decide the replacement
+			 * from the cart instead of from a saved list - for example matching a SKU pattern and
+			 * upgrading it. Applied before the empty check so a filter can supply a replacement
+			 * where none is configured.
+			 *
+			 * @param array|string $swap_product  Product ids to replace, or the string 'all'.
+			 * @param int          $bump_id       Order bump id.
+			 * @param array        $cart_item     The bump cart item being added.
+			 * @param string       $cart_item_key Its cart item key.
+			 */
+			$swap_product = apply_filters( 'wfob_swap_products', $swap_product, $bump_id, $cart_item, $cart_item_key );
+
+			if ( empty( $swap_product ) ) {
+				return $cart_item;
 			}
 
 			$swap_key = self::swap_product( $swap_product, $bump_product_key );

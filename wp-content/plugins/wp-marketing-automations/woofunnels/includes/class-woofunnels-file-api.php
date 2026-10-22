@@ -234,7 +234,7 @@ if ( class_exists( 'WP_Filesystem_Direct' ) ) {
 					$this->mkdir( $this->woofunnels_core_dir );
 					$file_handle = @fopen( trailingslashit( $this->woofunnels_core_dir ) . '/.htaccess', 'w' ); // phpcs:ignore WordPressVIPMinimum.PHP.SilencedErrors.Silenced, Generic.PHP.NoSilencedErrors.Discouraged, Generic.PHP.NoSilencedErrors.Forbidden, WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 					if ( $file_handle ) {
-						fwrite( $file_handle, 'deny from all' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite, WordPress.WP.AlternativeFunctions.file_system_operations
+						fwrite( $file_handle, 'deny from all' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite, WordPress.WP.AlternativeFunctions.file_system_operations, WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- writes the protective .htaccess (deny from all) for the upload folder
 						fclose( $file_handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 					}
 				}

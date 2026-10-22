@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'WFFN_Pro_React_App' ) ) {
 	/**
@@ -19,7 +19,7 @@ if ( ! class_exists( 'WFFN_Pro_React_App' ) ) {
 		private static $ins = null;
 
 		public function __construct() {
-			
+			add_filter( 'wffn_localize_admin', array( $this, 'localize_admin_data' ) );
 		}
 
 		/**
@@ -27,10 +27,31 @@ if ( ! class_exists( 'WFFN_Pro_React_App' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
+		}
+
+		/**
+		 * Pro's additions to the free plugin's window.wffn data: the features WFFN_Lite_Handshake
+		 * holds, which isFeatureAvailable() then keeps switched off.
+		 *
+		 * @param array $data Localized admin data.
+		 *
+		 * @return array
+		 */
+		public function localize_admin_data( $data ) {
+			if ( ! is_array( $data ) ) {
+				return $data;
+			}
+
+			$held = WFFN_Lite_Handshake::held();
+			if ( ! empty( $held ) ) {
+				$data['lite_handshake'] = array( 'held' => $held );
+			}
+
+			return $data;
 		}
 
 		/**
@@ -39,7 +60,7 @@ if ( ! class_exists( 'WFFN_Pro_React_App' ) ) {
 		 * plain 'main'.
 		 */
 		public function get_app_name() {
-			$app_name = 'main-20260904103854'; //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
+			$app_name = 'main-20261021131505'; //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 
 			return str_replace( '-{{{APP_VERSION}}}', '', $app_name ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 		}

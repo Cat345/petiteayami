@@ -4,8 +4,8 @@ namespace MailPoetVendor\Doctrine\Persistence;
 if (!defined('ABSPATH')) exit;
 interface ConnectionRegistry
 {
- public function getDefaultConnectionName();
- public function getConnection(?string $name = null);
- public function getConnections();
- public function getConnectionNames();
+public function getDefaultConnectionName();
+public function getConnection(?string $name = null);
+public function getConnections();
+public function getConnectionNames();
 }

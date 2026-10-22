@@ -2,16 +2,653 @@
 # This file is distributed under the same license as the Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-08-12 12:21:11+0000\n"
+"PO-Revision-Date: 2026-09-22 08:03:33+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: GlotPress/4.0.3\n"
+"X-Generator: GlotPress/4.1.0\n"
 "Language: en_GB\n"
 "Project-Id-Version: Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release)\n"
 
-#: includes/admin/class-admin-menu.php:281 rank-math.php:475
+#: includes/modules/content-ai/class-admin.php:145
+msgid "Rank Math AI Plan"
+msgstr "Rank Math AI Plan"
+
+#. translators: 1: platforms allowed on the current plan, 2: supported platform
+#. IDs.
+#: includes/modules/ai-visibility/class-platforms.php:189
+msgid "Your plan allows tracking %1$d AI platform(s) per brand — upgrade to the Expert plan to track more. Supported values: %2$s."
+msgstr "Your plan allows tracking %1$d AI platform(s) per brand — upgrade to the Expert plan to track more. Supported values: %2$s."
+
+#. translators: %s: supported platform IDs.
+#: includes/modules/ai-visibility/class-platforms.php:176
+msgid "No valid AI platforms were provided. Supported values: %s."
+msgstr "No valid AI platforms were provided. Supported values: %s."
+
+#. translators: %s: supported platform IDs.
+#: includes/modules/ai-visibility/class-platforms.php:162
+msgid "Please specify which AI platforms to track. Supported values: %s."
+msgstr "Please specify which AI platforms to track. Supported values: %s."
+
+#. translators: %s: supported platform IDs.
+#: includes/modules/ai-visibility/class-platforms.php:116
+msgid "AI platforms to track for this brand. Supported values: %s. Tracking more than one platform per brand requires the Expert plan."
+msgstr "AI platforms to track for this brand. Supported values: %s. Tracking more than one platform per brand requires the Expert plan."
+
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:480
+msgid "Please select a language for this brand."
+msgstr "Please select a language for this brand."
+
+#. translators: %s: comma-separated list of allowed cadences.
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:86
+msgid "The selected analysis frequency is not available on your plan. Allowed frequencies: %s. Upgrade your plan to unlock more frequency options."
+msgstr "The selected analysis frequency is not available on your plan. Allowed frequencies: %s. Upgrade your plan to unlock more frequency options."
+
+#: includes/module/class-manager.php:566 assets/admin/js/components.js:1
+#: assets/admin/js/modules.js:1 assets/admin/js/post-list.js:1
+#: assets/admin/js/rank-math-app.js:1
+#: includes/modules/content-ai/assets/js/content-ai-media.js:1
+#: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+msgid "Free 15-day Rank Math AI Trial"
+msgstr "Free 15-day Rank Math AI Trial"
+
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:188
+msgid "Analysis refresh cadence. Omitted → backend applies the account plan's default."
+msgstr "Analysis refresh cadence. Omitted → back end applies the account plan's default."
+
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:180
+msgid "Output language to use when analyzing/generating content for this brand. Independent of `locale` (target country). Required; immutable after creation."
+msgstr "Output language to use when analysing/generating content for this brand. Independent of `locale` (target country). Required; immutable after creation."
+
+#: includes/abilities/sitemap/class-subscriber.php:66
+msgid "Abilities to inspect the XML sitemap status."
+msgstr "Abilities to inspect the XML sitemap status."
+
+#: includes/abilities/sitemap/class-get-sitemap-status.php:322
+msgid "The active sitemap types, e.g. post types, taxonomies, and the Local SEO sitemap (PRO adds news/video when active)."
+msgstr "The active sitemap types, e.g. post types, taxonomies, and the Local SEO sitemap (PRO adds news/video when active)."
+
+#: includes/abilities/sitemap/class-get-sitemap-status.php:318
+msgid "The URL of the sitemap index file."
+msgstr "The URL of the sitemap index file."
+
+#: includes/abilities/sitemap/class-get-sitemap-status.php:314
+msgid "Whether the XML sitemap module is active."
+msgstr "Whether the XML sitemap module is active."
+
+#: includes/abilities/sitemap/class-get-sitemap-status.php:65
+msgid "Returns whether the XML sitemap is enabled, the sitemap index URL, and the active sitemap types (post types, taxonomies, and the Local SEO sitemap, when active) with their URLs and estimated entry counts."
+msgstr "Returns whether the XML sitemap is enabled, the sitemap index URL, and the active sitemap types (post types, taxonomies, and the Local SEO sitemap, when active) with their URLs and estimated entry counts."
+
+#: includes/abilities/sitemap/class-get-sitemap-status.php:64
+msgid "Get sitemap status"
+msgstr "Get sitemap status"
+
+#: includes/abilities/monitor-404/class-subscriber.php:66
+msgid "Abilities to inspect the 404 error monitor log."
+msgstr "Abilities to inspect the 404 error monitor log."
+
+#: includes/abilities/monitor-404/class-get-404-logs.php:203
+msgid "The 404 log entries for the requested page."
+msgstr "The 404 log entries for the requested page."
+
+#: includes/abilities/monitor-404/class-get-404-logs.php:199
+msgid "Number of log entries included in this response (the size of items)."
+msgstr "Number of log entries included in this response (the size of items)."
+
+#: includes/abilities/monitor-404/class-get-404-logs.php:191
+msgid "Log counts across the entire table, independent of pagination."
+msgstr "Log counts across the entire table, independent of pagination."
+
+#: includes/abilities/monitor-404/class-get-404-logs.php:89
+msgid "Sort direction."
+msgstr "Sort direction."
+
+#: includes/abilities/monitor-404/class-get-404-logs.php:83
+msgid "Field to order results by."
+msgstr "Field to order results by."
+
+#: includes/abilities/monitor-404/class-get-404-logs.php:69
+msgid "The number of log entries to return per page."
+msgstr "The number of log entries to return per page."
+
+#: includes/abilities/monitor-404/class-get-404-logs.php:59
+msgid "Returns the 404 error monitor log entries, with hit counts and referer/user-agent data."
+msgstr "Returns the 404 error monitor log entries, with hit counts and referer/user-agent data."
+
+#: includes/abilities/monitor-404/class-get-404-logs.php:58
+msgid "Get 404 logs"
+msgstr "Get 404 logs"
+
+#. translators: %s: supported platform IDs.
+#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:118
+msgid "AI platforms to track. Supported: %s. Selecting more than one requires the Expert plan; otherwise choose exactly one. Do not assume a default — ask the user which platform(s) to use."
+msgstr "AI platforms to track. Supported: %s. Selecting more than one requires the Expert plan; otherwise choose exactly one. Do not assume a default — ask the user which platform(s) to use."
+
+#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:109
+msgid "Analysis refresh cadence. Defaults to the account plan's default when omitted."
+msgstr "Analysis refresh cadence. Defaults to the account plan's default when omitted."
+
+#. translators: %s: supported platform IDs.
+#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:72
+msgid "Creates a new brand for AI Visibility monitoring, triggering an initial analysis automatically. Ask which AI platforms to track. Supported platforms: %s. Selecting more than one requires the Expert plan; other plans may choose only one."
+msgstr "Creates a new brand for AI Visibility monitoring, triggering an initial analysis automatically. Ask which AI platforms to track. Supported platforms: %s. Selecting more than one requires the Expert plan; other plans may choose only one."
+
+#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:104
+msgid "Language the brand should be analyzed in (e.g. \"US English\", \"French\"). Required; immutable after creation — ask the user which language to use."
+msgstr "Language the brand should be analysed in (e.g. \"US English\", \"French\"). Required; immutable after creation — ask the user which language to use."
+
+#: includes/abilities/settings/class-get-robots-txt.php:64
+msgid "Whether the site is set to be visible to search engines (Settings > Reading > Search engine visibility)."
+msgstr "Whether the site is set to be visible to search engines (Settings > Reading > Search engine visibility)."
+
+#: includes/abilities/settings/class-get-robots-txt.php:60
+msgid "Whether a physical robots.txt file exists in the site root."
+msgstr "Whether a physical robots.txt file exists in the site root."
+
+#: includes/abilities/settings/class-get-robots-txt.php:56
+msgid "The current robots.txt content: the real file contents when a physical robots.txt exists, otherwise the content Rank Math generates (custom override or computed default)."
+msgstr "The current robots.txt content: the real file contents when a physical robots.txt exists, otherwise the content Rank Math generates (custom override or computed default)."
+
+#: includes/abilities/settings/class-get-robots-txt.php:43
+msgid "Returns the current robots.txt content managed by Rank Math."
+msgstr "Returns the current robots.txt content managed by Rank Math."
+
+#: includes/abilities/settings/class-get-robots-txt.php:42
+msgid "Get robots.txt"
+msgstr "Get robots.txt"
+
+#: includes/abilities/settings/class-get-llms-txt.php:133
+msgid "The generated llms.txt Markdown content. Empty when the module is disabled."
+msgstr "The generated llms.txt Markdown content. Empty when the module is disabled."
+
+#: includes/abilities/settings/class-get-llms-txt.php:129
+msgid "The URL of the llms.txt file."
+msgstr "The URL of the llms.txt file."
+
+#: includes/abilities/settings/class-get-llms-txt.php:125
+msgid "Whether the llms.txt module is active."
+msgstr "Whether the llms.txt module is active."
+
+#: includes/abilities/settings/class-get-llms-txt.php:47
+msgid "Returns whether the llms.txt file is enabled, its URL, and the current generated Markdown content."
+msgstr "Returns whether the llms.txt file is enabled, its URL, and the current generated Markdown content."
+
+#: includes/abilities/settings/class-get-llms-txt.php:46
+msgid "Get llms.txt"
+msgstr "Get llms.txt"
+
+#: includes/abilities/redirections/class-subscriber.php:66
+msgid "Abilities to read and manage redirections for a site."
+msgstr "Abilities to read and manage redirections for a site."
+
+#: includes/abilities/redirections/class-get-redirections.php:211
+msgid "The redirections for the requested page."
+msgstr "The redirections for the requested page."
+
+#: includes/abilities/redirections/class-get-redirections.php:201
+msgid "Number of redirections included in this response (the size of items)."
+msgstr "Number of redirections included in this response (the size of items)."
+
+#: includes/abilities/redirections/class-get-redirections.php:187
+msgid "Redirection counts across all statuses, independent of the status filter applied to items."
+msgstr "Redirection counts across all statuses, independent of the status filter applied to items."
+
+#: includes/abilities/redirections/class-get-redirections.php:89
+msgid "Search redirections by source or target URL."
+msgstr "Search redirections by source or target URL."
+
+#: includes/abilities/monitor-404/class-get-404-logs.php:76
+#: includes/abilities/redirections/class-get-redirections.php:84
+msgid "The page number to return."
+msgstr "The page number to return."
+
+#: includes/abilities/redirections/class-get-redirections.php:77
+msgid "The number of redirections to return per page."
+msgstr "The number of redirections to return per page."
+
+#: includes/abilities/redirections/class-get-redirections.php:73
+msgid "Filter redirections by status."
+msgstr "Filter redirections by status."
+
+#: includes/abilities/redirections/class-get-redirections.php:61
+msgid "Returns the redirections for a site."
+msgstr "Returns the redirections for a site."
+
+#: includes/abilities/redirections/class-get-redirections.php:60
+msgid "Get redirections"
+msgstr "Get redirections"
+
+#: includes/abilities/redirections/class-get-redirections.php:194
+msgid "Non-trashed redirection counts grouped by HTTP redirect type (header code), e.g. { \"301\": 12, \"302\": 4 }."
+msgstr "Non-binned redirection counts grouped by HTTP redirect type (header code), e.g. { \"301\": 12, \"302\": 4 }."
+
+#: includes/abilities/settings/class-subscriber.php:66
+msgid "Abilities to read and configure Rank Math plugin settings."
+msgstr "Abilities to read and configure Rank Math plugin settings."
+
+#: includes/abilities/settings/class-set-website-identity.php:107
+msgid "knowledgegraph_type must be either \"person\" or \"company\"."
+msgstr "knowledgegraph_type must be either \"person\" or \"company\"."
+
+#: includes/abilities/settings/class-set-website-identity.php:83
+msgid "Site URL override used in Knowledge Graph markup."
+msgstr "Site URL override used in Knowledge Graph markup."
+
+#: includes/abilities/settings/class-set-website-identity.php:79
+msgid "Schema.org business type slug (e.g. \"Restaurant\", \"LegalService\", \"Organization\"), spaces removed. Only used when knowledgegraph_type is \"company\". Call get-settings first or see the Local SEO business type list in WP Admin for valid values."
+msgstr "Schema.org business type slug (e.g. \"Restaurant\", \"LegalService\", \"Organization\"), spaces removed. Only used when knowledgegraph_type is \"company\". Call get-settings first or see the Local SEO business type list in WP Admin for valid values."
+
+#: includes/abilities/settings/class-set-website-identity.php:67
+msgid "An alternate name for the website."
+msgstr "An alternate name for the website."
+
+#: includes/abilities/settings/class-set-website-identity.php:63
+msgid "The website name used in schema and social markup."
+msgstr "The website name used in schema and social markup."
+
+#: includes/abilities/settings/class-set-website-identity.php:47
+msgid "Set website identity"
+msgstr "Set website identity"
+
+#. translators: taxonomy slug
+#: includes/abilities/settings/class-set-sitemap-settings.php:138
+msgid "Unknown or inaccessible taxonomy: %s"
+msgstr "Unknown or inaccessible taxonomy: %s"
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:90
+msgid "Map of taxonomy slug to whether it should be included in the XML sitemap."
+msgstr "Map of taxonomy slug to whether it should be included in the XML sitemap."
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:89
+msgid "Taxonomies"
+msgstr "Taxonomies"
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:84
+msgid "Map of post type slug to whether it should be included in the XML sitemap. Call get-settings first to see registered post type sitemap status."
+msgstr "Map of post type slug to whether it should be included in the XML sitemap. Call get-settings first to see registered post type sitemap status."
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:78
+msgid "Include Authors in Sitemap"
+msgstr "Include Authors in Sitemap"
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:74
+msgid "Comma-separated term IDs to exclude from the sitemap. Applies to all taxonomies."
+msgstr "Comma-separated term IDs to exclude from the sitemap. Applies to all taxonomies."
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:69
+msgid "Comma-separated post IDs to exclude from the sitemap. Applies to all post types."
+msgstr "Comma-separated post IDs to exclude from the sitemap. Applies to all post types."
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:64
+msgid "Include the Featured Image too, even if it does not appear directly in the post content. Only takes effect when include_images is also enabled."
+msgstr "Include the Featured Image too, even if it does not appear directly in the post content. Only takes effect when include_images is also enabled."
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:59
+msgid "Include reference to images from the post content in sitemaps."
+msgstr "Include reference to images from the post content in sitemaps."
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:43
+msgid "Updates XML sitemap settings: links per sitemap page, image inclusion, excluded post/term IDs, author archive inclusion, and per-post-type/per-taxonomy sitemap inclusion. All fields are optional — omitted fields keep their current stored value. Requires the sitemap module to be active; enable it first with set-module-status if needed."
+msgstr "Updates XML sitemap settings: links per sitemap page, image inclusion, excluded post/term IDs, author archive inclusion, and per-post-type/per-taxonomy sitemap inclusion. All fields are optional — omitted fields keep their current stored value. Requires the sitemap module to be active; enable it first with set-module-status if needed."
+
+#: includes/abilities/settings/class-set-website-identity.php:116
+msgid "local_business_type is not a recognized Schema.org business type slug."
+msgstr "local_business_type is not a recognised Schema.org business type slug."
+
+#: includes/abilities/settings/class-set-website-identity.php:75
+msgid "Description of the organization. Only used when knowledgegraph_type is \"company\"."
+msgstr "Description of the organisation. Only used when knowledgegraph_type is \"company\"."
+
+#: includes/abilities/settings/class-set-website-identity.php:71
+msgid "The person or organization name used in the Knowledge Graph."
+msgstr "The person or organisation name used in the Knowledge Graph."
+
+#: includes/abilities/settings/class-set-website-identity.php:59
+msgid "Whether the site represents a person or a company/organization."
+msgstr "Whether the site represents a person or a company/organisation."
+
+#: includes/abilities/settings/class-set-website-identity.php:48
+msgid "Updates the site's Knowledge Graph identity used by Rank Math for schema and social markup: knowledge graph type (person/company), website name, alternate name, knowledge graph name, organization description, business type, and site URL override. All fields are optional — omitted fields keep their current stored value."
+msgstr "Updates the site's Knowledge Graph identity used by Rank Math for schema and social markup: knowledge graph type (person/company), website name, alternate name, knowledge graph name, organisation description, business type, and site URL override. All fields are optional — omitted fields keep their current stored value."
+
+#: includes/abilities/settings/class-set-sitemap-settings.php:42
+msgid "Set sitemap settings"
+msgstr "Set sitemap settings"
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:163
+msgid "default_article_type must be one of: Article, BlogPosting, NewsArticle."
+msgstr "default_article_type must be one of: Article, BlogPosting, NewsArticle."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:152
+msgid "robots may only contain: index, noindex, nofollow, noarchive, noimageindex, nosnippet."
+msgstr "robots may only contain: index, noindex, nofollow, noarchive, noimageindex, nosnippet."
+
+#. translators: post type slug
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:139
+#: includes/abilities/settings/class-set-sitemap-settings.php:120
+msgid "Unknown or inaccessible post type: %s"
+msgstr "Unknown or inaccessible post type: %s"
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:125
+msgid "post_types must be a non-empty map of post type slug to settings."
+msgstr "post_types must be a non-empty map of post type slug to settings."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:95
+msgid "Whether to add SEO controls to the editor screen for posts of this type."
+msgstr "Whether to add SEO controls to the editor screen for posts of this type."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:90
+msgid "Custom robots meta values for this post type. Only takes effect when custom_robots is enabled."
+msgstr "Custom robots meta values for this post type. Only takes effect when custom_robots is enabled."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:81
+msgid "Whether to use custom robots meta values for this post type instead of the Global Meta default."
+msgstr "Whether to use custom robots meta values for this post type instead of the Global Meta default."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:80
+msgid "Custom Robots Meta"
+msgstr "Custom Robots Meta"
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:76
+msgid "Default article schema sub-type. Only used when default_rich_snippet is \"article\"."
+msgstr "Default article schema sub-type. Only used when default_rich_snippet is \"article\"."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:70
+msgid "Default Schema type slug for new posts of this type (e.g. \"off\", \"article\", \"product\", \"event\"). Call get-settings first or see the Schema Type list in WP Admin for valid values — the list varies per post type and active modules."
+msgstr "Default Schema type slug for new posts of this type (e.g. \"off\", \"article\", \"product\", \"event\"). Call get-settings first or see the Schema Type list in WP Admin for valid values — the list varies per post type and active modules."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:65
+msgid "Default meta description for single pages of this post type. Supports Rank Math variables."
+msgstr "Default meta description for single pages of this post type. Supports Rank Math variables."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:64
+msgid "Single Description"
+msgstr "Single Description"
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:60
+msgid "Default title tag for single pages of this post type. Supports Rank Math title variables."
+msgstr "Default title tag for single pages of this post type. Supports Rank Math title variables."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:59
+msgid "Single Title"
+msgstr "Single Title"
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:53
+msgid "Map of post type slug to its SEO settings. Call get-settings first to see registered post type slugs."
+msgstr "Map of post type slug to its SEO settings. Call get-settings first to see registered post type slugs."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:52
+#: includes/abilities/settings/class-set-sitemap-settings.php:83
+msgid "Post Types"
+msgstr "Post Types"
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:41
+msgid "Updates per-post-type SEO defaults: default title/description templates, default Schema type, default article type, custom robots meta, and whether to show SEO controls on the editor screen. Accepts a map keyed by post type slug; only provided post types and fields are changed."
+msgstr "Updates per-post-type SEO defaults: default title/description templates, default Schema type, default article type, custom robots meta, and whether to show SEO controls on the editor screen. Accepts a map keyed by post type slug; only provided post types and fields are changed."
+
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:40
+msgid "Set post type SEO settings"
+msgstr "Set post type SEO settings"
+
+#: includes/abilities/settings/class-set-plugin-preferences.php:55
+msgid "Whether WordPress should automatically install new Rank Math plugin updates."
+msgstr "Whether WordPress should automatically install new Rank Math plugin updates."
+
+#: includes/abilities/settings/class-set-plugin-preferences.php:54
+msgid "Enable Automatic Updates"
+msgstr "Enable Automatic Updates"
+
+#: includes/abilities/settings/class-set-plugin-preferences.php:43
+msgid "Updates Rank Math plugin-level preferences that are not part of a settings section. Currently supports toggling automatic plugin updates."
+msgstr "Updates Rank Math plugin-level preferences that are not part of a settings section. Currently supports toggling automatic plugin updates."
+
+#: includes/abilities/settings/class-set-plugin-preferences.php:42
+msgid "Set plugin preferences"
+msgstr "Set plugin preferences"
+
+#. translators: 1: module slug, 2: required module slug
+#: includes/abilities/settings/class-set-module-status.php:134
+msgid "Cannot enable \"%1$s\" — it requires the \"%2$s\" module to be active or enabled in the same call."
+msgstr "Cannot enable \"%1$s\" — it requires the \"%2$s\" module to be active or enabled in the same call."
+
+#. translators: module slug
+#: includes/abilities/settings/class-set-module-status.php:111
+msgid "Cannot enable \"%s\" — its requirements are not met."
+msgstr "Cannot enable \"%s\" — its requirements are not met."
+
+#. translators: module slug
+#: includes/abilities/settings/class-set-module-status.php:98
+msgid "Unknown module: %s"
+msgstr "Unknown module: %s"
+
+#: includes/abilities/settings/class-set-module-status.php:82
+msgid "modules must be a non-empty map of module slug to boolean."
+msgstr "modules must be a non-empty map of module slug to boolean."
+
+#: includes/abilities/settings/class-set-module-status.php:55
+msgid "Map of module slug to desired active state. Call get-settings first to see the full list of registered module slugs and their current status."
+msgstr "Map of module slug to desired active state. Call get-settings first to see the full list of registered module slugs and their current status."
+
+#: includes/abilities/settings/class-set-module-status.php:42
+msgid "Set module status"
+msgstr "Set module status"
+
+#: includes/abilities/settings/class-set-link-settings.php:82
+msgid "Redirect attachment page URLs to the post they appear in."
+msgstr "Redirect attachment page URLs to the post they appear in."
+
+#: includes/abilities/settings/class-set-link-settings.php:77
+msgid "Remove /category/ from category archive URLs."
+msgstr "Remove /category/ from category archive URLs."
+
+#: includes/abilities/settings/class-set-link-settings.php:72
+msgid "Newline-separated list of domains to exclude from nofollow. Only takes effect when nofollow_external_links or nofollow_image_links is also enabled — hidden in the UI otherwise."
+msgstr "Newline-separated list of domains to exclude from nofollow. Only takes effect when nofollow_external_links or nofollow_image_links is also enabled — hidden in the UI otherwise."
+
+#: includes/abilities/settings/class-set-module-status.php:43
+msgid "Enables or disables Rank Math modules (e.g. sitemap, redirections, 404-monitor, rich-snippet). Only provided module slugs are changed; omitted modules keep their current state. Modules with unmet dependencies (e.g. Video Sitemap requires Sitemap and Schema) cannot be enabled until their dependencies are active or enabled in the same call. Modules whose external requirements are not met (e.g. WooCommerce module without the WooCommerce plugin active) cannot be enabled at all."
+msgstr "Enables or disables Rank Math modules (e.g. sitemap, redirections, 404-monitor, rich-snippet). Only provided module slugs are changed; omitted modules keep their current state. Modules with unmet dependencies (e.g. Video Sitemap requires Sitemap and Schema) cannot be enabled until their dependencies are active or enabled in the same call. Modules whose external requirements are not met (e.g. WooCommerce module without the WooCommerce plugin active) cannot be enabled at all."
+
+#: includes/abilities/settings/class-set-link-settings.php:67
+msgid "Newline-separated list of domains to nofollow. If empty, nofollow applies to all external domains (when enabled). Only takes effect when nofollow_external_links or nofollow_image_links is also enabled — hidden in the UI otherwise."
+msgstr "Newline-separated list of domains to nofollow. If empty, nofollow applies to all external domains (when enabled). Only takes effect when nofollow_external_links or nofollow_image_links is also enabled — hidden in the UI otherwise."
+
+#: includes/abilities/settings/class-set-link-settings.php:62
+msgid "Automatically add rel=\"nofollow\" to links pointing to external image files."
+msgstr "Automatically add rel=\"nofollow\" to links pointing to external image files."
+
+#: includes/abilities/settings/class-set-link-settings.php:57
+msgid "Automatically add target=\"_blank\" to external links in content."
+msgstr "Automatically add target=\"_blank\" to external links in content."
+
+#: includes/abilities/settings/class-set-link-settings.php:52
+msgid "Automatically add rel=\"nofollow\" to external links in content."
+msgstr "Automatically add rel=\"nofollow\" to external links in content."
+
+#: includes/abilities/settings/class-set-link-settings.php:41
+msgid "Updates site-wide link behavior: nofollow for external and image links, opening external links in a new tab, nofollow domain allow/exclude lists, category base stripping, and attachment page redirects. All fields are optional — omitted fields keep their current stored value."
+msgstr "Updates site-wide link behaviour: nofollow for external and image links, opening external links in a new tab, nofollow domain allow/exclude lists, category base stripping, and attachment page redirects. All fields are optional — omitted fields keep their current stored value."
+
+#: includes/abilities/settings/class-set-link-settings.php:40
+msgid "Set link settings"
+msgstr "Set link settings"
+
+#: includes/abilities/settings/class-set-homepage-seo.php:114
+msgid "show_on_front is set to \"page\" but no front page is assigned (page_on_front is empty). Assign a static front page under WP Dashboard > Settings > Reading."
+msgstr "show_on_front is set to \"page\" but no front page is assigned (page_on_front is empty). Assign a static front page under WP Dashboard > Settings > Reading."
+
+#: includes/abilities/settings/class-set-homepage-seo.php:89
+msgid "No fields provided. Pass at least one of: title, description, focus_keyword."
+msgstr "No fields provided. Pass at least one of: title, description, focus_keyword."
+
+#: includes/abilities/settings/class-set-homepage-seo.php:65
+msgid "Primary focus keyword for the homepage. Only applicable when the homepage is a static page — ignored for latest-posts homepages."
+msgstr "Primary focus keyword for the homepage. Only applicable when the homepage is a static page — ignored for latest-posts homepages."
+
+#: includes/abilities/settings/class-set-homepage-seo.php:60
+msgid "Meta description for the homepage. For static-page homepages, stored as post meta; for latest-posts homepages, stored in Titles & Meta settings."
+msgstr "Meta description for the homepage. For static-page homepages, stored as post meta; for latest-posts homepages, stored in Titles & Meta settings."
+
+#: includes/abilities/settings/class-set-homepage-seo.php:59
+msgid "Meta Description"
+msgstr "Meta Description"
+
+#: includes/abilities/settings/class-set-homepage-seo.php:55
+msgid "SEO title for the homepage. Supports Rank Math title variables (e.g. %sitename%, %sep%, %sitedesc%). For static-page homepages, stored as post meta; for latest-posts homepages, stored in Titles & Meta settings."
+msgstr "SEO title for the homepage. Supports Rank Math title variables (e.g. %sitename%, %sep%, %sitedesc%). For static-page homepages, stored as post meta; for latest-posts homepages, stored in Titles & Meta settings."
+
+#: includes/abilities/settings/class-set-homepage-seo.php:44
+msgid "Updates the SEO title, meta description, and focus keyword for the site homepage. Automatically detects whether the homepage is a static page or a latest-posts feed and writes to the correct storage in each case. Call get-settings first to see current homepage values. All fields are optional — omitted fields keep their current stored value."
+msgstr "Updates the SEO title, meta description, and focus keyword for the site homepage. Automatically detects whether the homepage is a static page or a latest-posts feed and writes to the correct storage in each case. Call get-settings first to see current homepage values. All fields are optional — omitted fields keep their current stored value."
+
+#: includes/abilities/settings/class-set-homepage-seo.php:43
+msgid "Set homepage SEO"
+msgstr "Set homepage SEO"
+
+#: includes/abilities/settings/class-set-global-seo-settings.php:114
+msgid "twitter_card_type must be either \"summary_large_image\" or \"summary_card\"."
+msgstr "twitter_card_type must be either \"summary_large_image\" or \"summary_card\"."
+
+#: includes/abilities/settings/class-set-global-seo-settings.php:103
+msgid "robots_global may only contain: index, noindex, nofollow, noarchive, noimageindex, nosnippet."
+msgstr "robots_global may only contain: index, noindex, nofollow, noarchive, noimageindex, nosnippet."
+
+#: includes/abilities/settings/class-set-global-seo-settings.php:77
+msgid "Default Twitter card type used when sharing content."
+msgstr "Default Twitter card type used when sharing content."
+
+#: includes/abilities/settings/class-set-global-seo-settings.php:68
+msgid "Character used to separate parts of the SEO title (e.g. \"-\", \"|\", \"&mdash;\"). A custom string is also accepted."
+msgstr "Character used to separate parts of the SEO title (e.g. \"-\", \"|\", \"&mdash;\"). A custom string is also accepted."
+
+#: includes/abilities/settings/class-set-global-seo-settings.php:64
+msgid "Whether to noindex taxonomy archives that have no posts assigned."
+msgstr "Whether to noindex taxonomy archives that have no posts assigned."
+
+#: includes/abilities/settings/class-set-global-seo-settings.php:60
+msgid "Global robots meta directives applied site-wide (e.g. [\"index\"], [\"noindex\",\"nofollow\"])."
+msgstr "Global robots meta directives applied site-wide (e.g. [\"index\"], [\"noindex\",\"nofollow\"])."
+
+#: includes/abilities/settings/class-set-global-seo-settings.php:45
+msgid "Set global SEO settings"
+msgstr "Set global SEO settings"
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:112
+msgid "Show the blog page in the breadcrumb trail. Only applies when a static homepage is set."
+msgstr "Show the blog page in the breadcrumb trail. Only applies when a static homepage is set."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:107
+msgid "Hide the current taxonomy term name from the breadcrumb trail."
+msgstr "Hide the current taxonomy term name from the breadcrumb trail."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:102
+msgid "If the category is a child category, show all ancestor categories in the breadcrumb trail."
+msgstr "If the category is a child category, show all ancestor categories in the breadcrumb trail."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:97
+msgid "Hide the current post/page title from the breadcrumb trail."
+msgstr "Hide the current post/page title from the breadcrumb trail."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:92
+msgid "Label used for the 404 error item in the breadcrumb trail."
+msgstr "Label used for the 404 error item in the breadcrumb trail."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:91
+msgid "404 Label"
+msgstr "404 Label"
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:87
+msgid "Label format used for search results pages in the breadcrumb trail. Include a placeholder token for the search query."
+msgstr "Label format used for search results pages in the breadcrumb trail. Include a placeholder token for the search query."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:82
+msgid "Label format used for archive pages in the breadcrumb trail. Include a placeholder token for the archive title."
+msgstr "Label format used for archive pages in the breadcrumb trail. Include a placeholder token for the archive title."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:77
+msgid "Text to show before the breadcrumb trail."
+msgstr "Text to show before the breadcrumb trail."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:72
+msgid "URL used for the homepage link in the breadcrumb trail."
+msgstr "URL used for the homepage link in the breadcrumb trail."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:71
+msgid "Home Link"
+msgstr "Home Link"
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:67
+msgid "Label used for the homepage link in the breadcrumb trail."
+msgstr "Label used for the homepage link in the breadcrumb trail."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:66
+msgid "Home Label"
+msgstr "Home Label"
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:62
+msgid "Show a link to the homepage at the start of the breadcrumb trail."
+msgstr "Show a link to the homepage at the start of the breadcrumb trail."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:61
+msgid "Show Home Link"
+msgstr "Show Home Link"
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:57
+msgid "Character to display between breadcrumb links."
+msgstr "Character to display between breadcrumb links."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:52
+msgid "Enable the Breadcrumbs feature."
+msgstr "Enable the Breadcrumbs feature."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:51
+msgid "Enable Breadcrumbs"
+msgstr "Enable Breadcrumbs"
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:41
+msgid "Updates breadcrumb display settings: enabling breadcrumbs, the separator, home link visibility/label/URL, a prefix before the trail, archive/search/404 label formats, ancestor category display, hiding the taxonomy name, removing the current post title, and showing the blog page. All fields are optional — omitted fields keep their current stored value."
+msgstr "Updates breadcrumb display settings: enabling breadcrumbs, the separator, home link visibility/label/URL, a prefix before the trail, archive/search/404 label formats, ancestor category display, hiding the taxonomy name, removing the current post title, and showing the blog page. All fields are optional — omitted fields keep their current stored value."
+
+#: includes/abilities/settings/class-set-global-seo-settings.php:72
+msgid "Whether to capitalize the first letter of every word in SEO titles."
+msgstr "Whether to capitalise the first letter of every word in SEO titles."
+
+#: includes/abilities/settings/class-set-global-seo-settings.php:46
+msgid "Updates site-wide SEO defaults: global robots meta directives, whether to noindex empty taxonomy archives, the title separator character, title capitalization, and the default Twitter card type. All fields are optional — omitted fields keep their current stored value."
+msgstr "Updates site-wide SEO defaults: global robots meta directives, whether to noindex empty taxonomy archives, the title separator character, title capitalisation, and the default Twitter card type. All fields are optional — omitted fields keep their current stored value."
+
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:40
+msgid "Set breadcrumb settings"
+msgstr "Set breadcrumb settings"
+
+#: includes/abilities/settings/class-get-system-status.php:45
+msgid "Get system status"
+msgstr "Get system status"
+
+#: includes/abilities/settings/class-get-settings.php:65
+msgid "Return only these top-level sections. Omit to return the full snapshot."
+msgstr "Return only these top-level sections. Omit to return the full snapshot."
+
+#: includes/abilities/settings/class-get-system-status.php:46
+msgid "Returns a structured system health snapshot identical to Status & Tools → System Status in the admin: Rank Math version, plan, DB table health, Google token status, WordPress core info, server environment, and active plugins. Call this alongside get-settings at the start of any AI configuration flow to detect environment issues before making changes."
+msgstr "Returns a structured system health snapshot identical to Status & Tools → System Status in the admin: Rank Math version, plan, DB table health, Google token status, WordPress core info, server environment, and active plugins. Call this alongside get-settings at the start of any AI configuration flow to detect environment issues before making changes."
+
+#: includes/abilities/settings/class-get-settings.php:55
+msgid "Returns the full normalized Rank Math settings snapshot: all four sections (general, titles, sitemap, instant_indexing), active module status, and auto-update state. Call this first in any AI configuration flow to understand what is already configured before making changes."
+msgstr "Returns the full normalised Rank Math settings snapshot: all four sections (general, titles, sitemap, instant_indexing), active module status, and auto-update state. Call this first in any AI configuration flow to understand what is already configured before making changes."
+
+#: includes/abilities/settings/class-get-settings.php:54
+msgid "Get settings"
+msgstr "Get settings"
+
+#: includes/abilities/content-analysis/class-analyze-post-content.php:150
+msgid "This post is password protected."
+msgstr "This post is password protected."
+
+#: includes/admin/class-admin-menu.php:281 rank-math.php:482
 msgid "Unlock PRO"
 msgstr "Unlock PRO"
 
@@ -52,11 +689,11 @@ msgstr "Post type to filter by (e.g. \"post\", \"page\"). Defaults to all public
 msgid "Returns SEO scores and grades for posts. Before running, ask the user which posts they want to review: posts needing improvement (bad score), posts with no focus keyword, unscored posts, or simply the most recently modified posts. Use this to surface which posts need SEO attention without needing to know post IDs in advance."
 msgstr "Returns SEO scores and grades for posts. Before running, ask the user which posts they want to review: posts needing improvement (bad score), posts with no focus keyword, unscored posts, or simply the most recently modified posts. Use this to surface which posts need SEO attention without needing to know post IDs in advance."
 
-#: includes/abilities/content-analysis/class-analyze-post-content.php:145
+#: includes/abilities/content-analysis/class-analyze-post-content.php:164
 msgid "Evaluate each test ID in tests_to_run against the fields in content, using kb_link as the scoring rubric for how each test is scored. Return a per-test breakdown with score, max_score, status (pass/fail), and a message with a specific fix. For the contentHasTOC test, when suggesting a fix or drafting content, tell the user to insert the Rank Math Table of Contents block (block name rank-math/toc-block, available in the block inserter as \"Table of Contents\") right after the intro, instead of a manual list of links — it auto-generates from the post headings."
 msgstr "Evaluate each test ID in tests_to_run against the fields in content, using kb_link as the scoring rubric for how each test is scored. Return a per-test breakdown with score, max_score, status (pass/fail), and a message with a specific fix. For the contentHasTOC test, when suggesting a fix or drafting content, tell the user to insert the Rank Math Table of Contents block (block name rank-math/toc-block, available in the block inserter as \"Table of Contents\") right after the intro, instead of a manual list of links — it auto-generates from the post headings."
 
-#: includes/abilities/content-analysis/class-analyze-post-content.php:72
+#: includes/abilities/content-analysis/class-analyze-post-content.php:73
 msgid "Gathers the raw content, metadata, and list of on-page SEO tests for a saved post so an AI agent can run Rank Math's full on-page analysis itself, since the scoring engine only runs client-side. Use tests_to_run and content together with kb_link (the scoring rubric for all 24 tests) to evaluate each test and produce a per-test score, status, and fix message."
 msgstr "Gathers the raw content, metadata, and list of on-page SEO tests for a saved post so an AI agent can run Rank Math's full on-page analysis itself, since the scoring engine only runs client-side. Use tests_to_run and content together with kb_link (the scoring rubric for all 24 tests) to evaluate each test and produce a per-test score, status, and fix message."
 
@@ -64,15 +701,16 @@ msgstr "Gathers the raw content, metadata, and list of on-page SEO tests for a s
 msgid "Get SEO scores"
 msgstr "Get SEO scores"
 
-#: includes/abilities/content-analysis/class-analyze-post-content.php:82
+#: includes/abilities/content-analysis/class-analyze-post-content.php:83
 msgid "ID of the post to analyze."
 msgstr "ID of the post to analyse."
 
-#: includes/abilities/content-analysis/class-analyze-post-content.php:131
+#: includes/abilities/content-analysis/class-analyze-post-content.php:132
+#: includes/abilities/post-seo/class-get-post-seo-meta.php:110
 msgid "No post found with the given ID, or the post status is not supported."
 msgstr "No post found with the given ID, or the post status is not supported."
 
-#: includes/abilities/content-analysis/class-analyze-post-content.php:86
+#: includes/abilities/content-analysis/class-analyze-post-content.php:87
 msgid "Optional focus keyword to analyze against, overriding the post's saved focus keyword."
 msgstr "Optional focus keyword to analyse against, overriding the post's saved focus keyword."
 
@@ -84,7 +722,7 @@ msgstr "Abilities to query Google Search Console and analytics data."
 msgid "Average position in Google Search results."
 msgstr "Average position in Google Search results."
 
-#: includes/abilities/content-analysis/class-analyze-post-content.php:71
+#: includes/abilities/content-analysis/class-analyze-post-content.php:72
 msgid "Analyze post content"
 msgstr "Analyse post content"
 
@@ -157,11 +795,11 @@ msgstr "AI Visibility API returned an invalid response."
 msgid "AI Visibility API returned an unexpected status: %d"
 msgstr "AI Visibility API returned an unexpected status: %d"
 
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:37
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:99
 msgid "Brand UUID."
 msgstr "Brand UUID."
 
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:100
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:162
 msgid "Brand website URL or domain."
 msgstr "Brand website URL or domain."
 
@@ -172,23 +810,23 @@ msgstr "Brand website URL or domain."
 msgid "Could not start the checkout session. Please try again."
 msgstr "Could not start the checkout session. Please try again."
 
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:62
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:124
 msgid "Filter brands by name or URL."
 msgstr "Filter brands by name or URL."
 
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:55
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:117
 msgid "Force a refresh from the AI Visibility API."
 msgstr "Force a refresh from the AI Visibility API."
 
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:112
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:174
 msgid "ISO 3166-1 alpha-2 country code (e.g. \"US\", \"HU\")."
 msgstr "ISO 3166-1 alpha-2 country code (e.g. \"US\", \"HU\")."
 
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:464
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:605
 msgid "No fields to update."
 msgstr "No fields to update."
 
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:201
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:293
 msgid "Query UUID."
 msgstr "Query UUID."
 
@@ -202,7 +840,7 @@ msgstr "Rank Math account not connected. Please connect your account and try aga
 msgid "We could not activate your trial. Please try again."
 msgstr "We could not activate your trial. Please try again."
 
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:208
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:300
 msgid "Whether the query is enabled for analysis."
 msgstr "Whether the query is enabled for analysis."
 
@@ -215,21 +853,21 @@ msgid "Abilities to retrieve AI brand visibility data tracked by Rank Math."
 msgstr "Abilities to retrieve AI brand visibility data tracked by Rank Math."
 
 #. Translators: placeholder is the new label.
-#: includes/modules/ai-visibility/Admin/class-admin.php:67
+#: includes/modules/ai-visibility/Admin/class-admin.php:68
 msgid "AI Visibility %s"
 msgstr "AI Visibility %s"
 
 #: includes/abilities/ai-visibility/class-subscriber.php:68
 #: includes/module/class-manager.php:236
-#: includes/modules/ai-visibility/Admin/class-admin.php:62
-#: includes/modules/ai-visibility/Admin/class-admin.php:149
+#: includes/modules/ai-visibility/Admin/class-admin.php:63
+#: includes/modules/ai-visibility/Admin/class-admin.php:186
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
 #: includes/modules/ai-visibility/assets/src/App.js:88
 msgid "AI Visibility"
 msgstr "AI Visibility"
 
-#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:80
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:94
+#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:85
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:156
 msgid "Brand name."
 msgstr "Brand name."
 
@@ -241,26 +879,13 @@ msgstr "Brand UUID. Obtain from get-ai-visibility-overview or get-ai-visibility-
 msgid "Brand UUID. Obtain from get-ai-visibility-overview."
 msgstr "Brand UUID. Obtain from get-ai-visibility-overview."
 
-#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:85
+#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:90
 msgid "Brand website URL."
 msgstr "Brand website URL."
-
-#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:69
-msgid "Creates a new brand for AI Visibility monitoring, triggering an initial analysis automatically."
-msgstr "Creates a new brand for AI Visibility monitoring, triggering an initial analysis automatically."
 
 #: includes/abilities/ai-visibility/class-get-ai-visibility-overview.php:74
 msgid "Filter brands by name or URL (case-insensitive substring match)."
 msgstr "Filter brands by name or URL (case-insensitive substring match)."
-
-#: includes/module/class-manager.php:565 assets/admin/js/components.js:1
-#: assets/admin/js/modules.js:1 assets/admin/js/post-list.js:1
-#: assets/admin/js/rank-math-app.js:1
-#: includes/modules/content-ai/assets/js/content-ai-media.js:1
-#: includes/modules/content-ai/assets/js/content-ai.js:1
-#: includes/modules/links/assets/js/links-page.js:1
-msgid "Free 15-Day Content AI Trial"
-msgstr "Free 15-Day Content AI Trial"
 
 #: includes/abilities/ai-visibility/class-get-ai-visibility-brand-insights.php:58
 msgid "Get AI Visibility brand insights"
@@ -274,7 +899,7 @@ msgstr "Get AI Visibility brand queries"
 msgid "Get AI Visibility overview"
 msgstr "Get AI Visibility overview"
 
-#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:94
+#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:99
 msgid "ISO 3166-1 alpha-2 country code (e.g. \"US\", \"HU\"). Defaults to no country filter."
 msgstr "ISO 3166-1 alpha-2 country code (e.g. \"US\", \"HU\"). Defaults to no country filter."
 
@@ -294,8 +919,8 @@ msgstr "Returns the list of search queries being monitored for a brand, includin
 msgid "Returns the site-level AI Visibility summary and the full list of tracked brands with their current scores, ranks, sentiment, and analysis status."
 msgstr "Returns the site-level AI Visibility summary and the full list of tracked brands with their current scores, ranks, sentiment, and analysis status."
 
-#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:89
-#: includes/modules/ai-visibility/Api/class-brands-controller.php:106
+#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:94
+#: includes/modules/ai-visibility/Api/class-brands-controller.php:168
 msgid "Short description of the brand or product."
 msgstr "Short description of the brand or product."
 
@@ -303,7 +928,7 @@ msgstr "Short description of the brand or product."
 msgid "Track your brand's AI search visibility. Monitor brand mentions, citations, & sentiment, and discover opportunities to grow your AI visibility."
 msgstr "Track your brand's AI search visibility. Monitor brand mentions, citations, & sentiment, and discover opportunities to grow your AI visibility."
 
-#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:68
+#: includes/abilities/ai-visibility/class-create-ai-visibility-brand.php:69
 msgid "Create AI Visibility brand"
 msgstr "Create AI Visibility brand"
 
@@ -323,19 +948,19 @@ msgstr "Abilities to retrieve and analyse internal and external link data for po
 msgid "Filter by post ID."
 msgstr "Filter by post ID."
 
-#: includes/abilities/link-genius/class-get-post-links.php:69
+#: includes/abilities/link-genius/class-get-post-links.php:70
 msgid "Get post links"
 msgstr "Get post links"
 
-#: includes/abilities/schema/class-get-post-schema.php:59
+#: includes/abilities/schema/class-get-post-schema.php:60
 msgid "Get post schema"
 msgstr "Get post schema"
 
-#: includes/abilities/post-seo/class-get-post-seo-meta.php:58
+#: includes/abilities/post-seo/class-get-post-seo-meta.php:59
 msgid "Get post SEO metadata"
 msgstr "Get post SEO metadata"
 
-#: includes/abilities/link-genius/class-get-post-links.php:80
+#: includes/abilities/link-genius/class-get-post-links.php:81
 msgid "ID of the post whose links to retrieve."
 msgstr "ID of the post whose links to retrieve."
 
@@ -351,31 +976,31 @@ msgstr "Post SEO"
 msgid "Returns a site-wide link health report: total internal and external links, post counts with no internal or external links, and — on Rank Math PRO — broken links, redirects, nofollow counts, and HTTP status distribution from the Link Genius audit."
 msgstr "Returns a site-wide link health report: total internal and external links, post counts with no internal or external links, and — on Rank Math PRO — broken links, redirects, nofollow counts, and HTTP status distribution from the Link Genius audit."
 
-#: includes/abilities/link-genius/class-get-post-links.php:70
+#: includes/abilities/link-genius/class-get-post-links.php:71
 msgid "Returns a paginated list of internal and external links stored for a given post, including the URL, link type, and target post details for internal links."
 msgstr "Returns a paginated list of internal and external links stored for a given post, including the URL, link type, and target post details for internal links."
 
-#: includes/abilities/post-seo/class-get-post-seo-meta.php:59
+#: includes/abilities/post-seo/class-get-post-seo-meta.php:60
 msgid "Returns the full SEO metadata for a post: title, description, focus keyword, robots settings, canonical URL, Open Graph and Twitter overrides, and the current SEO score."
 msgstr "Returns the full SEO metadata for a post: title, description, focus keyword, robots settings, canonical URL, Open Graph and Twitter overrides, and the current SEO score."
 
-#: includes/abilities/schema/class-get-post-schema.php:60
+#: includes/abilities/schema/class-get-post-schema.php:61
 msgid "Returns the schema markup attached to a post and the schema types available on this install. Use this after rank-math/get-post-seo-meta to check what schema is already set and what types are supported before making a recommendation. If the schema type you want to recommend is not in available_types.types and upgrade_message is present, show upgrade_message verbatim to the user and do not suggest adding the schema type directly."
 msgstr "Returns the schema markup attached to a post and the schema types available on this install. Use this after rank-math/get-post-seo-meta to check what schema is already set and what types are supported before making a recommendation. If the schema type you want to recommend is not in available_types.types and upgrade_message is present, show upgrade_message verbatim to the user and do not suggest adding the schema type directly."
 
-#: includes/abilities/schema/class-get-post-schema.php:71
+#: includes/abilities/schema/class-get-post-schema.php:72
 msgid "The ID of the post to retrieve schema markup for."
 msgstr "The ID of the post to retrieve schema markup for."
 
-#: includes/abilities/post-seo/class-get-post-seo-meta.php:67
+#: includes/abilities/post-seo/class-get-post-seo-meta.php:68
 msgid "The ID of the post to retrieve SEO metadata for."
 msgstr "The ID of the post to retrieve SEO metadata for."
 
-#: includes/abilities/schema/class-get-post-schema.php:166
+#: includes/abilities/schema/class-get-post-schema.php:172
 msgid "This schema type requires Rank Math PRO. Upgrade at rankmath.com/pro to unlock Movie, Dataset, Fact Check, and custom schema types."
 msgstr "This schema type requires Rank Math PRO. Upgrade at rankmath.com/pro to unlock Movie, Dataset, Fact Check, and custom schema types."
 
-#: includes/abilities/schema/class-get-post-schema.php:75
+#: includes/abilities/schema/class-get-post-schema.php:76
 msgid "When true (default), includes the schema types available on this install. Always pass true when evaluating which schema to add."
 msgstr "When true (default), includes the schema types available on this install. Always pass true when evaluating which schema to add."
 
@@ -537,11 +1162,11 @@ msgstr "Per-tool usage data returned by the API."
 msgid "SEO meta successfully updated in %d posts. The process was stopped as you have reached the monthly limit for this feature."
 msgstr "SEO meta successfully updated in %d posts. The process was stopped as you have reached the monthly limit for this feature."
 
-#: includes/helpers/class-content-ai.php:501
+#: includes/helpers/class-content-ai.php:635
 msgid "You've reached the monthly usage limit for this feature on your domain."
 msgstr "You've reached the monthly usage limit for this feature on your domain."
 
-#: includes/helpers/class-content-ai.php:502
+#: includes/helpers/class-content-ai.php:636
 msgid "You've reached the monthly usage limit for this feature."
 msgstr "You've reached the monthly usage limit for this feature."
 
@@ -783,23 +1408,23 @@ msgstr "Loopback requests to %s are blocked. This may prevent scheduled tasks fr
 msgid "WordPress's internal cron system is disabled via %s. Please ensure a real cron job is set up, otherwise scheduled features like Analytics may not work correctly."
 msgstr "WordPress's internal cron system is disabled via %s. Please ensure a real cron job is set up, otherwise scheduled features like Analytics may not work correctly."
 
-#: includes/helpers/class-content-ai.php:511
+#: includes/helpers/class-content-ai.php:645
 msgid "Insufficient results to complete the request. Please refine your query or reduce the requirements."
 msgstr "Insufficient results to complete the request. Please refine your query or reduce the requirements."
 
-#: includes/helpers/class-content-ai.php:510
+#: includes/helpers/class-content-ai.php:644
 msgid "No results found for the given query. Please modify your request and try again"
 msgstr "No results found for the given query. Please modify your request and try again"
 
-#: includes/helpers/class-content-ai.php:507
+#: includes/helpers/class-content-ai.php:641
 msgid "The input provided is invalid. Please check the format and try again."
 msgstr "The input provided is invalid. Please check the format and try again."
 
-#: includes/helpers/class-content-ai.php:508
+#: includes/helpers/class-content-ai.php:642
 msgid "The service is temporarily unavailable. Please try again later."
 msgstr "The service is temporarily unavailable. Please try again later."
 
-#: includes/helpers/class-content-ai.php:509
+#: includes/helpers/class-content-ai.php:643
 msgid "Unauthorized request. The client credentials are invalid."
 msgstr "Unauthorised request. The client credentials are invalid."
 
@@ -827,10 +1452,6 @@ msgstr "An array of AI-generated and existing outputs to be saved."
 msgid "Clear log by type."
 msgstr "Clear log by type."
 
-#: includes/modules/content-ai/class-rest.php:215
-msgid "Content AI plan to update in the Database."
-msgstr "Content AI plan to update in the Database."
-
 #: includes/modules/content-ai/class-rest.php:220
 msgid "Content AI reset date to update in the Database"
 msgstr "Content AI reset date to update in the Database"
@@ -848,15 +1469,15 @@ msgstr "Determine Search Intent"
 msgid "Filter log by type."
 msgstr "Filter log by type."
 
-#: includes/modules/analytics/rest/class-rest.php:149
+#: includes/modules/analytics/rest/class-rest.php:163
 msgid "Filter type."
 msgstr "Filter type."
 
-#: includes/modules/analytics/rest/class-rest.php:144
+#: includes/modules/analytics/rest/class-rest.php:158
 msgid "Filter."
 msgstr "Filter."
 
-#: includes/modules/analytics/rest/class-rest.php:165
+#: includes/modules/analytics/rest/class-rest.php:179
 msgid "Hide."
 msgstr "Hide."
 
@@ -884,24 +1505,25 @@ msgstr "List of attachment IDs for which to generate alt text."
 msgid "Mode to set"
 msgstr "Mode to set"
 
-#: includes/modules/analytics/rest/class-rest.php:93
-#: includes/modules/analytics/rest/class-rest.php:134
+#: includes/modules/analytics/rest/class-rest.php:107
+#: includes/modules/analytics/rest/class-rest.php:148
 msgid "Order."
 msgstr "Order."
 
-#: includes/modules/analytics/rest/class-rest.php:88
-#: includes/modules/analytics/rest/class-rest.php:129
+#: includes/modules/analytics/rest/class-rest.php:102
+#: includes/modules/analytics/rest/class-rest.php:143
 msgid "Order by."
 msgstr "Order by."
 
-#: includes/modules/analytics/rest/class-rest.php:78
-#: includes/modules/analytics/rest/class-rest.php:119
+#: includes/modules/analytics/rest/class-rest.php:53
+#: includes/modules/analytics/rest/class-rest.php:92
+#: includes/modules/analytics/rest/class-rest.php:133
 #: includes/modules/links/Api/class-controller.php:716
 #: includes/modules/links/Api/class-controller.php:782
 msgid "Page number."
 msgstr "Page number."
 
-#: includes/modules/analytics/rest/class-rest.php:56
+#: includes/modules/analytics/rest/class-rest.php:70
 msgid "Post ID."
 msgstr "Post ID."
 
@@ -909,33 +1531,34 @@ msgstr "Post ID."
 msgid "Post scores"
 msgstr "Post scores"
 
-#: includes/modules/analytics/rest/class-rest.php:69
+#: includes/modules/analytics/rest/class-rest.php:83
 msgid "Post Type."
 msgstr "Post Type."
 
-#: includes/rest/class-shared.php:271
+#: includes/rest/class-shared.php:278
 msgid "Redirection ID"
 msgstr "Redirection ID"
 
-#: includes/rest/class-shared.php:276
+#: includes/rest/class-shared.php:283
 msgid "Redirection URL"
 msgstr "Redirection URL"
 
-#: includes/modules/analytics/rest/class-rest.php:83
-#: includes/modules/analytics/rest/class-rest.php:124
+#: includes/modules/analytics/rest/class-rest.php:59
+#: includes/modules/analytics/rest/class-rest.php:97
+#: includes/modules/analytics/rest/class-rest.php:138
 msgid "Results per page."
 msgstr "Results per page."
 
-#: includes/modules/analytics/rest/class-rest.php:98
-#: includes/modules/analytics/rest/class-rest.php:139
+#: includes/modules/analytics/rest/class-rest.php:112
+#: includes/modules/analytics/rest/class-rest.php:153
 msgid "Search."
 msgstr "Search."
 
-#: includes/rest/class-post.php:196
+#: includes/rest/class-post.php:205
 msgid "Selected posts to update the data for."
 msgstr "Selected posts to update the data for."
 
-#: includes/rest/class-rest-helper.php:296
+#: includes/rest/class-rest-helper.php:354
 msgid "Sorry, the field contains invalid characters."
 msgstr "Sorry, the field contains invalid characters."
 
@@ -983,15 +1606,15 @@ msgstr "The selected prompt to be updated in the recent prompts."
 msgid "The title of the new post."
 msgstr "The title of the new post."
 
-#: includes/modules/analytics/rest/class-rest.php:160
+#: includes/modules/analytics/rest/class-rest.php:174
 msgid "Toggle bar."
 msgstr "Toggle bar."
 
-#: includes/modules/analytics/rest/class-rest.php:109
+#: includes/modules/analytics/rest/class-rest.php:123
 msgid "User preferences."
 msgstr "User preferences."
 
-#: includes/rest/class-shared.php:266
+#: includes/rest/class-shared.php:273
 msgid "Whether the object has a redirect or not"
 msgstr "Whether the object has a redirect or not"
 
@@ -1002,6 +1625,10 @@ msgstr "Whether the object has a redirect or not"
 #: includes/modules/links/assets/js/links-page.js:1
 msgid "Your current plugin version does not support this feature. Please update Rank Math PRO to version 3.0.83 or later to unlock full functionality."
 msgstr "Your current plugin version does not support this feature. Please update Rank Math PRO to version 3.0.83 or later to unlock full functionality."
+
+#: includes/modules/content-ai/class-rest.php:215
+msgid "Rank Math AI plan to update in the Database."
+msgstr "Rank Math AI plan to update in the Database."
 
 #: includes/admin/wizard/views/search-console-ui.php:358
 #: assets/admin/js/generalSettings.js:1 assets/admin/js/wizard.js:1
@@ -1305,7 +1932,7 @@ msgstr "Christmas Sale"
 msgid "Cyber Monday Sale"
 msgstr "Cyber Monday Sale"
 
-#: includes/helpers/class-content-ai.php:506
+#: includes/helpers/class-content-ai.php:640
 msgid "Invalid API key. Please check your API key or reconnect the site and try again."
 msgstr "Invalid API key. Please check your API key or reconnect the site and try again."
 
@@ -1347,7 +1974,7 @@ msgstr "Set to nofollow"
 msgid "Set to noindex"
 msgstr "Set to noindex"
 
-#: includes/helpers/class-content-ai.php:512
+#: includes/helpers/class-content-ai.php:646
 msgid "User wallet not found."
 msgstr "User wallet not found."
 
@@ -1394,10 +2021,6 @@ msgstr "This is the number of page views carried out by visitors from search eng
 #: includes/modules/content-ai/class-admin.php:149
 msgid "Content AI Credits"
 msgstr "Content AI Credits"
-
-#: includes/modules/content-ai/class-admin.php:145
-msgid "Content AI Plan"
-msgstr "Content AI Plan"
 
 #: includes/modules/content-ai/class-admin.php:153
 msgid "Content AI Refresh Date"
@@ -1453,17 +2076,16 @@ msgctxt "block keyword"
 msgid "rankmath"
 msgstr "rankmath"
 
-#: includes/module/class-manager.php:572 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:573 assets/admin/js/modules.js:1
 msgid "Buy Now"
 msgstr "Buy Now"
 
 #: includes/modules/content-ai/class-content-ai-page.php:139
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Chat"
 msgstr "Chat"
 
-#: includes/helpers/class-content-ai.php:500
+#: includes/helpers/class-content-ai.php:634
 msgid "Oops! Too many requests in a short time. Please try again after some time."
 msgstr "Oops! Too many requests in a short time. Please try again after some time."
 
@@ -1483,7 +2105,6 @@ msgid "Activists"
 msgstr "Activists"
 
 #: includes/modules/content-ai/class-content-ai-page.php:127
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "AI Tools"
 msgstr "AI Tools"
@@ -1573,7 +2194,6 @@ msgid "Content AI Tools"
 msgstr "Content AI Tools"
 
 #: includes/modules/content-ai/class-content-ai-page.php:133
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Content Editor"
 msgstr "Content Editor"
@@ -1588,7 +2208,7 @@ msgstr "Conversational"
 msgid "Cooks"
 msgstr "Cooks"
 
-#: includes/helpers/class-content-ai.php:505
+#: includes/helpers/class-content-ai.php:639
 msgid "Could not generate. Please try again later."
 msgstr "Could not generate. Please try again later."
 
@@ -1892,15 +2512,15 @@ msgstr "Pet Owners"
 msgid "Photographers"
 msgstr "Photographers"
 
-#: includes/helpers/class-content-ai.php:497
+#: includes/helpers/class-content-ai.php:631
 msgid "Please connect your account to use the Content AI."
 msgstr "Please connect your account to use the Content AI."
 
-#: includes/helpers/class-content-ai.php:503
+#: includes/helpers/class-content-ai.php:637
 msgid "Please revise the entered values in the fields as they are not secure. Make the required adjustments and try again."
 msgstr "Please revise the entered values in the fields as they are not secure. Make the required adjustments and try again."
 
-#: includes/helpers/class-content-ai.php:498
+#: includes/helpers/class-content-ai.php:632
 msgid "Please update the Rank Math SEO plugin to the latest version to use this feature."
 msgstr "Please update the Rank Math SEO plugin to the latest version to use this feature."
 
@@ -2011,7 +2631,7 @@ msgstr "Tech Enthusiasts"
 msgid "Technical"
 msgstr "Technical"
 
-#: includes/helpers/class-content-ai.php:504
+#: includes/helpers/class-content-ai.php:638
 msgid "The output was stopped as it was identified as potentially unsafe by the content filter."
 msgstr "The output was stopped as it was identified as potentially unsafe by the content filter."
 
@@ -2019,10 +2639,6 @@ msgstr "The output was stopped as it was identified as potentially unsafe by the
 #: assets/admin/js/generalSettings.js:1
 msgid "This feature enables the default primary tone or writing style that characterizes your content. You can override this in individual tools."
 msgstr "This feature enables the default primary tone or writing style that characterizes your content. You can override this in individual tools."
-
-#: includes/helpers/class-content-ai.php:499
-msgid "This feature is only available for Content AI subscribers."
-msgstr "This feature is only available for Content AI subscribers."
 
 #: includes/modules/content-ai/views/options.php:96
 #: assets/admin/js/generalSettings.js:1
@@ -2066,6 +2682,10 @@ msgstr "Writers"
 msgid "Travelers"
 msgstr "Travellers"
 
+#: includes/helpers/class-content-ai.php:633
+msgid "This feature is only available for Rank Math AI subscribers."
+msgstr "This feature is only available for Rank Math AI subscribers."
+
 #: includes/settings/general/webmaster.php:91
 #: assets/admin/js/generalSettings.js:1
 msgid "Custom Webmaster Tags"
@@ -2088,8 +2708,8 @@ msgstr "Selected roles will be excluded from the XML &amp; HTML sitemaps."
 
 #. Translators: link to the update page.
 #: includes/modules/content-ai/class-rest.php:678
-msgid "There is a new version of Content AI available! %s the Rank Math SEO plugin to use this feature."
-msgstr "There is a new version of Content AI available! %s the Rank Math SEO plugin to use this feature."
+msgid "There is a new version of Rank Math AI available! %s the Rank Math SEO plugin to use this feature."
+msgstr "There is a new version of Rank Math AI available! %s the Rank Math SEO plugin to use this feature."
 
 #: includes/rest/class-admin.php:266
 msgid "The redirection you are trying to create may cause an infinite loop. Please check the source and destination URLs. The redirection has been deactivated."
@@ -2141,7 +2761,7 @@ msgstr "https://rankmath.com/?utm_source=Plugin&utm_medium=Readme%20Author%20URI
 msgid "Additional Profiles"
 msgstr "Additional Profiles"
 
-#: includes/admin/importers/class-aioseo.php:69
+#: includes/admin/importers/class-aioseo.php:70
 msgid "Import Social URLs of your author archive pages."
 msgstr "Import Social URLs of your author archive pages."
 
@@ -2159,11 +2779,11 @@ msgstr "Additional Profiles to add in the <code>sameAs</code> Schema property."
 msgid "Additional profile URLs"
 msgstr "Additional profile URLs"
 
-#: includes/modules/seo-analysis/class-seo-analyzer.php:545
+#: includes/modules/seo-analysis/class-seo-analyzer.php:554
 msgid "(No Description)"
 msgstr "(No Description)"
 
-#: includes/modules/seo-analysis/class-seo-analyzer.php:537
+#: includes/modules/seo-analysis/class-seo-analyzer.php:546
 msgid "(No Title)"
 msgstr "(No Title)"
 
@@ -2192,7 +2812,7 @@ msgid "Confirm if Rank Math is connected to Search Console"
 msgstr "Confirm if Rank Math is connected to Search Console"
 
 #. Translators: placeholder is the new Rank Math label.
-#: includes/module/class-manager.php:276
+#: includes/module/class-manager.php:277
 #: includes/modules/seo-analysis/class-admin.php:85
 #: includes/modules/seo-analysis/class-seo-analysis.php:59
 #: includes/modules/seo-analysis/class-seo-analysis.php:72
@@ -2403,13 +3023,14 @@ msgstr "Sort By"
 msgid "Use this shortcode to display the HTML sitemap."
 msgstr "Use this shortcode to display the HTML sitemap."
 
-#: includes/admin/importers/class-aioseo.php:476
+#: includes/admin/importers/class-aioseo.php:478
 #: includes/modules/sitemap/class-admin.php:107
 #: includes/modules/sitemap/settings/html-sitemap.php:17
 #: assets/admin/js/sitemapSettings.js:1
 msgid "HTML Sitemap"
 msgstr "HTML Sitemap"
 
+#: includes/abilities/settings/class-set-sitemap-settings.php:79
 #: includes/modules/sitemap/settings/authors.php:28
 #: assets/admin/js/sitemapSettings.js:1
 msgid "Include author archives in the XML sitemap."
@@ -2518,7 +3139,7 @@ msgstr "For your video content, a Video Sitemap is a recommended step for better
 msgid "Make your podcasts discoverable via Google Podcasts, Apple Podcasts, and similar services with Podcast RSS feed and Schema Markup generated by Rank Math."
 msgstr "Make your podcasts discoverable via Google Podcasts, Apple Podcasts, and similar services with Podcast RSS feed and Schema Markup generated by Rank Math."
 
-#: includes/module/class-manager.php:459 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:460 assets/admin/js/modules.js:1
 msgid "More powerful options are available in the PRO version."
 msgstr "More powerful options are available in the PRO version."
 
@@ -2530,7 +3151,7 @@ msgstr "News Sitemap"
 msgid "Podcast"
 msgstr "Podcast"
 
-#: includes/module/class-manager.php:464 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:465 assets/admin/js/modules.js:1
 msgid "PRO options are enabled."
 msgstr "PRO options are enabled."
 
@@ -2774,7 +3395,6 @@ msgstr "Content A.I. (Artificial Intelligence)"
 
 #: includes/admin/class-pro-notice.php:219
 #: includes/admin/class-pro-notice.php:238
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 msgid "Keyword Rank Tracker"
 msgstr "Keyword Rank Tracker"
 
@@ -2809,7 +3429,7 @@ msgid "%s ago"
 msgstr "%s ago"
 
 #. translators: %s: Number of pages submitted.
-#: includes/modules/instant-indexing/class-instant-indexing.php:449
+#: includes/modules/instant-indexing/class-instant-indexing.php:448
 msgid "%s page submitted to IndexNow."
 msgid_plural "%s pages submitted to IndexNow."
 msgstr[0] "%s page submitted to IndexNow."
@@ -2832,7 +3452,6 @@ msgstr "Bad Request"
 
 #: includes/modules/instant-indexing/views/history.php:12
 #: assets/admin/js/instantIndexingSettings.js:1
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Clear History"
 msgstr "Clear History"
@@ -2842,7 +3461,7 @@ msgstr "Clear History"
 msgid "Directly notify search engines like Bing & Yandex using the %s when pages are added, updated and removed, or submit URLs manually."
 msgstr "Directly notify search engines like Bing & Yandex using the %s when pages are added, updated and removed, or submit URLs manually."
 
-#: includes/modules/instant-indexing/class-instant-indexing.php:443
+#: includes/modules/instant-indexing/class-instant-indexing.php:442
 msgid "Error submitting page to IndexNow."
 msgstr "Error submitting page to IndexNow."
 
@@ -2864,7 +3483,6 @@ msgstr "hello-world"
 #: includes/modules/content-ai/class-content-ai-page.php:145
 #: includes/modules/instant-indexing/class-instant-indexing.php:229
 #: assets/admin/js/instantIndexingSettings.js:1
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "History"
 msgstr "History"
@@ -3001,7 +3619,7 @@ msgstr "Unknown error."
 msgid "Unprocessable Entity"
 msgstr "Unprocessable Entity"
 
-#: includes/module/class-manager.php:568 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:569 assets/admin/js/modules.js:1
 msgid "24/7 Support"
 msgstr "24/7 Support"
 
@@ -3015,11 +3633,11 @@ msgstr "Get Rank Math PRO!"
 
 #: includes/admin/class-pro-notice.php:220
 #: includes/admin/class-pro-notice.php:239
-#: includes/module/class-manager.php:567 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:568 assets/admin/js/modules.js:1
 msgid "Powerful Schema Generator"
 msgstr "Powerful Schema Generator"
 
-#: includes/module/class-manager.php:562 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:563 assets/admin/js/modules.js:1
 msgid "Take SEO to the Next Level!"
 msgstr "Take SEO to the Next Level!"
 
@@ -3027,11 +3645,11 @@ msgstr "Take SEO to the Next Level!"
 msgid "Take your SEO to the Next Level!"
 msgstr "Take your SEO to the Next Level!"
 
-#: includes/module/class-manager.php:566 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:567 assets/admin/js/modules.js:1
 msgid "Track 500 Keywords"
 msgstr "Track 500 Keywords"
 
-#: includes/module/class-manager.php:564 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:565 assets/admin/js/modules.js:1
 msgid "Unlimited personal websites"
 msgstr "Unlimited personal websites"
 
@@ -3039,7 +3657,7 @@ msgstr "Unlimited personal websites"
 msgid "Exclude this attachment from sitemap"
 msgstr "Exclude this attachment from sitemap"
 
-#: includes/opengraph/class-slack.php:320
+#: includes/opengraph/class-slack.php:326
 msgid "Less than a minute"
 msgstr "Less than a minute"
 
@@ -3050,8 +3668,8 @@ msgstr "Less than a minute"
 msgid "Slack Enhanced Sharing"
 msgstr "Slack Enhanced Sharing"
 
-#: includes/opengraph/class-slack.php:267
-#: includes/opengraph/class-slack.php:281
+#: includes/opengraph/class-slack.php:269
+#: includes/opengraph/class-slack.php:286
 msgid "Time to read"
 msgstr "Time to read"
 
@@ -3106,7 +3724,7 @@ msgstr "Headless CMS Support"
 msgid "URL to get HTML tags for."
 msgstr "URL to get HTML tags for."
 
-#: includes/modules/ai-visibility/Admin/class-admin.php:59
+#: includes/modules/ai-visibility/Admin/class-admin.php:60
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "New!"
 msgstr "New!"
@@ -3115,7 +3733,7 @@ msgstr "New!"
 msgid "Peru"
 msgstr "Peru"
 
-#: includes/module/class-manager.php:450 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:451 assets/admin/js/modules.js:1
 msgid "NEW!"
 msgstr "NEW!"
 
@@ -3171,7 +3789,6 @@ msgstr "Cambodia"
 #: includes/modules/content-ai/class-content-ai-page.php:119
 #: includes/modules/role-manager/class-capability-manager.php:70
 #: assets/admin/js/components.js:1 assets/admin/js/generalSettings.js:1
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Content AI"
 msgstr "Content AI"
@@ -3326,7 +3943,7 @@ msgstr "Venezuela, Bolivarian Republic Of"
 msgid "Viet Nam"
 msgstr "Viet Nam"
 
-#: includes/module/class-manager.php:412
+#: includes/module/class-manager.php:413
 msgid "You cant access this page."
 msgstr "You cant access this page."
 
@@ -3364,7 +3981,7 @@ msgstr "It seems that there are no stats to show right now."
 msgid "Rank Math could not detect if a robots.txt file exists or not because of a filesystem issue. The file contents entered here may not be applied."
 msgstr "Rank Math could not detect if a robots.txt file exists or not because of a filesystem issue. The file contents entered here may not be applied."
 
-#: includes/modules/status/class-import-export-settings.php:54
+#: includes/modules/status/class-import-export-settings.php:55
 msgid "Uploaded file could not be read."
 msgstr "Uploaded file could not be read."
 
@@ -3373,7 +3990,7 @@ msgid "Spain"
 msgstr "Spain"
 
 #. Translators: placeholder is the number of modified posts.
-#: includes/modules/database-tools/class-aioseo-blocks.php:78
+#: includes/modules/database-tools/class-aioseo-blocks.php:85
 #: includes/modules/database-tools/class-yoast-blocks.php:106
 msgid "Blocks successfully converted in %d post."
 msgid_plural "Blocks successfully converted in %d posts."
@@ -3384,14 +4001,15 @@ msgstr[1] "Blocks successfully converted in %d posts."
 msgid "Could not check Focus Keywords in posts - the post meta table exceeds the size limit."
 msgstr "Could not check Focus Keywords in posts - the post meta table exceeds the size limit."
 
-#: includes/admin/importers/class-aioseo.php:81
+#: includes/admin/importers/class-aioseo.php:83
 msgid "Import Locations Settings."
 msgstr "Import Locations Settings."
 
-#: includes/admin/importers/class-aioseo.php:77
+#: includes/admin/importers/class-aioseo.php:79
 msgid "Import all the redirections you have already set up in AIO SEO Premium."
 msgstr "Import all the redirections you have already set up in AIO SEO Premium."
 
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:94
 #: includes/settings/titles/author.php:137
 #: includes/settings/titles/post-types.php:354
 #: includes/settings/titles/taxonomies.php:125
@@ -3399,11 +4017,11 @@ msgstr "Import all the redirections you have already set up in AIO SEO Premium."
 msgid "Add SEO Controls"
 msgstr "Add SEO Controls"
 
-#: includes/rest/class-rest-helper.php:208
+#: includes/rest/class-rest-helper.php:266
 msgid "Invalid term ID."
 msgstr "Invalid term ID."
 
-#: includes/rest/class-rest-helper.php:190
+#: includes/rest/class-rest-helper.php:251
 msgid "Sorry, you are not allowed to edit this term."
 msgstr "Sorry, you are not allowed to edit this term."
 
@@ -3427,11 +4045,11 @@ msgstr "No, I don't want it"
 msgid "Yes, I want to learn more"
 msgstr "Yes, I want to learn more"
 
-#: rank-math.php:502
+#: rank-math.php:509
 msgid "CAUTION:"
 msgstr "CAUTION:"
 
-#: rank-math.php:503
+#: rank-math.php:510
 msgid "This action is IRREVERSIBLE."
 msgstr "This action is IRREVERSIBLE."
 
@@ -3792,7 +4410,7 @@ msgstr "It seems like the connection with your Google account & Rank Math needs 
 msgid "Re-create Missing Database Tables"
 msgstr "Re-create Missing Database Tables"
 
-#: includes/admin/importers/class-aioseo.php:73
+#: includes/admin/importers/class-aioseo.php:75
 msgid "Import meta information of your terms like the titles, descriptions, robots meta, OpenGraph info, etc."
 msgstr "Import meta information of your terms like the titles, descriptions, robots meta, OpenGraph info, etc."
 
@@ -3845,7 +4463,7 @@ msgstr "Database Table: Redirection Cache"
 msgid "Database version"
 msgstr "Database version"
 
-#: includes/module/class-manager.php:444
+#: includes/module/class-manager.php:445
 #: includes/modules/status/class-system-status.php:63
 #: assets/admin/js/modules.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
@@ -3897,7 +4515,6 @@ msgid "(opens in a new window)"
 msgstr "(opens in a new window)"
 
 #: includes/admin/class-dashboard-widget.php:174
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Blog"
 msgstr "Blog"
@@ -4033,7 +4650,7 @@ msgstr "Note:"
 msgid "How many times your site was clicked on in the search results."
 msgstr "How many times your site was clicked on in the search results."
 
-#: includes/opengraph/class-slack.php:371
+#: includes/opengraph/class-slack.php:377
 #: includes/modules/analytics/assets/js/stats.js:1
 #: includes/modules/links/assets/js/links-page.js:1
 #: includes/modules/links/assets/src/features/links-page/LinksPage.js:41
@@ -4096,7 +4713,7 @@ msgstr "News Settings imported successfully."
 #: includes/admin/wizard/views/search-console-ui.php:284
 #: includes/admin/wizard/views/search-console-ui.php:309
 #: includes/admin/wizard/views/search-console-ui.php:365
-#: includes/module/class-manager.php:452
+#: includes/module/class-manager.php:453
 #: includes/modules/analytics/views/options.php:149
 #: assets/admin/js/components.js:1 assets/admin/js/generalSettings.js:1
 #: assets/admin/js/modules.js:1 assets/admin/js/wizard.js:1
@@ -4429,11 +5046,11 @@ msgstr "See your Google Search Console, Analytics and AdSense data without leavi
 msgid "Singapore"
 msgstr "Singapore"
 
-#: includes/modules/analytics/rest/class-rest.php:241
+#: includes/modules/analytics/rest/class-rest.php:255
 msgid "Sorry, no post id found."
 msgstr "Sorry, no post id found."
 
-#: includes/modules/analytics/rest/class-rest.php:216
+#: includes/modules/analytics/rest/class-rest.php:230
 msgid "Sorry, no preference found."
 msgstr "Sorry, no preference found."
 
@@ -4543,7 +5160,7 @@ msgstr "Export Options"
 msgid "Fix 404 Errors"
 msgstr "Fix 404 Errors"
 
-#: includes/admin/importers/class-aioseo.php:81
+#: includes/admin/importers/class-aioseo.php:83
 #: includes/admin/importers/class-plugin-importer.php:156
 msgid "Import Locations"
 msgstr "Import Locations"
@@ -4591,7 +5208,7 @@ msgstr "Post URL"
 msgid "Published Date"
 msgstr "Published Date"
 
-#: includes/rest/class-shared.php:412
+#: includes/rest/class-shared.php:419
 msgid "schemas to add or update data."
 msgstr "schemas to add or update data."
 
@@ -4616,24 +5233,24 @@ msgstr "With the 404 monitor you can see where users and search engines are unab
 msgid "You are using the outdated WordPress, please update it to version %s or higher."
 msgstr "You are using an outdated version of WordPress. Please update it to version %s or higher."
 
-#: includes/modules/seo-analysis/class-seo-analyzer.php:432
+#: includes/modules/seo-analysis/class-seo-analyzer.php:441
 msgid "Unexpected API response."
 msgstr "Unexpected API response."
 
 #. Translators: placeholder is a HTTP error code.
-#: includes/modules/seo-analysis/class-seo-analyzer.php:425
+#: includes/modules/seo-analysis/class-seo-analyzer.php:434
 msgid "HTTP %d error."
 msgstr "HTTP %d error."
 
-#: includes/module/class-manager.php:384
+#: includes/module/class-manager.php:385
 msgid "Google Web Stories"
 msgstr "Google Web Stories"
 
-#: includes/module/class-manager.php:385
+#: includes/module/class-manager.php:386
 msgid "Make any Story created with the Web Stories WordPress plugin SEO-Ready with automatic support for Schema and Meta tags."
 msgstr "Make any Story created with the Web Stories WordPress plugin SEO Ready with automatic support for Schema and Meta tags."
 
-#: includes/module/class-manager.php:389
+#: includes/module/class-manager.php:390
 msgid "Please activate Web Stories plugin to use this module."
 msgstr "Please activate the Web Stories plugin to use this module."
 
@@ -4751,7 +5368,7 @@ msgstr "Counts the total number of internal and external links, to and from link
 msgid "Image SEO"
 msgstr "Image SEO"
 
-#: includes/module/class-manager.php:258 assets/admin/js/wizard.js:1
+#: includes/module/class-manager.php:259 assets/admin/js/wizard.js:1
 msgid "The Role Manager allows you to use WordPress roles to control which of your site users can have edit or view access to Rank Math's settings."
 msgstr "The Role Manager allows you to use WordPress roles to control which of your site users can have edit or view access to Rank Math's settings."
 
@@ -4771,7 +5388,7 @@ msgid "Optimize for local searches and Knowledge Graph using these settings. %s.
 msgstr "Optimise for local searches and Knowledge Graph using these settings. %s."
 
 #. translators: Link to AMP plugin
-#: includes/module/class-manager.php:337
+#: includes/module/class-manager.php:338
 msgid "Install %s to make Rank Math work with Accelerated Mobile Pages. Rank Math automatically adds required meta tags in all the AMP pages."
 msgstr "Install %s to make Rank Math work with Accelerated Mobile Pages. Rank Math automatically adds required meta tags in all the AMP pages."
 
@@ -4839,7 +5456,7 @@ msgstr "Easily create redirects without fiddling with tedious code. %s."
 msgid "Change Sitemap settings of %1$s. %2$s."
 msgstr "Change sitemap settings of %1$s. %2$s."
 
-#: includes/module/class-manager.php:365
+#: includes/module/class-manager.php:366
 msgid "Optimize WooCommerce Pages for Search Engines by adding required metadata and Product Schema which will make your site stand out in the SERPs."
 msgstr "Optimise WooCommerce Pages for Search Engines by adding required metadata and Product Schema, which will make your site stand out in the SERPs."
 
@@ -4909,7 +5526,7 @@ msgstr "Automatic Updates"
 msgid "Enable automatic updates to ensure you are always using the latest version of Rank Math."
 msgstr "Enable automatic updates to ensure you are always using the latest version of Rank Math."
 
-#: includes/modules/seo-analysis/class-seo-analyzer.php:360
+#: includes/modules/seo-analysis/class-seo-analyzer.php:369
 #: includes/modules/seo-analysis/seo-analysis-tests.php:187
 #: includes/modules/seo-analysis/seo-analysis-tests.php:199
 msgid "Rank Math auto-update option is enabled on your site."
@@ -4927,16 +5544,17 @@ msgstr "Click here to see the code."
 msgid "Sorry, you are not allowed to create/update redirection."
 msgstr "Sorry, you are not allowed to create/update the redirection."
 
-#: includes/rest/class-rest-helper.php:123
-msgid "Sorry, you are not allowed to edit this post type."
-msgstr "Sorry, you are not allowed to edit this post type."
-
-#: includes/rest/class-rest-helper.php:139
+#: includes/abilities/content-analysis/class-analyze-post-content.php:141
+#: includes/abilities/link-genius/class-get-post-links.php:128
+#: includes/abilities/post-seo/class-get-post-seo-meta.php:114
+#: includes/abilities/schema/class-get-post-schema.php:124
+#: includes/rest/class-rest-helper.php:126
 msgid "Sorry, you are not allowed to edit this post."
 msgstr "Sorry, you are not allowed to edit this post."
 
-#: includes/abilities/schema/class-get-post-schema.php:118
-#: includes/rest/class-rest-helper.php:154
+#: includes/abilities/link-genius/class-get-post-links.php:124
+#: includes/abilities/schema/class-get-post-schema.php:120
+#: includes/rest/class-rest-helper.php:200
 msgid "Invalid post ID."
 msgstr "Invalid post ID."
 
@@ -4979,10 +5597,12 @@ msgstr "Imported blocks from posts %1$s - %2$s out of %3$s "
 msgid "Blocks import failed."
 msgstr "Blocks import failed."
 
+#: includes/admin/importers/class-aioseo.php:71
 #: includes/admin/importers/class-plugin-importer.php:155
 msgid "Import Blocks"
 msgstr "Import Blocks"
 
+#: includes/admin/importers/class-aioseo.php:71
 #: includes/admin/importers/class-plugin-importer.php:155
 msgid "Import and convert all compatible blocks in post contents."
 msgstr "Import and convert all compatible blocks in post contents."
@@ -5004,7 +5624,7 @@ msgstr[1] "%d hours"
 #. translators: %d is the number of minutes.
 #. translators: %d: minutes
 #: includes/modules/schema/blocks/howto/class-block-howto.php:424
-#: includes/opengraph/class-slack.php:315
+#: includes/opengraph/class-slack.php:321
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d minute"
@@ -5015,6 +5635,7 @@ msgstr[1] "%d minutes"
 msgid "%1$s and %2$s"
 msgstr "%1$s and %2$s"
 
+#: includes/admin/importers/class-aioseo.php:836
 #: includes/admin/importers/class-yoast.php:1272
 msgid "No post found."
 msgstr "No post found."
@@ -5069,7 +5690,7 @@ msgstr "Are you sure you want to convert Yoast blocks into Rank Math blocks? Thi
 msgid "Convert TOC block created using AIOSEO. Use this option to easily move your previous blocks into Rank Math."
 msgstr "Convert TOC block created using AIOSEO. Use this option to easily move your previous blocks into Rank Math."
 
-#: includes/module/class-manager.php:310
+#: includes/module/class-manager.php:311
 #: includes/modules/status/assets/js/status.js:1
 msgid "Database Tools"
 msgstr "Database Tools"
@@ -5091,7 +5712,7 @@ msgstr "The plugin rollback was successful."
 msgid "Installing the rollback version&#8230;"
 msgstr "Installing the rollback version&#8230;"
 
-#: includes/module/class-manager.php:304 assets/admin/js/components.js:1
+#: includes/module/class-manager.php:305 assets/admin/js/components.js:1
 #: assets/admin/js/modules.js:1 includes/modules/status/assets/js/status.js:1
 msgid "Version Control"
 msgstr "Version Control"
@@ -5111,6 +5732,7 @@ msgstr "Redirect Orphan Attachments"
 msgid "Schema (Structured Data)"
 msgstr "Schema (Structured Data)"
 
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:69
 #: includes/settings/titles/post-types.php:131
 #: includes/settings/titles/post-types.php:159
 #: assets/admin/js/titleSettings.js:1 assets/admin/js/wizard.js:1
@@ -5140,7 +5762,6 @@ msgid "Custom or Generated SEO Title of the current post/page"
 msgstr "Custom or Generated SEO Title of the current post/page"
 
 #: includes/replace-variables/class-post-variables.php:93
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "SEO Description"
 msgstr "SEO Description"
@@ -5150,11 +5771,11 @@ msgid "Custom or Generated SEO Description of the current post/page"
 msgstr "Custom or Generated SEO Description of the current post/page"
 
 #. translators: 1. Bold text 2. Bold text
-#: rank-math.php:501
+#: rank-math.php:508
 msgid "%1$s A filter to remove the Rank Math data from the database is present. Deactivating & Deleting this plugin will remove everything related to the Rank Math plugin. %2$s"
 msgstr "%1$s A filter to remove the Rank Math data from the database is present. Deactivating & deleting this plugin will remove everything related to the Rank Math plugin. %2$s"
 
-#: includes/module/class-manager.php:356
+#: includes/module/class-manager.php:357
 msgid "Enable the BuddyPress module for Rank Math SEO to make your BuddyPress forum SEO friendly by adding proper meta tags to all forum pages."
 msgstr "Enable the BuddyPress module for Rank Math SEO to make your BuddyPress forum SEO friendly by adding proper meta tags to all forum pages."
 
@@ -5162,17 +5783,17 @@ msgstr "Enable the BuddyPress module for Rank Math SEO to make your BuddyPress f
 msgid "username"
 msgstr "username"
 
-#: includes/rest/class-shared.php:259 includes/rest/class-shared.php:309
-#: includes/rest/class-shared.php:401
+#: includes/rest/class-shared.php:266 includes/rest/class-shared.php:316
+#: includes/rest/class-shared.php:408
 msgid "Object Type i.e. post, term, user"
 msgstr "Object Type, i.e. post, term, user"
 
-#: includes/rest/class-shared.php:252 includes/rest/class-shared.php:315
-#: includes/rest/class-shared.php:407
+#: includes/rest/class-shared.php:259 includes/rest/class-shared.php:322
+#: includes/rest/class-shared.php:414
 msgid "Object unique id"
 msgstr "Object unique ID"
 
-#: includes/rest/class-shared.php:329
+#: includes/rest/class-shared.php:336
 msgid "Meta to add or update data."
 msgstr "Meta to add or update data."
 
@@ -5306,6 +5927,7 @@ msgstr "here"
 msgid "Large"
 msgstr "Large"
 
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:111
 #: includes/settings/general/breadcrumbs.php:164
 #: assets/admin/js/generalSettings.js:1
 msgid "Show Blog Page"
@@ -5358,11 +5980,11 @@ msgstr "Standard"
 msgid "Post Excerpt Only"
 msgstr "Post Excerpt Only"
 
-#: includes/module/class-manager.php:375
+#: includes/module/class-manager.php:376
 msgid "ACF"
 msgstr "ACF"
 
-#: includes/module/class-manager.php:376
+#: includes/module/class-manager.php:377
 msgid "ACF support helps Rank Math SEO read and analyze content written in the Advanced Custom Fields. If your theme uses ACF, you should enable this option."
 msgstr "ACF support helps Rank Math SEO read and analyse content written in the Advanced Custom Fields. If your theme uses ACF, you should enable this option."
 
@@ -5382,7 +6004,7 @@ msgstr "Redirection rules successfully deleted."
 msgid "Status & Tools"
 msgstr "Status & Tools"
 
-#: includes/module/class-manager.php:380
+#: includes/module/class-manager.php:381
 msgid "Please activate ACF plugin to use this module."
 msgstr "Please activate the ACF plugin to use this module."
 
@@ -5429,7 +6051,7 @@ msgstr "Clear SEO Analyser"
 msgid "SEO Analyzer data successfully deleted."
 msgstr "SEO Analyser data successfully deleted."
 
-#: includes/module/class-manager.php:360
+#: includes/module/class-manager.php:361
 msgid "Please activate BuddyPress plugin to use this module."
 msgstr "Please activate the BuddyPress plugin to use this module."
 
@@ -5506,18 +6128,18 @@ msgstr "Group name."
 msgid "<strong>Warning:</strong> your site's search engine visibility is set to Hidden in <a href=\"%1$s\" target=\"_blank\">Settings &gt; Reading</a>. This means that the changes you make here will not take effect. Set the search engine visibility to Public to be able to change the robots.txt content."
 msgstr "<strong>Warning:</strong> your site's search engine visibility is set to Hidden in <a href=\"%1$s\" target=\"_blank\">Settings &gt; Reading</a>. This means that the changes you make here will not take effect. Set the search engine visibility to Public to be able to change the robots.txt content."
 
-#: includes/module/class-manager.php:355
+#: includes/module/class-manager.php:356
 msgid "BuddyPress"
 msgstr "BuddyPress"
 
-#: includes/module/class-manager.php:298
+#: includes/module/class-manager.php:299
 msgid "Robots Txt"
 msgstr "Robots Txt"
 
 #: includes/admin/class-cmb2-options.php:311 assets/admin/js/common.js:1
 #: assets/admin/js/modules.js:1 assets/admin/js/settings.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:448
+#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:491
 #: includes/modules/status/assets/js/status.js:1
 msgid "Save Changes"
 msgstr "Save Changes"
@@ -5526,19 +6148,19 @@ msgstr "Save Changes"
 msgid "Reset Options"
 msgstr "Reset Options"
 
-#: includes/admin/class-admin-bar-menu.php:391
+#: includes/admin/class-admin-bar-menu.php:396
 msgid "Google Rich Results (Mobile)"
 msgstr "Google Rich Results (Mobile)"
 
-#: includes/admin/class-admin-bar-menu.php:393
+#: includes/admin/class-admin-bar-menu.php:398
 msgid "Google Rich Results Test - Googlebot Smartphone"
 msgstr "Google Rich Results Test - Googlebot Smartphone"
 
-#: includes/admin/class-admin-bar-menu.php:397
+#: includes/admin/class-admin-bar-menu.php:402
 msgid "Google Rich Results (Desktop)"
 msgstr "Google Rich Results (Desktop)"
 
-#: includes/admin/class-admin-bar-menu.php:399
+#: includes/admin/class-admin-bar-menu.php:404
 msgid "Google Rich Results Test - Googlebot Desktop"
 msgstr "Google Rich Results Test - Googlebot Desktop"
 
@@ -5619,13 +6241,11 @@ msgid "Organization Logo"
 msgstr "Organisation Logo"
 
 #: includes/modules/schema/shortcode/person.php:41
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Job Title"
 msgstr "Job Title"
 
 #: includes/modules/schema/shortcode/book.php:41
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Format"
 msgstr "Format"
@@ -5682,15 +6302,15 @@ msgstr "Please enter a valid email address."
 msgid "Please enter a valid URL."
 msgstr "Please enter a valid URL."
 
-#: includes/module/class-manager.php:345
+#: includes/module/class-manager.php:346
 msgid "bbPress"
 msgstr "bbPress"
 
-#: includes/module/class-manager.php:346
+#: includes/module/class-manager.php:347
 msgid "Add proper Meta tags to your bbPress forum posts, categories, profiles, etc. Get more options to take control of what search engines see and how they see it."
 msgstr "Add proper Meta tags to your bbPress forum posts, categories, profiles, etc. Get more options to take control of what search engines see and how they see it."
 
-#: includes/module/class-manager.php:350
+#: includes/module/class-manager.php:351
 msgid "Please activate bbPress plugin to use this module."
 msgstr "Please activate the bbPress plugin to use this module."
 
@@ -5902,8 +6522,8 @@ msgstr "Module slug"
 msgid "Module state either on or off"
 msgstr "Module state either on or off"
 
-#: includes/rest/class-rest-helper.php:248
-#: includes/rest/class-rest-helper.php:278 includes/rest/class-shared.php:320
+#: includes/rest/class-rest-helper.php:306
+#: includes/rest/class-rest-helper.php:336 includes/rest/class-shared.php:327
 msgid "Sorry, field is empty which is not allowed."
 msgstr "Sorry, the field is empty, which is not allowed."
 
@@ -6299,6 +6919,7 @@ msgstr "Noindex Empty Category and Tag Archives"
 msgid "Setting empty archives to <code>noindex</code> is useful for avoiding indexation of thin content pages and dilution of page rank. As soon as a post is added, the page is updated to <code>index</code>."
 msgstr "Setting empty archives to <code>noindex</code> is useful for avoiding indexation of thin content pages and dilution of page rank. As soon as a post is added, the page is updated to <code>index</code>."
 
+#: includes/abilities/settings/class-set-link-settings.php:61
 #: includes/settings/general/links.php:70 assets/admin/js/generalSettings.js:1
 msgid "Nofollow Image File Links"
 msgstr "Nofollow Image File Links"
@@ -6307,11 +6928,13 @@ msgstr "Nofollow Image File Links"
 msgid "Automatically add <code>rel=\"nofollow\"</code> attribute for links pointing to external image files. The attribute is dynamically applied when the content is displayed, and the stored content is not changed."
 msgstr "Automatically add the <code>rel=\"nofollow\"</code> attribute for links pointing to external image files. The attribute is dynamically applied when the content is displayed, and the stored content is not changed."
 
+#: includes/abilities/settings/class-set-link-settings.php:51
 #: includes/settings/general/links.php:59 assets/admin/js/generalSettings.js:1
 #: assets/admin/js/wizard.js:1
 msgid "Nofollow External Links"
 msgstr "Nofollow External Links"
 
+#: includes/abilities/redirections/class-subscriber.php:65
 #: includes/module/class-manager.php:132
 #: includes/modules/redirections/class-admin.php:155
 #: includes/modules/redirections/class-admin.php:220
@@ -6338,7 +6961,7 @@ msgstr "Default rich snippet selected when creating a new product."
 msgid "Setup Wizard - Rank Math"
 msgstr "Setup Wizard - Rank Math"
 
-#: includes/admin/importers/class-aioseo.php:67
+#: includes/admin/importers/class-aioseo.php:68
 #: includes/admin/importers/class-plugin-importer.php:150
 #: includes/admin/importers/class-wp-schema-pro.php:603
 #: includes/modules/status/assets/js/importExport.js:1
@@ -6349,7 +6972,7 @@ msgstr "Import Settings"
 msgid "Import plugin settings, global meta, sitemap settings, etc."
 msgstr "Import plugin settings, global meta, sitemap settings, etc."
 
-#: includes/admin/importers/class-aioseo.php:68
+#: includes/admin/importers/class-aioseo.php:69
 #: includes/admin/importers/class-plugin-importer.php:151
 msgid "Import Post Meta"
 msgstr "Import Post Meta"
@@ -6398,11 +7021,11 @@ msgstr "There are no redirections to import."
 msgid "Import all Schema data for Posts, Pages, and custom post types."
 msgstr "Import all Schema data for Posts, Pages, and custom post types."
 
-#: includes/admin/importers/class-aioseo.php:67
+#: includes/admin/importers/class-aioseo.php:68
 msgid "Import AIO SEO plugin settings, global meta, sitemap settings, etc."
 msgstr "Import AIO SEO plugin settings, global meta, sitemap settings, etc."
 
-#: includes/module/class-manager.php:334
+#: includes/module/class-manager.php:335
 msgid "AMP"
 msgstr "AMP"
 
@@ -6432,6 +7055,7 @@ msgstr "Delete"
 msgid "Search Console"
 msgstr "Search Console"
 
+#: includes/abilities/monitor-404/class-subscriber.php:65
 #: includes/module/class-manager.php:114
 #: includes/modules/404-monitor/class-admin.php:143
 #: includes/modules/404-monitor/class-admin.php:197
@@ -6463,6 +7087,7 @@ msgstr "None (Click here to set one)"
 msgid "Google does not allow Person as the Publisher for articles. Organization will be used instead. You can read more about this <a href=\"%s\" target=\"_blank\">here</a>."
 msgstr "Google does not allow Person as the Publisher for articles. Organisation will be used instead. You can read more about this <a href=\"%s\" target=\"_blank\">here</a>."
 
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:75
 #: includes/settings/titles/post-types.php:212
 #: assets/admin/js/titleSettings.js:1 assets/admin/js/wizard.js:1
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
@@ -6487,7 +7112,7 @@ msgstr "The plugin was deactivated successfully."
 msgid "Imported post meta for posts %1$s - %2$s out of %3$s "
 msgstr "Imported post meta for posts %1$s - %2$s out of %3$s "
 
-#: includes/admin/importers/class-aioseo.php:68
+#: includes/admin/importers/class-aioseo.php:69
 msgid "Import meta information of your posts/pages like the titles, descriptions, robots meta, OpenGraph info, etc."
 msgstr "Import meta information of your posts/pages like the titles, descriptions, robots meta, OpenGraph info, etc."
 
@@ -6519,7 +7144,7 @@ msgstr "Blog Post"
 msgid "News Article"
 msgstr "News Article"
 
-#: includes/admin/importers/class-aioseo.php:73
+#: includes/admin/importers/class-aioseo.php:75
 #: includes/admin/importers/class-plugin-importer.php:152
 msgid "Import Term Meta"
 msgstr "Import Term Meta"
@@ -6528,7 +7153,7 @@ msgstr "Import Term Meta"
 msgid "Import data like category, tag, and CPT meta data from SEO."
 msgstr "Import data like category, tag, and CPT meta data from SEO."
 
-#: includes/admin/importers/class-aioseo.php:69
+#: includes/admin/importers/class-aioseo.php:70
 #: includes/admin/importers/class-plugin-importer.php:153
 msgid "Import Author Meta"
 msgstr "Import Author Meta"
@@ -6537,12 +7162,12 @@ msgstr "Import Author Meta"
 msgid "Import meta information like titles, descriptions, focus keyword, robots meta, etc., of your author archive pages."
 msgstr "Import meta information like titles, descriptions, focus keyword, robots meta, etc., of your author archive pages."
 
-#: includes/admin/importers/class-aioseo.php:77
+#: includes/admin/importers/class-aioseo.php:79
 #: includes/admin/importers/class-plugin-importer.php:154
 msgid "Import Redirections"
 msgstr "Import Redirections"
 
-#: rank-math.php:521 assets/admin/js/wizard.js:1
+#: rank-math.php:528 assets/admin/js/wizard.js:1
 msgid "Getting Started"
 msgstr "Getting Started"
 
@@ -6557,7 +7182,6 @@ msgstr "Getting Started"
 #: assets/admin/js/rank-math-app.js:1
 #: includes/modules/analytics/assets/js/admin-bar.js:1
 #: includes/modules/content-ai/assets/js/content-ai-media.js:1
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 #: includes/modules/links/assets/js/links-page.js:1
 msgid "Learn More"
@@ -6603,7 +7227,7 @@ msgstr "Learn More"
 #: assets/admin/js/settings.js:1 assets/admin/js/titleSettings.js:1
 #: assets/admin/js/wizard.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:292
+#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:306
 #: includes/modules/redirections/assets/js/redirections.js:1
 #: includes/modules/role-manager/assets/js/role-manager.js:1
 msgid "Learn more"
@@ -6621,40 +7245,40 @@ msgstr "Learn more"
 msgid "Learn more."
 msgstr "Learn more."
 
-#: includes/admin/class-admin-bar-menu.php:275
-#: includes/admin/class-admin-bar-menu.php:290
+#: includes/admin/class-admin-bar-menu.php:280
+#: includes/admin/class-admin-bar-menu.php:295
 msgid "Edit SEO settings for this archive page"
 msgstr "Edit SEO settings for this archive page"
 
-#: includes/admin/class-admin-bar-menu.php:288
+#: includes/admin/class-admin-bar-menu.php:293
 msgid "SEO Settings for Date Archives"
 msgstr "SEO Settings for Date Archives"
 
-#: includes/admin/class-admin-bar-menu.php:303
+#: includes/admin/class-admin-bar-menu.php:308
 msgid "SEO Settings for Search Page"
 msgstr "SEO Settings for Search Page"
 
-#: includes/admin/class-admin-bar-menu.php:305
+#: includes/admin/class-admin-bar-menu.php:310
 msgid "Edit SEO settings for the search results page"
 msgstr "Edit SEO settings for the search results page"
 
-#: includes/admin/class-admin-bar-menu.php:318
+#: includes/admin/class-admin-bar-menu.php:323
 msgid "Mark this page"
 msgstr "Mark this page"
 
-#: includes/admin/class-admin-bar-menu.php:335
+#: includes/admin/class-admin-bar-menu.php:340
 msgid "As Pillar Content"
 msgstr "As Pillar Content"
 
-#: includes/admin/class-admin-bar-menu.php:349
+#: includes/admin/class-admin-bar-menu.php:354
 msgid "As NoIndex"
 msgstr "As NoIndex"
 
-#: includes/admin/class-admin-bar-menu.php:360
+#: includes/admin/class-admin-bar-menu.php:365
 msgid "As NoFollow"
 msgstr "As NoFollow"
 
-#: includes/admin/class-admin-bar-menu.php:376
+#: includes/admin/class-admin-bar-menu.php:381
 msgid "External Tools"
 msgstr "External Tools"
 
@@ -6698,10 +7322,11 @@ msgstr "Records the URLs on which visitors & search engines run into 404 Errors.
 msgid "Link Counter"
 msgstr "Link Counter"
 
+#: includes/abilities/settings/class-subscriber.php:65
 #: includes/module/class-module.php:105
 #: includes/modules/404-monitor/class-admin.php:222
 #: includes/modules/instant-indexing/class-instant-indexing.php:222
-#: includes/modules/redirections/class-admin.php:319 rank-math.php:458
+#: includes/modules/redirections/class-admin.php:319 rank-math.php:465
 #: assets/admin/js/instantIndexingSettings.js:1 assets/admin/js/modules.js:1
 #: assets/admin/js/rank-math-app.js:1
 #: includes/modules/schema/blocks/schema/assets/js/index.js:1
@@ -6713,13 +7338,13 @@ msgstr "Settings"
 
 #: includes/modules/redirections/class-table.php:338
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/BrandDetail/BrandHeader.js:88
+#: includes/modules/ai-visibility/assets/src/BrandDetail/BrandHeader.js:93
 msgid "Active"
 msgstr "Active"
 
 #: includes/modules/redirections/class-table.php:339
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/BrandDetail/BrandHeader.js:88
+#: includes/modules/ai-visibility/assets/src/BrandDetail/BrandHeader.js:93
 msgid "Inactive"
 msgstr "Inactive"
 
@@ -6727,7 +7352,7 @@ msgstr "Inactive"
 msgid "Items per page"
 msgstr "Items per page"
 
-#: rank-math.php:522
+#: rank-math.php:529
 msgid "Documentation"
 msgstr "Documentation"
 
@@ -6903,24 +7528,25 @@ msgstr "Current Time (advanced)"
 msgid "Rank Math Knowledge Base"
 msgstr "Rank Math Knowledge Base"
 
+#: includes/abilities/sitemap/class-subscriber.php:65
 #: includes/module/class-manager.php:150
 #: includes/modules/sitemap/sitemap-xsl.php:259 assets/admin/js/wizard.js:1
 msgid "Sitemap"
 msgstr "Sitemap"
 
-#: includes/admin/class-admin-bar-menu.php:385
+#: includes/admin/class-admin-bar-menu.php:390
 msgid "Google PageSpeed"
 msgstr "Google PageSpeed"
 
-#: includes/admin/class-admin-bar-menu.php:387
+#: includes/admin/class-admin-bar-menu.php:392
 msgid "Google PageSpeed Insights"
 msgstr "Google PageSpeed Insights"
 
-#: includes/admin/class-admin-bar-menu.php:403
+#: includes/admin/class-admin-bar-menu.php:408
 msgid "Facebook Debugger"
 msgstr "Facebook Debugger"
 
-#: includes/admin/class-admin-bar-menu.php:405
+#: includes/admin/class-admin-bar-menu.php:410
 msgid "Facebook Sharing Debugger"
 msgstr "Facebook Sharing Debugger"
 
@@ -6937,7 +7563,6 @@ msgid "Page %1$d of %2$d"
 msgstr "Page %1$d of %2$d"
 
 #: includes/replace-variables/class-post-variables.php:34
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 #: includes/modules/links/assets/js/links-page.js:1
 #: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:132
@@ -6956,6 +7581,7 @@ msgstr "Post Title of parent page"
 msgid "Title of the parent page of the current post/page"
 msgstr "Title of the parent page of the current post/page"
 
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:56
 #: includes/replace-variables/class-basic-variables.php:58
 #: includes/settings/general/breadcrumbs.php:37
 #: includes/settings/titles/global.php:51 assets/admin/js/generalSettings.js:1
@@ -7015,10 +7641,10 @@ msgstr "Post ID"
 msgid "ID of the current post/page"
 msgstr "ID of the current post/page"
 
+#: includes/abilities/settings/class-set-homepage-seo.php:64
 #: includes/admin/class-post-columns.php:295
 #: includes/replace-variables/class-advanced-variables.php:44
 #: assets/admin/js/rank-math-app.js:1
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Focus Keyword"
 msgstr "Focus Keyword"
@@ -7171,7 +7797,6 @@ msgid "Music"
 msgstr "Music"
 
 #: includes/helpers/class-choices.php:445
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
@@ -7218,16 +7843,18 @@ msgstr "Sitemaps"
 msgid "Automatically add <code>rel=\"nofollow\"</code> attribute for external links appearing in your posts, pages, and other post types. The attribute is dynamically applied when the content is displayed, and the stored content is not changed."
 msgstr "Automatically add the <code>rel=\"nofollow\"</code> attribute for external links appearing in your posts, pages, and other post types. The attribute is dynamically applied when the content is displayed, and the stored content is not changed."
 
+#: includes/abilities/settings/class-set-link-settings.php:56
 #: includes/settings/general/links.php:109 assets/admin/js/generalSettings.js:1
 #: assets/admin/js/wizard.js:1
 msgid "Open External Links in New Tab/Window"
 msgstr "Open External Links in a New Tab/Window"
 
+#: includes/abilities/settings/class-set-link-settings.php:76
 #: includes/settings/general/links.php:18 assets/admin/js/generalSettings.js:1
 msgid "Strip Category Base"
 msgstr "Strip Category Base"
 
-#: includes/module/class-manager.php:257
+#: includes/module/class-manager.php:258
 #: includes/modules/role-manager/class-capability-manager.php:62
 #: includes/modules/role-manager/class-role-manager.php:60
 #: assets/admin/js/components.js:1 assets/admin/js/wizard.js:1
@@ -7239,7 +7866,7 @@ msgstr "Role Manager"
 #: includes/modules/redirections/views/main.php:45
 #: assets/admin/js/components.js:1 assets/admin/js/wizard.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/Analyses/AnalysesFilterBar.js:108
+#: includes/modules/ai-visibility/assets/src/Analyses/AnalysesFilterBar.js:109
 msgid "Search"
 msgstr "Search"
 
@@ -7248,26 +7875,26 @@ msgstr "Search"
 msgid "Products tagged &ldquo;%s&rdquo;"
 msgstr "Products tagged &ldquo;%s&rdquo;"
 
-#: includes/admin/class-admin-bar-menu.php:177
+#: includes/admin/class-admin-bar-menu.php:182
 msgid "Rank Math Dashboard"
 msgstr "Rank Math Dashboard"
 
-#: includes/admin/class-admin-bar-menu.php:222
+#: includes/admin/class-admin-bar-menu.php:227
 msgid "Homepage SEO"
 msgstr "Homepage SEO"
 
-#: includes/admin/class-admin-bar-menu.php:224
+#: includes/admin/class-admin-bar-menu.php:229
 msgid "Edit Homepage SEO Settings"
 msgstr "Edit Homepage SEO Settings"
 
 #. translators: Post Type Singular Name
 #. translators: Taxonomy Singular Name
-#: includes/admin/class-admin-bar-menu.php:250
-#: includes/admin/class-admin-bar-menu.php:273
+#: includes/admin/class-admin-bar-menu.php:255
+#: includes/admin/class-admin-bar-menu.php:278
 msgid "SEO Settings for %s"
 msgstr "SEO Settings for %s"
 
-#: includes/admin/class-admin-bar-menu.php:252
+#: includes/admin/class-admin-bar-menu.php:257
 msgid "Edit default SEO settings for this post type"
 msgstr "Edit default SEO settings for this post type"
 
@@ -7502,7 +8129,7 @@ msgstr "Summary Card with Large Image"
 msgid "Summary Card"
 msgstr "Summary Card"
 
-#: includes/module/class-manager.php:267
+#: includes/module/class-manager.php:268
 msgid "Connect Rank Math with Google Search Console to see the most important information from Google directly in your WordPress dashboard."
 msgstr "Connect Rank Math with Google Search Console to see the most important information from Google directly in your WordPress dashboard."
 
@@ -7510,17 +8137,17 @@ msgstr "Connect Rank Math with Google Search Console to see the most important i
 msgid "SEO Analysis"
 msgstr "SEO Analysis"
 
-#: includes/module/class-manager.php:338
+#: includes/module/class-manager.php:339
 msgid "AMP plugin"
 msgstr "AMP plugin"
 
-#: includes/module/class-manager.php:364
+#: includes/module/class-manager.php:365
 #: includes/modules/woocommerce/class-admin.php:75
 #: assets/admin/js/generalSettings.js:1
 msgid "WooCommerce"
 msgstr "WooCommerce"
 
-#: includes/module/class-manager.php:370
+#: includes/module/class-manager.php:371
 msgid "Please activate WooCommerce plugin to use this module."
 msgstr "Please activate the WooCommerce plugin to use this module."
 
@@ -7532,6 +8159,7 @@ msgstr "On-Page Social Settings"
 msgid "Top Admin Bar"
 msgstr "Top Admin Bar"
 
+#: includes/abilities/settings/class-set-post-type-seo-settings.php:89
 #: includes/settings/titles/global.php:17 assets/admin/js/rank-math-app.js:1
 #: assets/admin/js/titleSettings.js:1
 msgid "Robots Meta"
@@ -7631,7 +8259,7 @@ msgstr "Choose whether the site represents a person or an organisation."
 
 #: includes/modules/schema/shortcode/book.php:36
 #: includes/modules/sitemap/sitemap-xsl.php:170
-#: includes/opengraph/class-slack.php:370
+#: includes/opengraph/class-slack.php:376
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
 msgid "Name"
@@ -7662,7 +8290,6 @@ msgstr "URL of the item."
 #: includes/modules/local-seo/views/titles-options.php:94
 #: includes/modules/schema/shortcode/person.php:20
 #: assets/admin/js/titleSettings.js:1
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
@@ -7804,7 +8431,7 @@ msgstr "%d redirection(s) was/were successfully deleted."
 #: includes/modules/local-seo/views/titles-options.php:252
 #: assets/admin/js/titleSettings.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:449
+#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:492
 msgid "Add"
 msgstr "Add"
 
@@ -7856,7 +8483,6 @@ msgstr "Move to Bin"
 #: includes/modules/redirections/class-table.php:337
 #: assets/admin/js/components.js:1 assets/admin/js/instantIndexingSettings.js:1
 #: assets/admin/js/rank-math-app.js:1
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 #: includes/modules/links/assets/js/links-page.js:1
 #: includes/modules/links/assets/src/features/links-page/tabs/Links.js:160
@@ -8052,13 +8678,13 @@ msgid "Baggage Tracking"
 msgstr "Baggage Tracking"
 
 #: includes/modules/redirections/views/options.php:51
-#: includes/rest/class-shared.php:291 assets/admin/js/generalSettings.js:1
+#: includes/rest/class-shared.php:298 assets/admin/js/generalSettings.js:1
 #: assets/admin/js/rank-math-app.js:1
 #: includes/modules/redirections/assets/js/redirections.js:1
 msgid "Redirection Type"
 msgstr "Redirection Type"
 
-#: includes/module/class-manager.php:316 assets/admin/js/components.js:1
+#: includes/module/class-manager.php:317 assets/admin/js/components.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
 #: includes/modules/ai-visibility/assets/src/BrandDetail/QueriesTable.js:155
 #: includes/modules/analytics/assets/js/stats.js:1
@@ -8069,7 +8695,7 @@ msgstr "Status"
 #: includes/modules/redirections/class-table.php:251
 #: includes/modules/redirections/class-table.php:312
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/Dashboard/index.js:344
+#: includes/modules/ai-visibility/assets/src/Dashboard/index.js:365
 #: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:65
 #: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:71
 #: includes/modules/redirections/assets/js/redirections.js:1
@@ -8079,7 +8705,7 @@ msgstr "Activate"
 #: includes/modules/redirections/class-table.php:250
 #: includes/modules/redirections/class-table.php:313
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/Dashboard/index.js:345
+#: includes/modules/ai-visibility/assets/src/Dashboard/index.js:366
 #: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:65
 #: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:76
 #: includes/modules/redirections/assets/js/redirections.js:1
@@ -8465,7 +9091,7 @@ msgstr "Total Impressions"
 msgid "Average Position"
 msgstr "Average Position"
 
-#: includes/opengraph/class-slack.php:338
+#: includes/opengraph/class-slack.php:344
 msgid "Items"
 msgstr "Items"
 
@@ -8610,6 +9236,7 @@ msgstr "%s archives"
 msgid "Include the Featured Image too, even if it does not appear directly in the post content."
 msgstr "Include the Featured Image too, even if it does not appear directly in the post content."
 
+#: includes/abilities/settings/class-set-sitemap-settings.php:68
 #: includes/modules/sitemap/settings/general.php:63
 #: assets/admin/js/sitemapSettings.js:1
 msgid "Exclude Posts"
@@ -8620,6 +9247,7 @@ msgstr "Exclude Posts"
 msgid "Enter post IDs of posts you want to exclude from the sitemap, separated by commas. This option **applies** to all posts types including posts, pages, and custom post types."
 msgstr "Enter post IDs of posts you want to exclude from the sitemap, separated by commas. This option **applies** to all post types including posts, pages, and custom post types."
 
+#: includes/abilities/settings/class-set-sitemap-settings.php:73
 #: includes/modules/sitemap/settings/general.php:73
 #: assets/admin/js/sitemapSettings.js:1
 msgid "Exclude Terms"
@@ -8694,6 +9322,7 @@ msgstr "default: /product-category/accessories/action-figures/ - changed: /produ
 msgid "Prefix for the breadcrumb path."
 msgstr "Prefix for the breadcrumb path."
 
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:81
 #: includes/settings/general/breadcrumbs.php:95
 #: assets/admin/js/generalSettings.js:1
 msgid "Archive Format"
@@ -8704,6 +9333,7 @@ msgstr "Archive Format"
 msgid "Format the label used for archive pages."
 msgstr "Format the label used for archive pages."
 
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:86
 #: includes/settings/general/breadcrumbs.php:107
 #: assets/admin/js/generalSettings.js:1
 msgid "Search Results Format"
@@ -8724,6 +9354,7 @@ msgstr "404 label"
 msgid "Label used for 404 error item in breadcrumbs."
 msgstr "Label used for 404 error item in breadcrumbs."
 
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:96
 #: includes/settings/general/breadcrumbs.php:130
 #: assets/admin/js/generalSettings.js:1
 msgid "Hide Post Title"
@@ -8734,6 +9365,7 @@ msgstr "Hide Post Title"
 msgid "Hide Post title from Breadcrumb."
 msgstr "Hide Post title from Breadcrumb."
 
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:101
 #: includes/settings/general/breadcrumbs.php:141
 #: assets/admin/js/generalSettings.js:1
 msgid "Show Category(s)"
@@ -8782,6 +9414,7 @@ msgstr "Redirections Manager"
 msgid "Please enable Redirections module."
 msgstr "Please enable Redirections module."
 
+#: includes/abilities/settings/class-set-link-settings.php:81
 #: includes/settings/general/links.php:36 assets/admin/js/generalSettings.js:1
 msgid "Redirect Attachments"
 msgstr "Redirect Attachments"
@@ -8866,6 +9499,24 @@ msgstr "Fallback Behaviour"
 msgid "Salary Currency"
 msgstr "Salary Currency"
 
+#: includes/modules/ai-visibility/Admin/class-admin.php:145
+#: includes/modules/schema/assets/js/schema-gutenberg.js:1
+#: includes/modules/schema/assets/js/schema-template.js:1
+msgid "Monthly"
+msgstr "Monthly"
+
+#: includes/modules/ai-visibility/Admin/class-admin.php:141
+#: includes/modules/schema/assets/js/schema-gutenberg.js:1
+#: includes/modules/schema/assets/js/schema-template.js:1
+msgid "Weekly"
+msgstr "Weekly"
+
+#: includes/modules/ai-visibility/Admin/class-admin.php:137
+#: includes/modules/schema/assets/js/schema-gutenberg.js:1
+#: includes/modules/schema/assets/js/schema-template.js:1
+msgid "Daily"
+msgstr "Daily"
+
 #: includes/modules/schema/shortcode/jobposting.php:41
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
@@ -8881,7 +9532,6 @@ msgid "Product In-Stock"
 msgstr "Product In Stock"
 
 #: includes/modules/schema/shortcode/recipe.php:27
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
@@ -9119,6 +9769,7 @@ msgstr "Product's short description."
 msgid "If category is a child category, show all ancestor categories."
 msgstr "If the category is a child category, show all ancestor categories."
 
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:106
 #: includes/settings/general/breadcrumbs.php:152
 #: assets/admin/js/generalSettings.js:1
 msgid "Hide Taxonomy Name"
@@ -9149,6 +9800,11 @@ msgstr "I understand the risks and I want to edit the file"
 msgid "Add <code>alt</code> attributes for <code>images</code> without <code>alt</code> attributes automatically. The attribute is dynamically applied when the content is displayed, and the stored content is not changed."
 msgstr "Add <code>alt</code> attributes for <code>images</code> without <code>alt</code> attributes automatically. The attribute is dynamically applied when the content is displayed, and the stored content is not changed."
 
+#: includes/settings/general/htaccess.php:52
+#: assets/admin/js/generalSettings.js:1
+msgid "Be careful when editing the htaccess file, it is easy to make mistakes and break your site. If that happens, you can restore the file to its state <strong>before the last edit</strong> by replacing the htaccess file with the backup copy created by Rank Math in the same directory (<em>.htaccess_back_xxxxxx</em>) using an FTP client."
+msgstr "Be careful when editing the .htaccess file, it is easy to make mistakes and break your site. If that happens, you can restore the file to its state <strong>before the last edit</strong> by replacing the .htaccess file with the backup copy created by Rank Math in the same directory (<em>.htaccess_back_xxxxxx</em>), using an FTP client."
+
 #: includes/modules/image-seo/options.php:25
 #: assets/admin/js/generalSettings.js:1
 msgid "Alt attribute format"
@@ -9167,11 +9823,6 @@ msgstr "Automatically add <code>target=\"_blank\"</code> attribute for external 
 #: assets/admin/js/generalSettings.js:1
 msgid "Usage Tracking"
 msgstr "Usage Tracking"
-
-#: includes/settings/general/htaccess.php:52
-#: assets/admin/js/generalSettings.js:1
-msgid "Be careful when editing the htaccess file, it is easy to make mistakes and break your site. If that happens, you can restore the file to its state <strong>before the last edit</strong> by replacing the htaccess file with the backup copy created by Rank Math in the same directory (<em>.htaccess_back_xxxxxx</em>) using an FTP client."
-msgstr "Be careful when editing the .htaccess file, it is easy to make mistakes and break your site. If that happens, you can restore the file to its state <strong>before the last edit</strong> by replacing the .htaccess file with the backup copy created by Rank Math in the same directory (<em>.htaccess_back_xxxxxx</em>), using an FTP client."
 
 #: includes/settings/general/others.php:116
 #: assets/admin/js/generalSettings.js:1
@@ -9233,7 +9884,7 @@ msgstr "Yandex.Webmaster Page"
 msgid "Course Provider"
 msgstr "Course Provider"
 
-#: includes/admin/class-admin-bar-menu.php:243
+#: includes/admin/class-admin-bar-menu.php:248
 msgid "Pages"
 msgstr "Pages"
 
@@ -9256,10 +9907,6 @@ msgstr "You can integrate the Google Search Console with Rank Math in the <a hre
 msgid "Read <a href=\"%1$s\" target=\"_blank\">this article</a> for detailed instructions on setting up your Google Webmaster account and getting Rank Math to work with the Google Search Console."
 msgstr "Read <a href=\"%1$s\" target=\"_blank\">this article</a> for detailed instructions on setting up your Google Webmaster account and getting Rank Math to work with the Google Search Console."
 
-#: includes/modules/seo-analysis/seo-analysis-tests.php:227
-msgid "Your Site Tagline is set to the default value <em>Just another WordPress site</em>."
-msgstr "Your Site Tagline is set to the default value <em>Just another WordPress site</em>."
-
 #: includes/modules/seo-analysis/seo-analysis-tests.php:134
 msgid "XML sitemaps are a special type of text file that tells search engines about the structure of your site. They're a list of all the resources (pages and files) you would like the search engine to index. You can assign different priorities, so certain pages will be crawled first. Before XML sitemaps, search engines were limited to indexing the content they could find by following links. That's still an important feature for search engine spiders, but XML sitemaps have made it easier for content creators and search engines to collaborate."
 msgstr "XML sitemaps are a special type of text file that tells search engines about the structure of your site. They're a list of all the resources (pages and files) you would like the search engine to index. You can assign different priorities, so certain pages will be crawled first. Before XML sitemaps, search engines were limited to indexing the content they could find by following links. That's still an important feature for search engine spiders, but XML sitemaps have made it easier for content creators and search engines to collaborate."
@@ -9267,6 +9914,10 @@ msgstr "XML sitemaps are a special type of text file that tells search engines a
 #: includes/modules/seo-analysis/seo-analysis-tests.php:135
 msgid "If you don't have an XML sitemap, the best option is to install a plugin that creates sitemaps for you. That way you'll know the sitemap will always be up-to-date. Plugins can also automatically ping the search engines when the XML file is updated. The Rank Math WordPress plugin gives you complete control over your site's XML sitemaps. You can control the settings for each page as you write or edit it, and Rank Math will ping Google as soon as you submit your edits. This results in fast crawls and indexing."
 msgstr "If you don't have an XML sitemap, the best option is to install a plugin that creates sitemaps for you. That way you'll know the sitemap will always be up to date. Plugins can also automatically ping the search engines when the XML file is updated. The Rank Math WordPress plugin gives you complete control over your site's XML sitemaps. You can control the settings for each page as you write or edit it, and Rank Math will ping Google as soon as you submit your edits. This results in fast crawls and indexing."
+
+#: includes/modules/seo-analysis/seo-analysis-tests.php:227
+msgid "Your Site Tagline is set to the default value <em>Just another WordPress site</em>."
+msgstr "Your Site Tagline is set to the default value <em>Just another WordPress site</em>."
 
 #: includes/modules/seo-analysis/seo-analysis-tests.php:233
 msgid "Your Site Tagline is set to a custom value."
@@ -9330,6 +9981,7 @@ msgstr "Homepage label"
 msgid "Label used for homepage link (first item) in breadcrumbs."
 msgstr "Label used for the homepage link (first item) in breadcrumbs."
 
+#: includes/abilities/settings/class-set-breadcrumb-settings.php:76
 #: includes/settings/general/breadcrumbs.php:85
 #: assets/admin/js/generalSettings.js:1
 msgid "Prefix Breadcrumb"
@@ -9463,16 +10115,19 @@ msgstr "Exclude Users"
 msgid "Add user IDs, separated by commas, to exclude them from the sitemap."
 msgstr "Add user IDs, separated by commas, to exclude them from the sitemap."
 
+#: includes/abilities/settings/class-set-sitemap-settings.php:53
 #: includes/modules/sitemap/settings/general.php:30
 #: assets/admin/js/sitemapSettings.js:1
 msgid "Links Per Sitemap"
 msgstr "Links Per Sitemap"
 
+#: includes/abilities/settings/class-set-sitemap-settings.php:54
 #: includes/modules/sitemap/settings/general.php:31
 #: assets/admin/js/sitemapSettings.js:1
 msgid "Max number of links on each sitemap page."
 msgstr "Maximum number of links on each sitemap page."
 
+#: includes/abilities/settings/class-set-sitemap-settings.php:58
 #: includes/modules/sitemap/settings/general.php:42
 #: assets/admin/js/sitemapSettings.js:1
 msgid "Images in Sitemaps"
@@ -9483,6 +10138,7 @@ msgstr "Images in Sitemaps"
 msgid "Include reference to images from the post content in sitemaps. This helps search engines index the important images on your pages."
 msgstr "Include the reference to images from the post content in sitemaps. This helps search engines index the important images on your pages."
 
+#: includes/abilities/settings/class-set-sitemap-settings.php:63
 #: includes/modules/sitemap/settings/general.php:52
 #: assets/admin/js/sitemapSettings.js:1
 msgid "Include Featured Images"
@@ -9579,6 +10235,7 @@ msgstr "404 Title"
 msgid "Title tag on 404 Not Found error page."
 msgstr "Title tag on 404 Not Found error page."
 
+#: includes/abilities/settings/class-set-link-settings.php:66
 #: includes/settings/general/links.php:81 assets/admin/js/generalSettings.js:1
 msgid "Nofollow Domains"
 msgstr "Nofollow Domains"
@@ -9587,6 +10244,7 @@ msgstr "Nofollow Domains"
 msgid "Only add <code>nofollow</code> attribute for the link if target domain is in this list. Add one per line. Leave empty to apply nofollow for <strong>ALL</strong> external domains."
 msgstr "Only add a <code>nofollow</code> attribute for the link if the target domain is in this list. Add one per line. Leave empty to apply nofollow for <strong>ALL</strong> external domains."
 
+#: includes/abilities/settings/class-set-link-settings.php:71
 #: includes/settings/general/links.php:95 assets/admin/js/generalSettings.js:1
 msgid "Nofollow Exclude Domains"
 msgstr "Nofollow Exclude Domains"
@@ -9680,7 +10338,7 @@ msgstr "<strong>SEO Notice:</strong> A previously published %1$s has been moved 
 
 #: includes/abilities/analytics/class-subscriber.php:65
 #: includes/admin/wizard/views/search-console-ui.php:192
-#: includes/module/class-manager.php:266
+#: includes/module/class-manager.php:267
 #: includes/modules/analytics/class-analytics-common.php:75
 #: includes/modules/analytics/class-analytics-common.php:146
 #: includes/modules/analytics/class-analytics.php:76
@@ -9742,7 +10400,7 @@ msgstr "Please keep only one SEO plugin active, otherwise, you might lose your r
 msgid "Please keep only one Sitemap plugin active, otherwise, you might lose your rankings and traffic."
 msgstr "Please keep only one Sitemap plugin active, otherwise, you might lose your rankings and traffic."
 
-#: includes/module/class-manager.php:277
+#: includes/module/class-manager.php:278
 msgid "Let Rank Math analyze your website and your website's content using 28+ different tests to provide tailor-made SEO Analysis to you."
 msgstr "Let Rank Math analyse your website and your website's content using 28+ different tests to provide tailor-made SEO Analysis to you."
 
@@ -9790,7 +10448,7 @@ msgstr "Update data manually"
 #: assets/admin/js/generalSettings.js:1 assets/admin/js/rank-math-app.js:1
 #: assets/admin/js/titleSettings.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/BrandDetail/BrandHeader.js:105
+#: includes/modules/ai-visibility/assets/src/BrandDetail/BrandHeader.js:110
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
 msgid "Description"
@@ -9899,11 +10557,11 @@ msgstr "Cleanup of %s data successfully done."
 msgid "Cleanup of %s data failed."
 msgstr "Cleanup of %s data failed."
 
-#: includes/modules/status/class-import-export-settings.php:65
+#: includes/modules/status/class-import-export-settings.php:66
 msgid "Settings successfully imported. Your old configuration has been saved as a backup."
 msgstr "Settings successfully imported. Your old configuration has been saved as a backup."
 
-#: includes/modules/status/class-import-export-settings.php:70
+#: includes/modules/status/class-import-export-settings.php:71
 msgid "No settings found to be imported."
 msgstr "No settings found to be imported."
 
@@ -9913,7 +10571,7 @@ msgstr "The featured image should be at least 200 by 200 pixels to be picked up 
 
 #. Plugin Name of the plugin
 #. Author of the plugin
-#: rank-math.php includes/admin/class-admin-bar-menu.php:175
+#: rank-math.php includes/admin/class-admin-bar-menu.php:180
 #: includes/admin/class-admin-menu.php:122
 #: includes/admin/class-registration.php:212
 #: includes/admin/metabox/class-metabox.php:163
@@ -9945,7 +10603,7 @@ msgstr "Advanced"
 #: includes/admin/class-post-columns.php:331
 #: includes/admin/class-post-columns.php:344 assets/admin/js/post-list.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
-#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:433
+#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:476
 #: includes/modules/ai-visibility/assets/src/shared/Modals/ConfirmModal.js:39
 #: includes/modules/redirections/assets/js/redirections.js:1
 msgid "Cancel"
@@ -9971,10 +10629,10 @@ msgstr "Articles noindexed"
 msgid "SEO Details"
 msgstr "SEO Details"
 
+#: includes/abilities/settings/class-set-homepage-seo.php:54
 #: includes/admin/class-post-columns.php:131
 #: includes/admin/class-post-columns.php:178
 #: includes/replace-variables/class-post-variables.php:81
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "SEO Title"
 msgstr "SEO Title"
@@ -9988,8 +10646,8 @@ msgstr "This field is required."
 msgid "Help &amp; Support"
 msgstr "Help &amp; Support"
 
-#: includes/admin/class-admin-bar-menu.php:185
-#: includes/admin/class-admin-bar-menu.php:187
+#: includes/admin/class-admin-bar-menu.php:190
+#: includes/admin/class-admin-bar-menu.php:192
 #: includes/admin/class-admin-breadcrumbs.php:33
 #: includes/admin/class-admin-menu.php:138 assets/admin/js/components.js:1
 #: assets/admin/js/modules.js:1
@@ -10007,6 +10665,7 @@ msgstr "Twitter username (without @)"
 msgid "Facebook profile URL"
 msgstr "Facebook profile URL"
 
+#: includes/abilities/settings/class-set-module-status.php:54
 #: includes/admin/class-admin-breadcrumbs.php:45
 #: includes/admin/class-admin-dashboard-nav.php:97
 #: assets/admin/js/components.js:1 assets/admin/js/modules.js:1
@@ -10022,7 +10681,7 @@ msgstr "Help"
 
 #: includes/admin/class-admin-dashboard-nav.php:111
 #: includes/admin/class-setup-wizard.php:68
-#: includes/admin/class-setup-wizard.php:69 rank-math.php:459 rank-math.php:464
+#: includes/admin/class-setup-wizard.php:69 rank-math.php:466 rank-math.php:471
 #: assets/admin/js/modules.js:1
 msgid "Setup Wizard"
 msgstr "Setup Wizard"

@@ -106,7 +106,7 @@ class BWFAN_API_Exporter_Controller extends BWFAN_API_Controller {
 			flush();
 
 			// Read and output the file
-			readfile( $real_path );
+			readfile( $real_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- streams the file to the response; WP_Filesystem has no streaming read
 			exit;
 		}
 		wp_die();

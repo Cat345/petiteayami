@@ -10,7 +10,7 @@ use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
 class Tracker implements Hookable {
 
 	const PROGRESS_BAR_COUNT = 'method_free_shipping_progress_bar_count';
-	const NOTICE_TEXT_COUNT = 'method_free_shipping_notice_text_count';
+	const NOTICE_TEXT_COUNT  = 'method_free_shipping_notice_text_count';
 
 	public function hooks() {
 		add_filter( 'flexible-shipping/tracker/method-settings', [ $this, 'append_free_shipping_data_to_tracker_data' ], 10, 2 );
@@ -25,17 +25,16 @@ class Tracker implements Hookable {
 			$data[ self::PROGRESS_BAR_COUNT ] = 0;
 		}
 		if ( isset( $shipping_method_settings[ ProgressBarSettings::FIELD_NAME ] ) && $shipping_method_settings[ ProgressBarSettings::FIELD_NAME ] === 'yes' ) {
-			$data[ self::PROGRESS_BAR_COUNT ]++;
+			++$data[ self::PROGRESS_BAR_COUNT ];
 		}
 
 		if ( ! isset( $data[ self::NOTICE_TEXT_COUNT ] ) ) {
 			$data[ self::NOTICE_TEXT_COUNT ] = 0;
 		}
 		if ( isset( $shipping_method_settings[ NoticeTextSettings::FIELD_NAME ] ) && $shipping_method_settings[ NoticeTextSettings::FIELD_NAME ] !== '' ) {
-			$data[ self::NOTICE_TEXT_COUNT ]++;
+			++$data[ self::NOTICE_TEXT_COUNT ];
 		}
 
 		return $data;
 	}
-
 }

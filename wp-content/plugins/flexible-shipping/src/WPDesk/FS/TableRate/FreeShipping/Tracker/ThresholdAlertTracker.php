@@ -26,7 +26,12 @@ final class ThresholdAlertTracker implements Hookable {
 	const PRIORITY_AFTER_FLEXIBLE_SHIPPING_TRACKER = \WPDesk_Flexible_Shipping_Tracker::TRACKER_DATA_FILTER_PRIORITY + 1;
 
 	public function hooks(): void {
-		add_action( self::DISPLAYED_ACTION, [ $this, 'mark_alert_as_displayed' ] );
+		add_action(
+			self::DISPLAYED_ACTION,
+			function (): void {
+				$this->mark_alert_as_displayed();
+			}
+		);
 		add_filter( 'wpdesk_tracker_data', [ $this, 'append_tracker_data' ], self::PRIORITY_AFTER_FLEXIBLE_SHIPPING_TRACKER );
 	}
 

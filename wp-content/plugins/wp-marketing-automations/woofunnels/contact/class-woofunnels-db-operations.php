@@ -110,7 +110,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 			global $wpdb;
 			$sql = "SELECT COUNT(id) FROM `$this->contact_tbl`";
 
-			return $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Static query on prefixed custom table bwf_contact
 		}
 
 		/**
@@ -147,22 +147,22 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 
 				// $sql is assembled from static clause fragments; the only interpolated identifier is
 				// $this->contact_tbl ($wpdb->prefix + literal). All dynamic values are bound via $params.
-				return $wpdb->get_results( $wpdb->prepare( $sql, $params ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+				return $wpdb->get_results( $wpdb->prepare( $sql, $params ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Static fragments, gmdate/absint values bound via prepare
 			}
 
-			return $wpdb->get_results( "SELECT * FROM {$this->contact_tbl} AS contact WHERE 1=1" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( "SELECT * FROM {$this->contact_tbl} AS contact WHERE 1=1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Static query on prefixed custom table bwf_contact
 		}
 
 		protected function get_set_cached_response( $sql, $get = 'row' ) {
 			global $wpdb;
 			if ( 'row' === $get ) {
-				$result = $wpdb->get_row( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$result = $wpdb->get_row( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Protected helper; every caller passes a $wpdb->prepare() result
 			} elseif ( 'var' === $get ) {
-				$result = $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$result = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Protected helper; every caller passes a $wpdb->prepare() result
 			} elseif ( 'col' === $get ) {
-				$result = $wpdb->get_col( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$result = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Protected helper; every caller passes a $wpdb->prepare() result
 			} else {
-				$result = $wpdb->get_results( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$result = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Protected helper; every caller passes a $wpdb->prepare() result
 			}
 
 			return $result;
@@ -175,7 +175,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_contact( $uid ) {
 			global $wpdb;
 			$sql = "SELECT * FROM `$this->contact_tbl` WHERE `uid` = %s";
-			$sql = $wpdb->prepare( $sql, $uid );
+			$sql = $wpdb->prepare( $sql, $uid ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, value bound via placeholder
 
 			return $this->get_set_cached_response( $sql );
 		}
@@ -186,7 +186,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_contact_by_wpid( $wp_id ) {
 			global $wpdb;
 			$sql = "SELECT * FROM `$this->contact_tbl` WHERE `wpid` = %d";
-			$sql = $wpdb->prepare( $sql, $wp_id );
+			$sql = $wpdb->prepare( $sql, $wp_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, value bound via placeholder
 
 			return $this->get_set_cached_response( $sql );
 		}
@@ -197,7 +197,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_contact_by_email( $email ) {
 			global $wpdb;
 			$sql = "SELECT * FROM `$this->contact_tbl` WHERE `email` = %s";
-			$sql = $wpdb->prepare( $sql, $email );
+			$sql = $wpdb->prepare( $sql, $email ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, value bound via placeholder
 
 			return $this->get_set_cached_response( $sql );
 		}
@@ -212,7 +212,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_contact_by_phone( $phone ) {
 			global $wpdb;
 			$sql = "SELECT * FROM `$this->contact_tbl` WHERE `contact_no` = %s";
-			$sql = $wpdb->prepare( $sql, $phone );
+			$sql = $wpdb->prepare( $sql, $phone ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, value bound via placeholder
 
 			return $this->get_set_cached_response( $sql );
 		}
@@ -223,7 +223,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_contact_by_contact_id( $contact_id ) {
 			global $wpdb;
 			$sql = "SELECT * FROM `$this->contact_tbl` WHERE `id` = %d";
-			$sql = $wpdb->prepare( $sql, $contact_id );
+			$sql = $wpdb->prepare( $sql, $contact_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, value bound via placeholder
 
 			return $this->get_set_cached_response( $sql );
 		}
@@ -238,7 +238,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_contact_metadata( $contact_id ) {
 			global $wpdb;
 			$sql = "SELECT `meta_key`, `meta_value` FROM `$this->contact_meta_tbl` WHERE `contact_id` = %d";
-			$sql = $wpdb->prepare( $sql, $contact_id );
+			$sql = $wpdb->prepare( $sql, $contact_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, value bound via placeholder
 
 			if ( true === $this->cache_meta_query ) {
 				// extra caching when variable is set, used in actions like FKA broadcast
@@ -300,7 +300,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function meta_id_exists( $contact_id, $meta_key ) {
 			global $wpdb;
 			$sql     = $wpdb->prepare( "SELECT `meta_id` FROM `$this->contact_meta_tbl` WHERE `contact_id` = %d AND `meta_key` = %s", $contact_id, $meta_key ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$meta_id = $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$meta_id = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Executes prepared string; prefixed table, values bound
 
 			return ( ! empty( $meta_id ) && $meta_id > 0 ) ? true : false;
 		}
@@ -371,7 +371,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_contact_meta_value( $contact_id, $meta_key ) {
 			global $wpdb;
 			$sql = "SELECT `meta_value` FROM `$this->contact_meta_tbl` WHERE `contact_id` = %d AND `meta_key` = %s";
-			$sql = $wpdb->prepare( $sql, $contact_id, $meta_key );
+			$sql = $wpdb->prepare( $sql, $contact_id, $meta_key ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, values bound via placeholder
 
 			return $this->get_set_cached_response( $sql, 'var' );
 		}
@@ -488,7 +488,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 			// $this->customer_tbl ($wpdb->prefix + literal). All dynamic values are bound via $params.
 			$sql = "SELECT * FROM {$this->customer_tbl} AS customer" . $where . $limit;
 
-			$customers = $wpdb->get_results( $wpdb->prepare( $sql, $params ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$customers = $wpdb->get_results( $wpdb->prepare( $sql, $params ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Static fragments, cast values bound via prepare
 
 			return $customers;
 		}
@@ -499,7 +499,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_customer( $uid ) {
 			global $wpdb;
 			$sql = "SELECT * FROM `$this->customer_tbl` WHERE `uid` = %s";
-			$sql = $wpdb->prepare( $sql, $uid );
+			$sql = $wpdb->prepare( $sql, $uid ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, value bound via placeholder
 
 			return $this->get_set_cached_response( $sql );
 		}
@@ -510,7 +510,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_customer_by_cid( $cid ) {
 			global $wpdb;
 			$sql = "SELECT * FROM `$this->customer_tbl` WHERE `cid` = %d";
-			$sql = $wpdb->prepare( $sql, $cid );
+			$sql = $wpdb->prepare( $sql, $cid ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, value bound via placeholder
 
 			return $this->get_set_cached_response( $sql );
 		}
@@ -521,7 +521,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		public function get_customer_by_customer_id( $customer_id ) {
 			global $wpdb;
 			$sql = "SELECT * FROM `$this->customer_tbl` WHERE `id` = %d";
-			$sql = $wpdb->prepare( $sql, $customer_id );
+			$sql = $wpdb->prepare( $sql, $customer_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared; prefixed custom table, value bound via placeholder
 
 			return $this->get_set_cached_response( $sql );
 		}

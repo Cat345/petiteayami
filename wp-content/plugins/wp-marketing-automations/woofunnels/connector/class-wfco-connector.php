@@ -43,22 +43,60 @@ if ( ! class_exists( 'BWF_CO' ) ) {
 		protected $priority = 10;
 
 		/**
-		 * Loads all calls of current connector
+		 * call_slug => filename inside {dir}/calls.
+		 * Declared ⇒ on-demand loading. Empty ⇒ today's eager glob — old
+		 * Connectors, Funnel Builder's bundled connectors and third-party
+		 * connectors keep working untouched.
+		 *
+		 * The key is whatever the call class's get_slug() returns, the value its
+		 * file basename, in filename (glob) order. This framework ships no
+		 * generator; FunnelKit Automations has one for its own connectors at
+		 * bin/generate-call-maps.php inside that plugin.
+		 *
+		 * @var array
+		 */
+		protected $calls_map = array();
+
+		/**
+		 * Loads all calls of current connector.
+		 *
+		 * With a declared $calls_map, calls register into a runtime index and
+		 * resolve on demand through get_call() / WFCO_Common::get_call_object().
+		 * Without one, the original eager glob runs unchanged.
 		 */
 		public function load_calls() {
-			$resource_dir = $this->dir . '/calls';
-			if ( @file_exists( $resource_dir ) ) {
-				foreach ( glob( $resource_dir . '/class-*.php' ) as $filename ) {
-					$call_class = require_once( $filename );
-					if ( ( is_object( $call_class ) || is_string( $call_class ) ) && method_exists( $call_class, 'get_instance' ) ) {
-						$call_obj = $call_class::get_instance();
-						$call_obj->set_connector_slug( $this->get_slug() );
-						WFCO_Load_Connectors::register_calls( $call_obj );
+			if ( empty( $this->calls_map ) ) {
+				$resource_dir = $this->dir . '/calls';
+				if ( @file_exists( $resource_dir ) ) {
+					foreach ( glob( $resource_dir . '/class-*.php' ) as $filename ) {
+						$call_class = require_once( $filename );
+						if ( ( is_object( $call_class ) || is_string( $call_class ) ) && method_exists( $call_class, 'get_instance' ) ) {
+							$call_obj = $call_class::get_instance();
+							$call_obj->set_connector_slug( $this->get_slug() );
+							WFCO_Load_Connectors::register_calls( $call_obj );
+						}
 					}
+				}
+			} else {
+				WFCO_Load_Connectors::register_lazy_calls( $this->get_slug(), $this->dir . '/calls', $this->calls_map );
+
+				if ( defined( 'BWFAN_IS_DEV' ) && BWFAN_IS_DEV ) {
+					$this->verify_calls_map();
 				}
 			}
 
 			do_action( 'bwfan_' . $this->get_slug() . '_actions_loaded' );
+		}
+
+		/** Dev-only: declaration drift is silent in production — log it the day it happens. */
+		protected function verify_calls_map() {
+			$files = array_map( 'basename', (array) glob( $this->dir . '/calls/class-*.php' ) );
+			foreach ( array_diff( $files, $this->calls_map ) as $unmapped ) {
+				error_log( sprintf( '[BWFAN calls_map] %s: file not in map: %s', get_class( $this ), $unmapped ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- developer diagnostic, only runs when BWFAN_IS_DEV is defined
+			}
+			foreach ( array_diff( $this->calls_map, $files ) as $stale ) {
+				error_log( sprintf( '[BWFAN calls_map] %s: mapped file missing: %s', get_class( $this ), $stale ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- developer diagnostic, only runs when BWFAN_IS_DEV is defined
+			}
 		}
 
 		public function get_slug() {
@@ -178,10 +216,10 @@ if ( ! class_exists( 'BWF_CO' ) ) {
 
 		public function get_connector_messages( $key = 'connector_saved' ) {
 			$messages = array(
-				'connector_saved'            => __( 'Connector saved successfully', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'connector_synced'           => __( 'Connector synced successfully', 'woofunnels' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'connector_updated'          => __( 'Connector updated successfully', 'woofunnels' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'connector_settings_missing' => __( 'Connector settings missing', 'woofunnels' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'connector_saved'            => __( 'Connector saved successfully', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'connector_synced'           => __( 'Connector synced successfully', 'wp-marketing-automations' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'connector_updated'          => __( 'Connector updated successfully', 'wp-marketing-automations' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'connector_settings_missing' => __( 'Connector settings missing', 'wp-marketing-automations' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			);
 
 			return ( isset( $messages[ $key ] ) ) ? $messages[ $key ] : '';
@@ -197,7 +235,7 @@ if ( ! class_exists( 'BWF_CO' ) ) {
 		protected function get_api_data( $data ) {
 			return array(
 				'status'  => 'failed',
-				'message' => __( 'Connector forgot to override the method - get_api_data.', 'woofunnels' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'message' => __( 'Connector forgot to override the method - get_api_data.', 'wp-marketing-automations' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			);
 		}
 

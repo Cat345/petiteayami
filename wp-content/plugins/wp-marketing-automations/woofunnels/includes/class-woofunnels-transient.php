@@ -160,7 +160,7 @@ if ( ! class_exists( 'WooFunnels_Transient' ) ) {
 			/** removing db transient */
 			$like  = '%_woofunnels_transient_' . $wpdb->esc_like( $plugin_short_name ) . '%';
 			$query = $wpdb->prepare( "DELETE FROM `$wpdb->options` WHERE `option_name` LIKE %s", $like ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- options cleanup; LIKE value esc_like'd and bound via %s
 
 			/** removing files if file api exist */
 			$file_writing = $this->is_file_saving_enabled();

@@ -60,6 +60,7 @@ class BWFAN_Tasks {
 			$prepare_placeholders = array_fill( 0, $tasks_count, '%s' );
 			$prepare_placeholders = implode( ', ', $prepare_placeholders );
 			$sql_query            = "UPDATE {table_name} SET e_date=%d WHERE ID IN ($prepare_placeholders)";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via $wpdb->prepare()
 			$sql_query            = $wpdb->prepare( $sql_query, array_merge( array( time() ), $task_ids ) ); // WPCS: unprepared SQL OK
 			BWFAN_Model_Tasks::query( $sql_query );
 		}
@@ -144,8 +145,15 @@ class BWFAN_Tasks {
 			$action_slug      = $task_details['integration_action'];
 			$action_class_ins = BWFAN_Core()->integration->get_action( $action_slug );
 
-			/** Run hooks before executing task for Action */
-			$action_class_ins->before_executing_task();
+			/**
+			 * Both generic-hook calls are null-safe from here on: the action may
+			 * not have resolved, and the attempt-limit path below still has to
+			 * run so an unresolvable task cannot queue forever.
+			 */
+			if ( $action_class_ins instanceof BWFAN_Action ) {
+				/** Run hooks before executing task for Action */
+				$action_class_ins->before_executing_task();
+			}
 
 			/** Validating attempts if over then move to logs */
 			$attempt_count = ( intval( $task_details['attempts'] ) > 0 ) ? intval( $task_details['attempts'] ) : 0;
@@ -166,9 +174,54 @@ class BWFAN_Tasks {
 				$this->ajax_msg    = __( 'Attempts limit reached', 'wp-marketing-automations' );
 
 				/** Remove generic hooks after executing task for Action */
-				$action_class_ins->after_executing_task();
+				if ( $action_class_ins instanceof BWFAN_Action ) {
+					$action_class_ins->after_executing_task();
+				}
 
 				return;
+			}
+
+			if ( ! $action_class_ins instanceof BWFAN_Action ) {
+				/**
+				 * Action did not resolve: re-schedule, do NOT delete.
+				 *
+				 * The cause is usually transient - materialize_action() returns
+				 * false for an unreadable file, which is exactly what an update's
+				 * file swap looks like, and the owning integration can be missing
+				 * for a single request. move_task_to_log() ends in delete_tasks(),
+				 * so logging the task here would destroy scheduled mail a later
+				 * drain would have sent.
+				 *
+				 * Back off on the normal retry schedule instead. Attempts still
+				 * increment, so an action that is durably gone exhausts the limit
+				 * and is moved to logs by the block above - it does not requeue
+				 * forever.
+				 */
+				$new_exec_time = ( isset( $attempt_limit[ $attempt_count ] ) && (int) $attempt_limit[ $attempt_count ] > 0 ) ? (int) $attempt_limit[ $attempt_count ] : DAY_IN_SECONDS;
+				BWFAN_Model_Tasks::update( array(
+					'e_date'   => time() + $new_exec_time,
+					'attempts' => ( $attempt_count + 1 ),
+				), array(
+					'ID' => $task_id,
+				) );
+
+				/**
+				 * Record the attempt on the task itself, exactly as the sibling
+				 * re-attempt branch does. Without it the task silently slides
+				 * forward through the whole 1h/6h/18h backoff with no per-attempt
+				 * message, and the only row ever written is "Attempts limit
+				 * reached" - which reads as a failing action rather than a
+				 * missing one. BWFAN_Core()->logger->log() below goes to the
+				 * plugin debug log, which is off by default.
+				 */
+				$task_log_message = ( ! empty( $task_details['meta']['task_message'] ) ) ? $task_details['meta']['task_message'] : array();
+				$this->update_task_logs( $task_id, $task_log_message, __( 'Action not available. Re-scheduling task.', 'wp-marketing-automations' ) );
+
+				$this->ajax_status = false;
+				$this->ajax_msg    = __( 'Action not available.', 'wp-marketing-automations' );
+				BWFAN_Core()->logger->log( 'Action not found. Re-scheduling Task... Task ID - ' . $task_id . ', Action - ' . $action_slug, $this->log_type );
+
+				return null;
 			}
 
 			/**
@@ -203,6 +256,7 @@ class BWFAN_Tasks {
 			$prepare_placeholders = array_fill( 0, $automation_count, '%s' );
 			$prepare_placeholders = implode( ', ', $prepare_placeholders );
 			$sql_query            = "Select ID FROM {table_name} WHERE automation_id IN ($prepare_placeholders)";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via $wpdb->prepare()
 			$sql_query            = $wpdb->prepare( $sql_query, $automation_ids ); // WPCS: unprepared SQL OK
 			$tasks                = BWFAN_Model_Tasks::get_results( $sql_query );
 
@@ -220,12 +274,14 @@ class BWFAN_Tasks {
 			$prepare_placeholders = array_fill( 0, $automation_count, '%s' );
 			$prepare_placeholders = implode( ', ', $prepare_placeholders );
 			$sql_query            = "Delete FROM {table_name} WHERE ID IN ($prepare_placeholders)";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via $wpdb->prepare()
 			$sql_query            = $wpdb->prepare( $sql_query, $task_ids ); // WPCS: unprepared SQL OK
 
 			BWFAN_Model_Tasks::query( $sql_query );
 
 			/** Delete Tasks Meta */
 			$sql_query = "Delete FROM {table_name} WHERE bwfan_task_id IN ($prepare_placeholders)";
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via $wpdb->prepare()
 			$sql_query = $wpdb->prepare( $sql_query, $task_ids ); // WPCS: unprepared SQL OK
 
 			BWFAN_Model_Taskmeta::query( $sql_query );
@@ -271,9 +327,22 @@ class BWFAN_Tasks {
 		$action_instance      = BWFAN_Core()->integration->get_action( $action_name );
 		$event_instance       = BWFAN_Core()->sources->get_event( $event_slug );
 
-		/** Reset 'data set' during task action execution */
-		$action_instance->reset_data();
+		/**
+		 * Clear both caches of per-task state before any early return, or a task
+		 * that bails here leaves the previous task's order/cart data in place
+		 * for the next one in the same worker batch.
+		 *
+		 * The guard below fires on three conditions and only one of them implies
+		 * a null action, so on the other two the action singleton is alive,
+		 * resolvable, and still holding the last task's recipients and payload —
+		 * which parse_unsubscribe_link() and add_unsubscribe_merge_tag() both
+		 * read. Hence the instanceof rather than resetting after the guard.
+		 */
 		BWFAN_Merge_Tag_Loader::reset_data();
+		if ( $action_instance instanceof BWFAN_Action ) {
+			/** Reset 'data set' during task action execution */
+			$action_instance->reset_data();
+		}
 
 		if ( is_null( $integration_instance ) || is_null( $action_instance ) || is_null( $event_instance ) ) {
 			/**
@@ -563,7 +632,16 @@ class BWFAN_Tasks {
 			 * @var $action_instance BWFAN_Action
 			 */
 			$action_instance = BWFAN_Core()->integration->get_action( $action_slug );
-			$action_result   = $action_instance->execute_action( $action_details );
+
+			if ( ! $action_instance instanceof BWFAN_Action ) {
+				/** Action unavailable: fail the task instead of fataling the worker */
+				return [
+					'status'  => 4,
+					'message' => __( 'Action not available.', 'wp-marketing-automations' ),
+				];
+			}
+
+			$action_result = $action_instance->execute_action( $action_details );
 
 			return $action_result;
 		}
@@ -601,10 +679,10 @@ class BWFAN_Tasks {
 	public function update_taskmeta( $task_id, $key, $value ) {
 		$meta_data                  = array();
 		$meta_data['bwfan_task_id'] = $task_id;
-		$meta_data['meta_value']    = maybe_serialize( $value );
+		$meta_data['meta_value']    = maybe_serialize( $value ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		$where                      = array(
 			'bwfan_task_id' => $task_id,
-			'meta_key'      => $key,
+			'meta_key'      => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		);
 		BWFAN_Model_Taskmeta::update( $meta_data, $where );
 	}
@@ -619,8 +697,8 @@ class BWFAN_Tasks {
 	public function insert_taskmeta( $task_id, $key, $value ) {
 		$meta_data                  = array();
 		$meta_data['bwfan_task_id'] = $task_id;
-		$meta_data['meta_key']      = $key;
-		$meta_data['meta_value']    = maybe_serialize( $value );
+		$meta_data['meta_key']      = $key; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
+		$meta_data['meta_value']    = maybe_serialize( $value ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- column of the plugin own meta table row (insert/update by ID), not a WP_Query meta lookup
 		BWFAN_Model_Taskmeta::insert( $meta_data );
 	}
 
@@ -639,8 +717,9 @@ class BWFAN_Tasks {
 		}
 
 		$sql_query = "Select meta_value FROM {$wpdb->bwfan_taskmeta} WHERE bwfan_task_id = %d AND meta_key = %s LIMIT 0,1";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb registry; values bound via $wpdb->prepare()
 		$sql_query = $wpdb->prepare( $sql_query, $this->task_id, 't_track_id' ); // WPCS: unprepared SQL OK
-		$track_id  = $wpdb->get_var( $sql_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$track_id  = $wpdb->get_var( $sql_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 
 		if ( empty( $track_id ) ) {
 			return $restore_url;
@@ -716,7 +795,7 @@ class BWFAN_Tasks {
 
 			/** Set time delay */
 			if ( isset( $task_data['time']['scheduled_time_check'] ) && 1 === intval( $task_data['time']['scheduled_time_check'] ) && isset( $task_data['time']['scheduled_time'] ) && ! empty( $task_data['time']['scheduled_time'] ) ) {
-				$actual_date_object = new DateTime( date( ( 'Y-m-d H:i:s' ), $actual_timestamp ) );
+				$actual_date_object = new DateTime( date( ( 'Y-m-d H:i:s' ), $actual_timestamp ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Round-trips via new DateTime() with no tz; keep default-tz pairing
 
 				sscanf( $task_data['time']['scheduled_time'], '%d:%d', $hours, $minutes );
 				$actual_date_object->setTime( $hours, $minutes );
@@ -808,13 +887,13 @@ class BWFAN_Tasks {
 		}
 
 		/* Filter option - Automation handling */
-		$automation_id = ( isset( $_GET['filter_aid'] ) && ! empty( $_GET['filter_aid'] ) ) ? sanitize_text_field( $_GET['filter_aid'] ) : null; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
+		$automation_id = ( isset( $_GET['filter_aid'] ) && ! empty( $_GET['filter_aid'] ) ) ? sanitize_text_field( wp_unslash( $_GET['filter_aid'] ) ) : null; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 
 		/* Filter option - Action handling */
-		$task_action = ( isset( $_GET['filter_action'] ) && ! empty( $_GET['filter_action'] ) ) ? sanitize_text_field( $_GET['filter_action'] ) : null; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
+		$task_action = ( isset( $_GET['filter_action'] ) && ! empty( $_GET['filter_action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['filter_action'] ) ) : null; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 
 		/* Filter option - Status handling */
-		$task_status = ( isset( $_GET['status'] ) && '' !== $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : 't_0'; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
+		$task_status = ( isset( $_GET['status'] ) && '' !== $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : 't_0'; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 		if ( strpos( $task_status, '_' ) !== false ) {
 			$task_status = explode( '_', $task_status );
 			$task_status = intval( $task_status[1] );
@@ -839,13 +918,13 @@ class BWFAN_Tasks {
 
 		/** Filter option - Search */
 		$search = false;
-		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) { // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) { // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			$search                          = true;
 			$query_select                    = "SELECT $task_table.ID, $task_table.integration_slug, $task_table.integration_action, $task_table.automation_id, $task_table.status, $task_table.e_date ";
 			$query_from                      .= "LEFT JOIN " . $wpdb->prefix . "bwfan_taskmeta as m";
 			$query_from                      .= " ON $task_table.ID = m.bwfan_task_id";
 			$query_where                     .= " AND m.meta_value LIKE %s";
-			$params[]                        = "%" . sanitize_text_field( $_GET['s'] ) . "%"; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
+			$params[]                        = "%" . $wpdb->esc_like( sanitize_text_field( wp_unslash( $_GET['s'] ) ) ) . "%"; // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 			$query_order                     = " ORDER BY $task_table.e_date ASC, $task_table.ID ASC";
 			$this->show_filtered_tasks_count = true;
 		}
@@ -870,7 +949,7 @@ class BWFAN_Tasks {
 		$params[]     = $per_page;
 		$params[]     = $offset;
 		$new_query    = $wpdb->prepare( "{$query_select} {$query_from} {$query_where} {$query_order} {$query_limit}", $params ); //phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
-		$active_tasks = $wpdb->get_results( $new_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$active_tasks = $wpdb->get_results( $new_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- SQL fragments hardcoded; request values bound via $wpdb->prepare()
 		if ( $this->show_filtered_tasks_count ) {
 			$tasks_count  = 0;
 			$query_select = "SELECT COUNT($task_table.ID) as `count`";
@@ -881,7 +960,7 @@ class BWFAN_Tasks {
 			array_pop( $params );
 			array_pop( $params );
 			$new_query   = $wpdb->prepare( "{$query_select} {$query_from} {$query_where} {$query_order}", $params ); //phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
-			$count_tasks = $wpdb->get_results( $new_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$count_tasks = $wpdb->get_results( $new_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- SQL fragments hardcoded; request values bound via $wpdb->prepare()
 			if ( is_array( $count_tasks ) && count( $count_tasks ) > 0 ) {
 				$tasks_count = $count_tasks[0]['count'];
 			}
@@ -933,6 +1012,7 @@ class BWFAN_Tasks {
 		$query            = "SELECT count(t.ID) as tasks_count FROM {table_name} as t
 							 INNER JOIN $automation_table as a on t.automation_id = a.ID
 							 WHERE a.status = %d";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; value bound via %d
 		$query            = $wpdb->prepare( $query, 1 ); // WPCS: unprepared SQL OK
 		$tasks_count      = BWFAN_Model_Tasks::get_results( $query );
 		if ( ! empty( $tasks_count ) && isset( $tasks_count[0] ) && isset( $tasks_count[0]['tasks_count'] ) ) {
@@ -971,12 +1051,12 @@ class BWFAN_Tasks {
 			$params[]    = $automation_status;
 		}
 
-		if ( isset( $_GET['filter_aid'] ) && ! empty( $_GET['filter_aid'] ) ) { // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
-			$automation_id = sanitize_text_field( $_GET['filter_aid'] ); // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( isset( $_GET['filter_aid'] ) && ! empty( $_GET['filter_aid'] ) ) { // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			$automation_id = sanitize_text_field( wp_unslash( $_GET['filter_aid'] ) ); // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 		}
 
-		if ( isset( $_GET['automations'] ) && ! empty( $_GET['automations'] ) ) { // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
-			$automation_id = sanitize_text_field( $_GET['automations'] ); // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification
+		if ( isset( $_GET['automations'] ) && ! empty( $_GET['automations'] ) ) { // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
+			$automation_id = sanitize_text_field( wp_unslash( $_GET['automations'] ) ); // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.CSRF.NonceVerification.NoNonceVerification, WordPress.Security.NonceVerification.Recommended -- read-only admin page routing or list filter from the URL; no state change
 		}
 
 		if ( ! is_null( $automation_id ) && ! empty( $automation_id ) ) {
@@ -1024,6 +1104,7 @@ class BWFAN_Tasks {
 		$prepare_placeholders = array_fill( 0, $t_to_delete_count, '%s' );
 		$prepare_placeholders = implode( ', ', $prepare_placeholders );
 		$sql_query            = "Select bwfan_task_id FROM {table_name} WHERE meta_key = %s AND meta_value IN ($prepare_placeholders)";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via $wpdb->prepare()
 		$sql_query            = $wpdb->prepare( $sql_query, array_merge( array( $meta_key ), $t_to_delete ) ); // WPCS: unprepared SQL OK
 		$task_ids             = BWFAN_Model_Taskmeta::get_results( $sql_query );
 
@@ -1037,6 +1118,7 @@ class BWFAN_Tasks {
 		$prepare_placeholders = array_fill( 0, $task_ids_count, '%s' );
 		$prepare_placeholders = implode( ', ', $prepare_placeholders );
 		$sql_query            = "Select ID FROM {table_name} WHERE automation_id = %d AND ID IN ($prepare_placeholders)";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill; values bound via $wpdb->prepare()
 		$sql_query            = $wpdb->prepare( $sql_query, array_merge( array( intval( $automation_id ) ), $task_ids ) ); // WPCS: unprepared SQL OK
 		$task_ids             = BWFAN_Model_Tasks::get_results( $sql_query );
 
@@ -1113,14 +1195,14 @@ class BWFAN_Tasks {
 		$params[]     = $limit;
 		$params[]     = $offset;
 		$new_query    = $wpdb->prepare( "{$query_select} {$query_from} {$query_where} {$query_order} {$query_limit}", $params ); //phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
-		$active_tasks = $wpdb->get_results( $new_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$active_tasks = $wpdb->get_results( $new_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- SQL fragments hardcoded; all inputs bound via $wpdb->prepare()
 		if ( $this->show_filtered_tasks_count ) {
 			$query_select = "SELECT COUNT($task_table.ID) as `count`";
 			array_pop( $params );
 			array_pop( $params );
 			$new_query = $wpdb->prepare( "{$query_select} {$query_from} {$query_where} {$query_order}", $params ); //phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
 
-			$count_tasks = $wpdb->get_results( $new_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$count_tasks = $wpdb->get_results( $new_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- SQL fragments hardcoded; all inputs bound via $wpdb->prepare()
 			if ( is_array( $count_tasks ) && count( $count_tasks ) > 0 ) {
 				$tasks_count = $count_tasks[0]['count'];
 			}
@@ -1214,7 +1296,7 @@ class BWFAN_Tasks {
 				'automation_event'        => ! is_null( $event_instance ) ? $event_instance->get_name() : __( 'Data unavailable. Contact Support.', 'wp-marketing-automations' ),
 				'task_integration'        => esc_html__( 'Not Found', 'wp-marketing-automations' ),
 				'task_integration_action' => esc_html__( 'Not Found', 'wp-marketing-automations' ),
-				'task_date'               => BWFAN_Common::get_human_readable_time( $task['e_date'], get_date_from_gmt( date( 'Y-m-d H:i:s', $task['e_date'] ), BWFAN_Common::get_date_format() ) ),
+				'task_date'               => BWFAN_Common::get_human_readable_time( $task['e_date'], get_date_from_gmt( gmdate( 'Y-m-d H:i:s', $task['e_date'] ), BWFAN_Common::get_date_format() ) ),
 				'status'                  => $status,
 				'gif'                     => $gif,
 				'task_message'            => $message,

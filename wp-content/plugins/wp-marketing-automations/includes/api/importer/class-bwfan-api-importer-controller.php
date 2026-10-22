@@ -208,12 +208,12 @@ class BWFAN_API_Importer_Controller extends BWFAN_API_Controller {
 		if ( ! $delete_pending ) {
 			$id_placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 			// Perform the delete operation
-			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE ID IN ($id_placeholders)", $ids );
+			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE ID IN ($id_placeholders)", $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- prefix table; %d placeholders generated in code; ids bound via prepare()
 		} else {
-			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE type = %d AND status = %d", 1, 0 );
+			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE type = %d AND status = %d", 1, 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- prefix table; %d placeholders generated in code; ids bound via prepare()
 		}
 
-		$result = $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prefix table; %d placeholders generated in code; ids bound via prepare()
 
 		if ( $result === false ) {
 			return $this->error_response( __( 'Failed to delete imports', 'wp-marketing-automations' ) );
@@ -307,7 +307,10 @@ class BWFAN_API_Importer_Controller extends BWFAN_API_Controller {
 
 		$meta = $import['meta'] ?? '';
 		$meta = ! empty( $meta ) ? json_decode( $meta, true ) : [];
-		if ( BWFAN_Importer::$IMPORT_IN_PROGRESS === intval( $import['status'] ) && empty( $meta['is_running'] ) ) {
+		/** Treat an abandoned lock as free, otherwise a crashed batch leaves the import unrecoverable from the UI too */
+		$is_running = ! empty( $meta['is_running'] ) && ! Importer::is_running_lock_abandoned( $import['last_modified'] ?? '' );
+
+		if ( BWFAN_Importer::$IMPORT_IN_PROGRESS === intval( $import['status'] ) && ! $is_running ) {
 			if ( bwf_has_action_scheduled( BWFAN_Importer::$IMPORTER_ACTION_HOOK, array( 'import_id' => $import_id ), 'bwfan' ) ) {
 				bwf_unschedule_actions( BWFAN_Importer::$IMPORTER_ACTION_HOOK, array( 'import_id' => absint( $import_id ) ), 'bwfan' );
 			}
@@ -613,7 +616,7 @@ class BWFAN_API_Importer_Controller extends BWFAN_API_Controller {
 		}
 
 			// Set a time limit for script execution
-			set_time_limit( 60 );
+			set_time_limit( 60 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- import/export download may need longer than the default time limit
 
 			// Define header information
 			header( 'Content-Description: File Transfer' );
@@ -628,7 +631,7 @@ class BWFAN_API_Importer_Controller extends BWFAN_API_Controller {
 			flush();
 
 		// Read and output the file
-		readfile( $real_path );
+		readfile( $real_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- streams the file to the response; WP_Filesystem has no streaming read
 			exit;
 	}
 

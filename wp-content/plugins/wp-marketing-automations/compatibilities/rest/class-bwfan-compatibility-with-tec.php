@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The Events Calendar
@@ -29,7 +30,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_TEC' ) ) {
 		public function remove_tec_hook() {
 			$rest_route = filter_input( INPUT_GET, 'rest_route' );
 			if ( empty( $rest_route ) ) {
-				$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : '';
+				$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 			}
 			if ( empty( $rest_route ) ) {
 				return;

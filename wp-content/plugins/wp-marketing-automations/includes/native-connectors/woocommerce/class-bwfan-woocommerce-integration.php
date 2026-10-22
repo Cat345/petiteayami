@@ -1,9 +1,15 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 final class BWFAN_WC_Integration extends BWFAN_Integration {
 
 	private static $instance = null;
+
+	/** @var array slug => filename, resolved on demand (see BWFAN_Integration::$action_map) */
+	protected $action_map = [
+		'wc_create_coupon' => 'class-bwfan-wc-create-coupon.php',
+	];
 
 	/**
 	 * Constructor

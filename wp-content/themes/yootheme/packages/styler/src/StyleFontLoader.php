@@ -36,7 +36,6 @@ class StyleFontLoader
      */
     public function css(string $url, string $basePath): ?string
     {
-        $date = date(DATE_W3C);
         $hash = hash('crc32b', join(',', [$url, $basePath, static::VERSION]));
         $file = "{$this->cache}/font-{$hash}.css";
 
@@ -58,6 +57,7 @@ class StyleFontLoader
         }
 
         // generate fonts css
+        $date = date(DATE_W3C);
         $info = "/* {$url} generated on {$date} */\n";
         $data = join('', array_map([$this, 'cssFontFace'], $fonts));
 

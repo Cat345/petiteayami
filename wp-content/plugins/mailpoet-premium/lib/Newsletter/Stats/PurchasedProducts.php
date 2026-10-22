@@ -6,9 +6,7 @@ if (!defined('ABSPATH')) exit;
 
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WooCommerce\OrderAttributionRevenueReader;
 use MailPoet\WP\Functions as WPFunctions;
@@ -21,9 +19,6 @@ class PurchasedProducts {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var StatisticsWooCommercePurchasesRepository */
-  private $statisticsWooCommercePurchasesRepository;
-
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
@@ -32,14 +27,12 @@ class PurchasedProducts {
 
   public function __construct(
     WCHelper $woocommerceHelper,
-    StatisticsWooCommercePurchasesRepository $statisticsWooCommercePurchasesRepository,
     NewslettersRepository $newslettersRepository,
     WPFunctions $wp,
     OrderAttributionRevenueReader $orderAttributionRevenueReader
   ) {
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
-    $this->statisticsWooCommercePurchasesRepository = $statisticsWooCommercePurchasesRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->orderAttributionRevenueReader = $orderAttributionRevenueReader;
   }
@@ -54,19 +47,14 @@ class PurchasedProducts {
     }
 
     $revenueStatus = $this->woocommerceHelper->getPurchaseStates();
-
     $currency = $this->woocommerceHelper->getWoocommerceCurrency();
-    $result = $this->getWooBackedStats((int)$newsletterId, $currency, $revenueStatus);
-    if ($result === null) {
-      $purchases = $this->statisticsWooCommercePurchasesRepository->findBy([
-        'newsletter' => $newsletter,
-        'orderCurrency' => $currency,
-        'status' => $revenueStatus,
-      ]);
 
-      $result = $this->getStatsForPurchases($purchases);
+    $orderIds = $this->getWooBackedOrderIds((int)$newsletterId, $currency, $revenueStatus);
+    if ($orderIds === null) {
+      $orderIds = $this->getLegacyOrderIds((int)$newsletterId, $currency, $revenueStatus);
     }
 
+    $result = $this->aggregateOrderItems($orderIds);
     $result = $this->formatPrices($result, $currency);
     $result = $this->addThumbnails($result);
     $result = $this->sortProducts($result);
@@ -74,34 +62,13 @@ class PurchasedProducts {
   }
 
   /**
-   * @param StatisticsWooCommercePurchaseEntity[] $purchases
-   * @return array<int, array<string, int|float|string>>
-   */
-  private function getStatsForPurchases($purchases) {
-    $result = [];
-    foreach ($purchases as $purchase) {
-      $result = $this->addOrderItems($result, $this->getOrderItems($purchase));
-    }
-    return $result;
-  }
-
-  /**
-   * @return \WC_Order_Item[]
-   */
-  private function getOrderItems(StatisticsWooCommercePurchaseEntity $purchase) {
-    $order = $this->woocommerceHelper->wcGetOrder($purchase->getOrderId());
-    if (!$order) {
-      return [];
-    }
-    // get_items returns by default only product items, no shipping or coupons or anything
-    return $order->get_items();
-  }
-
-  /**
+   * Orders attributed to the newsletter by the Woo order-attribution read
+   * model, or null when that model is unavailable.
+   *
    * @param string[] $revenueStatus
-   * @return array<int, array<string, int|float|string>>|null
+   * @return int[]|null
    */
-  private function getWooBackedStats(int $newsletterId, string $currency, array $revenueStatus): ?array {
+  private function getWooBackedOrderIds(int $newsletterId, string $currency, array $revenueStatus): ?array {
     $rows = $this->orderAttributionRevenueReader->getNewsletterOrderRows(
       [$newsletterId],
       new \DateTimeImmutable('@0'),
@@ -111,47 +78,131 @@ class PurchasedProducts {
       return null;
     }
 
-    $result = [];
+    $orderIds = [];
     foreach ($rows as $row) {
       $status = (string)$row['status'];
       if (strpos($status, 'wc-') === 0) {
         $status = substr($status, 3);
       }
-      if (!in_array($status, $revenueStatus, true)) {
-        continue;
+      if (in_array($status, $revenueStatus, true)) {
+        $orderIds[] = (int)$row['order_id'];
       }
-
-      $order = $this->woocommerceHelper->wcGetOrder((int)$row['order_id']);
-      if (!$order instanceof \WC_Order || $order->get_currency() !== $currency) {
-        continue;
-      }
-      $result = $this->addOrderItems($result, $order->get_items());
     }
-    return $result;
+    return $this->filterOrderIdsByCurrency(array_values(array_unique($orderIds)), $currency);
   }
 
   /**
-   * @param array<int, array<string, int|float|string>> $result
-   * @param \WC_Order_Item[] $orderItems
+   * @param string[] $revenueStatus
+   * @return int[]
+   */
+  private function getLegacyOrderIds(int $newsletterId, string $currency, array $revenueStatus): array {
+    if (!$revenueStatus) {
+      return [];
+    }
+    global $wpdb;
+
+    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted placeholders; values are prepared below.
+    $query = $wpdb->prepare(
+      '
+        SELECT DISTINCT order_id
+        FROM %i
+        WHERE newsletter_id = %d
+          AND order_currency = %s
+          AND status IN (' . implode(',', array_fill(0, count($revenueStatus), '%s')) . ')
+      ',
+      array_merge(
+        [$wpdb->prefix . 'mailpoet_statistics_woocommerce_purchases', $newsletterId, $currency],
+        $revenueStatus
+      )
+    );
+    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+
+    return array_map('intval', (array)$wpdb->get_col($query)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
+  }
+
+  /**
+   * @param int[] $orderIds
+   * @return int[]
+   */
+  private function filterOrderIdsByCurrency(array $orderIds, string $currency): array {
+    if (!$orderIds) {
+      return [];
+    }
+    global $wpdb;
+
+    $placeholders = implode(',', array_fill(0, count($orderIds), '%d'));
+    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted placeholders; values are prepared below.
+    if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
+      $query = $wpdb->prepare(
+        'SELECT id FROM %i WHERE id IN (' . $placeholders . ') AND currency = %s',
+        array_merge([$wpdb->prefix . 'wc_orders'], $orderIds, [$currency])
+      );
+    } else {
+      $query = $wpdb->prepare(
+        'SELECT post_id FROM %i WHERE post_id IN (' . $placeholders . ') AND meta_key = %s AND meta_value = %s',
+        array_merge([$wpdb->postmeta], $orderIds, ['_order_currency', $currency])
+      );
+    }
+    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+
+    return array_map('intval', (array)$wpdb->get_col($query)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
+  }
+
+  /**
+   * Sums quantity and line total per product across the given orders in one
+   * query, so the stats never hydrate individual WC_Order objects.
+   *
+   * @param int[] $orderIds
    * @return array<int, array<string, int|float|string>>
    */
-  private function addOrderItems(array $result, array $orderItems): array {
-    foreach ($orderItems as $orderItem) {
-      if (!$orderItem instanceof \WC_Order_Item_Product) {
-        continue;
-      }
-      $productId = $orderItem->get_product_id();
-      if (!isset($result[$productId])) {
-        $result[$productId] = [
-          'name' => $orderItem->get_name(),
-          'count' => $orderItem->get_quantity(),
-          'total' => (float)$orderItem->get_total(),
-          'product_id' => $productId,
-        ];
-      } else {
-        $result[$productId]['count'] += $orderItem->get_quantity();
-        $result[$productId]['total'] += (float)$orderItem->get_total();
-      }
+  private function aggregateOrderItems(array $orderIds): array {
+    if (!$orderIds) {
+      return [];
+    }
+    global $wpdb;
+
+    $placeholders = implode(',', array_fill(0, count($orderIds), '%d'));
+    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted identifiers/placeholders; values are prepared below.
+    $query = $wpdb->prepare(
+      '
+        SELECT
+          product.meta_value AS product_id,
+          MIN(items.order_item_name) AS name,
+          SUM(qty.meta_value) AS count,
+          SUM(total.meta_value) AS total
+        FROM %i items
+        INNER JOIN %i product ON product.order_item_id = items.order_item_id AND product.meta_key = %s
+        INNER JOIN %i qty ON qty.order_item_id = items.order_item_id AND qty.meta_key = %s
+        INNER JOIN %i total ON total.order_item_id = items.order_item_id AND total.meta_key = %s
+        WHERE items.order_item_type = %s
+          AND items.order_id IN (' . $placeholders . ')
+        GROUP BY product.meta_value
+      ',
+      array_merge(
+        [
+          $wpdb->prefix . 'woocommerce_order_items',
+          $wpdb->prefix . 'woocommerce_order_itemmeta',
+          '_product_id',
+          $wpdb->prefix . 'woocommerce_order_itemmeta',
+          '_qty',
+          $wpdb->prefix . 'woocommerce_order_itemmeta',
+          '_line_total',
+          'line_item',
+        ],
+        $orderIds
+      )
+    );
+    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+
+    $result = [];
+    foreach ((array)$wpdb->get_results($query, ARRAY_A) as $row) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
+      $productId = (int)$row['product_id'];
+      $result[$productId] = [
+        'name' => (string)$row['name'],
+        'count' => (int)(float)$row['count'],
+        'total' => (float)$row['total'],
+        'product_id' => $productId,
+      ];
     }
     return $result;
   }

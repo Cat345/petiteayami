@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'BWF_Compatibility_With_WOOCS' ) ) {
 	#[AllowDynamicProperties]
 	class BWF_Compatibility_With_WOOCS {

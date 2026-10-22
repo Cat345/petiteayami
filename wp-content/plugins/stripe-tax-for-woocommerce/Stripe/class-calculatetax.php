@@ -346,7 +346,7 @@ class CalculateTax {
 
 		check_admin_referer( 'calc-totals', 'security' );
 		if ( ! isset( $_REQUEST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['security'] ) ), 'calc-totals' ) ) {
-			StripeTaxPluginHelper::do_exit();
+			exit;
 		}
 
 		return sanitize_text_field( wp_unslash( $_POST['stripe_tax_for_woocommerce_customer_user'] ) );

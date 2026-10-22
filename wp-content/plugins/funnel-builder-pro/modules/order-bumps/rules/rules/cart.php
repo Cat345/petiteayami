@@ -732,6 +732,10 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Type' ) ) {
 				}
 			}
 
+			// Type-agnostic Virtual / Downloadable flags, offered alongside the real product-type
+			$result['virtual']      = __( 'Virtual', 'woofunnels-order-bump' );
+			$result['downloadable'] = __( 'Downloadable', 'woofunnels-order-bump' );
+
 			return $result;
 		}
 
@@ -776,6 +780,13 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Type' ) ) {
 					);
 					$all_types     = array_merge( $all_types, $product_types );
 
+					// Type-agnostic virtual/downloadable flags, read from the cart item's own product
+					if ( $product->is_virtual() ) {
+						$all_types[] = 'virtual';
+					}
+					if ( $product->is_downloadable() ) {
+						$all_types[] = 'downloadable';
+					}
 				}
 			}
 			$all_types = array_filter( $all_types );
@@ -1348,6 +1359,355 @@ if ( ! class_exists( 'wfob_Rule_Order_Coupon_Text_Match' ) ) {
 				}
 				if ( $matched ) {
 					return $this->return_is_match( $matched, $rule_data );
+				}
+			}
+
+			return $this->return_is_match( $matched, $rule_data );
+		}
+	}
+}
+if ( ! class_exists( 'wfob_Rule_Order_Item_Text_Match' ) ) {
+	#[\AllowDynamicProperties]
+	class wfob_Rule_Order_Item_Text_Match extends wfob_Rule_Base {
+		public $supports = array( 'cart', 'order' );
+
+		public function __construct() {
+
+			parent::__construct( 'order_item_text_match' );
+		}
+
+		public function get_possible_rule_operators() {
+
+			$operators = array(
+				'contains'       => __( 'any contains', 'woofunnels-order-bump' ),
+				'contains_all'   => __( 'contains all of', 'woofunnels-order-bump' ),
+				'starts_with'    => __( 'any starts with', 'woofunnels-order-bump' ),
+				'ends_with'      => __( 'any ends with', 'woofunnels-order-bump' ),
+				'doesnt_contain' => __( 'doesn\'t contain', 'woofunnels-order-bump' ),
+			);
+
+			return $operators;
+		}
+
+		public function get_possible_rule_values() {
+			$result = '';
+
+			return $result;
+		}
+
+		public function get_condition_input_type() {
+			return 'Text';
+		}
+
+		/**
+		 * Collect the searchable text (product name/title) of every eligible cart item.
+		 *
+		 * Reads the variation object directly and does NOT resolve to the parent product,
+		 * so per-variation names stay distinguishable.
+		 *
+		 * @return array
+		 */
+		public function get_item_values() {
+			$values = array();
+
+			if ( is_null( WC()->cart ) ) {
+				return $values;
+			}
+
+			$items = WC()->cart->get_cart_contents();
+			if ( $items && is_array( $items ) && count( $items ) > 0 ) {
+				foreach ( $items as $cart_item ) {
+					if ( apply_filters( 'wfob_exclude_cart_item_in_rule', false, $cart_item, __CLASS__ ) ) {
+						continue;
+					}
+
+					if ( apply_filters( 'wfob_dont_allow_bump_item_in_rule', isset( $cart_item['_wfob_product'] ), $cart_item, __CLASS__ ) ) {
+						continue;
+					}
+
+					$product = isset( $cart_item['data'] ) ? $cart_item['data'] : null;
+					if ( ! $product instanceof WC_Product ) {
+						continue;
+					}
+
+					$values[] = (string) $product->get_name();
+				}
+			}
+
+			return $values;
+		}
+
+		public function is_match( $rule_data ) {
+
+			$type = isset( $rule_data['operator'] ) ? $rule_data['operator'] : '';
+
+			$item_values = $this->get_item_values();
+
+			$result = false;
+			if ( empty( $item_values ) || empty( $rule_data['condition'] ) ) {
+
+				if ( $type === 'doesnt_contain' ) {
+					$result = true;
+				}
+
+				return $this->return_is_match( $result, $rule_data );
+			}
+
+			// The condition may hold several comma-separated "OR" values; each is
+			// trimmed and blanks are dropped. Copy-pasted values often carry stray
+			// whitespace which would otherwise silently never match.
+			$condition = trim( (string) $rule_data['condition'] );
+			$tokens    = $this->split_condition( $condition );
+			if ( empty( $tokens ) ) {
+				return $this->return_is_match( 'doesnt_contain' === $type, $rule_data );
+			}
+
+			// "doesn't contain" is universal: NO eligible cart item may contain ANY
+			// token. The any-item loop below would pass as soon as one item merely
+			// lacked the text, wrongly matching mixed carts.
+			if ( 'doesnt_contain' === $type ) {
+				foreach ( $item_values as $item_value ) {
+					foreach ( $tokens as $token ) {
+						if ( stristr( $item_value, $token ) !== false ) {
+							return $this->return_is_match( false, $rule_data );
+						}
+					}
+				}
+
+				return $this->return_is_match( true, $rule_data );
+			}
+
+			// "contains all of": every token must be present in at least one cart item.
+			if ( 'contains_all' === $type ) {
+				foreach ( $tokens as $token ) {
+					$token_found = false;
+					foreach ( $item_values as $item_value ) {
+						if ( stristr( $item_value, $token ) !== false ) {
+							$token_found = true;
+							break;
+						}
+					}
+					if ( ! $token_found ) {
+						return $this->return_is_match( false, $rule_data );
+					}
+				}
+
+				return $this->return_is_match( true, $rule_data );
+			}
+
+			// Remaining operators are OR across both items and tokens: one hit wins.
+			$matched = false;
+			foreach ( $item_values as $item_value ) {
+				foreach ( $tokens as $token ) {
+					switch ( $type ) {
+						case 'contains':
+							$matched = ( stristr( $item_value, $token ) !== false );
+							break;
+						case 'starts_with':
+							$matched = strtolower( substr( $item_value, 0, strlen( $token ) ) ) === strtolower( $token );
+							break;
+						case 'ends_with':
+							$matched = strtolower( substr( $item_value, - strlen( $token ) ) ) === strtolower( $token );
+							break;
+						default:
+							$matched = false;
+							break;
+					}
+					if ( $matched ) {
+						return $this->return_is_match( $matched, $rule_data );
+					}
+				}
+			}
+
+			return $this->return_is_match( $matched, $rule_data );
+		}
+	}
+}
+if ( ! class_exists( 'wfob_Rule_Order_Item_Sku_Match' ) ) {
+	#[\AllowDynamicProperties]
+	class wfob_Rule_Order_Item_Sku_Match extends wfob_Rule_Base {
+		public $supports = array( 'cart', 'order' );
+
+		public function __construct() {
+
+			parent::__construct( 'order_item_sku_match' );
+		}
+
+		public function get_possible_rule_operators() {
+
+			$operators = array(
+				'contains'           => __( 'any contains', 'woofunnels-order-bump' ),
+				'starts_with'        => __( 'any starts with', 'woofunnels-order-bump' ),
+				'ends_with'          => __( 'any ends with', 'woofunnels-order-bump' ),
+				'matches_regex'      => __( 'any matches regex', 'woofunnels-order-bump' ),
+				'matches_regex_all'  => __( 'all matches regex', 'woofunnels-order-bump' ),
+				'matches_regex_none' => __( 'none matches regex', 'woofunnels-order-bump' ),
+				'doesnt_contain'     => __( 'doesn\'t contain', 'woofunnels-order-bump' ),
+			);
+
+			return $operators;
+		}
+
+		public function get_possible_rule_values() {
+			$result = '';
+
+			return $result;
+		}
+
+		public function get_condition_input_type() {
+			return 'Text';
+		}
+
+		/**
+		 * Collect the SKU of every eligible cart item.
+		 *
+		 * Reads the variation object's own SKU directly and does NOT resolve to the parent
+		 * product, so per-variation SKUs stay distinguishable.
+		 *
+		 * @return array
+		 */
+		public function get_item_values() {
+			$values = array();
+
+			if ( is_null( WC()->cart ) ) {
+				return $values;
+			}
+
+			$items = WC()->cart->get_cart_contents();
+			if ( $items && is_array( $items ) && count( $items ) > 0 ) {
+				foreach ( $items as $cart_item ) {
+					if ( apply_filters( 'wfob_exclude_cart_item_in_rule', false, $cart_item, __CLASS__ ) ) {
+						continue;
+					}
+
+					if ( apply_filters( 'wfob_dont_allow_bump_item_in_rule', isset( $cart_item['_wfob_product'] ), $cart_item, __CLASS__ ) ) {
+						continue;
+					}
+
+					$product = isset( $cart_item['data'] ) ? $cart_item['data'] : null;
+					if ( ! $product instanceof WC_Product ) {
+						continue;
+					}
+
+					$sku = (string) $product->get_sku();
+					if ( '' === $sku ) {
+						continue;
+					}
+
+					$values[] = $sku;
+				}
+			}
+
+			return $values;
+		}
+
+		public function is_match( $rule_data ) {
+
+			$type = isset( $rule_data['operator'] ) ? $rule_data['operator'] : '';
+
+			$item_values = $this->get_item_values();
+
+			$result = false;
+			if ( empty( $item_values ) || empty( $rule_data['condition'] ) ) {
+
+				if ( $type === 'doesnt_contain' || $type === 'matches_regex_none' ) {
+					$result = true;
+				}
+
+				return $this->return_is_match( $result, $rule_data );
+			}
+
+			// Copy-pasted conditions often carry stray whitespace which would silently
+			// never match; a whitespace-only condition is treated as no condition.
+			$condition = trim( (string) $rule_data['condition'] );
+			if ( '' === $condition ) {
+				return $this->return_is_match( ( 'doesnt_contain' === $type || 'matches_regex_none' === $type ), $rule_data );
+			}
+
+			// Regex operators treat the condition as ONE pattern. Commas are valid
+			// regex syntax (e.g. "{1,3}"), so the condition must not be token-split —
+			// this branch must stay ahead of split_condition() below.
+			if ( in_array( $type, array( 'matches_regex', 'matches_regex_all', 'matches_regex_none' ), true ) ) {
+				// The pattern is the store admin's own rule input, wrapped in ~ so no
+				// delimiter is expected; an invalid pattern is treated as "no match"
+				// instead of raising a warning on every checkout render.
+				$pattern     = '~' . str_replace( '~', '\~', $condition ) . '~i';
+				$any_matched = false;
+				$all_matched = true;
+
+				// A pathological admin-authored pattern (e.g. "^(a+)+$") can backtrack
+				// catastrophically against certain SKUs. Bound it explicitly rather than
+				// trust whatever pcre.backtrack_limit the host happens to have
+				// configured, so cart/checkout rendering can never be stalled by a
+				// single bad rule; restore the host's own value once done.
+				$previous_backtrack_limit = ini_set( 'pcre.backtrack_limit', '1000000' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+
+				foreach ( $item_values as $item_value ) {
+					if ( 1 === @preg_match( $pattern, $item_value ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+						$any_matched = true;
+					} else {
+						$all_matched = false;
+					}
+				}
+
+				if ( false !== $previous_backtrack_limit ) {
+					ini_set( 'pcre.backtrack_limit', $previous_backtrack_limit ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+				}
+
+				if ( 'matches_regex_all' === $type ) {
+					$result = $all_matched;
+				} elseif ( 'matches_regex_none' === $type ) {
+					$result = ! $any_matched;
+				} else {
+					$result = $any_matched;
+				}
+
+				return $this->return_is_match( $result, $rule_data );
+			}
+
+			// The condition may hold several comma-separated "OR" values for the
+			// substring operators; each is trimmed and blanks are dropped.
+			$tokens = $this->split_condition( $condition );
+			if ( empty( $tokens ) ) {
+				return $this->return_is_match( 'doesnt_contain' === $type, $rule_data );
+			}
+
+			// "doesn't contain" is universal: NO eligible cart item may contain ANY
+			// token. The any-item loop below would pass as soon as one item merely
+			// lacked the text, wrongly matching mixed carts.
+			if ( 'doesnt_contain' === $type ) {
+				foreach ( $item_values as $item_value ) {
+					foreach ( $tokens as $token ) {
+						if ( stristr( $item_value, $token ) !== false ) {
+							return $this->return_is_match( false, $rule_data );
+						}
+					}
+				}
+
+				return $this->return_is_match( true, $rule_data );
+			}
+
+			// Remaining operators are OR across both items and tokens: one hit wins.
+			$matched = false;
+			foreach ( $item_values as $item_value ) {
+				foreach ( $tokens as $token ) {
+					switch ( $type ) {
+						case 'contains':
+							$matched = ( stristr( $item_value, $token ) !== false );
+							break;
+						case 'starts_with':
+							$matched = strtolower( substr( $item_value, 0, strlen( $token ) ) ) === strtolower( $token );
+							break;
+						case 'ends_with':
+							$matched = strtolower( substr( $item_value, - strlen( $token ) ) ) === strtolower( $token );
+							break;
+						default:
+							$matched = false;
+							break;
+					}
+					if ( $matched ) {
+						return $this->return_is_match( $matched, $rule_data );
+					}
 				}
 			}
 

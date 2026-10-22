@@ -12,6 +12,8 @@ class BWFAN_Split_Path_Traversal_Controller extends BWFAN_Base_Step_Controller {
 	public $get_nodes = false;
 	public $formatted_links = [];
 	public $path_target_nodes = [];
+	/** Lazy map of branchpath chip stepId => node id (null = not built). */
+	protected $branch_chip_nodes = null;
 
 	/**
 	 * Set steps in the traverser
@@ -24,6 +26,8 @@ class BWFAN_Split_Path_Traversal_Controller extends BWFAN_Base_Step_Controller {
 		if ( ! is_array( $db_steps ) || empty( $db_steps ) ) {
 			return;
 		}
+
+		$this->branch_chip_nodes = null;
 
 		foreach ( $db_steps as $step ) {
 			$this->steps[ $step['id'] ] = $step;
@@ -55,10 +59,40 @@ class BWFAN_Split_Path_Traversal_Controller extends BWFAN_Base_Step_Controller {
 			if ( ! isset( $data['next'] ) ) {
 				continue;
 			}
-			$branches[] = $data['next'];
+			$branches[] = 'branchpath' === ( $data['type'] ?? '' ) ? $this->get_branch_node_id( $data['next'] ) : $data['next'];
 		}
 
 		return $branches;
+	}
+
+	/**
+	 * Iteration array 'next' values are node ids for split/conditional pseudo-nodes
+	 * ({id}-path-{n}, {id}yes/no). Branchpath chips normally carry stepId = node id
+	 * too, but the automation copy/import path (BWFAN_Automations::get_prepared_steps)
+	 * rewrites chip stepIds to fresh DB step ids, so copied automations feed step ids
+	 * here. The path walk (get_connected_nodes) is keyed by node id — translate.
+	 *
+	 * Lookup is restricted to branchpath rows so a non-chip step whose id happens to
+	 * string-match can never be returned.
+	 *
+	 * @param int|string $branch branchpath 'next' value from the iteration array
+	 *
+	 * @return int|string branchpath node id ({id}-branch-{bid}), or input when no chip matches
+	 */
+	protected function get_branch_node_id( $branch ) {
+		if ( ! is_array( $this->steps ) ) {
+			return $branch;
+		}
+		if ( null === $this->branch_chip_nodes ) {
+			$this->branch_chip_nodes = [];
+			foreach ( $this->steps as $node_id => $step ) {
+				if ( isset( $step['type'], $step['stepId'] ) && 'branchpath' === $step['type'] ) {
+					$this->branch_chip_nodes[ (string) $step['stepId'] ] = (string) $node_id;
+				}
+			}
+		}
+
+		return isset( $this->branch_chip_nodes[ (string) $branch ] ) ? $this->branch_chip_nodes[ (string) $branch ] : $branch;
 	}
 
 	/**

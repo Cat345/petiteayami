@@ -2,6 +2,8 @@
 
 namespace BWFAN\Importers;
 
+defined( 'ABSPATH' ) || exit;
+
 use BWFAN\Importers\Importer;
 use WP_Error;
 use WP_Meta_Query;
@@ -140,7 +142,7 @@ class WP_Importer extends Importer {
 			$query .= $wpdb->prepare( ' LIMIT %d, %d', $offset, $limit );
 		}
 
-		return $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		return $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- meta SQL from WP_Meta_Query (core-escaped); LIMIT via prepare()
 	}
 
 	/**
@@ -200,7 +202,7 @@ class WP_Importer extends Importer {
 		$metadata = $meta_query->get_sql( 'user', $wpdb->users, 'ID', $role__in_clauses );
 		$query    = "SELECT COUNT(DISTINCT {$wpdb->users}.ID) FROM {$wpdb->users} {$metadata['join']} WHERE 1=1 {$metadata['where']}";
 		
-		$count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		$count = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- meta SQL from WP_Meta_Query (core-escaped); tables from $wpdb->users
 		
 		return ! empty( $count ) ? absint( $count ) : 0;
 	}

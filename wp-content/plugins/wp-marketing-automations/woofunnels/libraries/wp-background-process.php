@@ -168,12 +168,7 @@ if ( ! class_exists( 'WP_Background_Process' ) ) {
 
 			$key = $this->identifier . '_batch_%';
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$count = $wpdb->get_var( $wpdb->prepare( "
-			SELECT COUNT(*)
-			FROM {$table}
-			WHERE {$column} LIKE %s
-		", $key ) );
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE {$column} LIKE %s", $key ) ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table and $column are the fixed core options/sitemeta names picked by is_multisite()
 
 			return ! ( $count > 0 );
 		}
@@ -263,14 +258,7 @@ if ( ! class_exists( 'WP_Background_Process' ) ) {
 
 			$key = $this->identifier . '_batch_%';
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$query = $wpdb->get_row( $wpdb->prepare( "
-			SELECT *
-			FROM {$table}
-			WHERE {$column} LIKE %s
-			ORDER BY {$key_column} ASC
-			LIMIT 1
-		", $key ) );
+			$query = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE {$column} LIKE %s ORDER BY {$key_column} ASC LIMIT 1", $key ) ); //phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table, $column and $key_column are the fixed core options/sitemeta names picked by is_multisite()
 
 			$batch       = new stdClass();
 			$batch->key  = $query->$column;
@@ -459,7 +447,7 @@ if ( ! class_exists( 'WP_Background_Process' ) ) {
 			// Adds every 5 minutes to the existing schedules.
 			$schedules[ $this->identifier . '_cron_interval' ] = array(
 				'interval' => MINUTE_IN_SECONDS * $interval,
-				'display'  => sprintf( __( 'Every %d Minutes', 'woofunnels' ), $interval ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				'display'  => sprintf( 'Every %d Minutes', $interval ), // not translated: cron_schedules can run before init, see class-woofunnels-as-ds.php
 			);
 
 			return $schedules;

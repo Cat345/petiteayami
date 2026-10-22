@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Security & Malware scan by CleanTalk
@@ -37,14 +38,14 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Security_By_CleanTalk' ) ) {
 			try {
 				$rest_route = filter_input( INPUT_GET, 'rest_route' );
 				if ( empty( $rest_route ) ) {
-					$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : '';
+					$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 				}
 
 				if ( empty( $rest_route ) ) {
 					return $status;
 				}
 
-				if ( false === strpos( $rest_route, 'autonami' ) && false === strpos( $rest_route, 'woofunnel' ) && false === strpos( $rest_route, 'funnelkit' ) ) {
+				if ( false === strpos( $rest_route, 'autonami' ) && false === strpos( $rest_route, 'woofunnel' ) && false === strpos( $rest_route, 'funnelkit-automations' ) ) {
 					return $status;
 				}
 

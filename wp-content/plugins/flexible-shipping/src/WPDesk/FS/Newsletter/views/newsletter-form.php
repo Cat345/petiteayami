@@ -30,14 +30,16 @@
 		<p>
 			<input id="fs-newsletter-checkbox" type="checkbox">
 			<label for="fs-newsletter-checkbox">
-				<?php echo wp_kses_post(
+				<?php
+				echo wp_kses_post(
 					sprintf(
 						// Translators: link
 						__( 'I’d like to receive exclusive tips, updates, and special offers from Octolize by email. I can unsubscribe at any time. %1$sPrivacy Policy%2$s', 'flexible-shipping' ),
 						'<a href="https://octolize.com/terms-of-service/privacy-policy/" target="_blank">',
 						'</a>'
 					)
-				);?>
+				);
+				?>
 			</label>
 		</p>
 		<p><button id="fs-newsletter-submit" class="oct-btn" disabled="disabled">Submit</button> <span id="fs-newsletter-status"></span></p>

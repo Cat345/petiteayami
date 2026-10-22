@@ -4,7 +4,6 @@ namespace WPDesk\FS\TableRate\FreeShipping;
 
 use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
 use FSVendor\WPDesk\View\Renderer\Renderer;
-use FSVendor\WPDesk\View\Renderer\SimplePhpRenderer;
 
 /**
  * Can render free shipping notice.
@@ -12,9 +11,9 @@ use FSVendor\WPDesk\View\Renderer\SimplePhpRenderer;
 class FreeShippingNoticeRenderer implements Hookable {
 
 	/**
-	 * @var SimplePhpRenderer
+	 * @var Renderer
 	 */
-	private $renderer;
+	private Renderer $renderer;
 
 	/**
 	 * @param Renderer $renderer
@@ -62,5 +61,4 @@ class FreeShippingNoticeRenderer implements Hookable {
 
 		return is_string( $notice_text ) ? $notice_text : '';
 	}
-
 }

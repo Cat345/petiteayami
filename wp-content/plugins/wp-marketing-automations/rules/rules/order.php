@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || exit;
+// phpcs:disable Generic.PHP.DisallowAlternativePHPTags -- <% %> below are Underscore.js template delimiters inside HTML output, not PHP tags (asp_tags was removed in PHP 7.0)
 
 #[\AllowDynamicProperties]
 class BWFAN_Rule_Order_Total extends BWFAN_Rule_Base {
@@ -538,7 +540,8 @@ class BWFAN_Rule_Product_Item_Type extends BWFAN_Rule_Base {
 	}
 
 	public function get_possible_rule_values( $term = '' ) {
-		$product_type = get_terms( 'product_type', array(
+		$product_type = get_terms( array(
+			'taxonomy'   => 'product_type',
 			'hide_empty' => false,
 		) );
 
@@ -1162,7 +1165,8 @@ class BWFAN_Rule_Order_Item_Type extends BWFAN_Rule_Base {
 	}
 
 	public function get_possible_rule_values( $term = '' ) {
-		$order_type = get_terms( 'product_type', array(
+		$order_type = get_terms( array(
+			'taxonomy'   => 'product_type',
 			'hide_empty' => false,
 		) );
 
@@ -2365,15 +2369,14 @@ class BWFAN_Rule_Order_Items_Data extends BWFAN_Rule_Base {
 		$meta_key   = isset( $rule_data['data'][0] ) ? $rule_data['data'][0] : '';
 		$meta_value = isset( $rule_data['data'][1] ) ? $rule_data['data'][1] : '';
 
-		$value = array(); // Initialize an array to store order item meta values
-
-		// Loop through order items
-		foreach ( $order->get_items() as $item_id => $item ) {
-			$item_meta_value = wc_get_order_item_meta( $item_id, $meta_key );
-			if ( $item_meta_value !== '' ) {
-				$value[] = $item_meta_value;
-			}
+		/** Rule is only available on Order Created - Per Product, so check the current line item, not the whole order */
+		$single_item_id = isset( $automation_data['global']['wc_single_item_id'] ) ? absint( $automation_data['global']['wc_single_item_id'] ) : 0;
+		if ( empty( $single_item_id ) ) {
+			return $this->return_is_match( false, $rule_data );
 		}
+
+		$item_meta_value = wc_get_order_item_meta( $single_item_id, $meta_key );
+		$value           = ( '' !== $item_meta_value ) ? array( $item_meta_value ) : array();
 
 		// Convert all values to lowercase for case-insensitive comparison
 		$value           = array_map( 'strtolower', $value );

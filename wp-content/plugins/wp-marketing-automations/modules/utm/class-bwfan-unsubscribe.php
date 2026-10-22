@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 #[\AllowDynamicProperties]
 class BWFAN_unsubscribe {
@@ -141,6 +142,7 @@ class BWFAN_unsubscribe {
             <meta name="robots" content="noindex, nofollow">
 			<?php wp_print_styles(); ?>
             <title><?php echo esc_html( $page_title ); ?></title>
+<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- standalone page prints its own head without wp_head(), so an enqueued style would never print ?>
             <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         </head>
         <body class="bwfan-manage-profile-page-body <?php echo is_rtl() ? 'is-rtl' : ''; ?>">
@@ -628,7 +630,7 @@ class BWFAN_unsubscribe {
 
 		// Use esc_like for LIKE queries to prevent SQL injection
 		$like = '%' . $wpdb->esc_like( $term ) . '%';
-		$results = $wpdb->get_results(
+		$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- live post title search for the unsubscribe page; not cacheable
 			$wpdb->prepare(
 				"SELECT ID, post_title FROM {$wpdb->prefix}posts WHERE post_title LIKE %s AND post_type = %s AND post_status = %s",
 				$like,
@@ -941,7 +943,7 @@ class BWFAN_unsubscribe {
 			sanitize_text_field( $this->recipient ),
 			$mode
 		);
-		$unsubscribers = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$unsubscribers = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		if ( $unsubscribers > 0 ) {
 			$this->return_message( 6 );
 		}
@@ -1007,7 +1009,7 @@ class BWFAN_unsubscribe {
 			sanitize_text_field( $this->recipient ),
 			$mode
 		);
-		$unsubscribers = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$unsubscribers = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		if ( ! empty( $unsubscribers ) ) {
 			foreach ( $unsubscribers as $unsubscriber ) {
 				$id = $unsubscriber['ID'];

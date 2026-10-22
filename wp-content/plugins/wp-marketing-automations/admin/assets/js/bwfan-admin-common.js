@@ -1,3 +1,13 @@
+/* decodeURIComponent that never throws: a value can hold a bare % ("50% off"), which is not valid
+   percent-encoding and raises "URIError: URI malformed". */
+function bwfan_safe_decode( value ) {
+	try {
+		return decodeURIComponent( value );
+	} catch ( e ) {
+		return value;
+	}
+}
+
 /* Deserialize the form data */
 function bwfan_deserialize_obj( query ) {
 	if ( '' === query ) {
@@ -21,8 +31,8 @@ function bwfan_deserialize_obj( query ) {
 	const data = {};
 	for ( let i = 0; i < nvp.length; i++ ) {
 		const pair = nvp[ i ].split( '=' );
-		const name = decodeURIComponent( pair[ 0 ] );
-		const value = decodeURIComponent( pair[ 1 ] );
+		const name = bwfan_safe_decode( pair[ 0 ] );
+		const value = bwfan_safe_decode( pair[ 1 ] );
 
 		let path = name.match( /(^[^\[]+)(\[.*\]$)?/ );
 		const first = path[ 1 ];
@@ -46,9 +56,13 @@ function bwfan_deserialize_obj( query ) {
 		adminSyncButton.on( 'click', function () {
 			$( this ).addClass( 'loading' );
 			$( this ).html( bwfanProObj.localize_text.loading );
+			$( '#bwfan-editorder-message-section' )
+				.hide()
+				.removeClass( 'bwf-success bwf-error' );
 			fetch(
-				bwfanProObj.siteUrl +
-					'/wp-json/' +
+				// wpApiSettings.root instead of siteUrl + '/wp-json/': works with plain
+				// permalinks (?rest_route=) and sites that rename the REST prefix
+				wpApiSettings.root +
 					bwfanProObj.apiNamespace +
 					'/contact/' +
 					bwfanProObj.contactId +
@@ -61,18 +75,36 @@ function bwfan_deserialize_obj( query ) {
 					},
 				}
 			)
-				.then( ( response ) => response.json() )
+				.then( ( response ) =>
+					response
+						.json()
+						.catch( () => null )
+						.then( ( parsed ) => {
+							if ( ! parsed || typeof parsed !== 'object' ) {
+								// Unparseable/empty body (WAF page, PHP fatal): a failure
+								// regardless of HTTP status — never let it look like success
+								throw new Error( 'HTTP ' + response.status );
+							}
+							if ( ! response.ok ) {
+								return {
+									httpFailed: true,
+									message: parsed.message
+										? parsed.message
+										: bwfanProObj.localize_text.error +
+										  ' (HTTP ' +
+										  response.status +
+										  ')',
+								};
+							}
+							return parsed;
+						} )
+				)
 				.then( function ( result ) {
 					let message = '';
-					if ( result.code == 200 ) {
-						$( '#bwfan-editorder-message-section' ).addClass(
-							'bwf-success'
-						);
-					} else {
-						$( '#bwfan-editorder-message-section' ).addClass(
-							'bwf-error'
-						);
-					}
+					const isSuccess = ! result.httpFailed && result.code == 200;
+					$( '#bwfan-editorder-message-section' ).addClass(
+						isSuccess ? 'bwf-success' : 'bwf-error'
+					);
 					$( '#bwfan-admin-resync-order' )
 						.html( bwfanProObj.localize_text.text )
 						.removeClass( 'loading' );
@@ -89,14 +121,31 @@ function bwfan_deserialize_obj( query ) {
 
 					if ( message !== '' ) {
 						$( '#bwfan-editorder-message-section' )
-							.html( result.message )
+							.html( message )
 							.show();
-						setTimeout( function () {
-							$( '#bwfan-editorder-message-section' )
-								.hide()
-								.removeClass( 'bwf-success bwf-error' );
-						}, 3000 );
+						// Errors stay visible; only success auto-hides
+						if ( isSuccess ) {
+							setTimeout( function () {
+								$( '#bwfan-editorder-message-section' )
+									.hide()
+									.removeClass( 'bwf-success bwf-error' );
+							}, 3000 );
+						}
 					}
+				} )
+				.catch( function ( err ) {
+					$( '#bwfan-admin-resync-order' )
+						.html( bwfanProObj.localize_text.text )
+						.removeClass( 'loading' );
+					$( '#bwfan-editorder-message-section' )
+						.addClass( 'bwf-error' )
+						.html(
+							bwfanProObj.localize_text.error +
+								( err && err.message
+									? ' (' + err.message + ')'
+									: '' )
+						)
+						.show();
 				} );
 		} );
 	} );

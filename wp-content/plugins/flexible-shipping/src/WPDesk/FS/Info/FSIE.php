@@ -39,5 +39,4 @@ class FSIE extends Metabox {
 
 		return '<a class="oct-metabox-btn" href="' . esc_url( $url ) . '" target="_blank">' . __( 'Buy Add-ons', 'flexible-shipping' ) . '</a>';
 	}
-
 }

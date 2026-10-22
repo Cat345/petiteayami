@@ -117,11 +117,7 @@ class Configuration extends Repository implements Config
             return $value;
         }
 
-        if (isset($this->cache[$value])) {
-            return $this->cache[$value];
-        }
-
-        return $this->cache[$value] = new FilterNode($this->matchString($matches[0]), 'path');
+        return $this->cache[$value] ??= new FilterNode($this->matchString($matches[0]), 'path');
     }
 
     /**

@@ -209,7 +209,7 @@ class BWFAN_WC_Cart_Recovery_Link extends BWFAN_Merge_Tag {
         global $wpdb;
         $query = "SELECT uid FROM {$wpdb->prefix}bwf_contact WHERE id = %d";
 
-        return $wpdb->get_var( $wpdb->prepare( $query, $contact_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        return $wpdb->get_var( $wpdb->prepare( $query, $contact_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare()
     }
 }
 

@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || exit;
+// phpcs:disable Generic.PHP.DisallowAlternativePHPTags -- <% %> below are Underscore.js template delimiters inside HTML output, not PHP tags (asp_tags was removed in PHP 7.0)
 
 #[\AllowDynamicProperties]
 class BWFAN_Rule_Cart_Total extends BWFAN_Rule_Base {
@@ -412,13 +414,14 @@ class BWFAN_Rule_Cart_Category extends BWFAN_Rule_Term_Taxonomy {
 
 	public function get_possible_rule_values() {
 		$result = array();
-		$terms  = get_terms( 'product_cat', array(
+		$terms  = get_terms( array(
+			'taxonomy'   => 'product_cat',
 			'hide_empty' => false,
 		) );
 
 		if ( $terms && ! is_wp_error( $terms ) ) {
 			foreach ( $terms as $term ) {
-				$result[ $term->term_id ] = $term->name;
+				$result[ $term->term_id ] = BWFAN_Common::decode_term_name( $term->name );
 			}
 		}
 
@@ -498,13 +501,14 @@ class BWFAN_Rule_Cart_Items_Tag extends BWFAN_Rule_Term_Taxonomy {
 
 	public function get_possible_rule_values() {
 		$result = array();
-		$terms  = get_terms( 'product_tag', array(
+		$terms  = get_terms( array(
+			'taxonomy'   => 'product_tag',
 			'hide_empty' => false,
 		) );
 
 		if ( $terms && ! is_wp_error( $terms ) ) {
 			foreach ( $terms as $term ) {
-				$result[ $term->term_id ] = $term->name;
+				$result[ $term->term_id ] = BWFAN_Common::decode_term_name( $term->name );
 			}
 		}
 
@@ -1076,6 +1080,83 @@ class BWFAN_Rule_Is_Global_Checkout extends BWFAN_Rule_Base {
         <% if (condition == "no") { %> Is not <% } %>
 		<?php
 		esc_html_e( 'Global Checkout', 'wp-marketing-automations' );
+	}
+
+}
+
+/**
+ * Cart Rule: Marketing Consent
+ *
+ * Reads the checkout "Marketing Consent" checkbox (bwfan_user_consent) value
+ * captured live into the abandoned cart's checkout_data snapshot, and returns
+ * true/false based on whether the contact had it checked or unchecked.
+ */
+class BWFAN_Rule_Cart_Marketing_Consent extends BWFAN_Rule_Base {
+
+	public function __construct() {
+		parent::__construct( 'cart_marketing_consent' );
+		$this->v2 = true;
+		$this->v1 = false;
+	}
+
+	/** v2 Methods: START */
+
+	public function get_options( $term = '' ) {
+		return $this->get_possible_rule_values();
+	}
+
+	public function get_possible_rule_values() {
+		return array(
+			'yes' => __( 'Yes', 'wp-marketing-automations' ),
+			'no'  => __( 'No', 'wp-marketing-automations' ),
+		);
+	}
+
+	public function get_rule_type() {
+		return 'Select';
+	}
+
+	/**
+	 * Extract the bwfan_user_consent field value from the cart's captured checkout data.
+	 *
+	 * @param array $abandoned_data
+	 *
+	 * @return bool
+	 */
+	protected function get_consent_value( $abandoned_data ) {
+		if ( ! is_array( $abandoned_data ) || empty( $abandoned_data['checkout_data'] ) ) {
+			return false;
+		}
+
+		$checkout_data = $abandoned_data['checkout_data'];
+		$checkout_data = is_string( $checkout_data ) ? json_decode( $checkout_data, true ) : $checkout_data;
+
+		if ( ! is_array( $checkout_data ) || empty( $checkout_data['fields'] ) || ! is_array( $checkout_data['fields'] ) ) {
+			return false;
+		}
+
+		if ( ! isset( $checkout_data['fields']['bwfan_user_consent'] ) ) {
+			return false;
+		}
+
+		return (bool) absint( $checkout_data['fields']['bwfan_user_consent'] );
+	}
+
+	public function is_match_v2( $automation_data, $rule_data ) {
+		if ( ! isset( $automation_data['global'] ) || ! is_array( $automation_data['global'] ) || empty( $automation_data['global']['cart_details'] ) ) {
+			return $this->return_is_match( false, $rule_data );
+		}
+
+		$result = $this->get_consent_value( $automation_data['global']['cart_details'] );
+		$result = ( 'yes' === $rule_data['data'] ) ? $result : ! $result;
+
+		return $this->return_is_match( $result, $rule_data );
+	}
+
+	/** v2 Methods: END */
+
+	public function get_possible_rule_operators() {
+		return null;
 	}
 
 }

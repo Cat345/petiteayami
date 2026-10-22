@@ -2,7 +2,6 @@
 
 namespace WPDesk\FS\TableRate\Rule\Condition\Pro;
 
-
 use WPDesk\FS\TableRate\Rule\Condition\AbstractCondition;
 
 class ProductFieldRange extends AbstractCondition {

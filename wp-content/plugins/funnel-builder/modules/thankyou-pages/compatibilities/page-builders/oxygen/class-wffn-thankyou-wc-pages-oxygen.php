@@ -125,7 +125,7 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Oxygen' ) ) {
 
 		public function prepare_frontend_module() {
 			global $post;
-			if ( is_null( $post ) ) {
+			if ( ! $post instanceof WP_Post ) {
 				return;
 			}
 			if ( $post->post_type === WFFN_Core()->thank_you_pages->get_post_type_slug() ) {
@@ -188,7 +188,7 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Oxygen' ) ) {
 				if ( ! is_null( $node ) ) {
 					$node = (array) $node;
 					global $post;
-					if ( ! is_null( $post ) && $post->post_type === WFFN_Core()->thank_you_pages->get_post_type_slug() ) {
+					if ( $post instanceof WP_Post && $post->post_type === WFFN_Core()->thank_you_pages->get_post_type_slug() ) {
 						$wfacp_id     = $post->ID;
 						$href         = $node['href'];
 						$node['href'] = add_query_arg( [ 'ct_builder' => 'true', 'oxy_wffn_thankyou_id' => $wfacp_id ], $href );
@@ -228,7 +228,7 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Oxygen' ) ) {
 
 		public function disable_universal_css( $status ) {
 			global $post;
-			if ( ! is_null( $post ) && $post->post_type === WFFN_Core()->thank_you_pages->get_post_type_slug() ) {
+			if ( $post instanceof WP_Post && $post->post_type === WFFN_Core()->thank_you_pages->get_post_type_slug() ) {
 				$status = 'false';
 			}
 
@@ -245,7 +245,7 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Oxygen' ) ) {
 
 			$ct_builder = ( isset( $_GET['ct_builder'] ) && $_GET['ct_builder'] === 'true' ) ? true : false;//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			if ( ! is_null( $post ) && $post->post_type === WFFN_Core()->thank_you_pages->get_post_type_slug() ) {
+			if ( $post instanceof WP_Post && $post->post_type === WFFN_Core()->thank_you_pages->get_post_type_slug() ) {
 				$design = WFFN_Core()->thank_you_pages->get_page_design( $post->ID );
 				if ( ( $ct_builder === true ) || ( is_array( $design ) && isset( $design['selected_type'] ) && 'oxy' === $design['selected_type'] ) ) {
 					remove_action( 'template_include', [ WFFN_Thank_You_WC_Pages::get_instance(), 'may_be_change_template' ], 99 );

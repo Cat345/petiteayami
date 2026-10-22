@@ -9,7 +9,6 @@ use MailPoet\Entities\StatisticsBounceEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
-use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Bounces {
@@ -64,31 +63,29 @@ class Bounces {
    */
   public function get($data = []): array {
     $definition = $this->parseData($data);
+    $connection = $this->entityManager->getConnection();
 
-    $countQuery = $this->getBouncesQuery($definition, true);
-    if ($countQuery) {
-      $query = 'SELECT COUNT(*) as cnt FROM ( ' . $countQuery . ' ) t ';
-      /** @var int $result */
-      $result = $this->entityManager->getConnection()->executeQuery($query)->fetchOne();
-      $count = intval($result);
-
-      $query = $this->getBouncesQuery($definition);
-      $query .= " ORDER BY {$definition->getSortBy()} {$definition->getSortOrder()} LIMIT :limit OFFSET :offset ";
-      $items = $this
-        ->entityManager
-        ->getConnection()
-        ->executeQuery($query, [
-          'limit' => $definition->getLimit(),
-          'offset' => $definition->getOffset(),
-        ], [
-          'limit' => ParameterType::INTEGER,
-          'offset' => ParameterType::INTEGER,
-        ])
-        ->fetchAllAssociative();
-    } else {
-      $count = 0;
-      $items = [];
+    $parameters = ['newsletterId' => intval($definition->getParameters()['id'])];
+    $types = ['newsletterId' => ParameterType::INTEGER];
+    $search = $this->sanitizeSearchLike($definition->getSearch());
+    if ($search !== null) {
+      $parameters['search'] = $search;
+      $types['search'] = ParameterType::STRING;
     }
+
+    $queryBody = $this->getBouncesQueryBody($definition, $search !== null);
+    $count = $connection->executeQuery('SELECT COUNT(*) ' . $queryBody, $parameters, $types)->fetchOne();
+    $count = is_numeric($count) ? (int)$count : 0;
+
+    $query = 'SELECT ' . join(', ', self::getFields()) . ' ' . $queryBody
+      . " ORDER BY {$definition->getSortBy()} {$definition->getSortOrder()} LIMIT :limit OFFSET :offset ";
+    $items = $connection
+      ->executeQuery(
+        $query,
+        $parameters + ['limit' => $definition->getLimit(), 'offset' => $definition->getOffset()],
+        $types + ['limit' => ParameterType::INTEGER, 'offset' => ParameterType::INTEGER]
+      )
+      ->fetchAllAssociative();
 
     return [
       'count' => $count,
@@ -98,26 +95,31 @@ class Bounces {
     ];
   }
 
-  private function getBouncesQuery(Listing\ListingDefinition $definition, bool $count = false): ?string {
-    $searchConstraint = '';
-    $newsletterId = intval($definition->getParameters()['id']);
-
+  /**
+   * Everything after SELECT, shared by the count and page queries. The search is
+   * applied to the joined subscribers only, so it never scans the whole
+   * subscriber table.
+   */
+  private function getBouncesQueryBody(Listing\ListingDefinition $definition, bool $withSearch): string {
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $bouncesTable = $this->entityManager->getClassMetadata(StatisticsBounceEntity::class)->getTableName();
-    $searchString = $definition->getSearch();
 
-    if (is_string($searchString) && !empty($searchString)) {
-      $searchConstraint = $this->getSearchConstraint($searchString);
-      if ($searchConstraint === null) {
-        // Nothing was found by search
-        return null;
-      }
-    }
-
+    $searchConstraint = $withSearch
+      ? ' AND (subscribers.email LIKE :search OR subscribers.first_name LIKE :search OR subscribers.last_name LIKE :search) '
+      : '';
     $dateRange = $this->sanitizeDateRange($definition->getFilters());
     $dateConstraint = $this->buildDateRangeConstraint('bounces.created_at', $dateRange['from'], $dateRange['to']);
 
-    $fields = [
+    return 'FROM ' . $bouncesTable . ' bounces '
+      . 'LEFT JOIN ' . $subscriberTable . ' subscribers ON subscribers.id = bounces.subscriber_id '
+      . 'WHERE bounces.newsletter_id = :newsletterId ' . $searchConstraint . $dateConstraint;
+  }
+
+  /**
+   * @return array<int, string>
+   */
+  private static function getFields(): array {
+    return [
       'bounces.id',
       'bounces.created_at',
       'bounces.subscriber_id',
@@ -126,50 +128,5 @@ class Bounces {
       'subscribers.first_name',
       'subscribers.last_name',
     ];
-
-    return 'SELECT '
-      . self::getColumnList($fields, $count) . ' '
-      . 'FROM ' . $bouncesTable . ' bounces '
-      . 'LEFT JOIN ' . $subscriberTable . ' subscribers ON subscribers.id = bounces.subscriber_id '
-      . "WHERE bounces.newsletter_id = '" . $newsletterId . "' " . $searchConstraint . $dateConstraint;
-  }
-
-  private function getSearchConstraint(string $searchString): ?string {
-    // Search recipients
-    $search = trim($searchString);
-    $search = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $search); // escape for 'LIKE'
-    $qb = $this->entityManager->getConnection()->createQueryBuilder();
-    $qb->addSelect('id')
-      ->from($this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName())
-      ->orWhere($qb->expr()->like('email', ':search'))
-      ->orWhere($qb->expr()->like('first_name', ':search'))
-      ->orWhere($qb->expr()->like('last_name', ':search'))
-      ->setParameter('search', '%' . $search . '%');
-    $result = $qb->execute();
-    if (!$result instanceof Result) { // for PHPStan, it doesn't know execute always returns Statement for SELECT queries
-      throw new \Exception('$statement must be an instance of Statement');
-    }
-    $subscriberIds = $result->fetchAll();
-
-    $subscriberIds = array_column($subscriberIds, 'id');
-    if (empty($subscriberIds)) {
-      return null;
-    }
-
-    return sprintf(
-      ' AND subscribers.id IN (%s) ',
-      join(',', array_map('intval', $subscriberIds))
-    );
-  }
-
-  /**
-   * @param array<int, string> $fields
-   * @param bool $count
-   *
-   * @return string
-   */
-  private static function getColumnList(array $fields, bool $count = false): string {
-    // Select ID field only for counting
-    return $count ? (string)reset($fields) : join(', ', $fields);
   }
 }

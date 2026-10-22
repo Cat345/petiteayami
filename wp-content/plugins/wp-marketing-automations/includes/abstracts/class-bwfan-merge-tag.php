@@ -142,7 +142,7 @@ abstract class BWFAN_Merge_Tag {
 		echo '<div class="bwfan_label_val">';
 		echo '<select class="bwfan_date_format bwfan-input-wrapper bwfan_tag_select" name="format" style="width:100%;">';
 		foreach ( $formats as $parameters ) {
-			$date_time = $this->format_datetime( date( 'Y-m-d H:i:s' ), $parameters );
+			$date_time = $this->format_datetime( gmdate( 'Y-m-d H:i:s' ), $parameters );
 			echo '<option value="' . $parameters['format'] . '">' . $date_time . '</option>'; //phpcs:ignore WordPress.Security.EscapeOutput
 		}
 		echo '</select>';
@@ -202,30 +202,171 @@ abstract class BWFAN_Merge_Tag {
 			$output_format = 'Y-m-d H:i:s';
 		}
 		if ( is_a( $input, 'DateTime' ) ) {
-			$date = $input;
+			/**
+			 * Cloned so the timezone switch below cannot leak into the caller's object.
+			 *
+			 * Pro's subscription start date tag passes `$subscription->get_date_created()`, a live
+			 * `WC_DateTime` that WooCommerce hands out by reference. `WC_DateTime::setTimezone()` also
+			 * zeroes the UTC offset it stores for sites on a manual `gmt_offset`, and that offset feeds
+			 * its own `date()` / `date_i18n()` helpers, so mutating it here could shift the caller's
+			 * later reads. The `order_date` tag guards itself by cloning at its own call site; doing it
+			 * here covers the ones that do not.
+			 */
+			$date = clone $input;
 		} else {
 			if ( is_numeric( $input ) ) {
 				$date = new DateTime();
 				$date->setTimestamp( $input );
 			} else {
+				/**
+				 * The parse is pinned to UTC because this function treats its input as GMT.
+				 *
+				 * Left implicit, the instant depended on `date_default_timezone_get()`. WordPress
+				 * forces that to UTC, so nothing moves today — but it is ambient state any plugin
+				 * can change with `date_default_timezone_set()`, and it was the last input to the
+				 * result that this function did not control. A string carrying its own offset keeps
+				 * it; the argument applies only when the input has none.
+				 */
+				$utc = new DateTimeZone( 'UTC' );
 				try {
-					$date = false !== DateTime::createFromFormat( $input_format, $input ) ? DateTime::createFromFormat( $input_format, $input ) : new DateTime( $input );
+					$parsed = DateTime::createFromFormat( $input_format, $input, $utc );
+					$date   = false !== $parsed ? $parsed : new DateTime( $input, $utc );
 				} catch ( Exception $e ) {
 					return '';
 				}
 			}
 		}
 
-		/** Convert time in store time if gmt is false */
-		if ( false === $is_gmt ) {
-			$date = BWFAN_Common::convert_to_site_time( $date );
-		}
+		/**
+		 * Render in the store timezone, or UTC when GMT was requested.
+		 *
+		 * `wp_timezone()` is the single source of truth for both the conversion and the
+		 * formatting below. The previous implementation shifted the instant by
+		 * `convert_to_site_time()` -> `BWFAN_Common::get_timezone_offset()`, then handed the result
+		 * to `date_i18n()`, which reads a supplied timestamp back as a UTC wall clock and reinterprets
+		 * that wall clock as site-local. The round trip is faithful, so it echoed back whatever offset
+		 * `get_timezone_offset()` had applied: correct while the two resolutions of the site timezone
+		 * agreed, and out by the full divergence when they did not. Converting on the DateTime itself
+		 * leaves no second source to disagree with.
+		 *
+		 * This also keeps the `T` / `O` format characters honest: GMT output previously carried
+		 * the store timezone label while holding a UTC value.
+		 *
+		 * `$is_gmt` is cast deliberately. The guard this replaced was `false === $is_gmt`, which sent
+		 * every falsy non-boolean — `0`, `null`, `''` — down the GMT branch, a full UTC offset away
+		 * from where a caller passing `null` would expect to land. Reading it as a plain boolean is
+		 * the intended meaning. Every caller in Lite, Pro and Sublium Subscriptions passes a strict
+		 * boolean, so nothing in tree moves; the cast is here so the choice is visible to third-party
+		 * subclasses of this abstract, and so the old strict check does not get "restored" later.
+		 */
+		$timezone = (bool) $is_gmt ? new DateTimeZone( 'UTC' ) : wp_timezone();
+		$date->setTimezone( $timezone );
 
+		/**
+		 * Applied after the timezone switch, so it operates on the site-local wall clock.
+		 *
+		 * The old ordering did too: it shifted the instant first, leaving a UTC-zoned DateTime that
+		 * already carried the site wall clock. So the result is unchanged by the switch. PHP's
+		 * relative units are wall-clock based — `+24 hours` no less than `+1 day` — and across the
+		 * end of DST both land on the same local time the following day, 25 real hours later.
+		 */
 		if ( isset( $parameters['modify'] ) && ! empty( $parameters['modify'] ) ) {
-			$date->modify( $parameters['modify'] );
+			try {
+				$date->modify( $parameters['modify'] );
+			} catch ( Exception $e ) {
+				/**
+				 * `modify` is typed by hand into a merge tag field, so an unparseable value is a
+				 * routine typo, not an exceptional condition. PHP 8.3 turned that from a `false`
+				 * return into a thrown `DateMalformedStringException`, which was uncaught here and
+				 * so fatal partway through rendering an email.
+				 *
+				 * A failed `modify()` leaves the DateTime untouched on both PHP versions, so the
+				 * unmodified date still renders. Dropping the tag over a bad modifier would be the
+				 * harsher failure, and PHP is lenient enough that only genuine garbage lands here —
+				 * `+1 dayz` still parses as `+1 day`.
+				 */
+				unset( $e );
+			}
 		}
 
-		return date_i18n( $output_format, $date->getTimestamp() );
+		/**
+		 * Format localized month/day names in the language of the record being rendered (e.g. WPML) instead
+		 * of the ambient request locale, which is nondeterministic in cron/async workers.
+		 *
+		 * Resolved here once for every date merge tag rather than in each merge tag class, so tags do not
+		 * have to opt in one by one. $parameters['locale'] stays available as an explicit per-tag override.
+		 * Always restored afterward so batch workers are not left with a mutated locale bleeding into
+		 * subsequent records.
+		 */
+		if ( ! BWFAN_Common::should_skip_language_support() ) {
+			$locale = ( isset( $parameters['locale'] ) && ! empty( $parameters['locale'] ) ) ? $parameters['locale'] : BWFAN_Common::get_locale_from_language_code( self::get_context_language() );
+
+			if ( ! empty( $locale ) ) {
+				/**
+				 * switch_to_locale() decides on its own whether a switch is needed, and that is deliberate:
+				 * WP_Locale_Switcher::switch_to_locale() compares against determine_locale() and refuses
+				 * locales whose language pack is not installed. get_locale() must not be used for that check:
+				 * WPML filters 'locale' (SitePress::locale_filter), so it reports WPML's current language
+				 * rather than the locale whose translations are actually loaded. determine_locale() is
+				 * filtered by the locale switcher itself, so it does reflect an active switch. A redundant or
+				 * impossible switch returns false, costs nothing, and is not restored.
+				 */
+				$switched = switch_to_locale( $locale );
+
+				/**
+				 * A refused switch is silent and falls back to the ambient locale, which is the behaviour
+				 * this fix exists to correct. The usual cause is a missing language pack, so record it when
+				 * logging is enabled rather than leaving support to guess from a screenshot.
+				 */
+				if ( false === $switched && $locale !== determine_locale() ) {
+					BWFAN_Common::log_test_data( 'Date merge tag: could not switch to ' . $locale . ', formatting with ' . determine_locale(), 'fka-merge-tag-locale' );
+				}
+
+				/**
+				 * Same terminal call as the unswitched path below. wp_date() reads $wp_locale for month/day
+				 * names, so the switch above is all it needs to localize. date_i18n() must not be used here:
+				 * it reads a supplied timestamp back as a UTC wall clock and reinterprets it as site-local,
+				 * so a true epoch renders the UTC time, off by the site offset, and it ignores $timezone
+				 * so GMT output would carry the store timezone label. That is the bug #4835 removed.
+				 */
+				$formatted = wp_date( $output_format, $date->getTimestamp(), $timezone );
+				if ( true === $switched ) {
+					restore_previous_locale();
+				}
+
+				return $formatted;
+			}
+		}
+
+		return wp_date( $output_format, $date->getTimestamp(), $timezone );
+	}
+
+	/**
+	 * Language of the record currently being rendered, read from the merge tag data bag.
+	 *
+	 * The automation engines set 'language' explicitly before rendering (BWFAN_Tasks for V1,
+	 * BWFAN_Action_Controller for V2). Transactional mails only set the order, so fall back to resolving
+	 * the language from that order.
+	 *
+	 * @return string
+	 */
+	protected static function get_context_language() {
+		$lang = BWFAN_Merge_Tag_Loader::get_data( 'language' );
+		if ( ! empty( $lang ) && is_string( $lang ) ) {
+			return $lang;
+		}
+
+		if ( ! function_exists( 'wc_get_order' ) ) {
+			return '';
+		}
+
+		$order = BWFAN_Merge_Tag_Loader::get_data( 'wc_order' );
+		if ( ! $order instanceof WC_Order ) {
+			$order_id = BWFAN_Merge_Tag_Loader::get_data( 'order_id' );
+			$order    = empty( $order_id ) ? false : wc_get_order( $order_id );
+		}
+
+		return $order instanceof WC_Order ? BWFAN_Common::get_order_language( $order ) : '';
 	}
 
 	public function get_fallback() {
@@ -402,7 +543,7 @@ abstract class BWFAN_Merge_Tag {
 			return $date_value;
 		}
 		$date_format = BWFAN_Common::bwfan_get_date_format();
-		$date_value  = date( $date_format, strtotime( $date_value ) );
+		$date_value  = date( $date_format, strtotime( $date_value ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Reformats strtotime(date string) round-trip; gmdate would shift the calendar day
 
 		return $date_value;
 	}

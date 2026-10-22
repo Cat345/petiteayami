@@ -121,14 +121,16 @@ class BWFAN_Traversal_Controller {
 			$this->log( [ 'id' => $current_step['id'], 'type' => $current_step['type'] ], 'goal-check' );
 
 			/**
-			 * Disabled Split/Conditional — do not enter its branch. Jump to the merger,
-			 * matching process_disabled_step() in the main engine. Any goal inside the
-			 * skipped subtree is intentionally unreachable via this path.
+			 * Disabled Split/Conditional, or any branching step on a Lite site — do not
+			 * enter its branch. Jump to the merger, matching process_disabled_step() in
+			 * the main engine (which fast-forwards Pro-only steps when Pro is inactive;
+			 * evaluating rules here would also fatal on Lite where BWFAN_Core()->rules
+			 * is not registered). Any goal inside the skipped subtree is intentionally
+			 * unreachable via this path.
 			 */
 			if (
-				in_array( $current_step['type'], [ 'conditional', 'split' ], true ) &&
-				! empty( $disabled_step_ids ) &&
-				in_array( intval( $current_step['stepId'] ), $disabled_step_ids, true )
+				in_array( $current_step['type'], [ 'conditional', 'split', 'branches' ], true ) &&
+				( ! bwfan_is_autonami_pro_active() || ( ! empty( $disabled_step_ids ) && in_array( intval( $current_step['stepId'] ), $disabled_step_ids, true ) ) )
 			) {
 				$merger = $this->get_merger_or_end( intval( $current_step['stepId'] ) );
 				if ( empty( $merger ) || 'end' === $merger || false === $this->set_node_id_from_step_id( intval( $merger ) ) ) {
@@ -148,6 +150,11 @@ class BWFAN_Traversal_Controller {
 					$this->process_goal_conditional( $goal_ins, $automation_contact );
 					$this->traverse_to_next_step();
 					$this->log( 'traversed to next conditional step', 'goal-check' );
+					break;
+				case 'branches':
+					$this->process_goal_branches( $goal_ins, $automation_contact );
+					$this->traverse_to_next_step();
+					$this->log( 'traversed to next multi conditional step', 'goal-check' );
 					break;
 				case 'jump':
 					$this->process_jump( $goal_ins, $automation_contact );
@@ -201,8 +208,8 @@ class BWFAN_Traversal_Controller {
 
 		foreach ( $this->steps as $step ) {
 
-			/** If step id is empty or is a split path then skip */
-			if ( empty( $step['stepId'] ) || false !== strpos( (string) $step['stepId'], '-path-' ) ) {
+			/** If step id is empty or is a split path / branch chip pseudo-node then skip */
+			if ( empty( $step['stepId'] ) || false !== strpos( (string) $step['stepId'], '-path-' ) || false !== strpos( (string) $step['stepId'], '-branch-' ) ) {
 				continue;
 			}
 			if ( ( absint( $step['stepId'] ) === absint( $step_id ) ) ) {
@@ -245,11 +252,12 @@ class BWFAN_Traversal_Controller {
 	 */
 	public function traverse_to_next_step() {
 		$current_step = $this->get_current_step();
-		$this->log( $this->trail_id . ' - current step id: ' . $current_step['stepId'] . ' and node id: ' . $current_step['id'] . ' and type: ' . $current_step['type'] );
 
 		if ( empty( $current_step ) || empty( $this->links ) ) {
 			return false;
 		}
+
+		$this->log( $this->trail_id . ' - current step id: ' . ( isset( $current_step['stepId'] ) ? $current_step['stepId'] : '' ) . ' and node id: ' .  ( isset( $current_step['id'] ) ? $current_step['id'] : '' ) . ' and type: ' . ( isset( $current_step['type'] ) ? $current_step['type'] : '' ) );
 
 		if ( 'conditional' === $current_step['type'] ) {
 			/** Traverse conditional step */
@@ -260,6 +268,19 @@ class BWFAN_Traversal_Controller {
 
 			$this->current_node_id = $next_step;
 			$this->log( $this->trail_id . ' - traverse to next step from conditional step. New node id: ' . $this->current_node_id );
+
+			return true;
+		}
+
+		if ( 'branches' === $current_step['type'] ) {
+			/** Traverse multi conditional (branches) step */
+			$next_step = $this->traverse_branches_step();
+			if ( empty( $next_step ) ) {
+				return false;
+			}
+
+			$this->current_node_id = $next_step;
+			$this->log( $this->trail_id . ' - traverse to next step from multi conditional step. New node id: ' . $this->current_node_id );
 
 			return true;
 		}
@@ -332,6 +353,40 @@ class BWFAN_Traversal_Controller {
 	}
 
 	/**
+	 * Return step id after processing multi conditional step result
+	 *
+	 * @return false|mixed
+	 */
+	public function traverse_branches_step() {
+		$branch_node_id = $this->conditional_result_node_id;
+		if ( isset( $this->links[ $branch_node_id ] ) ) {
+			return $this->links[ $branch_node_id ];
+		}
+
+		/** Maybe check if set in the database */
+		if ( $this->automation_contact_ins instanceof BWFAN_Automation_Controller ) {
+			$data = $this->automation_contact_ins->automation_contact_data;
+			if ( isset( $data['node_id'] ) && isset( $this->links[ $data['node_id'] ] ) ) {
+				/** Removing saved node id from the DB */
+				$this->automation_contact_ins->update_conditional_step_result();
+
+				return $this->links[ $data['node_id'] ];
+			}
+		}
+
+		/** Branch deleted while contact in-flight: fall to Everyone Else path */
+		$else_node_id = $this->current_node_id . '-branch-else';
+		if ( isset( $this->links[ $else_node_id ] ) ) {
+			return $this->links[ $else_node_id ];
+		}
+
+		BWFAN_Common::log_test_data( 'not able to traverse to multi conditional next step ' . $this->current_node_id, 'traverse_branches_failed' );
+		BWFAN_Common::log_test_data( 'branch_node_id: ' . $branch_node_id, 'traverse_branches_failed' );
+
+		return false;
+	}
+
+	/**
 	 * Return step id after processing split next path result
 	 *
 	 * @return false|mixed
@@ -373,6 +428,29 @@ class BWFAN_Traversal_Controller {
 	}
 
 	/**
+	 * Process multi conditional step data for goal only (live re-evaluation)
+	 *
+	 * @param $goal_ins BWFAN_Goal_Controller
+	 * @param array $automation_contact automation contact row
+	 *
+	 * @return void
+	 */
+	public function process_goal_branches( $goal_ins, $automation_contact ) {
+		$current_step = $this->get_current_step();
+
+		$ins                = new BWFAN_Branches_Controller();
+		$ins->contact_id    = $goal_ins->contact_id;
+		$ins->automation_id = $goal_ins->automation_id;
+		$ins->step_id       = absint( $current_step['stepId'] );
+		$ins->populate_step_data( $current_step );
+		$ins->populate_automation_contact_data( $automation_contact );
+
+		$branch = $ins->get_matched_branch();
+
+		$this->conditional_result_node_id = $current_step['id'] . '-branch-' . $branch;
+	}
+
+	/**
 	 * Process jump step
 	 *
 	 * @param $goal_ins
@@ -410,12 +488,12 @@ class BWFAN_Traversal_Controller {
 
 		$step_id = $ins->step_id;
 		$query   = $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_contact_trail` WHERE `tid` = %s AND `sid` = %d LIMIT 0,1;", $ins->automation_contact['trail'], $step_id );
-		$result  = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result  = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 
 		$valid_step_id = 0;
 		if ( ! empty( $result ) ) {
 			$query  = $wpdb->prepare( "SELECT t.`sid` FROM `{$wpdb->prefix}bwfan_automation_contact_trail` as t INNER JOIN `{$wpdb->prefix}bwfan_automation_step` as s ON s.`ID` = t.`sid` WHERE t.`tid` = %s AND t.`ID` < %d AND s.`status` IN (%d, %d) ORDER BY t.ID DESC LIMIT 0,1;", $ins->automation_contact['trail'], $result, 0, 1 );
-			$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 			if ( ! empty( $result ) ) {
 				$valid_step_id = strval( $result );
 			}
@@ -594,7 +672,7 @@ class BWFAN_Traversal_Controller {
 		 * also reads real -path- child nodes rather than the stored path count.
 		 */
 		foreach ( $this->links as $src => $tgt ) {
-			if ( 0 === strpos( (string) $src, $node_id . '-path-' ) ) {
+			if ( 0 === strpos( (string) $src, $node_id . '-path-' ) || 0 === strpos( (string) $src, $node_id . '-branch-' ) ) {
 				$branch_starts[] = $tgt;
 			}
 		}
@@ -632,9 +710,9 @@ class BWFAN_Traversal_Controller {
 						$queue[] = [ $this->links[ $v ], $hops + 1 ];
 					}
 				}
-				/** Nested split sub-edges — enumerate actual -path-* handles (no fixed ceiling). */
+				/** Nested split / branches sub-edges — enumerate actual -path-* / -branch-* handles (no fixed ceiling). */
 				foreach ( $this->links as $src => $tgt ) {
-					if ( 0 === strpos( (string) $src, $cur . '-path-' ) && ! isset( $visited[ $tgt ] ) ) {
+					if ( ( 0 === strpos( (string) $src, $cur . '-path-' ) || 0 === strpos( (string) $src, $cur . '-branch-' ) ) && ! isset( $visited[ $tgt ] ) ) {
 						$queue[] = [ $tgt, $hops + 1 ];
 					}
 				}

@@ -43,7 +43,7 @@ return [
 
     '4.5.0-beta.0.3' => function ($node) {
         if (($node->props['link'] ?? '') && ($node->props['panel_link'] ?? '') && preg_match('/^card-(default|primary|secondary)|tile-/', $node->props['panel_style'] ?? '')) {
-            $node->props['panel_link_hover'] = 'true';
+            $node->props['panel_link_hover'] = true;
         }
 
         // Remove obsolete props

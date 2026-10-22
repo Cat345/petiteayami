@@ -197,7 +197,7 @@ if ($props['consent']) {
 
             <?= $consent_card($props, ['class' => ['uk-card-small', !$props['consent_card_size'] ? 'uk-hidden@m' : '']]) ?>
                 <?= $consent_icon($props, ['width' => '40'], '') ?>
-                <p class="uk-text-small uk-margin-small"><?= $props['consent_content'] ?? '' ?></p>
+                <p class="uk-text-small uk-margin-small"><?= $this->trans($props['consent_content'] ?? '') ?></p>
                 <?= $consent_button($props, ['class' => ['uk-button-small']], $props['consent_accept_button'] ?? '') ?>
             <?= $consent_card->end() ?>
 

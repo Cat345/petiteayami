@@ -146,7 +146,7 @@ class WooCommerceBooking {
       return '';
     }
     $product = $payload->getProduct();
-    return $product ? esc_html($product->get_name()) : '';
+    return $product ? $product->get_name() : '';
   }
 
   /**

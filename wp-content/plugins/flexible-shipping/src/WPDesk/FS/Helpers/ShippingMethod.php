@@ -63,5 +63,4 @@ class ShippingMethod {
 
 		return false;
 	}
-
 }

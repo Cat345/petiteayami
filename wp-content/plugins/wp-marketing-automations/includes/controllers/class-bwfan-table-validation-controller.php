@@ -122,9 +122,9 @@ class BWFAN_Table_Validation_Controller {
 		$table_names = array_values( array_filter( array_unique( $table_names ) ) );
 
 		$placeholders = implode( ',', array_fill( 0, count( $table_names ), '%s' ) );
-		$query        = $wpdb->prepare( "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ($placeholders)", array_merge( [ $db_name ], $table_names ) );
+		$query        = $wpdb->prepare( "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ($placeholders)", array_merge( [ $db_name ], $table_names ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders from array_fill %s; values bound via prepare()
 
-		return $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholders from array_fill %s; values bound via prepare()
 	}
 
 	/**
@@ -146,7 +146,7 @@ class BWFAN_Table_Validation_Controller {
 					continue;
 				}
 				$sql    = call_user_func_array( [ __CLASS__, $method_name ], [] );
-				$result = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$result = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- whitelisted table; SQL from internal hardcoded CREATE TABLE builders
 				if ( $result === false ) {
 					$db_errors[] = $wpdb->last_error;
 				}

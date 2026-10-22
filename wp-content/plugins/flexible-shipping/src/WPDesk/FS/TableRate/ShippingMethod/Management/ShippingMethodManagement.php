@@ -83,11 +83,11 @@ class ShippingMethodManagement {
 	/**
 	 * @param int    $instance_id .
 	 * @param string $key         .
-	 * @param string $value       .
+	 * @param string|int $value       .
 	 *
 	 * @return bool|int
 	 */
-	public function update_shipping_method_field( int $instance_id, string $key, string $value ) {
+	public function update_shipping_method_field( int $instance_id, string $key, $value ) {
 		return $this->wpdb->update( $this->get_table(), [ $key => $value ], [ 'instance_id' => $instance_id ] );
 	}
 

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFCRM_Term' ) && BWFAN_Common::is_pro_3_0() ) {
 	#[\AllowDynamicProperties]

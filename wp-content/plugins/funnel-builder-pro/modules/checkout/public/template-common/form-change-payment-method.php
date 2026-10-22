@@ -18,6 +18,9 @@ $stepClassName  = 'wfacp_single_step_form';
 $stepMultiClass = 'wfacp_single_step_form';
 if ( $totalStepCount > 1 && $totalStepCount == 2 ) {
 	$stepMultiClass = 'wfacp_two_step';
+} elseif ( 4 === absint( $totalStepCount ) ) {
+	// Four steps keep the three-step styling and narrow it with wfacp_four_step.
+	$stepMultiClass = 'wfacp_three_step wfacp_four_step';
 } else {
 	$stepMultiClass = 'wfacp_three_step';
 }
@@ -43,8 +46,8 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 <div class="wfacp_main_form woocommerce <?php echo esc_attr( implode( ' ', $form_class ) ); ?>">
 	<?php
 	do_action( 'wfacp_outside_header' );
-	$checkout                = WC()->checkout();
-	$selected_template_slug  = $instance->get_template_slug();
+	$checkout               = WC()->checkout();
+	$selected_template_slug = $instance->get_template_slug();
 	require __DIR__ . '/form_internal_css.php';
 
 	ob_start();
@@ -170,7 +173,9 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 							<div style="clear: both;"></div>
 							<div class="wfacp-comm-title <?php echo esc_attr( $border_cls ); ?>">
 								<h2 class="wfacp_section_heading wfacp_section_title <?php echo esc_attr( $instance->get_heading_class() ); ?> "><?php echo wp_kses_post( $payment_methods_heading ); ?></h2>
+								<?php if ( ! empty( $payment_methods_sub_heading ) ) { ?>
 								<h4 class="<?php echo esc_attr( $instance->get_sub_heading_class() ); ?>"><?php echo wp_kses_post( $payment_methods_sub_heading ); ?></h4>
+								<?php } ?>
 							</div>
 							<div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">
 								<?php

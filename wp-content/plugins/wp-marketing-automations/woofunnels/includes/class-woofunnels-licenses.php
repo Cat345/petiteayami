@@ -27,7 +27,7 @@ if ( ! class_exists( 'WooFunnels_Licenses' ) ) {
 		 * Pass to submission
 		 */
 		public function maybe_submit() {
-			if ( isset( $_POST['_wpnonce'] ) && wp_verify_nonce( bwf_clean( wp_unslash( $_POST['_wpnonce'] ) ), 'woofunnels-activate-license' ) ) {
+			if ( isset( $_POST['_wpnonce'] ) && wp_verify_nonce( bwf_clean( wp_unslash( $_POST['_wpnonce'] ) ), 'woofunnels-activate-license' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- bwf_clean() sanitizes recursively
 				if ( isset( $_POST['action'] ) && 'woofunnels_activate-products' === sanitize_text_field( wp_unslash( $_POST['action'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified above
 					do_action( 'woofunnels_licenses_submitted', bwf_clean( wp_unslash( $_POST ) ) );
 				}
@@ -38,7 +38,7 @@ if ( ! class_exists( 'WooFunnels_Licenses' ) ) {
 		 * Pass to deactivate hook
 		 */
 		public function maybe_deactivate() {
-			if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( bwf_clean( wp_unslash( $_GET['_wpnonce'] ) ), 'bwf-deactivate-product' ) ) {
+			if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( bwf_clean( wp_unslash( $_GET['_wpnonce'] ) ), 'bwf-deactivate-product' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- bwf_clean() sanitizes recursively
 				if ( isset( $_GET['action'] ) && 'woofunnels_deactivate-product' === sanitize_text_field( wp_unslash( $_GET['action'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce already verified above
 					do_action( 'woofunnels_deactivate_request', bwf_clean( wp_unslash( $_GET ) ) );
 				}
@@ -160,7 +160,7 @@ if ( ! class_exists( 'WooFunnels_Licenses' ) ) {
             <div class="bwf-notice notice error">
                 <p>
 					<?php
-					echo sprintf( __( '<strong>Invalid License Key: </strong> You are <i>not receiving</i> Latest Updates, New Features, Security Updates &amp; Bug Fixes for <strong>%1$s</strong>. <a href="%2$s">Click Here To Fix This</a>.', 'buildwoofunnels' ), implode( ', ', array_map( 'esc_html', $plugins ) ), esc_url( $this->license_url( $type ) ) ); // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.TextDomainMismatch
+					echo wp_kses_post( sprintf( __( '<strong>Invalid License Key: </strong> You are <i>not receiving</i> Latest Updates, New Features, Security Updates &amp; Bug Fixes for <strong>%1$s</strong>. <a href="%2$s">Click Here To Fix This</a>.', 'wp-marketing-automations' ), implode( ', ', array_map( 'esc_html', $plugins ) ), esc_url( $this->license_url( $type ) ) ) ); // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.TextDomainMismatch
 					?>
                 </p>
             </div>

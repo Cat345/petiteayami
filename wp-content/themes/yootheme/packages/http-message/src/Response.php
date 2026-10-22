@@ -44,7 +44,7 @@ class Response extends BaseResponse
         $body = Stream::create(is_string($file) ? fopen($file, 'r') : $file);
 
         if (!$mimetype && is_string($file) && function_exists('finfo_file')) {
-            $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
+            $mimetype = (new \finfo(FILEINFO_MIME_TYPE))->file($file);
         }
 
         if (!$mimetype) {

@@ -28,6 +28,15 @@ use WP_User;
 abstract class Importer {
 	const LIMIT = 50;
 	const RECENT_IMPORT_TIME_THRESHOLD = 5; // seconds
+
+	/**
+	 * Maximum age of the `is_running` lock before it is treated as abandoned.
+	 *
+	 * A healthy batch bumps `last_modified` on every iteration, so this window only has to
+	 * be longer than a single iteration (one API page plus its contacts), never longer than
+	 * a whole import.
+	 */
+	const RUNNING_LOCK_TIMEOUT = 300; // seconds
 	public $slug = '';
 	public $name = '';
 	public $description = '';
@@ -347,6 +356,33 @@ abstract class Importer {
 	}
 
 	/**
+	 * Checks whether the `is_running` lock has been abandoned by a dead process.
+	 *
+	 * The lock is set before a batch starts and is only cleared on a clean exit: the end of
+	 * a batch, end_import() or update_retry(). If the process dies mid-batch - fatal error,
+	 * PHP timeout, memory limit or a server restart - nothing clears it and the import can
+	 * never be picked up again. Every batch iteration writes `last_modified`, so a lock
+	 * sitting on top of a `last_modified` that has stopped advancing means no process is
+	 * working on this import any more and the lock can be ignored.
+	 *
+	 * @param string $last_modified GMT datetime string of the import's last write.
+	 *
+	 * @return bool True when the lock is stale and should not block a new batch.
+	 */
+	public static function is_running_lock_abandoned( $last_modified ) {
+		if ( empty( $last_modified ) ) {
+			return true;
+		}
+
+		$last_modified_time = strtotime( $last_modified );
+		if ( false === $last_modified_time ) {
+			return true;
+		}
+
+		return ( time() - $last_modified_time ) > self::RUNNING_LOCK_TIMEOUT;
+	}
+
+	/**
 	 * Initializes the logger for the importer.
 	 *
 	 * This method creates a logger object and sets the file path and headers for the log file.
@@ -441,7 +477,7 @@ abstract class Importer {
 				'fields'                  => $fields,
 			),
 			'created_date'  => current_time( 'mysql', 1 ),
-			'last_modified' => date( 'Y-m-d H:i:s', time() - 6 ),
+			'last_modified' => gmdate( 'Y-m-d H:i:s', time() - 6 ),
 		);
 
 		$import_data = $this->prepare_create_import_data( $import_data, $fields );
@@ -569,7 +605,12 @@ abstract class Importer {
 	 *
 	 */
 	public function import( $time_threshold = 20 ) {
-		if ( $this->is_recently_imported() || ! empty( $this->import_meta['is_running'] ) ) {
+		if ( $this->is_recently_imported() ) {
+			return;
+		}
+
+		/** Another process holds the lock. Only back off if that process is still alive. */
+		if ( ! empty( $this->import_meta['is_running'] ) && ! self::is_running_lock_abandoned( $this->import['last_modified'] ) ) {
 			return;
 		}
 
@@ -1071,8 +1112,10 @@ abstract class Importer {
 				if ( isset( $field['type'] ) && in_array( intval( $field['type'] ), $field_types, true ) ) {
 					$options = isset( $field['meta']['options'] ) && is_array( $field['meta']['options'] ) ? implode( ', ', $field['meta']['options'] ) : '';
 					if ( intval( $field['type'] ) === 6 ) {
+						/* translators: %s: Comma-separated list of available field options */
 						$hint = sprintf( __( "Available options: %s. Use comma seperated values for multiple options.", 'wp-marketing-automations' ), $options );
 					} else {
+						/* translators: %s: Comma-separated list of available field options */
 						$hint = sprintf( __( "Available options: %s", 'wp-marketing-automations' ), $options );
 					}
 				}

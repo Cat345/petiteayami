@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, mailch
 Requires at least: 7.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.36.0
+Stable tag: 5.43.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -57,6 +57,32 @@ Our [support site](https://kb.mailpoet.com/) has plenty of articles. You can wri
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 5.43.0 - 2026-10-19 =
+* Improved: Performance of the automation orders report.
+
+= 5.42.0 - 2026-10-13 =
+* Improved: Performance of the subscriber activity feed;
+* Improved: Performance of searching the bounces list in campaign statistics;
+* Improved: Performance of the per-recipient campaign statistics export;
+* Improved: Performance of the purchased products list in campaign statistics.
+
+= 5.41.0 - 2026-10-05 =
+* Improved: Premium automation templates now let you choose the email editor before the email is created;
+* Fixed: Missing detailed analytics plan checks on the newsletter stats, subscriber stats and automation analytics endpoints.
+
+= 5.40.0 - 2026-09-29 =
+* Improved: How link URLs are displayed in email statistics.
+
+= 5.39.0 - 2026-09-21 =
+* Improved: Stability of automation triggers and actions;
+* Fixed: Change user role automation action failing with an unknown error when the automation is saved or run.
+
+= 5.38.0 - 2026-09-07 =
+* Fixed: Subscription and booking personalization tags showing HTML-encoded characters in email subjects and plain-text emails.
+
+= 5.37.0 - 2026-09-01 =
+* Improved: Campaign and subscriber stats now show personalization tag names instead of raw tokens for tracked links.
 
 = 5.36.0 - 2026-08-18 =
 * Updated: Bump the minimum required WordPress version to 7.0 and tested up to version to 7.1;

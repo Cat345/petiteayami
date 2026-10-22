@@ -366,8 +366,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 					$plan_id   = 0;
 					if ( strpos( $pid, '-' ) !== false ) {
 						list( $pid, $plan_id ) = explode( '-', $pid, 2 );
-						$pid     = absint( $pid );
-						$plan_id = absint( $plan_id );
+						$pid                   = absint( $pid );
+						$plan_id               = absint( $plan_id );
 					} else {
 						$pid = absint( $pid );
 					}
@@ -419,7 +419,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							if ( $plan_id > 0 && class_exists( '\Sublium_WCS\Plugin', false ) ) {
 								$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $product );
 								if ( ! is_null( $plan ) ) {
-									$plan_price             = $plan->get_recurring_cart_price( $product->get_price(), $product );
+									$plan_price            = $plan->get_recurring_cart_price( $product->get_price(), $product );
 									$default['sale_price'] = wc_price( $plan_price );
 								}
 							}
@@ -2111,7 +2111,12 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function get_divi_form_data() {
 
-			if ( ! check_ajax_referer( 'wfacp_secure_key', 'wfacp_nonce', false ) ) {
+			// Divi's form module posts a raw JSON body, so wfacp_send_ajax() sends the nonce as an X-WP-Nonce header rather than in the URL.
+			$nonce = isset( $_REQUEST['wfacp_nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wfacp_nonce'] ) ) : '';
+			if ( '' === $nonce && isset( $_SERVER['HTTP_X_WP_NONCE'] ) ) {
+				$nonce = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_WP_NONCE'] ) );
+			}
+			if ( ! wp_verify_nonce( $nonce, 'wfacp_secure_key' ) ) {
 				wp_send_json_error( array( 'message' => __( 'Invalid security token.', 'funnel-builder' ) ), 403 );
 			}
 
@@ -2187,8 +2192,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function analytics() {
 			self::check_nonce();
-			$resp           = array( 'status' => false );
-			$data           = isset( $_POST['data'] ) ? map_deep( wp_unslash( $_POST['data'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified in check_nonce()
+			$resp = array( 'status' => false );
+			$data = isset( $_POST['data'] ) ? self::clean_event_payload( wp_unslash( $_POST['data'] ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce already verified in check_nonce(); sanitised by clean_event_payload()
 			/*
 			 * Events the checkout page is allowed to forward to the Conversions API.
 			 *
@@ -2218,7 +2223,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$source         = isset( $data['source'] ) ? $data['source'] : '';
 
 			if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
-				$source = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- HTTP_REFERER is URL; sanitized with esc_url_raw()
+				$source = sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- HTTP_REFERER is URL; sanitized with sanitize_url()
 			}
 			$pixel        = WFACP_Analytics_Pixel::get_instance();
 			$access_token = $pixel->get_conversion_api_access_token();
@@ -2280,7 +2285,17 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						}
 						$instance->set_event_id( $single_item['event_id'] );
 						$instance->set_user_data( $user_data );
-						$instance->set_event_source_url( $source );
+						// The page URL captured with the event beats HTTP_REFERER, which a Referrer-Policy collapses to the homepage.
+						$event_source_url = ! empty( $single_item['data']['event_url'] ) && is_string( $single_item['data']['event_url'] ) ? $single_item['data']['event_url'] : $source;
+
+						/**
+						 * Filters the event_source_url sent to the Meta Conversions API for a checkout event.
+						 *
+						 * @param string $event_source_url Page URL captured with the event, else HTTP_REFERER.
+						 * @param string $event            Event name (PageView, InitiateCheckout, ...).
+						 * @param array  $single_item      Full event payload.
+						 */
+						$instance->set_event_source_url( apply_filters( 'wfacp_conversion_api_event_source_url', $event_source_url, $single_item['event'], $single_item ) );
 
 						$fb_single_data = isset( $single_item['data'] ) ? $single_item['data'] : array();
 						if ( isset( $fb_single_data['contents'] ) ) {
@@ -2369,6 +2384,31 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'url'    => ! empty( $edit_url ) ? $edit_url : $url,
 			);
 			self::send_resp( $resp );
+		}
+
+		/**
+		 * map_deep( 'sanitize_text_field' ), except that every `event_url` is sanitised as a URL:
+		 * sanitize_text_field() deletes every %XX octet, so a non-ASCII permalink or an encoded
+		 * query value would reach Meta as a URL that does not exist.
+		 *
+		 * @param mixed      $value Unslashed request data.
+		 * @param string|int $key   Key $value sits under in its parent array.
+		 *
+		 * @return mixed
+		 */
+		private static function clean_event_payload( $value, $key = '' ) {
+			if ( is_array( $value ) ) {
+				foreach ( $value as $k => $v ) {
+					$value[ $k ] = self::clean_event_payload( $v, $k );
+				}
+
+				return $value;
+			}
+			if ( 'event_url' === $key ) {
+				return is_string( $value ) ? sanitize_url( $value ) : '';
+			}
+
+			return sanitize_text_field( $value );
 		}
 	}
 

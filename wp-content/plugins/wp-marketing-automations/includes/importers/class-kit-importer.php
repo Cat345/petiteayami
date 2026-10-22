@@ -2,6 +2,8 @@
 
 namespace BWFAN\Importers;
 
+defined( 'ABSPATH' ) || exit;
+
 use BWFAN\Importers\Kit\Calls\Connect;
 use BWFAN\Importers\Kit\Calls\Get_Subscribers;
 use BWFAN\Importers\Kit\Calls\Get_Subscriber_Tags;

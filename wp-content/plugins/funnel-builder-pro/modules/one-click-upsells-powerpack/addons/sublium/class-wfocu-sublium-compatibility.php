@@ -193,7 +193,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				// force_one_time so inject_plan_from_product_options()/maybe_hide_bump_plan_selector()
 				// keep it locked as a plain purchase instead of Sublium/the bump template still
 				// offering an "upgrade to subscription" prompt for it.
-				$default['title']         = $default['title'] . ' - ' . $this->get_one_time_purchase_label();
+				$default['title']          = $default['title'] . ' - ' . $this->get_one_time_purchase_label();
 				$default['force_one_time'] = true;
 			}
 			return $default;
@@ -216,12 +216,12 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		 */
 		private function get_checkout_bump_display_price( $product, $plan, $discount_type ) {
 			$true_regular_price = $this->get_true_regular_price( $product );
-			$is_regular_type     = in_array( $discount_type, array( 'percent_discount_reg', 'fixed_discount_reg' ), true );
+			$is_regular_type    = in_array( $discount_type, array( 'percent_discount_reg', 'fixed_discount_reg' ), true );
 			// $true_regular_price (stable postmeta), not $product->get_price() — the latter may
 			// already reflect a prior pass's plan/discount mutation on a repeatedly-processed cart
 			// item (WFACP/WFOB re-run their discount calc on every woocommerce_before_calculate_totals
 			// pass), which would compound the plan discount further on each subsequent call.
-			$basis                = $is_regular_type ? $true_regular_price : $plan->get_recurring_cart_price( $true_regular_price, $product );
+			$basis = $is_regular_type ? $true_regular_price : $plan->get_recurring_cart_price( $true_regular_price, $product );
 
 			return array( $true_regular_price, $basis );
 		}
@@ -283,8 +283,8 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				// set_product_price() may already have mutated $pro's regular_price prop to
 				// regular_price * quantity by the time this runs, which would double-count quantity
 				// once price_data['price'] is itself multiplied by $org_quantity below.
-				$true_regular_price = $this->get_true_regular_price( $pro );
-				$plan_price         = WFACP_Common::calculate_discount(
+				$true_regular_price                         = $this->get_true_regular_price( $pro );
+				$plan_price                                 = WFACP_Common::calculate_discount(
 					array(
 						'wfacp_product_rp'      => $true_regular_price,
 						'wfacp_product_p'       => (float) $pro->get_price(),
@@ -292,7 +292,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 						'wfacp_discount_type'   => $product_data['discount_type'],
 					)
 				);
-				$plan_price = is_null( $plan_price ) ? $true_regular_price : $plan_price;
+				$plan_price                                 = is_null( $plan_price ) ? $true_regular_price : $plan_price;
 				$price_data['wfacp_regular_basis_discount'] = true;
 			} else {
 				$plan_price = $plan->get_recurring_cart_price( $pro->get_price(), $pro );
@@ -325,7 +325,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 			if ( '' !== $string || ! $pro instanceof \WC_Product ) {
 				return $string;
 			}
-			//var_dump($price_data);
+			// var_dump($price_data);
 
 			// For cart items, resolve plan from cart item data.
 			if ( is_string( $cart_item_key ) && '' !== $cart_item_key ) {
@@ -352,7 +352,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 					);
 				}
 
-				return $cart[ $cart_item_key ]['sublium_wcs_plan_summary']??"";
+				return $cart[ $cart_item_key ]['sublium_wcs_plan_summary'] ?? '';
 
 			} else {
 				// For non-cart switcher items, plan was resolved in set_switcher_plan_price.
@@ -374,7 +374,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				return $string;
 			}
 
-			return $plan->display_summary( $pro ,absint($price_data['quantity']));
+			return $plan->display_summary( $pro, absint( $price_data['quantity'] ) );
 		}
 
 		public function append_plan_name_to_bump_product_name( $product_name, $pro, $cart_item_key, $product_data = array() ) {
@@ -412,7 +412,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 							'wfob_discount_type'   => $product_data['discount_type'],
 						)
 					);
-					$price = is_null( $discounted ) ? $true_regular_price : $discounted;
+					$price      = is_null( $discounted ) ? $true_regular_price : $discounted;
 				}
 				$price_data['regular_org'] = $price;
 				$price_data['price']       = $price;
@@ -436,7 +436,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 						'wfob_discount_type'   => $product_data['discount_type'],
 					)
 				);
-				$plan_price = is_null( $plan_price ) ? $true_regular_price : $plan_price;
+				$plan_price         = is_null( $plan_price ) ? $true_regular_price : $plan_price;
 			} else {
 				// For per-product plans (object_type=1), product_plan_map_data holds the relation pricing.
 				// get_recurring_cart_price() uses it directly for type 2 (Subscription), ignoring input price.
@@ -615,7 +615,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 						'wfob_discount_type'   => $product_data['discount_type'],
 					)
 				);
-				$new_price = is_null( $new_price ) ? $true_regular_price : $new_price;
+				$new_price          = is_null( $new_price ) ? $true_regular_price : $new_price;
 
 				return sprintf(
 					/* translators: %s: price charged today */
@@ -660,9 +660,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		}
 
 		public function inject_plan_from_product_options( $cart_item_data ) {
-				$options = isset( $cart_item_data['_wfacp_options'] ) ? $cart_item_data['_wfacp_options'] :(isset($cart_item_data['_wfob_options'])?$cart_item_data['_wfob_options']:[]);
-
-
+				$options = isset( $cart_item_data['_wfacp_options'] ) ? $cart_item_data['_wfacp_options'] : ( isset( $cart_item_data['_wfob_options'] ) ? $cart_item_data['_wfob_options'] : array() );
 
 			if ( empty( $options ) ) {
 				return $cart_item_data;
@@ -679,9 +677,9 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				$plan_id = absint( $options['plan_id'] );
 			}
 			if ( $plan_id > 0 ) {
-				$cart_item_data['sublium_wcs_plan'] = $plan_id;
+				$cart_item_data['sublium_wcs_plan']                    = $plan_id;
 				$cart_item_data['sublium_wcs_plan_added_by_funnelkit'] = 1;
-				$cart_item_data['sublium_wcs_plan_locked'] = 1;
+				$cart_item_data['sublium_wcs_plan_locked']             = 1;
 
 			} elseif ( ! empty( $options['force_one_time'] ) || ! empty( $options['products_meta_data'][1]['sublium_one_time'] ) ) {
 				// Admin explicitly configured this as a plain one-time purchase (no plan_id at all) —
@@ -857,10 +855,10 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		 * (e.g. one plain, one on a Sublium "Every Month" plan) are indistinguishable, even though the
 		 * admin Products table (via append_plan_name_on_offer_get()) tells them apart.
 		 *
-		 * @param string     $name     Product display name for this offer field.
+		 * @param string      $name     Product display name for this offer field.
 		 * @param \WC_Product $product The underlying product.
-		 * @param int        $offer_id
-		 * @param string     $hash_key Product key in the offer.
+		 * @param int         $offer_id
+		 * @param string      $hash_key Product key in the offer.
 		 *
 		 * @return string
 		 */
@@ -898,8 +896,8 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		 */
 		private function get_offer_display_prices_for_plan( $product, $plan, $discount_type ) {
 			$true_regular_price = $this->get_true_regular_price( $product );
-			$is_regular_type     = in_array( $discount_type, array( 'percentage_on_reg', 'fixed_on_reg' ), true );
-			$basis                = $is_regular_type ? $true_regular_price : $plan->get_recurring_cart_price( $product->get_price(), $product );
+			$is_regular_type    = in_array( $discount_type, array( 'percentage_on_reg', 'fixed_on_reg' ), true );
+			$basis              = $is_regular_type ? $true_regular_price : $plan->get_recurring_cart_price( $product->get_price(), $product );
 
 			return array( $true_regular_price, $basis );
 		}
@@ -952,17 +950,24 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				return (float) $plan->get_signup_fee( $product ) * $qty;
 			}
 
+			// No free trial: the first charge is the recurring/discounted price PLUS the plan's
+			// one-time signup fee (0 when the plan has none). Sublium's get_recurring_cart_price()
+			// returns only the recurring amount — the signup fee is charged on top of it, exactly as
+			// Plan::calculate_initial_price() does. Previously this returned the recurring/regular
+			// price alone, which silently dropped a configured signup fee from the upsell charge.
+			$signup_fee = (float) $plan->get_signup_fee( $product );
+
 			// "On Regular Price" discount types discount off the product's true regular price
 			// (e.g. $3000 -> $2700 for 10% off), which then becomes the actual subscription charge —
 			// bypassing the plan's own recurring price entirely. Everything else (including no
 			// discount_type chosen yet) keeps discounting off the plan's recurring price as before.
 			if ( is_object( $options ) && isset( $options->discount_type ) && in_array( $options->discount_type, array( 'percentage_on_reg', 'fixed_on_reg' ), true ) ) {
 				$regular_price = ! empty( $product->get_regular_price() ) ? floatval( $product->get_regular_price() ) : 0;
-				return $regular_price * $qty;
+				return ( $regular_price + $signup_fee ) * $qty;
 			}
 
 			$recurring_price = $plan->get_recurring_cart_price( $product->get_price(), $product );
-			return $recurring_price * $qty;
+			return ( $recurring_price + $signup_fee ) * $qty;
 		}
 
 		public function override_regular_price_for_preassigned_plan( $product_details, $output, $offer_data, $is_front, $hash_key ) {
@@ -981,8 +986,8 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 			if ( is_null( $plan ) ) {
 				return $product_details;
 			}
-			$qty            = ! empty( $offer_data->fields->{$hash_key}->quantity ) ? absint( $offer_data->fields->{$hash_key}->quantity ) : 1;
-			$discount_type  = isset( $offer_data->fields->{$hash_key}->discount_type ) ? $offer_data->fields->{$hash_key}->discount_type : '';
+			$qty             = ! empty( $offer_data->fields->{$hash_key}->quantity ) ? absint( $offer_data->fields->{$hash_key}->quantity ) : 1;
+			$discount_type   = isset( $offer_data->fields->{$hash_key}->discount_type ) ? $offer_data->fields->{$hash_key}->discount_type : '';
 			$is_regular_type = in_array( $discount_type, array( 'percentage_on_reg', 'fixed_on_reg' ), true );
 
 			// During a free trial the "today" charge is the signup fee (see
@@ -1027,10 +1032,10 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		 * Price". Confirmed live: a Sublium plan priced at $10 with a 10% "on Sale Price" discount configured
 		 * in WFACP/WFOB still charged the full $10, because Sublium's filter ignored the admin's discount config.
 		 *
-		 * @param float|null       $modified_price The price Sublium computed.
-		 * @param \WC_Product      $product        The cart item's product object.
-		 * @param object           $plan           The resolved Sublium plan.
-		 * @param string|null      $calculation_type
+		 * @param float|null  $modified_price The price Sublium computed.
+		 * @param \WC_Product $product        The cart item's product object.
+		 * @param object      $plan           The resolved Sublium plan.
+		 * @param string|null $calculation_type
 		 *
 		 * @return float|null
 		 */
@@ -1214,8 +1219,8 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 			}
 
 			// Find the live cart item this recurring cart is projected from, matched by plan.
-			$options    = null;
-			$is_wfacp   = true;
+			$options  = null;
+			$is_wfacp = true;
 			foreach ( WC()->cart->get_cart() as $cart_item ) {
 				if ( empty( $cart_item['sublium_wcs_plan'] ) || absint( $cart_item['sublium_wcs_plan'] ) !== $recurring_plan_id ) {
 					continue;
@@ -1240,7 +1245,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				if ( empty( $recurring_item['data'] ) || ! $recurring_item['data'] instanceof \WC_Product ) {
 					continue;
 				}
-				$product       = $recurring_item['data'];
+				$product = $recurring_item['data'];
 				// See get_true_regular_price() docblock — avoids double-counting quantity for
 				// checkout items where WFACP_Common::set_product_price() has mutated the product's
 				// regular_price prop to regular_price * quantity.
@@ -1249,8 +1254,8 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				// "on Sale Price": discount off the plan's own recurring price (computed from the
 				// stable true regular price, not $product->get_price() — matching
 				// get_checkout_bump_display_price(), keeps this idempotent across repeated calls).
-				$plan       = $is_sale_type ? \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $recurring_plan_id, $product ) : null;
-				$sale_basis = ( $is_sale_type && $plan ) ? $plan->get_recurring_cart_price( $regular_price, $product ) : $regular_price;
+				$plan          = $is_sale_type ? \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $recurring_plan_id, $product ) : null;
+				$sale_basis    = ( $is_sale_type && $plan ) ? $plan->get_recurring_cart_price( $regular_price, $product ) : $regular_price;
 				$discount_data = array(
 					'discount_amount' => floatval( $options['discount_amount'] ),
 					'discount_type'   => $options['discount_type'],
@@ -1505,7 +1510,18 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 						}
 					} else {
 						$data['_sublium_data']['sublium_tax_data'] = $tax_data;
-						$data['initial_price_tax']                 = 0;
+						// The upsell's "charge today" for a no-trial plan is the recurring price PLUS any
+						// one-time signup fee (initial_price). Tax that full first payment so the frontend
+						// charges tax on the signup fee too, not just the recurring part.
+						if ( $initial_price > 0 ) {
+							$initial_taxes             = WC_Tax::calc_tax( $initial_price, $tax_rates, $including_tax );
+							$data['initial_price_tax'] = array_sum( $initial_taxes );
+							if ( $including_tax ) {
+								$data['initial_price'] = $initial_price - $data['initial_price_tax'];
+							}
+						} else {
+							$data['initial_price_tax'] = 0;
+						}
 					}
 				}
 			}
@@ -1619,7 +1635,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 			$is_regular_type = in_array( $discount_type, array( 'percentage_on_reg', 'fixed_on_reg' ), true );
 			$basis           = $is_regular_type ? $this->get_true_regular_price( $product ) : $plan->get_recurring_cart_price( $base_price, $product );
 			if ( ! empty( $discount_amount ) ) {
-				$options = (object) array(
+				$options    = (object) array(
 					'discount_type'   => $discount_type,
 					'discount_amount' => $discount_amount,
 					'quantity'        => 1,
@@ -1638,26 +1654,24 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 			if ( WFOCU_Core()->funnels->show_prices_including_tax() ) {
 				$recurring_price = wc_get_price_including_tax( $product, array( 'price' => $recurring_price ) );
 			}
-			$period_string   = $plan->get_subscription_period_strings();
-			$free_trial      = $plan->get_free_trial();
+			$period_string = $plan->get_subscription_period_strings();
+			$free_trial    = $plan->get_free_trial();
 
-$subscrition_label='';
-if(1==$plan->get_type()){
-	$subscrition_label=\Sublium_WCS\Includes\Helpers\Data::get('subscribe_and_save_label');
-}elseif(2==$plan->get_type()){
-	$subscrition_label=\Sublium_WCS\Includes\Helpers\Data::get('recurring_label');
-}elseif(3==$plan->get_type()){
-	$subscrition_label=\Sublium_WCS\Includes\Helpers\Data::get('installments_label');
-}
+			$subscrition_label = '';
+			if ( 1 == $plan->get_type() ) {
+				$subscrition_label = \Sublium_WCS\Includes\Helpers\Data::get( 'subscribe_and_save_label' );
+			} elseif ( 2 == $plan->get_type() ) {
+				$subscrition_label = \Sublium_WCS\Includes\Helpers\Data::get( 'recurring_label' );
+			} elseif ( 3 == $plan->get_type() ) {
+				$subscrition_label = \Sublium_WCS\Includes\Helpers\Data::get( 'installments_label' );
+			}
 
-
-
-if(empty($subscrition_label)){
-$subscrition_label=__( 'Recurring Total: ', 'woocommerce-subscription' );
-}else{
-	$subscrition_label.=": ";
-}
-// Build period label: " / month" or " / 3 months" + optional free trial suffix.e
+			if ( empty( $subscrition_label ) ) {
+				$subscrition_label = __( 'Recurring Total: ', 'woocommerce-subscription' );
+			} else {
+				$subscrition_label .= ': ';
+			}
+			// Build period label: " / month" or " / 3 months" + optional free trial suffix.e
 			$subscription_details = ' / ' . $period_string;
 			if ( $free_trial > 0 ) {
 				$subscription_details .= ' ' . sprintf(
@@ -1673,7 +1687,7 @@ $subscrition_label=__( 'Recurring Total: ', 'woocommerce-subscription' );
 				if ( WFOCU_Core()->funnels->show_prices_including_tax() ) {
 					$signup_fee_price = wc_get_price_including_tax( $product, array( 'price' => $signup_fee_price ) );
 				}
-				$html            .= '<div class="signup_details_wrap" data-key="' . esc_attr( $product_key ) . '">'
+				$html .= '<div class="signup_details_wrap" data-key="' . esc_attr( $product_key ) . '">'
 					. '<span class="signup_price_label">' . esc_html__( 'Signup Fee: ', 'woocommerce-subscription' ) . '</span>'
 					. wp_kses_post( wc_price( $signup_fee_price ) )
 					. '</div>';
@@ -1681,7 +1695,7 @@ $subscrition_label=__( 'Recurring Total: ', 'woocommerce-subscription' );
 
 			// Recurring total row.
 			$html .= '<div class="recurring_details_wrap" data-key="' . esc_attr( $product_key ) . '">'
-				. '<span class="recurring_price_label">' . esc_html($subscrition_label) . '</span>'
+				. '<span class="recurring_price_label">' . esc_html( $subscrition_label ) . '</span>'
 				. wp_kses_post( wc_price( $recurring_price ) )
 				. '<span class="subscription-details">' . esc_html( $subscription_details ) . '</span>'
 				. '</div>';
@@ -1774,8 +1788,8 @@ $subscrition_label=__( 'Recurring Total: ', 'woocommerce-subscription' );
 					static $sublium_preassigned_rendered = array();
 					if ( ! isset( $sublium_preassigned_rendered[ $product_key ] ) ) {
 						$sublium_preassigned_rendered[ $product_key ] = true;
-						$plan_id = absint( $offer_data->fields->{$product_key}->plan_id );
-						$product = wc_get_product( absint( $product_id ) );
+						$plan_id                                      = absint( $offer_data->fields->{$product_key}->plan_id );
+						$product                                      = wc_get_product( absint( $product_id ) );
 						if ( $product instanceof \WC_Product ) {
 							$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $product );
 							if ( ! is_null( $plan ) ) {
@@ -2108,8 +2122,8 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 				static $sublium_single_plan_rendered = array();
 				if ( ! isset( $sublium_single_plan_rendered[ $product_key ] ) ) {
 					$sublium_single_plan_rendered[ $product_key ] = true;
-					$discount_type   = isset( $offer_data ) && isset( $offer_data->fields->{$product_key}->discount_type ) ? $offer_data->fields->{$product_key}->discount_type : '';
-					$discount_amount = isset( $offer_data ) && isset( $offer_data->fields->{$product_key}->discount_amount ) ? $offer_data->fields->{$product_key}->discount_amount : 0;
+					$discount_type                                = isset( $offer_data ) && isset( $offer_data->fields->{$product_key}->discount_type ) ? $offer_data->fields->{$product_key}->discount_type : '';
+					$discount_amount                              = isset( $offer_data ) && isset( $offer_data->fields->{$product_key}->discount_amount ) ? $offer_data->fields->{$product_key}->discount_amount : 0;
 					echo $this->get_sublium_billing_summary_html( $single_plan, $product, $product_key, 1, $discount_type, $discount_amount ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					$this->print_billing_move_script( $product_key );
 				}
@@ -2375,8 +2389,11 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 								let subs_val = jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="sublium-option-plan"].wfocu_convert_sub_hidden');
 								let data = subs_val.data('sublium-data');
 								if (undefined !== data && Object.keys(data).length > 0) {
-									// Use initial_price when plan has a free trial (first charge = signup fee or $0).
-									getPrice = (data.free_trial > 0) ? (data.initial_price || 0) : data.recurring_price;
+									// initial_price is the plan's true "charge today" for every case: the signup
+									// fee (or $0) during a free trial, or the recurring price plus any one-time
+									// signup fee otherwise (Plan::calculate_initial_price()). Using recurring_price
+									// for non-trial plans dropped a configured signup fee from the upsell charge.
+									getPrice = (undefined !== data.initial_price && null !== data.initial_price) ? parseFloat(data.initial_price) : data.recurring_price;
 								}
 							}
 						} catch (e) {
@@ -2390,8 +2407,9 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 								let subs_val = jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="sublium-option-plan"].wfocu_convert_sub_hidden');
 								let data = subs_val.data('sublium-data');
 								if (undefined !== data && Object.keys(data).length > 0) {
-									if (data.free_trial > 0) {
-										// Trial plan: use initial_price_tax (signup fee tax) or 0 if no signup fee.
+									// Tax on the "charge today" amount, matching the initial_price used above:
+									// the signup-fee tax on trial plans, or the recurring+signup tax otherwise.
+									if (data.hasOwnProperty('initial_price_tax')) {
 										getPrice = data.initial_price_tax || 0;
 									} else if (data.hasOwnProperty('recurring_price_tax')) {
 										getPrice = data.recurring_price_tax;
@@ -2941,10 +2959,10 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 				}
 
 				foreach ( $plans as $plan ) {
-					$plan_id  = $plan->get_id();
-					$price    = $plan->get_recurring_cart_price( $product->get_price(), $product );
+					$plan_id = $plan->get_id();
+					$price   = $plan->get_recurring_cart_price( $product->get_price(), $product );
 
-					$plan_title = html_entity_decode( strip_tags( $plan->get_title( $product ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+					$plan_title   = html_entity_decode( strip_tags( $plan->get_title( $product ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 					$plan_items[] = array(
 						'id'                   => $product_id,
 						'product'              => $product_name . ' - ' . $plan_title,
@@ -2956,7 +2974,7 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 						'product_stock_status' => isset( $product_data['product_stock_status'] ) ? $product_data['product_stock_status'] : true,
 						'product_type'         => isset( $product_data['product_type'] ) ? $product_data['product_type'] : 'simple',
 						'currency_symbol'      => $currency_symbol,
-						'product_meta_data'=>['sublium_plan'=>$plan_id]
+						'product_meta_data'    => array( 'sublium_plan' => $plan_id ),
 					);
 				}
 			}
@@ -2970,9 +2988,9 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 		 * back to plain product IDs so wc_get_product() can resolve them,
 		 * and stores the plan_id context for the post-save hook.
 		 *
-		 * @param mixed            $result  Short-circuit response (null = proceed normally).
-		 * @param WP_REST_Server   $server  REST server instance.
-		 * @param WP_REST_Request  $request Incoming request.
+		 * @param mixed           $result  Short-circuit response (null = proceed normally).
+		 * @param WP_REST_Server  $server  REST server instance.
+		 * @param WP_REST_Request $request Incoming request.
 		 * @return mixed Unchanged $result (null).
 		 */
 		public function intercept_checkout_add_product_request( $result, $server, $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- $server required by filter signature
@@ -2998,7 +3016,7 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 			$plan_id_map  = array();
 
 			foreach ( $body['products'] as $pid ) {
-				$pid     = absint( $pid );
+				$pid      = absint( $pid );
 				$real_pid = $pid;
 				$plan_id  = 0;
 				// Detect encoded Sublium plan variant: combined_id = product_id * PLAN_ID_MULTIPLIER + plan_id

@@ -32,34 +32,34 @@ if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 		public static function load_all_str() {
 
 			self::$deactivation_str = array(
-				'deactivation-share-reason'                => __( 'If you have a moment, please let us know why you are deactivating', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-no-longer-needed'                  => __( 'No longer need the plugin', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-found-a-better-plugin'             => __( 'I found an alternate plugin', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-needed-for-a-short-period'         => __( 'I only needed the plugin for a short period', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'placeholder-plugin-name'                  => __( 'Please share which plugin', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-broke-my-site'                     => __( 'Encountered a fatal error', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-suddenly-stopped-working'          => __( 'The plugin suddenly stopped working', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-other'                             => _x( 'Other', 'the text of the "other" reason for deactivating the plugin that is shown in the modal box.', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'deactivation-modal-button-submit'         => __( 'Submit & Deactivate', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'deactivate'                               => __( 'Deactivate', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'deactivation-modal-button-deactivate'     => __( 'Deactivate', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'deactivation-modal-button-confirm'        => __( 'Yes - Deactivate', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'deactivation-modal-button-cancel'         => _x( 'Cancel', 'the text of the cancel button of the plugin deactivation dialog box.', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-cant-pay-anymore'                  => __( "I can't pay for it anymore", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'placeholder-comfortable-price'            => __( 'What price would you feel comfortable paying?', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-couldnt-make-it-work'              => __( "I couldn't understand how to make it work", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-great-but-need-specific-feature'   => __( "The plugin is great, but I need specific feature that you don't support", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-not-working'                       => __( 'Couldn\'t get the plugin to work', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-not-what-i-was-looking-for'        => __( "It's not what I was looking for", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-didnt-work-as-expected'            => __( "The plugin didn't work as expected", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'placeholder-feature'                      => __( 'What feature?', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'placeholder-share-what-didnt-work'        => __( "Kindly share what didn't work so we can fix it for future users...", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'placeholder-what-youve-been-looking-for'  => __( "What you've been looking for?", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'placeholder-what-did-you-expect'          => __( 'What did you expect?', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-didnt-work'                        => __( "The plugin didn't work", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'reason-dont-like-to-share-my-information' => __( "I don't like to share my information with you", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'conflicts-other-plugins'                  => __( "Conflicts with other plugins", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'temporary-deactivation'                   => __( "It's a temporary deactivation", 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'deactivation-share-reason'                => __( 'If you have a moment, please let us know why you are deactivating', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-no-longer-needed'                  => __( 'No longer need the plugin', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-found-a-better-plugin'             => __( 'I found an alternate plugin', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-needed-for-a-short-period'         => __( 'I only needed the plugin for a short period', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'placeholder-plugin-name'                  => __( 'Please share which plugin', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-broke-my-site'                     => __( 'Encountered a fatal error', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-suddenly-stopped-working'          => __( 'The plugin suddenly stopped working', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-other'                             => _x( 'Other', 'the text of the "other" reason for deactivating the plugin that is shown in the modal box.', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'deactivation-modal-button-submit'         => __( 'Submit & Deactivate', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'deactivate'                               => __( 'Deactivate', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'deactivation-modal-button-deactivate'     => __( 'Deactivate', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'deactivation-modal-button-confirm'        => __( 'Yes - Deactivate', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'deactivation-modal-button-cancel'         => _x( 'Cancel', 'the text of the cancel button of the plugin deactivation dialog box.', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-cant-pay-anymore'                  => __( "I can't pay for it anymore", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'placeholder-comfortable-price'            => __( 'What price would you feel comfortable paying?', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-couldnt-make-it-work'              => __( "I couldn't understand how to make it work", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-great-but-need-specific-feature'   => __( "The plugin is great, but I need specific feature that you don't support", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-not-working'                       => __( 'Couldn\'t get the plugin to work', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-not-what-i-was-looking-for'        => __( "It's not what I was looking for", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-didnt-work-as-expected'            => __( "The plugin didn't work as expected", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'placeholder-feature'                      => __( 'What feature?', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'placeholder-share-what-didnt-work'        => __( "Kindly share what didn't work so we can fix it for future users...", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'placeholder-what-youve-been-looking-for'  => __( "What you've been looking for?", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'placeholder-what-did-you-expect'          => __( 'What did you expect?', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-didnt-work'                        => __( "The plugin didn't work", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'reason-dont-like-to-share-my-information' => __( "I don't like to share my information with you", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'conflicts-other-plugins'                  => __( "Conflicts with other plugins", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'temporary-deactivation'                   => __( "It's a temporary deactivation", 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			);
 		}
 
@@ -133,7 +133,7 @@ if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 					'id'                => 7,
 					'text'              => self::load_str( 'reason-other' ),
 					'input_type'        => 'textfield',
-					'input_placeholder' => __( 'Please share the reason', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'input_placeholder' => __( 'Please share the reason', 'wp-marketing-automations' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				)
 			);
 
@@ -168,7 +168,7 @@ if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 					wp_send_json_error();
 				}
 
-				$reason_info = isset( $_POST['reason_info'] ) ? sanitize_textarea_field( bwf_clean( wp_unslash( $_POST['reason_info'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system
+				$reason_info = isset( $_POST['reason_info'] ) ? sanitize_textarea_field( bwf_clean( wp_unslash( $_POST['reason_info'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verification handled by AJAX system; bwf_clean() sanitizes recursively
 
 				$reason = array(
 					'id'   => sanitize_text_field( wp_unslash( $_POST['reason_id'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system
@@ -177,7 +177,7 @@ if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 
 				$licenses        = WooFunnels_addons::get_installed_plugins();
 				$version         = 'NA';
-				$plugin_basename = isset( $_POST['plugin_basename'] ) ? bwf_clean( wp_unslash( $_POST['plugin_basename'] ) ) : '';
+				$plugin_basename = isset( $_POST['plugin_basename'] ) ? bwf_clean( wp_unslash( $_POST['plugin_basename'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- bwf_clean() sanitizes recursively
 
 				if ( $licenses && count( $licenses ) > 0 ) {
 					foreach ( $licenses as $key => $license ) {

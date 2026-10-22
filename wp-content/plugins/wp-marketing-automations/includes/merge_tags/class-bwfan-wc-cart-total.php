@@ -48,8 +48,15 @@ class BWFAN_WC_Cart_Total extends BWFAN_Merge_Tag {
 		if ( empty( $cart_details ) ) {
 			return $this->parse_shortcode_output( '', $attr );
 		}
-
 		$formatting  = BWFAN_Common::get_formatting_for_wc_price( $attr, '' );
+		if ( ! empty( $formatting['currency'] ) && ! empty( $cart_details['currency'] ) ) {
+			$cart_symbol = '';
+			if ( method_exists( 'BWF_Plugin_Compatibilities', 'get_currency_symbol' ) ) {
+				$cart_symbol = BWF_Plugin_Compatibilities::get_currency_symbol( $cart_details['currency'] );
+			}
+			$cart_symbol            = empty( $cart_symbol ) ? get_woocommerce_currency_symbol( $cart_details['currency'] ) : $cart_symbol;
+			$formatting['currency'] = html_entity_decode( $cart_symbol, ENT_QUOTES | ENT_HTML401 );
+		}
 		$items_total = BWFAN_Common::get_formatted_price_wc( $cart_details['total'], $formatting['raw'], $formatting['currency'] );
 
 		return $this->parse_shortcode_output( $items_total, $attr );

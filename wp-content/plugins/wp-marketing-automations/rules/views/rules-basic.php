@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 $automation_id = BWFAN_Core()->automations->get_automation_id();
 $groups        = [];
 

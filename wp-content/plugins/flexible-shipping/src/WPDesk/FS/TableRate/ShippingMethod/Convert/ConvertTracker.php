@@ -15,8 +15,8 @@ use WPDesk_Flexible_Shipping;
  * Tracking of convert usages.
  */
 class ConvertTracker implements Hookable {
-	const OPTION_FIRST = 'flexible_shipping_convert_first';
-	const OPTION_AGAIN = 'flexible_shipping_convert_again';
+	const OPTION_FIRST   = 'flexible_shipping_convert_first';
+	const OPTION_AGAIN   = 'flexible_shipping_convert_again';
 	const OPTION_DELETED = 'flexible_shipping_convert_deleted';
 
 	const PRIORYTY_AFTER_FS_TRACKER = 12;
@@ -24,25 +24,25 @@ class ConvertTracker implements Hookable {
 	/**
 	 * @var array .
 	 */
-	private $to_delete_methods = array();
+	private $to_delete_methods = [];
 
 	/**
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_filter( 'wpdesk_tracker_data', array( $this, 'add_tracking_data' ), self::PRIORYTY_AFTER_FS_TRACKER );
+		add_filter( 'wpdesk_tracker_data', [ $this, 'add_tracking_data' ], self::PRIORYTY_AFTER_FS_TRACKER );
 
 		// Trackers.
-		add_action( 'woocommerce_shipping_zone_method_deleted', array( $this, 'track_deleted_method' ) );
-		add_action( 'flexible-shipping/group-method/converted-method', array( $this, 'track_convert_method' ) );
+		add_action( 'woocommerce_shipping_zone_method_deleted', [ $this, 'track_deleted_method' ] );
+		add_action( 'flexible-shipping/group-method/converted-method', [ $this, 'track_convert_method' ] );
 
 		// Prepare before tracking.
 		add_action(
 			'wp_ajax_woocommerce_shipping_zone_methods_save_changes',
-			array(
+			[
 				$this,
 				'check_deleted_methods',
-			),
+			],
 			5
 		);
 	}
@@ -89,7 +89,7 @@ class ConvertTracker implements Hookable {
 				continue;
 			}
 
-			$this->to_delete_methods[] = $instance_id;
+			$this->to_delete_methods[] = (int) $instance_id;
 		}
 	}
 
@@ -97,7 +97,7 @@ class ConvertTracker implements Hookable {
 	 * @param int $instance_id .
 	 */
 	public function track_deleted_method( $instance_id ) {
-		if ( ! in_array( $instance_id, $this->to_delete_methods ) ) {
+		if ( ! in_array( (int) $instance_id, $this->to_delete_methods, true ) ) {
 			return;
 		}
 
@@ -119,11 +119,11 @@ class ConvertTracker implements Hookable {
 	 * @return array
 	 */
 	private function prepare_data() {
-		return array(
+		return [
 			'first'   => (int) get_option( self::OPTION_FIRST, 0 ),
 			'again'   => (int) get_option( self::OPTION_AGAIN, 0 ),
 			'deleted' => (int) get_option( self::OPTION_DELETED, 0 ),
-		);
+		];
 	}
 
 	/**

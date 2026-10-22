@@ -31,17 +31,17 @@ class RuleCostFieldsFactory implements FieldProvider {
 	 * @return array
 	 */
 	public function get_normalized_cost_fields() {
-		$normalized_cost_fields = array();
+		$normalized_cost_fields = [];
 		$renderer               = new JsonNormalizedRenderer();
 
-		return $renderer->render_fields( $this, array() );
+		return $renderer->render_fields( $this, [] );
 	}
 
 	/**
 	 * @return Field[]
 	 */
 	public function get_built_in_rule_cost_fields() {
-		return array(
+		return [
 			( new Field\InputNumberField() )
 				->set_name( self::COST_PER_ORDER )
 				->add_class( 'wc_input_decimal' )
@@ -51,7 +51,6 @@ class RuleCostFieldsFactory implements FieldProvider {
 				->set_label( __( 'rule cost is', 'flexible-shipping' ) )
 				->set_description_tip( __( 'Enter shipment cost for this rule.', 'flexible-shipping' ) )
 				->add_data( 'suffix', get_woocommerce_currency_symbol() ),
-		);
+		];
 	}
-
 }

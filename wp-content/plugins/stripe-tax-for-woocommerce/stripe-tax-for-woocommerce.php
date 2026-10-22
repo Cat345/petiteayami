@@ -2,13 +2,16 @@
 /**
  * Plugin Name: Stripe Tax - Sales tax automation for WooCommerce
  * Description: Automate sales tax, VAT, and GST compliance for all your transactions.
- * Version: 2.0.5
+ * Version: 2.2.0
  * Text Domain: stripe-tax-for-woocommerce
  * Requires at least: 6.3
  * Requires PHP: 7.4
+ * WC requires at least: 8.0
+ * WC tested up to: 10.4
  * Requires Plugins: woocommerce
- * License: Expat
- * Tested up to: 7.0
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Tested up to: 7.1
  *
  * @package Stripe\StripeTaxForWooCommerce
  */
@@ -45,6 +48,7 @@ spl_autoload_register(
 use Stripe\StripeTaxForWooCommerce\SDK\lib\Stripe;
 use Stripe\StripeTaxForWooCommerce\WordPress\Hooks;
 use Stripe\StripeTaxForWooCommerce\WordPress\PluginActivate;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 global $wpdb;
 
@@ -66,6 +70,15 @@ define( 'STRIPE_TAX_FOR_WOOCOMMERCE_PLUGIN_BASENAME', plugin_basename( __FILE__ 
 define( 'STRIPE_TAX_PARTNER_ID', 'tailorapp%2AAZwoRQq7nwAAABn9%23EhcKFWFjY3RfMVNYZW1JTGlEQzhRYTRQMA' );
 
 register_activation_hook( __FILE__, array( PluginActivate::class, 'trigger_activate' ) );
+
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( FeaturesUtil::class ) ) {
+			FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
+	}
+);
 
 add_action( 'plugins_loaded', array( new Hooks(), 'init' ) );
 add_action( 'init', array( Hooks::class, 'set_app_info' ) );

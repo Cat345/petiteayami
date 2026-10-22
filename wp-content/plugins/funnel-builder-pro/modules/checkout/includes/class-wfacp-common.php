@@ -31,6 +31,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 			add_action( 'plugins_loaded', array( __CLASS__, 'plugins_loaded' ), - 1 );
 			add_action( 'init', array( __CLASS__, 'register_post_type' ), 98 );
+			// Both places that apply a discount fire this, so the sale window is dropped from the
+			// cart item in one place rather than at each injection site.
+			add_action( 'wfacp_discount_added_to_item', array( __CLASS__, 'detach_sale_schedule' ) );
 
 			add_action( 'wc_ajax_get_refreshed_fragments', array( __CLASS__, 'wc_ajax_get_refreshed_fragments' ), - 1 );
 			add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'woocommerce_checkout_update_order_review' ), - 1 );
@@ -938,8 +941,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			} else {
 				$required = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>';
 			}
+			$checked_key       = self::get_radio_checked_key( $value, $args['options'] ?? array() );
 			$sort              = $args['priority'] ? $args['priority'] : '';
-			$field_container   = '<p class="form-row %1$s" id="%2$s" data-priority="' . esc_attr( $sort ) . '" data-fkcf-default="' . esc_attr( $value ) . '">%3$s</p>';
+			$field_container   = '<p class="form-row %1$s" id="%2$s" data-priority="' . esc_attr( $sort ) . '" data-fkcf-default="' . esc_attr( null !== $checked_key ? $checked_key : $value ) . '">%3$s</p>';
 			$field             = '';
 			$custom_attributes = array();
 
@@ -947,10 +951,11 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			unset( $args['label_class'][0] );
 			if ( ! empty( $args['options'] ) ) {
 				foreach ( $args['options'] as $option_key => $option_text ) {
-					$field .= "<span class='wfacp_radio_options_group'>";
-					$field .= '<input type="radio" class="input-radio ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" value="' . esc_attr( $option_key ) . '" name="' . esc_attr( $key ) . '" ' . implode( ' ', $custom_attributes ) . ' id="' . esc_attr( $args['id'] ) . '_' . esc_attr( $option_key ) . '"' . checked( $value, $option_key, false ) . ' />';
-					$field .= '<label for="' . esc_attr( $args['id'] ) . '_' . esc_attr( $option_key ) . '" class="radio ' . implode( ' ', $args['label_class'] ) . '">' . $option_text . '</label>';
-					$field .= '</span>';
+					$is_checked = ( null !== $checked_key && $checked_key === (string) $option_key ) ? ' checked="checked"' : '';
+					$field     .= "<span class='wfacp_radio_options_group'>";
+					$field     .= '<input type="radio" class="input-radio ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" value="' . esc_attr( $option_key ) . '" name="' . esc_attr( $key ) . '" ' . implode( ' ', $custom_attributes ) . ' id="' . esc_attr( $args['id'] ) . '_' . esc_attr( $option_key ) . '"' . $is_checked . ' />';
+					$field     .= '<label for="' . esc_attr( $args['id'] ) . '_' . esc_attr( $option_key ) . '" class="radio ' . implode( ' ', $args['label_class'] ) . '">' . $option_text . '</label>';
+					$field     .= '</span>';
 				}
 			}
 
@@ -974,6 +979,34 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$field           = sprintf( $field_container, $container_class, $container_id, $field_html );
 
 			return $field;
+		}
+
+		/**
+		 * Resolve a radio field's value to the one option key that should be checked.
+		 *
+		 * The field editor saves the default as the option label ("Filiaal") while each radio's value is
+		 * the option key ("filiaal"), and checked() compares with (string) ===, so a label never matches.
+		 * A key match wins; otherwise the first option whose label equals the value is used, so at most
+		 * one radio is ever checked even when a label equals another option's key.
+		 *
+		 * @since 3.23.0
+		 *
+		 * @param mixed $value   Saved or posted field value.
+		 * @param array $options Option key => label map.
+		 *
+		 * @return string|null Option key to check, or null when nothing matches.
+		 */
+		public static function get_radio_checked_key( $value, $options ) {
+			if ( ! is_scalar( $value ) || ! is_array( $options ) || empty( $options ) ) {
+				return null;
+			}
+			$value = (string) $value;
+			if ( array_key_exists( $value, $options ) ) {
+				return $value;
+			}
+			$label_key = array_search( $value, array_map( 'strval', $options ), true );
+
+			return false === $label_key ? null : (string) $label_key;
 		}
 
 
@@ -1351,6 +1384,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'smart_button_position'                   => $buttons_positions[0],
 				'enable_google_autocomplete'              => 'false',
 				'enable_phone_flag'                       => 'true',
+				'enable_email_suggestion'                 => 'false',
+				/* translators: %s: the suggested email address */
+				'email_suggestion_prompt'                 => __( 'Did you mean %s?', 'woofunnels-aero-checkout' ),
 				'enable_phone_validation'                 => 'false',
 				'save_phone_number_type'                  => 'false',
 				'enable_live_validation'                  => 'true',
@@ -1360,6 +1396,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					'single_step' => new stdClass(),
 					'two_step'    => new stdClass(),
 					'third_step'  => new stdClass(),
+					'fourth_step' => new stdClass(),
 				),
 			);
 
@@ -1828,8 +1865,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( ! is_null( $cart_item ) && isset( $cart_item['data'] ) ) {
-				$pro = $cart_item['data'];
-				$pro = self::set_product_price( $pro, $product_data );
+				// set_product_price() rewrites the product to the price of the whole pack. On the cart's
+				// own object that leaks into everything rendered after this row, which reads it as one unit.
+				$pro = self::set_product_price( clone $cart_item['data'], $product_data );
 			} else {
 				$pro = null;
 				if ( ! wp_doing_ajax() ) {
@@ -2701,6 +2739,51 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			echo apply_filters( 'woocommerce_wfacp_dropdown_variation_attribute_options_html', $html, $args ); // WPCS: XSS ok.
 		}
 
+		/**
+		 * Whether the current request is entitled to read the given order.
+		 *
+		 * Delegates to the shared core check when the active Funnel Builder ships it
+		 * (3.16.0.5+), and otherwise applies the same rules inline so an older Lite
+		 * paired with this Pro build is still protected. The order key is the secret
+		 * WooCommerce embeds in the order-received URL, and FunnelKit's own thank-you
+		 * links carry it too, so the legitimate flow is unaffected while id enumeration
+		 * is not (#9636).
+		 *
+		 * @param int $order_id Order id taken from the request.
+		 *
+		 * @return bool
+		 */
+		public static function current_request_can_view_order( $order_id ) {
+			if ( class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'current_request_can_view_order' ) ) {
+				return WFFN_Common::current_request_can_view_order( $order_id );
+			}
+
+			$order_id = absint( $order_id );
+			if ( $order_id < 1 || ! function_exists( 'wc_get_order' ) ) {
+				return false;
+			}
+
+			$order = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
+
+			/** Possessing the order key is the credential. */
+			$request_key = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the key is itself the credential being checked.
+			if ( '' !== $request_key && hash_equals( (string) $order->get_order_key(), $request_key ) ) {
+				return true;
+			}
+
+			/** A logged-in customer reading their own order. */
+			$customer_id = $order->get_customer_id();
+			if ( $customer_id > 0 && get_current_user_id() === $customer_id ) {
+				return true;
+			}
+
+			/** Anyone who can manage orders already sees this in wp-admin. */
+			return current_user_can( 'edit_shop_orders' );
+		}
+
 		public static function wfacp_order_custom_field( $atts ) {
 
 			$atts = shortcode_atts(
@@ -2718,8 +2801,19 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			$order_id = absint( $atts['order_id'] );
-			if ( 0 === $order_id && isset( $_REQUEST['order_id'] ) && absint( $_REQUEST['order_id'] ) > 0 ) {
-				$order_id = absint( $_REQUEST['order_id'] );
+
+			/**
+			 * An order id supplied in the shortcode attribute comes from page content, so it is
+			 * as trusted as the author who wrote it. One arriving in the request is not: this
+			 * shortcode prints billing and shipping details -- name, email, phone, full address
+			 * -- so without an entitlement check any visitor could walk order ids and read
+			 * other customers' data. Verify before accepting it (#9636).
+			 */
+			if ( 0 === $order_id ) {
+				$requested_order_id = isset( $_REQUEST['order_id'] ) ? absint( wp_unslash( $_REQUEST['order_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a nonce cannot apply to a shortcode rendered for logged-out customers; entitlement is verified on the next line instead.
+				if ( $requested_order_id > 0 && self::current_request_can_view_order( $requested_order_id ) ) {
+					$order_id = $requested_order_id;
+				}
 			}
 
 			$order_id = apply_filters( 'wfacp_custom_field_order_id', $order_id );
@@ -3047,24 +3141,27 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 
 		/**
-		 * Display proper subscription price
+		 * Price column of a subscription row in the Order Summary: what the whole line charges today.
 		 *
-		 * @param $_product WC_Product
-		 * @param $cart_item WC_Cart
-		 * @param $cart_item_key
+		 * Priced like every other row, from the line subtotal, so it carries the same tax label and
+		 * agrees with the order subtotal. For a sign-up fee that is recurring + fee, which Subscriptions
+		 * labels "due today" through woocommerce_cart_item_subtotal; for a free trial with no fee it is
+		 * 0. The recurring amount is stated beside it by the subscription price string.
+		 *
+		 * @param WC_Product $_product      Cart item product.
+		 * @param array      $cart_item     Cart item.
+		 * @param string     $cart_item_key Cart item key.
 		 *
 		 * @return string
 		 */
 		public static function display_subscription_price( $_product, $cart_item, $cart_item_key ) {
-			if ( ! wp_doing_ajax() && $cart_item['quantity'] > 1 ) {
-				$price = $_product->get_price();
-				$price = $price / $cart_item['quantity'];
-				if ( $price > 0 ) {
-					$_product->set_price( $price );
-				}
+			if ( isset( $cart_item['line_subtotal'] ) ) {
+				$subtotal = self::get_product_subtotal( $_product, $cart_item );
+			} else {
+				$subtotal = WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] );
 			}
 
-			return apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key );
+			return apply_filters( 'woocommerce_cart_item_subtotal', $subtotal, $cart_item, $cart_item_key );
 		}
 
 		public static function get_signup_fee( $price ) {
@@ -3083,37 +3180,39 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 		/**
-		 * @param $pro \WC_Product_Subscription
-		 * @param $product_data
-		 * @param $cart_item
-		 * @param $cart_item_key
+		 * Recurring price string of a product switcher or Order Summary row.
+		 *
+		 * @param WC_Product_Subscription $pro           Product the row displays.
+		 * @param array                   $product_data  Checkout product settings of the row.
+		 * @param array|null              $cart_item     Cart item, when the row is in the cart.
+		 * @param string                  $cart_item_key Cart item key, or ''.
 		 *
 		 * @return string
 		 */
 		public static function subscription_product_string( $pro, $product_data, $cart_item, $cart_item_key ) {
-			$_price     = $pro->get_price();
-			$temp_price = floatval( $_price );
-
 			if ( isset( $product_data['quantity'] ) ) {
 				$qty = $product_data['quantity'];
 			} else {
 				$qty = $cart_item['quantity'];
 			}
 
-			// absint() zeroed a fractional quantity, wiping the subscription price out.
-			$temp_price *= ( isset( $qty ) && $qty > 0 ) ? wc_stock_amount( $qty ) : 1;
-			$temp_data   = array(
+			// A row in the cart is priced from the cart's product, which carries the offer discount for
+			// one unit, times the units in the line, shown with or without tax like the cart's price column.
+			// Not from line_subtotal: for a sign-up fee or a free trial that holds what is due today, not what recurs.
+			if ( is_array( $cart_item ) && isset( $cart_item['data'] ) && $cart_item['data'] instanceof WC_Product ) {
+				$temp_price = wc_get_price_to_display( $cart_item['data'], array( 'qty' => ( isset( $cart_item['quantity'] ) && $cart_item['quantity'] > 0 ) ? wc_stock_amount( $cart_item['quantity'] ) : 1, 'display_context' => 'cart' ) );
+			} else {
+				$temp_price = wc_get_price_to_display( $pro, array( 'qty' => ( isset( $qty ) && $qty > 0 ) ? wc_stock_amount( $qty ) : 1, 'display_context' => 'cart' ) );
+			}
+
+			$temp_data = array(
 				'price' => wc_price( $temp_price ),
 			);
 			global $wfacp_product_switcher_quantity;
 			if ( '' !== $cart_item_key && ! isset( WC()->cart->removed_cart_contents[ $cart_item_key ] ) ) {
 				$wfacp_product_switcher_quantity = $cart_item['quantity'];
 			} elseif ( isset( $product_data['org_quantity'] ) ) {
-
-					$wfacp_product_switcher_quantity = $qty * $product_data['org_quantity'];
-			} elseif ( isset( $product_data['org_quantity'] ) ) {
-
-					$wfacp_product_switcher_quantity = $qty * $product_data['org_quantity'];
+				$wfacp_product_switcher_quantity = $qty * $product_data['org_quantity'];
 			} else {
 				$wfacp_product_switcher_quantity = $qty;
 			}
@@ -3631,6 +3730,16 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 				// Add CPT to the list of post types WP will include when it queries based on the post name.
 				$query->set( 'post_type', array( 'post', 'page', self::get_post_type_slug() ) );
+				/**
+				 * Pages are hierarchical, so WordPress only resolves a child page at its full
+				 * path. Adding 'page' above would otherwise let a child page's slug match at the
+				 * site root: /child/ returned the page instead of 404ing, and because there was no
+				 * 404 WordPress never ran redirect_canonical(), so the visitor was never sent on to
+				 * /parent/child/. The step post types this rule exists for are always top level, so
+				 * restricting to top level keeps them resolving at the root and leaves page
+				 * hierarchy, and its canonical redirect, to WordPress.
+				 */
+				$query->set( 'post_parent', 0 );
 			}
 		}
 
@@ -4389,7 +4498,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * @return array
 		 */
 		public static function add_third_party_fields_to_checkout_form( $data ) {
-			$steps = array( 'third_step', 'two_step', 'single_step' );
+			$steps = array_reverse( self::get_all_step_slugs() );
 			foreach ( $steps as $step ) {
 				if ( isset( $data['page_layout']['fieldsets'][ $step ] ) ) {
 					$data['page_layout']['fieldsets'][ $step ] = self::map_third_party_field_into_last_section_form( $data['page_layout']['fieldsets'][ $step ] );
@@ -4976,6 +5085,49 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			return '';
+		}
+
+		/**
+		 * Drop a scheduled-sale window from a product we have just discounted.
+		 *
+		 * WooCommerce 11.1.0 added Automattic\WooCommerce\Internal\ScheduledSalePriceReconciler
+		 * (woocommerce/woocommerce#65551). It filters `woocommerce_product_get_price` at priority 99
+		 * and, when "now" falls outside a product's scheduled sale window, returns the regular price
+		 * if the active price still equals the sale price:
+		 *
+		 *     if ( ! $within_window && (float) $stored_price === (float) $sale_price ) {
+		 *         return $regular_price;
+		 *     }
+		 *
+		 * We write the same value to `price` and `sale_price`, so that test matches every discounted
+		 * item and our price is discarded as a stale leftover - in 'view' context, which is what cart
+		 * totals use, so the regular price is displayed AND charged. Since WooCommerce 10.x a lapsed
+		 * sale keeps its sale price and dates forever, so this is not a short cron-lag window: every
+		 * product that ever ran a scheduled sale carries it.
+		 *
+		 * The cart item is a per-request snapshot whose prices we own; a catalog sale schedule on it
+		 * is meaningless once we have overridden the price, and clearing it makes the reconciler
+		 * return at its own "no sale dates" guard. Both dates go, not only a lapsed end date: a sale
+		 * scheduled to START later puts "now" outside the window just the same.
+		 *
+		 * Re-asserting the price on a later `woocommerce_product_get_price` priority was the
+		 * alternative, and it is not safe here - it discards transforms that legitimately ran before
+		 * it, notably CURCY's currency conversion at 99 and All Products for Subscriptions' scheme
+		 * price, and it would silence every later set_price() on the object, including our own.
+		 *
+		 * Nothing is saved: the stored schedule is untouched, and repeated calls are a no-op.
+		 *
+		 * @param WC_Product $product Product a discount has just been applied to.
+		 */
+		public static function detach_sale_schedule( $product ) {
+			if ( ! $product instanceof WC_Product ) {
+				return;
+			}
+
+			if ( $product->get_date_on_sale_from( 'edit' ) || $product->get_date_on_sale_to( 'edit' ) ) {
+				$product->set_date_on_sale_from( '' );
+				$product->set_date_on_sale_to( '' );
+			}
 		}
 	}
 

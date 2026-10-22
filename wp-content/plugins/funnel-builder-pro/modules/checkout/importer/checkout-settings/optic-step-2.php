@@ -129,7 +129,7 @@ $pageLayout = array(
 						'class'        => array(
 							0 => 'form-row-last',
 						),
-						'autocomplete' => 'phone',
+						'autocomplete' => 'tel',
 						'priority'     => '20',
 						'type'         => 'tel',
 						'id'           => 'billing_phone',

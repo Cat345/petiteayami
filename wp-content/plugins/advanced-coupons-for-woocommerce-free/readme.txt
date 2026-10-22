@@ -2,8 +2,8 @@
 Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo, store credit, coupon plugin, discount codes
 Requires at least: 5.9
-Tested up to: 7.1
-Stable tag: 4.7.6
+Tested up to: 7.1.3
+Stable tag: 4.7.6.1
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -404,6 +404,9 @@ Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
 
+= 4.7.6.1 =
+* Bug Fix: Store credit (after tax) lets a resumed failed order complete without payment or without deducting credit
+
 = 4.7.6 =
 * Bug Fix: Coupon Expiry Date column shows blank for any non-expired coupon, even when Scheduler was never used
 * Bug Fix: Dashboard License Activation Status shows Inactive while License page shows Active
@@ -417,16 +420,6 @@ Josh Kohlbach (CEO of Rymera Web Co)
 * Bug Fix: URL Coupon success message can be cached and leaked to anonymous visitors on cart-aware page caches (Kinsta, etc.)
 * Bug Fix: Wholesale sale price ignored on classic cart page when BOGO module is active (no coupon required)
 * Improvement: Allow Store Credit “Total Paid Deduction” Setting to Apply to Processing Orders
-
-= 4.7.5 =
-* Bug Fix: Integration: WPML compatibility (URL coupon notice)
-* Bug Fix: Product added twice when using coupon URL with add-to-cart query
-* Bug Fix: Store credits refund not respecting currency conversion rates
-* Bug Fix: URL coupon redirect can enter an endless redirect loop due to unbounded query string accumulation
-* Feature: Set store credit expiry of less than a year e.g. 30 days, 60 days, etc.
-* Improvement: Add "Discount application mode" setting for BOGO deals (price modification vs coupon amount)
-* Improvement: Add a setting to extend valid product types returned in product search
-* Improvement: Move the HTML tags outside of the translatable strings
 
 = 4.7.4 =
 * Bug Fix: BOGO "eligible to redeem deals" notice persists on classic cart after cart condition is no longer met

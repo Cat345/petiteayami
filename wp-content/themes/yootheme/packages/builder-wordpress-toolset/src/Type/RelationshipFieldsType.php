@@ -20,64 +20,62 @@ class RelationshipFieldsType
      */
     public static function config(Source $source, string $name, array $relationships): array
     {
-        return [
-            'fields' => array_reduce(
-                $relationships,
-                function ($fields, $relationship) use ($source, $name) {
-                    // determine role in relationship
-                    $isParent = $relationship['roles']['parent']['types'][0] === $name;
+        $fields = [];
 
-                    $config = [
-                        'name' => Str::snakeCase($relationship['slug']),
-                        'metadata' => [
-                            'label' => $relationship['labels']['singular'],
-                            'group' => trans('Relationships'),
+        foreach ($relationships as $relationship) {
+            // determine role in relationship
+            $isParent = $relationship['roles']['parent']['types'][0] === $name;
+
+            $config = [
+                'name' => Str::snakeCase($relationship['slug']),
+                'metadata' => [
+                    'label' => $relationship['labels']['singular'],
+                    'group' => trans('Relationships'),
+                ],
+                'extensions' => [
+                    'call' => [
+                        'args' => [
+                            'slug' => $relationship['slug'],
+                            'isParent' => $isParent,
                         ],
-                        'extensions' => [
-                            'call' => [
-                                'args' => [
-                                    'slug' => $relationship['slug'],
-                                    'isParent' => $isParent,
-                                ],
-                            ],
-                        ],
-                    ];
+                    ],
+                ],
+            ];
 
-                    // find type of related items
-                    $type = Helper::getPostType(
-                        $relationship['roles'][$isParent ? 'child' : 'parent']['types'][0],
-                    );
+            // find type of related items
+            $type = Helper::getPostType(
+                $relationship['roles'][$isParent ? 'child' : 'parent']['types'][0],
+            );
 
-                    if (!$type) {
-                        return $fields;
-                    }
+            if (!$type) {
+                continue;
+            }
 
-                    if (
-                        $relationship['cardinality']['type'] === 'one-to-one' ||
-                        ($relationship['cardinality']['type'] === 'one-to-many' && !$isParent)
-                    ) {
-                        $config['type'] = Str::camelCase($type->name, true);
-                        $config['extensions']['call']['func'] = __CLASS__ . '::resolve';
-                    } else {
-                        $relationshipName = Str::camelCase(
-                            ['toolset', $type->name, $relationship['slug']],
-                            true,
-                        );
+            if (
+                $relationship['cardinality']['type'] === 'one-to-one' ||
+                ($relationship['cardinality']['type'] === 'one-to-many' && !$isParent)
+            ) {
+                $config['type'] = Str::camelCase($type->name, true);
+                $config['extensions']['call']['func'] = __CLASS__ . '::resolve';
+            } else {
+                $relationshipName = Str::camelCase(
+                    ['toolset', $type->name, $relationship['slug']],
+                    true,
+                );
 
-                        $source->objectType(
-                            $relationshipName,
-                            fn() => RelationshipType::config($type->name, $relationship),
-                        );
+                $source->objectType(
+                    $relationshipName,
+                    fn() => RelationshipType::config($type->name, $relationship),
+                );
 
-                        $config['type'] = ['listOf' => $relationshipName];
-                        $config['extensions']['call']['func'] = __CLASS__ . '::resolveManyToMany';
-                    }
+                $config['type'] = ['listOf' => $relationshipName];
+                $config['extensions']['call']['func'] = __CLASS__ . '::resolveManyToMany';
+            }
 
-                    return $fields + [$config['name'] => $config];
-                },
-                [],
-            ),
-        ];
+            $fields += [$config['name'] => $config];
+        }
+
+        return ['fields' => $fields];
     }
 
     /**

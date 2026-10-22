@@ -21,8 +21,8 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 
 		$query  = 'SELECT ID FROM ' . self::_table();
 		$field  = preg_replace( '/[^a-zA-Z0-9_]/', '', (string) $field );
-		$query  .= $wpdb->prepare( " WHERE `{$field}` = %s ", $data );
-		$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query  .= $wpdb->prepare( " WHERE `{$field}` = %s ", $data ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- field regex-whitelisted to [A-Za-z0-9_]; value via %s
+		$result = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- field regex-whitelisted to [A-Za-z0-9_]; value via %s
 		if ( ! empty( $result ) ) {
 			$exists = true;
 		}
@@ -134,13 +134,13 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$query = 'SELECT * FROM ' . $table_name . '  WHERE ID = ' . $automation_id;
+		$query = 'SELECT * FROM ' . $table_name . '  WHERE ID = ' . intval( $automation_id );
 
 		$core_cache_obj = WooFunnels_Cache::get_instance();
 
 		$result = $core_cache_obj->get_cache( md5( $query ), 'fka-automation' );
 		if ( false === $result ) {
-			$result = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- automation id intval()ed when building the query
 			$core_cache_obj->set_cache( md5( $query ), $result, 'fka-automation' );
 		}
 
@@ -158,13 +158,13 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$query = $wpdb->prepare( "SELECT `ID`,`benchmark` FROM {$table_name} WHERE `status` = %d AND `v` = %d AND `benchmark` LIKE %s", 1, 2, "%$event_slug%" );
+		$query = $wpdb->prepare( "SELECT `ID`,`benchmark` FROM {$table_name} WHERE `status` = %d AND `v` = %d AND `benchmark` LIKE %s", 1, 2, "%$event_slug%" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; values bound via prepare
 
 		$core_cache_obj = WooFunnels_Cache::get_instance();
 
 		$result = $core_cache_obj->get_cache( md5( $query ), 'fka-automation' );
 		if ( false === $result ) {
-			$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; values bound via prepare
 			$core_cache_obj->set_cache( md5( $query ), $result, 'fka-automation' );
 		}
 
@@ -232,15 +232,15 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 		$automation_contact_table          = $wpdb->prefix . 'bwfan_automation_contact';
 		$automation_contact_complete_table = $wpdb->prefix . 'bwfan_automation_complete_contact';
 
-		$query         = $wpdb->prepare( "SELECT count(*) as count FROM {$automation_contact_table} WHERE `cid` = %d AND `aid` = %d", $contact_id, $automation_id );
-		$running_count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query         = $wpdb->prepare( "SELECT count(*) as count FROM {$automation_contact_table} WHERE `cid` = %d AND `aid` = %d", $contact_id, $automation_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- tables from $wpdb->prefix; ids bound via %d
+		$running_count = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; ids bound via %d
 
 		if ( absint( $running_count ) > 0 && 'bool' === $return ) {
 			return true;
 		}
 
-		$query          = $wpdb->prepare( "SELECT count(*) as count FROM {$automation_contact_complete_table} WHERE `cid` = %d AND `aid` = %d", $contact_id, $automation_id );
-		$complete_count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query          = $wpdb->prepare( "SELECT count(*) as count FROM {$automation_contact_complete_table} WHERE `cid` = %d AND `aid` = %d", $contact_id, $automation_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- tables from $wpdb->prefix; ids bound via %d
+		$complete_count = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; ids bound via %d
 
 		$count = ( absint( $running_count ) + absint( $complete_count ) );
 		if ( 'bool' === $return ) {
@@ -267,8 +267,8 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 		global $wpdb;
 		$automation_contact_complete_table = $wpdb->prefix . 'bwfan_automation_complete_contact';
 
-		$query          = $wpdb->prepare( "SELECT count(*) as count FROM {$automation_contact_complete_table} WHERE `cid` = %d AND `aid` = %d", $contact_id, $automation_id );
-		$complete_count = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query          = $wpdb->prepare( "SELECT count(*) as count FROM {$automation_contact_complete_table} WHERE `cid` = %d AND `aid` = %d", $contact_id, $automation_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- tables from $wpdb->prefix; ids bound via %d
+		$complete_count = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- tables from $wpdb->prefix; ids bound via %d
 
 		if ( absint( $complete_count ) > 0 && 'bool' === $return ) {
 			return true;
@@ -299,7 +299,7 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 		$ids         = array_map( 'absint', $ids );
 		$placeholder = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
-		return $wpdb->query( $wpdb->prepare( "DELETE FROM $table_name WHERE `ID` IN( $placeholder )", $ids ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->query( $wpdb->prepare( "DELETE FROM $table_name WHERE `ID` IN( $placeholder )", $ids ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- table from $wpdb->prefix; ids absint()ed; %d placeholders
 	}
 
 	/**
@@ -325,7 +325,7 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 		$placeholder = array_fill( 0, count( $event_slugs ), '%s' );
 		$placeholder = implode( ', ', $placeholder );
 
-		$query = $wpdb->prepare( "SELECT `ID` FROM {$table_name} WHERE `event` IN ($placeholder) AND `v` = %d", $args );
+		$query = $wpdb->prepare( "SELECT `ID` FROM {$table_name} WHERE `event` IN ($placeholder) AND `v` = %d", $args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- generated %s placeholders; values bound via prepare
 
 		$core_cache_obj = WooFunnels_Cache::get_instance();
 

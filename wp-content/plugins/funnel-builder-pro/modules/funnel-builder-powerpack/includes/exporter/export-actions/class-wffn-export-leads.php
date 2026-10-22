@@ -51,15 +51,16 @@ if ( ! class_exists( 'WFFN_Export_Leads' ) ) {
 				'phone'        => __( 'Phone', 'funnel-builder-powerpack' ),
 				'others'       => __( 'Others', 'funnel-builder-powerpack' ),
 				'date'         => __( 'Date', 'funnel-builder-powerpack' ),
-				'device'       => __( 'Device', 'funnel-builder-powerpack' ),
 				'referrers'    => __( 'Referrers', 'funnel-builder-powerpack' ),
+				'device'       => __( 'Device', 'funnel-builder-powerpack' ),
+				'convert_time' => __( 'Time to Convert', 'funnel-builder-powerpack' ),
 				'utm_campaign' => __( 'Utm Campaign', 'funnel-builder-powerpack' ),
 				'utm_source'   => __( 'Utm Source', 'funnel-builder-powerpack' ),
 				'utm_medium'   => __( 'Utm Medium', 'funnel-builder-powerpack' ),
 				'utm_term'     => __( 'Utm Term', 'funnel-builder-powerpack' ),
+				'utm_content'  => __( 'Utm Content', 'funnel-builder-powerpack' ),
 				'contact_id'   => __( 'Contact ID', 'funnel-builder-powerpack' ),
 				'funnel'       => __( 'Funnel', 'funnel-builder-powerpack' ),
-				'convert_time' => __( 'Time to Convert', 'funnel-builder-powerpack' ),
 			);
 		}
 
@@ -107,16 +108,28 @@ if ( ! class_exists( 'WFFN_Export_Leads' ) ) {
 			$get_conversions = $rest_endpoints->get_leads( $args, true );
 
 			if ( isset( $get_conversions['status'] ) && false === $get_conversions['status'] ) {
-				WFFN_Core()->logger->log( 'Something Went Wrong ' . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true );
+				WFFN_Core()->logger->log( 'Something Went Wrong ' . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				return;
 			}
 			if ( isset( $get_conversions['db_error'] ) && true === $get_conversions['db_error'] ) {
-				WFFN_Core()->logger->log( 'db error ' . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true );
+				WFFN_Core()->logger->log( 'db error ' . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				return;
 			}
 			unset( $get_conversions['total_count'] );
+
+			$get_conversions['records'] = array_map(
+				function ( $item ) {
+					$item['order_id']   = $item['entry_id'] ?? '';
+					$item['contact_id'] = $item['customer_id'] ?? '';
+					$item['funnel']     = $item['funnel_title'] ?? '';
+
+					return $this->map_columns( $item );
+				},
+				$get_conversions['records']
+			);
+
 			$this->data_populated_in_csv( $funnel_id, $get_conversions['records'] );
 		}
 
@@ -130,7 +143,7 @@ if ( ! class_exists( 'WFFN_Export_Leads' ) ) {
 		*/
 		public function data_populated_in_csv( $funnel_id, $data ) {
 			/* prepared data for csv header get maximum columns data using funnel data **/
-			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], 'a' );
+			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], 'a' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 			$count = 0;
 			foreach ( $data as $subdata ) {
 				if ( isset( $subdata['date'] ) ) {
@@ -139,7 +152,7 @@ if ( ! class_exists( 'WFFN_Export_Leads' ) ) {
 				fputcsv( $file, $subdata, ',', '"', '\\' );
 				++$count;
 			}
-			fclose( $file );
+			fclose( $file ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 			$this->current_pos = $this->current_pos + $count;
 		}
 	}

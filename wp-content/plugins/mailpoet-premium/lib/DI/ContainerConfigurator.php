@@ -78,6 +78,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $this->registerFreeService($container, \MailPoet\Settings\SettingsController::class);
     $this->registerFreeService($container, \MailPoet\Automation\Integrations\WooCommerce\WooCommerce::class);
     $this->registerFreeService($container, \MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController::class);
+    $this->registerFreeService($container, \MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTagManager::class);
     $this->registerFreeService($container, \MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController::class);
     $this->registerFreeService($container, \MailPoet\Segments\WooCommerce::class);
     $this->registerFreeService($container, \MailPoet\Automation\Engine\WordPress::class);
@@ -94,10 +95,14 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Premium\API\JSON\v1\ResponseBuilders\StatsResponseBuilder::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\API\JSON\v1\ResponseBuilders\SubscriberDetailedStatsResponseBuilder::class);
 
+    // License
+    $container->autowire(\MailPoet\Premium\Util\License\DetailedAnalyticsGuard::class)->setPublic(true);
+
     // Automation
     $container->autowire(\MailPoet\Premium\Automation\Engine\Builder\CreateAutomationController::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Engine\Builder\UpdateAutomationController::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Engine\Engine::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Engine\AutomationAuthorization::class)->setPublic(true);
 
     // Automation - API endpoints
     $container->autowire(\MailPoet\Premium\Automation\Engine\Endpoints\Automations\AutomationsPostEndpoint::class)->setPublic(true);
@@ -106,6 +111,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Automation - MailPoet Premium integration
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\MailPoetPremiumIntegration::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\ContextFactory::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\CustomHookChain::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Actions\UnsubscribeAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Actions\AddTagAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Actions\RemoveTagAction::class)->setPublic(true);

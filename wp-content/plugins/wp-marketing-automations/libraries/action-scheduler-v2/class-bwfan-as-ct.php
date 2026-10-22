@@ -133,7 +133,7 @@ class BWFAN_AS_V2 {
 		 * (update_status_by_multiple_ids) do not reset claim_id.
 		 * Status 2 (Failed) and 5 (Terminate) are excluded — they won't re-enter the queue.
 		 */
-		$stuck_ids = $wpdb->get_col(
+		$stuck_ids = $wpdb->get_col( //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->prepare(
 				"SELECT ac.`ID` FROM `{$wpdb->prefix}bwfan_automation_contact` ac
 				LEFT JOIN `{$wpdb->prefix}bwfan_automation_contact_claim` acc ON ac.`claim_id` = acc.`ID`
@@ -143,13 +143,13 @@ class BWFAN_AS_V2 {
 				LIMIT %d",
 				1, 3, 4, 6, 100
 			)
-		); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		);
 
 		if ( ! empty( $stuck_ids ) ) {
 			$placeholders = array_fill( 0, count( $stuck_ids ), '%d' );
 			$format       = implode( ', ', $placeholders );
 			$sql          = $wpdb->prepare(
-				"UPDATE `{$wpdb->prefix}bwfan_automation_contact` SET `claim_id` = 0 WHERE `ID` IN ({$format})", //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"UPDATE `{$wpdb->prefix}bwfan_automation_contact` SET `claim_id` = 0 WHERE `ID` IN ({$format})", //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $format is a run of %d placeholders, one per stuck ID
 				...$stuck_ids
 			);
 			self::query_with_deadlock_retry( $sql );
@@ -170,7 +170,7 @@ class BWFAN_AS_V2 {
 		for ( $attempt = 0; $attempt <= $max_retries; $attempt++ ) {
 			/** Suppress wpdb's native error logging; deadlocks are handled here. last_error stays populated for detection below. */
 			$suppress = $wpdb->suppress_errors( true );
-			$result   = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$result   = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- callers pass a query already built with $wpdb->prepare()
 			$wpdb->suppress_errors( $suppress );
 
 			if ( false !== $result ) {

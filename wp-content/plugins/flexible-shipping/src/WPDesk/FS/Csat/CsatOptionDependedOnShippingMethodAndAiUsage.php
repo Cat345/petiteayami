@@ -7,9 +7,9 @@ use FSVendor\Octolize\Csat\CsatOptionDependedOnShippingMethod;
 class CsatOptionDependedOnShippingMethodAndAiUsage extends CsatOptionDependedOnShippingMethod {
 
 	/**
-	 * @param array $settings
+	 * @param mixed $settings
 	 *
-	 * @return array
+	 * @return mixed
 	 */
 	public function update_settings( $settings ) {
 		if ( is_array( $settings ) && isset( $settings['used_rules_table_paste'] ) ) {

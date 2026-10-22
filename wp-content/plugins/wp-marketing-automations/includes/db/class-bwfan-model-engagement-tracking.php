@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro_3_0() ) {
 
@@ -17,7 +18,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 				$mode = absint( $mode );
 				$and  = $wpdb->prepare( ' AND con.mode = %d', $mode );
 			}
-			$query = $wpdb->prepare( "SELECT con.*, ct.subject, ct.template as message FROM $table AS con LEFT JOIN {$wpdb->prefix}bwfan_templates AS ct ON con.tid=ct.ID WHERE cid = %d $and ORDER BY created_at DESC LIMIT %d OFFSET %d", $cid, $limit, $offset );
+			$query = $wpdb->prepare( "SELECT con.*, ct.subject, ct.template as message FROM $table AS con LEFT JOIN {$wpdb->prefix}bwfan_templates AS ct ON con.tid=ct.ID WHERE cid = %d $and ORDER BY created_at DESC LIMIT %d OFFSET %d", $cid, $limit, $offset ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from _table(); $and built with prepare()
 
 			return self::get_results( $query );
 		}
@@ -30,7 +31,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$query[] = $wpdb->prepare( "AND cid = %d", $cid );
 			$query[] = $wpdb->prepare( "AND mode = %d", $mode );
 
-			return $wpdb->get_var( implode( ' ', $query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( implode( ' ', $query ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from _table(); values bound via prepare()
 		}
 
 		public static function get_recipents_by_type( $oid, $type, $offset = 0, $limit = 25 ) {
@@ -46,8 +47,8 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$results = self::get_results( $query );
 
 			/** Fetch Engagements total count **/
-			$query = $wpdb->prepare( "SELECT COUNT(conv.ID) FROM $table AS conv WHERE conv.type = %d AND conv.oid = %d", $type, $oid );
-			$total = absint( $wpdb->get_var( $query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query = $wpdb->prepare( "SELECT COUNT(conv.ID) FROM $table AS conv WHERE conv.type = %d AND conv.oid = %d", $type, $oid ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from _table() ($wpdb->prefix)
+			$total = absint( $wpdb->get_var( $query ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 
 			$conversations_ids = empty( $results ) ? [] : array_column( $results, 'conversation_id' );
 			$conversions       = [];
@@ -57,7 +58,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 				$conversations_ids  = array_map( 'absint', $conversations_ids );
 				$conv_placeholder   = implode( ', ', array_fill( 0, count( $conversations_ids ), '%d' ) );
 				/** Scoped by oid as well, a matching trackid alone does not mean the conversion belongs to this source */
-				$conversion_query   = $wpdb->prepare( "SELECT wcid,cid,trackid,wctotal FROM {$wpdb->prefix}bwfan_conversions WHERE trackid IN( $conv_placeholder ) AND otype = %d AND oid = %d", array_merge( $conversations_ids, array( $type, $oid ) ) );
+				$conversion_query   = $wpdb->prepare( "SELECT wcid,cid,trackid,wctotal FROM {$wpdb->prefix}bwfan_conversions WHERE trackid IN( $conv_placeholder ) AND otype = %d AND oid = %d", array_merge( $conversations_ids, array( $type, $oid ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders via array_fill; arg count matches at runtime
 				$conversions_result = self::get_results( $conversion_query );
 				foreach ( $conversions_result as $conversion ) {
 					if ( ! isset( $conversions[ absint( $conversion['cid'] ) ] ) ) {
@@ -76,7 +77,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			if ( ! empty( $send_to ) ) {
 				$send_to              = array_map( 'sanitize_text_field', $send_to );
 				$recipients_ph        = implode( ', ', array_fill( 0, count( $send_to ), '%s' ) );
-				$unsubscribe_query    = $wpdb->prepare( "SELECT ID,recipient FROM {$wpdb->prefix}bwfan_message_unsubscribe WHERE recipient IN ($recipients_ph) AND automation_id=%d AND c_type = 2", array_merge( $send_to, array( $oid ) ) );
+				$unsubscribe_query    = $wpdb->prepare( "SELECT ID,recipient FROM {$wpdb->prefix}bwfan_message_unsubscribe WHERE recipient IN ($recipients_ph) AND automation_id=%d AND c_type = 2", array_merge( $send_to, array( $oid ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders via array_fill; values bound in prepare()
 				$unsubscribers_result = self::get_results( $unsubscribe_query );
 				foreach ( $unsubscribers_result as $unsubscriber ) {
 					$unsubscribers[ $unsubscriber['recipient'] ] = $unsubscriber;
@@ -113,14 +114,14 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$limit  = absint( $limit );
 
 			/** Fetching all Engagements for automation **/
-			$query       = $wpdb->prepare( "SELECT GROUP_CONCAT(DISTINCT ID) as track_ids,cid, send_to, SUM(open) as open,mode, SUM(click) as click, COUNT(*) as total, SUM(IF(c_status=2,1,0)) as sent,MAX(created_at) as sent_time FROM $table WHERE oid = %d AND type = %d AND cid>0 AND (c_status = 2 OR c_status = 3) GROUP BY send_to,cid,mode ORDER BY sent_time DESC LIMIT %d OFFSET %d", $oid, $type, $limit, $offset );
+			$query       = $wpdb->prepare( "SELECT GROUP_CONCAT(DISTINCT ID) as track_ids,cid, send_to, SUM(open) as open,mode, SUM(click) as click, COUNT(*) as total, SUM(IF(c_status=2,1,0)) as sent,MAX(created_at) as sent_time FROM $table WHERE oid = %d AND type = %d AND cid>0 AND (c_status = 2 OR c_status = 3) GROUP BY send_to,cid,mode ORDER BY sent_time DESC LIMIT %d OFFSET %d", $oid, $type, $limit, $offset ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from _table(); values bound via %d
 			$engagements = self::get_results( $query );
 			if ( empty( $engagements ) ) {
 				array( 'conversations' => [], 'total' => 0 );
 			}
 
 			/** Get Engagements total count **/
-			$count_query = $wpdb->prepare( "SELECT count(send_to) FROM $table WHERE oid = %d AND type = %d AND cid>0 AND (c_status = 2 OR c_status = 3)  GROUP BY send_to,cid,mode", $oid, $type );
+			$count_query = $wpdb->prepare( "SELECT count(send_to) FROM $table WHERE oid = %d AND type = %d AND cid>0 AND (c_status = 2 OR c_status = 3)  GROUP BY send_to,cid,mode", $oid, $type ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from _table(); values bound via %d
 			$total       = self::get_results( $count_query );
 
 			$c_ids       = empty( $engagements ) ? [] : array_column( $engagements, 'cid' );
@@ -131,14 +132,14 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 				/** Get contacts f_name, l_name **/
 				$c_ids            = array_map( 'absint', $c_ids );
 				$cids_placeholder = implode( ',', array_fill( 0, count( $c_ids ), '%d' ) );
-				$contact_query    = $wpdb->prepare( "SELECT id,f_name,l_name,email,contact_no FROM {$wpdb->prefix}bwf_contact WHERE id IN($cids_placeholder)", $c_ids );
+				$contact_query    = $wpdb->prepare( "SELECT id,f_name,l_name,email,contact_no FROM {$wpdb->prefix}bwf_contact WHERE id IN($cids_placeholder)", $c_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders via array_fill; ids absint()ed
 				$contact_data     = self::get_results( $contact_query );
 				foreach ( $contact_data as $contact ) {
 					$contacts[ $contact['id'] ] = $contact;
 				}
 
 				/** Get contacts conversion **/
-				$conversion_query  = $wpdb->prepare( "SELECT c.wcid,c.cid,c.trackid,c.wctotal FROM {$wpdb->prefix}bwfan_conversions as c JOIN {$wpdb->prefix}posts as p on c.wcid=p.ID  WHERE 1=1 AND c.oid = %d AND c.otype = %d AND c.cid IN( $cids_placeholder )", array_merge( array( $oid, $type ), $c_ids ) );
+				$conversion_query  = $wpdb->prepare( "SELECT c.wcid,c.cid,c.trackid,c.wctotal FROM {$wpdb->prefix}bwfan_conversions as c JOIN {$wpdb->prefix}posts as p on c.wcid=p.ID  WHERE 1=1 AND c.oid = %d AND c.otype = %d AND c.cid IN( $cids_placeholder )", array_merge( array( $oid, $type ), $c_ids ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders via array_fill; arg count matches at runtime
 				$conversion_result = self::get_results( $conversion_query );
 				foreach ( $conversion_result as $conversion ) {
 					if ( ! isset( $conversions[ absint( $conversion['cid'] ) ] ) ) {
@@ -159,7 +160,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 
 				/** Get unsubscribers data **/
 				$recipients_ph        = implode( ',', array_fill( 0, count( $send_to ), '%s' ) );
-				$unsubscribe_query    = $wpdb->prepare( "SELECT ID,recipient FROM {$wpdb->prefix}bwfan_message_unsubscribe WHERE recipient IN ( $recipients_ph ) AND automation_id = %d AND c_type = %d", array_merge( $send_to, array( $oid, $type ) ) );
+				$unsubscribe_query    = $wpdb->prepare( "SELECT ID,recipient FROM {$wpdb->prefix}bwfan_message_unsubscribe WHERE recipient IN ( $recipients_ph ) AND automation_id = %d AND c_type = %d", array_merge( $send_to, array( $oid, $type ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders via array_fill; arg count matches at runtime
 				$unsubscribers_result = self::get_results( $unsubscribe_query );
 				foreach ( $unsubscribers_result as $unsubscriber ) {
 					$unsubscribers[ $unsubscriber['recipient'] ] = $unsubscriber;
@@ -268,7 +269,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 		public static function get_automation_recipient_timeline( $automation_id, $contact_id, $mode ) {
 			$table       = self::_table();
 			global $wpdb;
-			$query       = $wpdb->prepare( " SELECT ID,mode,c_status,c_interaction,o_interaction,created_at FROM $table WHERE type = 1 AND oid = %d AND cid = %d AND (c_status = 2 OR c_status = 3) AND mode = %d", $automation_id, $contact_id, $mode );
+			$query       = $wpdb->prepare( " SELECT ID,mode,c_status,c_interaction,o_interaction,created_at FROM $table WHERE type = 1 AND oid = %d AND cid = %d AND (c_status = 2 OR c_status = 3) AND mode = %d", $automation_id, $contact_id, $mode ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from _table(); values bound via %d
 			$engagements = self::get_results( $query );
 			$engage_ids  = array_map( function ( $engagement ) {
 				return $engagement['ID'];
@@ -313,9 +314,9 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 
 			global $wpdb;
 
-			$query = "SELECT MIN(created_at) FROM `{$wpdb->prefix}bwfan_engagement_tracking` where oid = $oid and type = $o_type";
+			$query = "SELECT MIN(created_at) FROM `{$wpdb->prefix}bwfan_engagement_tracking` where oid = " . intval( $oid ) . " and type = " . intval( $o_type );
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- oid and type intval()ed when building the query
 		}
 
 		/**
@@ -329,7 +330,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 
 			$query = "select count( ID ) as sent_total, sum( open ) as total_open, sum( click ) as total_click from {$wpdb->prefix}bwfan_engagement_tracking where c_status = 2 group by c_status";
 
-			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 		}
 
 		/**
@@ -341,7 +342,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$engagement_table = $wpdb->prefix . 'bwfan_engagement_tracking';
 
 			$query   = "SELECT `tid`, SUM(`open`) as `opens`, SUM(`click`) as `clicks` FROM $engagement_table WHERE tid IS NOT NULL AND open > 0 GROUP BY tid ORDER BY `opens` DESC LIMIT 0,5";
-			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded SQL; table name from $wpdb->prefix
 
 			if ( empty( $results ) ) {
 				return [];
@@ -352,8 +353,8 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$placeholders = array_fill( 0, count( $tids ), '%d' );
 			$placeholders = implode( ', ', $placeholders );
 
-			$query   = $wpdb->prepare( "SELECT `ID`, `subject` FROM $template_table WHERE `ID` IN ($placeholders)", $tids );
-			$result2 = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query   = $wpdb->prepare( "SELECT `ID`, `subject` FROM $template_table WHERE `ID` IN ($placeholders)", $tids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders via array_fill; ids bound via %d
+			$result2 = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 
 			$subjects = [];
 			foreach ( $result2 as $val ) {
@@ -383,11 +384,11 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 		public static function get_last_24_hours_conversations_count( $mode = 1 ) {
 			global $wpdb;
 			$mode       = absint( $mode );
-			$start_time = date( 'Y-m-d H:i:s', strtotime( '-24 hours' ) );
+			$start_time = gmdate( 'Y-m-d H:i:s', strtotime( '-24 hours' ) );
 			$and_mode   = ! empty( $mode ) ? " AND mode = {$mode} " : "";
-			$query      = $wpdb->prepare( "SELECT COUNT(ID)  FROM {$wpdb->prefix}bwfan_engagement_tracking WHERE c_status = 2 AND created_at > %s {$and_mode}", $start_time ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$query      = $wpdb->prepare( "SELECT COUNT(ID)  FROM {$wpdb->prefix}bwfan_engagement_tracking WHERE c_status = 2 AND created_at > %s {$and_mode}", $start_time ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- mode absint()ed before interpolation
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		}
 
 		public static function get_most_interacted_template( $oid, $otype, $mode ) {
@@ -399,7 +400,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$interaction = in_array( $interaction, array( 'click', 'open' ), true ) ? $interaction : 'open';
 			$sql = "SELECT tid, SUM($interaction) AS $interaction FROM `{$wpdb->prefix}bwfan_engagement_tracking` WHERE oid=" . absint( $oid ) . " AND type=" . absint( $otype ) . " AND c_status=2 GROUP BY tid ORDER BY $interaction DESC LIMIT 0, 1";
 
-			return $wpdb->get_row( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_row( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- column whitelisted via in_array strict; ids absint()ed
 		}
 
 		/**
@@ -409,7 +410,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			global $wpdb;
 			$query = 'SELECT MIN(`ID`) FROM ' . self::_table();
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table name from _table(); no user input
 		}
 
 		/**
@@ -474,7 +475,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			}
 
 			$query                    = $wpdb->prepare( $query, $args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$results                  = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$results                  = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare(); ids absint()ed
 			$results['unsubscribers'] = self::get_automation_unsubscribers( $oid, $step_ids );
 
 			return $results;
@@ -492,17 +493,17 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 				$args         = array_merge( $args, $step_ids );
 			}
 
-			$query = $wpdb->prepare( $query, $args );
+			$query = $wpdb->prepare( $query, $args ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders via array_fill; values bound in prepare()
 
-			return absint( $wpdb->get_var( $query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return absint( $wpdb->get_var( $query ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		}
 
 		public static function get_contact_engagements( $aid, $cid, $start_date, $last_date ) {
 			global $wpdb;
 			$table = self::_table();
-			$query = $wpdb->prepare( "SELECT ID FROM {$table} WHERE cid = %d AND oid = %d AND type = 1 AND `created_at` BETWEEN %s AND %s", $cid, $aid, $start_date, $last_date );
+			$query = $wpdb->prepare( "SELECT ID FROM {$table} WHERE cid = %d AND oid = %d AND type = 1 AND `created_at` BETWEEN %s AND %s", $cid, $aid, $start_date, $last_date ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from _table(); values bound via prepare()
 
-			return $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		}
 
 		public static function delete_contact_engagements( $ids ) {
@@ -516,9 +517,9 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$placeholders = array_fill( 0, count( $ids ), '%d' );
 			$placeholders = implode( ', ', $placeholders );
 
-			$query = $wpdb->prepare( "DELETE FROM {$table} WHERE ID IN ($placeholders)", $ids );
+			$query = $wpdb->prepare( "DELETE FROM {$table} WHERE ID IN ($placeholders)", $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders via array_fill; ids bound via %d
 
-			return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		}
 
 		public static function get_engagements_tid( $aid, $sids ) {
@@ -533,7 +534,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$args         = array_merge( $args, $sids );
 			$query        = "SELECT `sid`, `tid` FROM {$wpdb->prefix}bwfan_engagement_tracking WHERE `oid` = %d AND `type` = %d AND `sid` IN ($placeholders)";
 
-			return $wpdb->get_results( $wpdb->prepare( $query, $args ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( $wpdb->prepare( $query, $args ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholders via array_fill; values bound in prepare()
 		}
 
 		/**
@@ -622,7 +623,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$query .= $filter_query;
 			$query .= $wpdb->prepare( " ORDER BY ID DESC LIMIT %d OFFSET %d", $limit, $offset );
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built from prepare() fragments and absint() ids
 			$results = $wpdb->get_results( $query, ARRAY_A );
 			if ( empty( $results ) ) {
 				return array(
@@ -634,8 +635,8 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			/** All Contact IDs */
 			$cids = array_unique( array_column( $results, 'cid' ) );
 
-			$con_query    = $wpdb->prepare( "SELECT ID, f_name, email, l_name FROM {$wpdb->prefix}bwf_contact WHERE ID IN (" . implode( ',', array_map( 'absint', $cids ) ) . ")" );
-			$contact_data = $wpdb->get_results( $con_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$con_query    = "SELECT ID, f_name, email, l_name FROM {$wpdb->prefix}bwf_contact WHERE ID IN (" . implode( ',', array_map( 'absint', $cids ) ) . ")";
+			$contact_data = $wpdb->get_results( $con_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- ids absint()ed before implode
 
 			/** Contact array with ID as key */
 			$contact_map = array_column( $contact_data, null, 'ID' );
@@ -651,8 +652,9 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 				$tids[] = $result['tid'];
 			}
 
-			$template      = $wpdb->prepare( "SELECT ct.ID, ct.subject, ct.title, ct.mode FROM {$wpdb->prefix}bwfan_templates AS ct WHERE ct.ID IN (" . implode( ',', array_map( 'absint', $tids ) ) . ")" );
-			$template_data = $wpdb->get_results( $template, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$template      = "SELECT ct.ID, ct.subject, ct.title, ct.mode FROM {$wpdb->prefix}bwfan_templates AS ct WHERE ct.ID IN (" . implode( ',', array_map( 'absint', $tids ) ) . ")";
+			/** No template ids -> "IN ()" is invalid SQL; get_results() returned [] on that error, so return [] without the failing query */
+			$template_data = empty( $tids ) ? array() : $wpdb->get_results( $template, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- template ids absint()ed; query skipped when empty
 
 			/** Map subjects by ID */
 			$template_map       = [];
@@ -731,7 +733,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 
 			return [
 				'data'  => $con_data,
-				'total' => $wpdb->get_var( $count . $filter_query ) //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				'total' => $wpdb->get_var( $count . $filter_query ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built from prepare() fragments and absint() ids
 			];
 		}
 
@@ -740,13 +742,13 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$table = self::_table();
 			$tid   = absint( $tid );
 			if ( $only_count ) {
-				$query = $wpdb->prepare( "SELECT COUNT(ID) as count FROM {$table} WHERE tid = %d", $tid );
+				$query = $wpdb->prepare( "SELECT COUNT(ID) as count FROM {$table} WHERE tid = %d", $tid ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from _table(); tid absint()ed
 			} else {
-				$query = $wpdb->prepare( "SELECT * FROM {$table} WHERE tid = %d", $tid );
+				$query = $wpdb->prepare( "SELECT * FROM {$table} WHERE tid = %d", $tid ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from _table(); tid absint()ed
 			}
 
 
-			return $only_count ? $wpdb->get_var( $query ) : $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $only_count ? $wpdb->get_var( $query ) : $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		}
 	}
 }

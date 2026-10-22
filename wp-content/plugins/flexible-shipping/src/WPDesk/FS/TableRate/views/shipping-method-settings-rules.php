@@ -18,7 +18,7 @@
 		<?php do_action( 'flexible-shipping/method-rules-settings/table/before' ); ?>
 
 		<p><a href="#0" class="button-hints js--button-hints"
-			  data-second_label="<?php esc_attr_e( 'Close the FS hints', 'flexible-shipping' ); ?>"><?php esc_attr_e( 'Check the FS hints', 'flexible-shipping' ); ?></a>
+				data-second_label="<?php esc_attr_e( 'Close the FS hints', 'flexible-shipping' ); ?>"><?php esc_attr_e( 'Check the FS hints', 'flexible-shipping' ); ?></a>
 		</p>
 
 		<div class="flexible-shipping-rules-instruction js--hints">
@@ -82,7 +82,7 @@
 		</script>
 
 		<div class="flexible-shipping-rules-settings" id="<?php echo esc_attr( $settings_field_id ); ?>"
-			 data-settings-field-name="<?php echo esc_attr( $settings_field_name ); ?>">
+			data-settings-field-name="<?php echo esc_attr( $settings_field_name ); ?>">
 			<input name="<?php echo esc_attr( $settings_field_name ); ?>" type="hidden" value="<?php echo esc_attr( json_encode( $rules_table_settings['rules_settings'] ) ); ?>">
 			<div class="notice notice-error inline">
 				<?php echo wp_kses_post( wpautop( __( 'This is where the rules table should be displayed. If it\'s not, it is usually caused by the conflict with the other plugins you are currently using, JavaScript error or the caching issue. Clear your browser\'s cache or deactivate the plugins which may be interfering.', 'flexible-shipping' ) ) ); ?>
@@ -92,14 +92,18 @@
 		<?php do_action( 'flexible-shipping/method-rules-settings/table/after' ); ?>
 		</div><div class="flexible-shipping-method-rules-settings-modal" style="display:none;">
 			<div class="notice notice-error inline">
-				<?php echo wp_kses_post( wpautop(
-					sprintf(
+				<?php
+				echo wp_kses_post(
+					wpautop(
+						sprintf(
 						// Translators: open tag, close tag.
-						__( 'To use Flexible Shipping Rules Table you need to switch to non-modal mode. %1$sClick here%2$s to edit this shipping method with Rules Table.', 'flexible-shipping' ),
-						'<a class="fs-non-modal-method-edit" href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=shipping' ) ) . '">',
-						'</a>'
+							__( 'To use Flexible Shipping Rules Table you need to switch to non-modal mode. %1$sClick here%2$s to edit this shipping method with Rules Table.', 'flexible-shipping' ),
+							'<a class="fs-non-modal-method-edit" href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=shipping' ) ) . '">',
+							'</a>'
+						)
 					)
-				) ); ?>
+				);
+				?>
 			</div>
 		</div></td>
 </tr>

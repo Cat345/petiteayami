@@ -43,5 +43,4 @@ class Assets implements Hookable {
 			);
 		}
 	}
-
 }

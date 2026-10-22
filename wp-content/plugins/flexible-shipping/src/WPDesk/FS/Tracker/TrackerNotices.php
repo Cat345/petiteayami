@@ -22,7 +22,7 @@ class TrackerNotices implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
-		add_filter( 'wpdesk_tracker_notice_content', array( $this, 'tracker_notice' ), 10, 3 );
+		add_filter( 'wpdesk_tracker_notice_content', [ $this, 'tracker_notice' ], 10, 3 );
 	}
 
 	/**

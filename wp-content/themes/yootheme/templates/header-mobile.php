@@ -1,5 +1,6 @@
 <?php
 
+
 // Config
 $site = '~theme.site';
 $header = '~theme.mobile.header';
@@ -241,11 +242,11 @@ $attrs_modal = [];
 $attrs_modal['class'][] = 'uk-modal-body uk-padding-large uk-margin-auto uk-flex uk-flex-column uk-box-sizing-content';
 $attrs_modal['class'][] = $config("$dialog.modal.width") ? 'uk-width-' .  $config("$dialog.modal.width") : 'uk-width-auto@s';
 $attrs_modal['uk-height-viewport'] = true;
-$attrs_modal['uk-toggle'] = json_encode(array_filter([
+$attrs_modal['uk-toggle'] = json_encode([
     'cls' => 'uk-padding-large',
     'mode' => 'media',
     'media' => '@s',
-]));
+]);
 
 // Dropbar
 if (str_starts_with($config("$dialog.layout"), 'dropbar')) {
@@ -307,7 +308,7 @@ if (str_starts_with($config("$dialog.layout"), 'dropbar')) {
 
     <?php if (str_starts_with($config("$dialog.layout"), 'offcanvas')) : ?>
     <div id="tm-dialog-mobile" uk-offcanvas="container: true; overlay: true"<?= $this->attrs($config("$dialog.offcanvas") ?: []) ?>>
-        <div class="uk-offcanvas-bar uk-flex uk-flex-column">
+        <div class="uk-offcanvas-bar uk-flex uk-flex-column" aria-label="<?= __('Menu', 'yootheme') ?>">
 
             <?php if ($config("$dialog.close")) : ?>
             <button class="uk-offcanvas-close uk-close-large" type="button" uk-close uk-toggle="cls: uk-close-large; mode: media; media: @s"></button>
@@ -331,7 +332,7 @@ if (str_starts_with($config("$dialog.layout"), 'dropbar')) {
 
     <?php if (str_starts_with($config("$dialog.layout"), 'modal')) : ?>
     <div id="tm-dialog-mobile" class="uk-modal uk-modal-full" uk-modal>
-        <div class="uk-modal-dialog uk-flex">
+        <div class="uk-modal-dialog uk-flex" aria-label="<?= __('Menu', 'yootheme') ?>">
 
             <?php if ($config("$dialog.close")) : ?>
             <button class="uk-modal-close-full uk-close-large" type="button" uk-close uk-toggle="cls: uk-modal-close-full uk-close-large uk-modal-close-default; mode: media; media: @s"></button>

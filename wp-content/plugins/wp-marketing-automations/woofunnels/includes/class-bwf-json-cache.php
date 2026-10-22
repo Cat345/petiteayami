@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'BWF_JSON_Cache' ) ) {
 	#[\AllowDynamicProperties]

@@ -5,12 +5,12 @@ if (!defined('ABSPATH')) exit;
 use Stringable;
 class Select extends Base
 {
- protected $preSeparator = '';
- protected $postSeparator = '';
- protected $allowedClasses = [Func::class];
- protected $parts = [];
- public function getParts()
- {
- return $this->parts;
- }
+protected $preSeparator = '';
+protected $postSeparator = '';
+protected $allowedClasses = [Func::class];
+protected $parts = [];
+public function getParts()
+{
+return $this->parts;
+}
 }

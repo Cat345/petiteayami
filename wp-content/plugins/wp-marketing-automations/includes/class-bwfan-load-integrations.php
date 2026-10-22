@@ -21,6 +21,15 @@ class BWFAN_Load_Integrations {
 	 * @var array
 	 */
 	private static $available_actions = array();
+
+	/**
+	 * Slugs whose file loaded this request and declined to register, because
+	 * the integration plugin they guard on is inactive. Nine getters call
+	 * load_all_actions(), which re-walks every index key, so without this memo
+	 * each of them re-stats and re-requires every guard-declined file.
+	 * Deliberately holds only permanent failures — see materialize().
+	 */
+	private static $unresolvable_actions = array();
 	private static $integration_actions = array();
 
 	private static $integration_localize_data = array();
@@ -30,6 +39,20 @@ class BWFAN_Load_Integrations {
 	private static $dynamic_register_actions = [
 		'list' => []
 	];
+	/**
+	 * Lazily resolvable actions, from integrations that declare $action_map.
+	 * slug => [ dir, integration_slug, filename, calls_after ]
+	 *
+	 * Keyed by slug; each entry carries its own directory. That is what keeps
+	 * the wc_create_coupon / pro_wc_create_coupon filename collision straight:
+	 * distinct slugs, same integration, same filename, different plugins.
+	 *
+	 * Never persisted — the declarations live in integration classes that
+	 * load on every request anyway.
+	 *
+	 * @var array
+	 */
+	private static $action_index = [];
 
 	/**
 	 * BWFAN_Load_Integrations constructor.
@@ -107,15 +130,99 @@ class BWFAN_Load_Integrations {
 	}
 
 	/**
+	 * Register a declared map of lazily loadable actions.
+	 *
+	 * @param string $integration_slug integration the actions belong to
+	 * @param string $dir              absolute path to the actions directory
+	 * @param array  $map              slug => filename
+	 * @param bool   $calls_after      whether do_after_action_registration() runs
+	 */
+	public static function register_lazy_actions( $integration_slug, $dir, array $map, $calls_after = true ) {
+		foreach ( $map as $slug => $filename ) {
+			self::$action_index[ $slug ] = [ $dir, $integration_slug, $filename, (bool) $calls_after ];
+		}
+	}
+
+	/**
+	 * Load the one file behind an indexed slug.
+	 *
+	 * The work happens on the owning integration instance —
+	 * do_after_action_registration() is protected, so only BWFAN_Integration
+	 * itself may call it, and $this-> there dispatches polymorphically to the
+	 * connector overrides.
+	 *
+	 * @param string $slug
+	 *
+	 * @return BWFAN_Action|null
+	 */
+	public static function materialize( $slug ) {
+		if ( isset( self::$available_actions[ $slug ] ) ) {
+			return self::$available_actions[ $slug ];
+		}
+
+		/** Settled earlier this request: the file loads and declines to register. */
+		if ( isset( self::$unresolvable_actions[ $slug ] ) ) {
+			return null;
+		}
+
+		if ( ! isset( self::$action_index[ $slug ] ) ) {
+			return null;
+		}
+
+		list( $dir, $integration_slug, $filename, $calls_after ) = self::$action_index[ $slug ];
+
+		$integration = isset( self::$integrations[ $integration_slug ] ) ? self::$integrations[ $integration_slug ] : null;
+		if ( ! $integration instanceof BWFAN_Integration ) {
+			/** Not memoized: an integration may still register later this request. */
+			return null;
+		}
+
+		$action_obj = $integration->materialize_action( $dir, $filename, $calls_after );
+		if ( $action_obj instanceof BWFAN_Action ) {
+			return $action_obj;
+		}
+
+		/**
+		 * require_once returns bool true for a file some other path already
+		 * loaded; if that path also registered the action, hand it back.
+		 */
+		if ( isset( self::$available_actions[ $slug ] ) ) {
+			return self::$available_actions[ $slug ];
+		}
+
+		/**
+		 * null: the file loaded and its guard declined (integration plugin
+		 * inactive) — permanent for this request, so stop re-attempting it.
+		 * false: the file could not be read, which is transient; an update
+		 * swapping files must not disable the action for the whole request.
+		 */
+		if ( null === $action_obj ) {
+			self::$unresolvable_actions[ $slug ] = true;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Materialize every indexed action, in insertion order — integration
+	 * registration order × filename order, which is today's glob order.
+	 * Only for callers that explicitly want everything; never from get_action().
+	 */
+	public static function load_all_actions() {
+		foreach ( array_keys( self::$action_index ) as $slug ) {
+			if ( ! isset( self::$available_actions[ $slug ] ) ) {
+				self::materialize( $slug );
+			}
+		}
+	}
+
+	/**
 	 * Register every action when action file is included
 	 *
 	 * @param $action_obj BWFAN_Action
 	 */
 	public static function register_actions( BWFAN_Action $action_obj ) {
 		if ( method_exists( $action_obj, 'get_instance' ) ) {
-			/**
-			 * @var $temp_instance BWFAN_Action;
-			 */
 			$slug                                                                  = $action_obj->get_slug();
 			$integration_type                                                      = $action_obj->get_integration_type();
 			$localized_data                                                        = $action_obj->get_localize_data();
@@ -125,16 +232,30 @@ class BWFAN_Load_Integrations {
 			self::$integration_actions_localize_data[ $integration_type ][ $slug ] = $localized_data;
 
 			$integration = BWFAN_Core()->integration->get_integration( $integration_type );
-			if ( $action_obj->support_v2 ) {
+			if ( $action_obj->support_v2 && $integration instanceof BWFAN_Integration ) {
 				self::$dynamic_register_actions['list'][ $slug ]                                               = [
 					'action_name' => $action_obj->get_name(),
 					'lock'        => true,
 					'isLite'      => isset( self::lite_actions()[ $slug ] ),
 				];
 				self::$dynamic_register_actions['subgroup'][ $integration_type ][ $integration->get_name() ][] = $slug;
-				if ( isset( self::$dynamic_register_actions['group'][ $integration_type ] ) ) {
-					self::$dynamic_register_actions['group'][ $integration_type ]['subgroup'][] = $slug;
-				}
+				/**
+				 * No append into ['group'][ $integration_type ]['subgroup'].
+				 *
+				 * That isset() compares an ACTION's integration slug against a
+				 * key built from some integration's GROUP slug - two unrelated
+				 * namespaces that only ever match by accident. When they do, an
+				 * action slug lands in a list that holds integration slugs, and
+				 * BWFAN_Automation_V2::merge_group_data() renders it as a
+				 * phantom subgroup in the v2 action picker. Observed live:
+				 * group 'wp' (created by Pro's BWFAN_WP_Adv_Integration) picking
+				 * up Lite's 'wp_sendemail', and group 'wc' (Lite's) picking up
+				 * Pro's six WC actions.
+				 *
+				 * It never fired before actions resolved lazily: register()
+				 * calls load_actions() BEFORE it creates the group entry, so the
+				 * isset() was always false at eager-registration time.
+				 */
 			}
 		}
 	}
@@ -253,6 +374,8 @@ class BWFAN_Load_Integrations {
 		if ( empty( $evt ) ) {
 			return [];
 		}
+		self::load_all_actions();
+
 		$filtered_action = [];
 		$all_actions     = self::$available_actions;
 
@@ -300,6 +423,8 @@ class BWFAN_Load_Integrations {
 	 * @return array
 	 */
 	public function get_actions( $slug = '' ) {
+		self::load_all_actions();
+
 		return self::$available_actions;
 	}
 
@@ -315,12 +440,25 @@ class BWFAN_Load_Integrations {
 	/**
 	 * @param string $slug
 	 *
-	 * Return integration object
+	 * Return action object
 	 *
-	 * @return BWFAN_Action
+	 * @return BWFAN_Action|null
 	 */
 	public function get_action( $slug = 'wp' ) {
-		return isset( self::$available_actions[ $slug ] ) ? self::$available_actions[ $slug ] : null;
+		/**
+		 * $available_actions first, index second. Load-bearing order: old Pro's
+		 * WC loader and any third-party copy of the old eager loop register
+		 * directly into $available_actions and never appear in the index.
+		 */
+		if ( isset( self::$available_actions[ $slug ] ) ) {
+			return self::$available_actions[ $slug ];
+		}
+
+		if ( isset( self::$action_index[ $slug ] ) ) {
+			return self::materialize( $slug );
+		}
+
+		return null;
 	}
 
 	public function get_integration_localize_data( $type = '' ) {
@@ -345,6 +483,7 @@ class BWFAN_Load_Integrations {
 	 * @return array
 	 */
 	public function get_mapped_arr_action_with_integration() {
+		self::load_all_actions();
 		$actions  = self::$available_actions;
 		$map_data = [];
 		if ( count( $actions ) > 0 ) {
@@ -365,13 +504,15 @@ class BWFAN_Load_Integrations {
 	 * @return array
 	 */
 	public function get_mapped_arr_integration_name_with_action_name() {
+		self::load_all_actions();
 		$integrations = self::get_all_integrations();
 		$data         = [];
 		if ( count( $integrations ) > 0 ) {
-			/**
-			 * @var $integration BWFAN_Integration
-			 */
 			foreach ( $integrations as $slug => $actions ) {
+
+				/**
+				 * @var BWFAN_Integration $integration
+				 */
 				$integration = $this->get_integration( $slug );
 				if ( count( $actions ) === 0 ) {
 					continue;
@@ -379,7 +520,7 @@ class BWFAN_Load_Integrations {
 				$nice_name          = $integration->get_name();
 				$data[ $nice_name ] = [];
 				/**
-				 * @var $action BWFAN_Action
+				 * @var BWFAN_Action $action
 				 */
 				foreach ( $actions as $action ) {
 					$data[ $nice_name ][ $action->get_slug() ] = [
@@ -404,14 +545,19 @@ class BWFAN_Load_Integrations {
 	 * @return array
 	 */
 	public static function get_all_integrations() {
+		self::load_all_actions();
+
 		return self::$integration_actions;
 	}
 
 	public function get_integration_actions_localize_data() {
+		self::load_all_actions();
+
 		return self::$integration_actions_localize_data;
 	}
 
 	public function get_actions_schemas( $event = '', $integration_actions = array() ) {
+		self::load_all_actions();
 		if ( empty( $integration_actions ) ) {
 			/** @var BWFAN_Action[] $actions */
 			$integration_actions = $this->get_actions_objs( $event );
@@ -430,6 +576,7 @@ class BWFAN_Load_Integrations {
 	}
 
 	public function get_actions_objs( $event = '' ) {
+		self::load_all_actions();
 		$integrations = self::$integration_actions;
 
 		$final_actions = array();
@@ -747,6 +894,8 @@ class BWFAN_Load_Integrations {
 	}
 
 	public function get_dynamic_action_data() {
+		self::load_all_actions();
+
 		return self::$dynamic_register_actions;
 	}
 

@@ -75,10 +75,7 @@ class Translator implements TranslatorInterface
     {
         $locale ??= $this->getLocale();
 
-        if (isset($this->resources[$locale][$id])) {
-            return strtr($this->resources[$locale][$id], $parameters);
-        }
-        return strtr($id, $parameters);
+        return strtr($this->resources[$locale][$id] ?? $id, $parameters);
     }
 
     /**
@@ -90,9 +87,7 @@ class Translator implements TranslatorInterface
         array $parameters = [],
         ?string $locale = null
     ): string {
-        if (null === $locale) {
-            $locale = $this->getLocale();
-        }
+        $locale ??= $this->getLocale();
 
         return strtr($this->choose($this->trans($id, [], $locale), $number, $locale), $parameters);
     }

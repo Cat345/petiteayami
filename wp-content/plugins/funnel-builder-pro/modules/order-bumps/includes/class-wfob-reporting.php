@@ -183,6 +183,19 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 				return $bump_data;
 			}
 
+			/**
+			 * Funnel Builder withholds funnel analytics for this visitor (wffn_allow_funnel_analytics).
+			 * Drop the report meta as a recorded order would, so the recovery cron stops picking it up.
+			 */
+			if ( 'yes' === $order->get_meta( '_wffn_analytics_withheld' ) ) {
+				$order->delete_meta_data( '_wfob_report_data' );
+				$order->delete_meta_data( '_wfob_report_needs_normalization' );
+				$order->save();
+				remove_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfob_custom_order_status' ) );
+
+				return false;
+			}
+
 			$results = $wpdb->get_results( $wpdb->prepare( "select item.order_item_id as item_id ,meta.meta_value as bump_id from {$wpdb->prefix}woocommerce_order_items as item INNER JOIN  {$wpdb->prefix}woocommerce_order_itemmeta as meta on item.order_item_id=meta.order_item_id and item.order_id = %d and meta.meta_key='_wfob_id'", absint( $order_id ) ), ARRAY_A );
 
 			$bump_items = array();

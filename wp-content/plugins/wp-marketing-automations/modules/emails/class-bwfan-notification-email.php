@@ -315,7 +315,7 @@ class BWFAN_Notification_Email {
 
 		/** Update the last execution time if the email was sent */
 		if ( $sent ) {
-			$this->executed_last[ $frequency ] = date( 'c' );
+			$this->executed_last[ $frequency ] = gmdate( 'c' );
 			update_option( 'bwfan_email_notification_updated', $this->executed_last, false );
 		}
 	}
@@ -436,7 +436,7 @@ class BWFAN_Notification_Email {
 		if ( false === current_user_can( 'administrator' ) ) {
 			return;
 		}
-		if ( ! isset( $_GET['bwfan_email_preview'] ) ) {
+		if ( ! isset( $_GET['bwfan_email_preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin email preview; capability checked
 			return;
 		}
 		$mode = filter_input( INPUT_GET, 'bwfan_mode' );

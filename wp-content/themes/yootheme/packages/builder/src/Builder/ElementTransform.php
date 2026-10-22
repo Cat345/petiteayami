@@ -371,12 +371,33 @@ class ElementTransform
     }
 
     /**
-     * Prefix CSS classes.
+     * Prefix CSS selectors and selector lists, recursively inside grouping at-rules like @media.
+     *
+     * Preserve other matched at-rule blocks without prefixing their contents, including
+     * @keyframes.
+     *
+     * Comments are consumed as opaque chunks when matching block boundaries. This regex-based
+     * parser does not support the full CSS grammar: braces or comment-like text inside strings
+     * can still confuse block boundaries and leave selectors unprefixed.
      */
     protected static function prefixCSS(string $css, string $prefix = ''): string
     {
-        // The atomic group `(?\>...)` is used to match nested CSS rules
-        $pattern = '/([@#:.\w[\]][\\\\@#:,<>~="\'+\-^$.()\w\s[\]*]*)({(?>[^{}]+|(?R))*})/';
+        $pattern = '/
+            (
+                [@#:.\w[\]]                         # start a selector or at-rule header
+                [\\\\@#:,<>~="\'+\-^$.()\w\s[\]*]*    # match the rest of the header
+            )
+            (
+                {                                   # open the block (group 2)
+                (?>
+                    \/\*.*?\*\/                     # consume comments, including braces
+                    | [^{}\/]+                      # consume ordinary block content
+                    | \/(?!\*)                      # consume slashes outside comments
+                    | (?2)                          # recurse into nested brace blocks
+                )*
+                }                                   # close the block
+            )
+        /xs';
 
         if (preg_match_all($pattern, $css, $matches, PREG_SET_ORDER)) {
             $keys = [];
@@ -385,6 +406,26 @@ class ElementTransform
                 [$match, $selector, $content] = $match;
 
                 if (in_array($key = sha1($match), $keys)) {
+                    continue;
+                }
+
+                $atRule = ltrim($selector);
+                if (str_starts_with($atRule, '@')) {
+                    if (
+                        preg_match(
+                            '/^@(media|supports|container|layer|starting-style|scope)\b/i',
+                            $atRule,
+                        )
+                    ) {
+                        $css = str_replace(
+                            $match,
+                            $selector . static::prefixCSS($content, $prefix),
+                            $css,
+                        );
+                    }
+
+                    $keys[] = $key;
+
                     continue;
                 }
 

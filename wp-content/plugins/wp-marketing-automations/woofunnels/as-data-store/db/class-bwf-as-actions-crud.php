@@ -26,7 +26,7 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 			$sql   = "SELECT {$return_vars} FROM {$table} WHERE {$p_key}=%d";
 			$sql   = $wpdb->prepare( $sql, $action_id ); //phpcs:ignore WordPress.DB.PreparedSQL
 
-			$status = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$status = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Column whitelisted, table from prefix, action_id bound via %d
 
 			if ( ! is_array( $status ) || ! isset( $status[0] ) || ! is_array( $status[0] ) || 0 === count( $status[0] ) ) {
 				/** Empty stdClass here passed every instanceof/empty() guard downstream, causing undefined-property warnings on deleted actions */
@@ -37,7 +37,7 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 			foreach ( $status[0] as $key => $value ) {
 				$value = maybe_unserialize( $value );
 				if ( true === self::is_json( $value ) ) {
-					$value = json_decode( $value, ARRAY_A );
+					$value = json_decode( $value, true );
 				}
 				$return->$key = $value;
 			}
@@ -107,7 +107,7 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 				$sql_params[] = $args['recurring_interval'];
 			}
 
-			$action_ids = $wpdb->get_results( $wpdb->prepare( $sql, $sql_params ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql assembled from static clause fragments with trusted {$p_key}/$table identifiers; all values bound via $sql_params.
+			$action_ids = $wpdb->get_results( $wpdb->prepare( $sql, $sql_params ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $sql assembled from static clause fragments with trusted {$p_key}/$table identifiers; all values bound via $sql_params.; Static fragments, values bound via prepare; custom bwf_actions table
 			if ( is_array( $action_ids ) && count( $action_ids ) > 0 ) {
 				$action_ids = array_column( $action_ids, 'id' );
 
@@ -123,14 +123,23 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 			$p_key  = self::$primary_key;
 			$sql    = "SELECT `status` FROM {$table} WHERE {$p_key}=%d";
 			$sql    = $wpdb->prepare( $sql, $action_id ); //phpcs:ignore WordPress.DB.PreparedSQL
-			$status = $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$status = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared at 125; only table/pkey identifiers interpolated
 
 			return $status;
 		}
 
+		/**
+		 * Insert an action row.
+		 *
+		 * @param $data
+		 *
+		 * @return int|false Number of rows inserted, or false on failure. Callers scheduling a recurring
+		 *                   action MUST check this: a silently dropped INSERT breaks the recurring chain.
+		 */
 		public static function insert( $data ) {
 			global $wpdb;
-			$wpdb->insert( self::_table(), $data ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+
+			return $wpdb->insert( self::_table(), $data ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		}
 
 		public static function delete( $value ) {
@@ -160,7 +169,7 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 			$query  = "DELETE FROM {$table} WHERE {$p_key} IN ({$format})";
 			$sql    = $wpdb->prepare( $query, $action_ids ); //phpcs:ignore WordPress.DB.PreparedSQL
 
-			$rows_affected = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$rows_affected = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- IN placeholders generated in code, ids bound via %d
 
 			return $rows_affected;
 		}
@@ -171,7 +180,7 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 			if ( ! empty( $params ) ) {
 				$query = $wpdb->prepare( $query, ...$params ); //phpcs:ignore WordPress.DB.PreparedSQL
 			}
-			$results = $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$results = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- public raw SQL wrapper, no callers in any plugin; callers must pass prepared SQL
 
 			return $results;
 		}
@@ -188,7 +197,7 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 			if ( ! empty( $params ) ) {
 				$query = $wpdb->prepare( $query, ...$params ); //phpcs:ignore WordPress.DB.PreparedSQL
 			}
-			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- public raw SQL wrapper, no callers in any plugin; callers must pass prepared SQL
 
 			return $results;
 		}

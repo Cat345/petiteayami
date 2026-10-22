@@ -19,6 +19,7 @@ class FilterOrders implements Hookable {
 		add_filter( 'posts_where', [ $this, 'posts_where' ], 999 );
 
 		add_action( 'restrict_manage_posts', [ $this, 'restrict_manage_posts' ], 9999 );
+		add_action( 'woocommerce_order_list_table_restrict_manage_orders', [ $this, 'restrict_manage_posts' ], 9999 );
 	}
 
 	/**
@@ -86,7 +87,7 @@ class FilterOrders implements Hookable {
 		$add_where_meta     = ' ( ' . $add_where_meta . ' ) ';
 		$add_where_shipment = ' ( ' . $add_where_shipment . ' ) ';
 		$add_where          = ' AND ( ' . $add_where_meta . ' OR ' . $add_where_shipment . ' ) ';
-		$where              .= $add_where;
+		$where             .= $add_where;
 
 		return $where;
 	}

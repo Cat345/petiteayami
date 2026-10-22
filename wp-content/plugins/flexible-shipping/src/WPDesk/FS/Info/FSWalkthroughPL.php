@@ -28,27 +28,27 @@ class FSWalkthroughPL extends Links {
 	 * @return array[]
 	 */
 	protected function get_links() {
-		return array(
-			array(
+		return [
+			[
 				'label' => __( 'How to add a new shipping method handled by Flexible Shipping?', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-konfiguracja',
-			),
-			array(
+			],
+			[
 				'label' => __( 'A complete guide to shipping methods', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-konfiguracja-metody',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Disable or hide the shipping method', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-wylaczanie-metody',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Advanced options and customization', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-zaawansowane',
-			),
-			array(
+			],
+			[
 				'label' => __( 'Combine shipping classes in Flexible Shipping', 'flexible-shipping' ),
 				'href'  => 'https://octol.io/fs-laczenie-klas-wysylkowych',
-			),
-		);
+			],
+		];
 	}
 }

@@ -226,14 +226,21 @@ class Cart_Input extends Input {
 				continue;
 			}
 
+			$rate                 = $rates[ $chosen_rate_id ];
 			$chosen_rate_settings = get_option( 'woocommerce_' . str_replace( ':', '_', $chosen_rate_id ) . '_settings' );
-			$rate_is_taxable      = isset( $chosen_rate_settings['tax_status'] ) && 'taxable' === $chosen_rate_settings['tax_status'];
+			$rate_is_taxable      = false;
+
+			if ( is_array( $chosen_rate_settings ) && isset( $chosen_rate_settings['tax_status'] ) ) {
+				$rate_is_taxable = 'taxable' === $chosen_rate_settings['tax_status'];
+			} elseif ( is_callable( array( $rate, 'get_tax_status' ) ) ) {
+				$rate_is_taxable = 'taxable' === $rate->get_tax_status();
+			} elseif ( isset( $rate->tax_status ) ) {
+				$rate_is_taxable = 'taxable' === $rate->tax_status;
+			}
 
 			if ( $is_taxable !== $rate_is_taxable ) {
 				continue;
 			}
-
-			$rate = $rates[ $chosen_rate_id ];
 
 			foreach ( $shipping_methods as $shipping_method ) {
 				if ( $rate->instance_id === $shipping_method->instance_id ) {

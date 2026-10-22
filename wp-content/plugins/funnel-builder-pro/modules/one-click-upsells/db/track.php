@@ -210,7 +210,23 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 			);
 		}
 
+		/**
+		 * Funnel Builder marks the parent order when funnel analytics are withheld for the visitor
+		 * (wffn_allow_funnel_analytics). Only analytics-only events honour it: funnel start, accepted, product,
+		 * payment-failed and refund rows drive upsell rules, refunds and order batching.
+		 *
+		 * @return bool
+		 */
+		private function is_analytics_withheld() {
+			$order = WFOCU_Core()->data->get_parent_order();
+
+			return $order instanceof WC_Order && 'yes' === $order->get_meta( '_wffn_analytics_withheld' );
+		}
+
 		public function offer_viewed( $offer_id, $order_id, $funnel_id, $get_type_of_offer, $get_type_index_of_offer, $email ) {
+			if ( $this->is_analytics_withheld() ) {
+				return;
+			}
 
 			$this->create(
 				array(
@@ -228,6 +244,9 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 		}
 
 		public function offer_skipped( $offer_id, $order_id, $funnel_id, $get_type_of_offer, $get_type_index_of_offer, $email, $invalidation_reason ) {
+			if ( $this->is_analytics_withheld() ) {
+				return;
+			}
 
 			$this->create(
 				array(
@@ -315,6 +334,9 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 		}
 
 		public function offer_rejected( $args = array() ) {
+			if ( $this->is_analytics_withheld() ) {
+				return;
+			}
 
 			$args = wp_parse_args(
 				$args,
@@ -460,6 +482,9 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 
 
 		public function offer_expired( $args = array() ) {
+			if ( $this->is_analytics_withheld() ) {
+				return;
+			}
 
 			if ( isset( $args['next_action'] ) && 'redirect_to_next' === $args['next_action'] ) {
 

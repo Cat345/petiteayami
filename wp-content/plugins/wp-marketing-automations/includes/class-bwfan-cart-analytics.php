@@ -13,8 +13,8 @@ class BWFAN_Cart_Analytics {
 	public static $sql_datetime_format = 'Y-m-d H:i:s';
 
 	private function __construct() {
-		$this->end_date   = date( 'Y-m-d', strtotime( "+1 days" ) );
-		$this->start_date = date( 'Y-m-d', strtotime( "-{$this->filter_date} days" ) );
+		$this->end_date   = date( 'Y-m-d', strtotime( "+1 days" ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- output is re-parsed by strtotime() in default tz at line 98; keep the pairing
+		$this->start_date = gmdate( 'Y-m-d', strtotime( "-{$this->filter_date} days" ) );
 	}
 
 	public static function get_instance() {
@@ -60,7 +60,7 @@ class BWFAN_Cart_Analytics {
 
 		$base_query = "SELECT SUM(total_base) as `sum`, COUNT(ID) as `count` " . $interval_query . " FROM `" . $table . "` WHERE 1=1 $start_date_query $end_date_query $group_by ORDER BY $order_by ASC";
 
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval format stripped to date-format chars in date_format(); tables from $wpdb->prefix
 	}
 
 	public static function get_lost_cart( $start_date, $end_date, $interval, $is_interval ) {
@@ -85,7 +85,7 @@ class BWFAN_Cart_Analytics {
 		$date_cond  = $wpdb->prepare( " AND " . $date_col . " >= %s AND " . $date_col . " <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$base_query = "SELECT  SUM(total_base) as sum, COUNT(ID) as count " . $interval_query . "  FROM " . $table . " WHERE 1=1 AND status = 2 " . $date_cond . $group_by . " ORDER BY " . $order_by . " ASC";
 
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval format stripped to date-format chars in date_format(); tables from $wpdb->prefix
 	}
 
 	private function get_default_data() {
@@ -95,7 +95,7 @@ class BWFAN_Cart_Analytics {
 		$no_of_loops = absint( $this->filter_date );
 
 		for ( $i = $no_of_loops; $i >= 0; $i -- ) {
-			$date             = date( 'Y-m-d', strtotime( "-$i days", $timestamp ) );
+			$date             = date( 'Y-m-d', strtotime( "-$i days", $timestamp ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Paired with strtotime(Y-m-d) in default tz; gmdate would shift the day
 			$labels[]         = $date;
 			$dataset[ $date ] = 0;
 		}
@@ -109,6 +109,7 @@ class BWFAN_Cart_Analytics {
 		global $wpdb;
 
 		$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array( 'wc-pending', 'wc-failed', 'wc-cancelled', 'wc-refunded', 'trash', 'draft' ) );
+		$post_statuses = is_array( $post_statuses ) ? esc_sql( $post_statuses ) : $post_statuses; // filter output is placed inside quoted SQL literals
 		$post_status   = '(';
 		foreach ( $post_statuses as $status ) {
 			$post_status .= "'" . $status . "',";
@@ -147,7 +148,7 @@ class BWFAN_Cart_Analytics {
 
 		$query = " SELECT COUNT(p.ID) as count, sum(m.meta_value) as sum " . $interval_query . " FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id LEFT JOIN {$wpdb->prefix}postmeta as m2 ON p.ID = m2.post_id WHERE p.post_type = 'shop_order' AND p.post_status NOT IN $post_status AND m.meta_key = '_bwfan_order_total_base' AND m2.meta_key = '_bwfan_ab_cart_recovered_a_id' $where " . $group_by . " ORDER BY " . $order_by . " ASC";
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared; format sanitized
 	}
 
 	public static function hpos_get_recovered_cart( $start_date, $end_date, $interval, $is_interval, $post_status ) {
@@ -182,7 +183,7 @@ class BWFAN_Cart_Analytics {
 
 		$query = " SELECT COUNT(p.id) as count, sum(m.meta_value) as sum " . $interval_query . " FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id LEFT JOIN {$wpdb->prefix}wc_orders_meta as m2 ON p.id = m2.order_id WHERE p.type = 'shop_order' AND p.status NOT IN $post_status AND m.meta_key = '_bwfan_order_total_base' AND m2.meta_key = '_bwfan_ab_cart_recovered_a_id' $where " . $group_by . " ORDER BY " . $order_by . " ASC";
 
-		$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared; format sanitized
 
 		return empty( $result ) ? [] : $result;
 	}
@@ -211,7 +212,7 @@ class BWFAN_Cart_Analytics {
 			foreach ( $data as $item ) {
 				$create_time  = $item->last_modified;
 				$timestamp    = strtotime( $create_time );
-				$created_time = date( 'Y-m-d', $timestamp );
+				$created_time = date( 'Y-m-d', $timestamp ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Round-trips strtotime(DB datetime string); gmdate would shift under non-UTC tz
 
 				if ( ! isset( $dataset[ $created_time ] ) ) {
 					$dataset[ $created_time ]     = 1;
@@ -258,7 +259,7 @@ class BWFAN_Cart_Analytics {
 		$date_cond  = $wpdb->prepare( " AND `" . $date_col . "` >= %s AND `" . $date_col . "` <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$base_query = "SELECT  SUM(no_of_sessions) as total_session " . $interval_query . "  FROM `" . $table . "` WHERE 1=1 " . $date_cond . " and type = 1 and object_id = 0 " . $group_by . " ORDER BY " . $order_by . " ASC";
 
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- interval format stripped to date-format chars in date_format(); tables from $wpdb->prefix
 	}
 
 	/**
@@ -272,6 +273,7 @@ class BWFAN_Cart_Analytics {
 		global $wpdb;
 
 		$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array( 'wc-pending', 'wc-failed', 'wc-cancelled' ) );
+		$post_statuses = is_array( $post_statuses ) ? esc_sql( $post_statuses ) : $post_statuses; // filter output is placed inside quoted SQL literals
 		$count         = count( $post_statuses );
 		$i             = 0;
 		$post_status   = '(';
@@ -307,7 +309,7 @@ class BWFAN_Cart_Analytics {
 		$date_cond  = $wpdb->prepare( " AND " . $date_col . " >= %s AND " . $date_col . " <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$base_query = "SELECT COUNT(p.ID) as order_placed_count" . $interval_query . " FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE 1=1 AND p.post_type = 'shop_order' AND p.post_status NOT IN $post_status " . $date_cond . " AND m.meta_key = '_bwfan_order_total_base' " . $group_by . " ORDER BY " . $order_by . " ASC";
 
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 	}
 
 	public static function hpos_get_total_orders_placed( $start_date, $end_date, $interval, $is_interval, $post_status ) {
@@ -329,7 +331,7 @@ class BWFAN_Cart_Analytics {
 
 		$date_cond  = $wpdb->prepare( " AND " . $date_col . " >= %s AND " . $date_col . " <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$base_query = "SELECT COUNT(p.id) as order_placed_count" . $interval_query . " FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE 1=1 AND p.type = 'shop_order' AND p.status NOT IN $post_status " . $date_cond . " AND m.meta_key = '_bwfan_order_total_base' " . $group_by . " ORDER BY " . $order_by . " ASC";
-		$orders     = $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$orders     = $wpdb->get_results( $base_query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- excluded statuses esc_sql()ed after the filter; tables from $wpdb->prefix; values prepared
 
 		return empty( $orders ) ? [] : $orders;
 	}
@@ -399,7 +401,10 @@ class BWFAN_Cart_Analytics {
 				break;
 		}
 
-		return apply_filters( 'bwfan_api_date_format_' . $interval, $format, $interval );
+		$format = apply_filters( 'bwfan_api_date_format_' . $interval, $format, $interval );
+
+		/** Placed inside DATE_FORMAT( col, '...' ) in SQL, so keep only MySQL date-format characters */
+		return is_string( $format ) ? preg_replace( '/[^%A-Za-z0-9 :\/._,-]/', '', $format ) : $format;
 	}
 
 	/**

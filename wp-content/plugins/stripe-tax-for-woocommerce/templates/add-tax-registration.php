@@ -29,12 +29,21 @@ $stripe_tax_for_woocommerce_tax_maybe_hide_us_state            = '';
 $stripe_tax_for_woocommerce_tax_maybe_hide_lease_and_amusement = '';
 $stripe_tax_for_woocommerce_tax_maybe_hide_communications      = '';
 
+// @phpstan-ignore-next-line notIdentical.alwaysFalse
+if ( 'US' !== $stripe_tax_for_woocommerce_tax_registration_selected_country ) {
+	$stripe_tax_for_woocommerce_tax_maybe_hide_us_state = 'stripe_tax_for_woocommerce_hidden';
+}
+
 $stripe_tax_for_woocommerce_tax_maybe_hide_eu = '';
 if ( ! in_array( $stripe_tax_for_woocommerce_tax_registration_selected_country, StripeTaxPluginHelper::get_tax_registration_eu_countries(), true ) ) {
 	$stripe_tax_for_woocommerce_tax_maybe_hide_eu = 'stripe_tax_for_woocommerce_hidden';
 }
 
 $stripe_tax_for_woocommerce_tax_maybe_hide_ca = '';
+// @phpstan-ignore-next-line notIdentical.alwaysFalse
+if ( 'CA' !== $stripe_tax_for_woocommerce_tax_registration_selected_country ) {
+	$stripe_tax_for_woocommerce_tax_maybe_hide_ca = 'stripe_tax_for_woocommerce_hidden';
+}
 
 if ( ! in_array( $stripe_tax_for_woocommerce_tax_registration_selected_us_state, StripeTaxPluginHelper::get_tax_registration_lease_and_amusement_tax_us_states(), true ) ) {
 	$stripe_tax_for_woocommerce_tax_maybe_hide_lease_and_amusement = 'stripe_tax_for_woocommerce_hidden';
@@ -135,7 +144,11 @@ $html_list = StripeTaxPluginHelper::get_admin_allowed_html();
 	<p class="description">Click the Stripe Tax tab above to return to the main settings menu.</p>
 	<p class="description">Check Stripe Tax’s <a href="https://stripe.com/docs/tax/supported-countries" target="_blank">supported
 		countries</a> to make sure your requirements are met when adding new registrations outside the US.</p>
-<?php echo wp_kses( ErrorRenderer::get_rendered_error( 'add_tax_registration' ), $html_list ); ?>
+<?php
+$add_tax_registration_error = ErrorRenderer::get_rendered_error( 'add_tax_registration', true );
+$add_tax_registration_error = str_replace( '<a ', '<a target="_blank" ', $add_tax_registration_error );
+echo wp_kses( $add_tax_registration_error, $html_list );
+?>
 	<table class="form-table stripe_tax_for_woocommerce_tax_registrations">
 		<tbody>
 		<tr valign="top"
@@ -444,7 +457,7 @@ add_action(
 	'woocommerce_after_settings_stripe_tax_for_woocommerce',
 	function () {
 		?>
-		<form method="post" action="" enctype="multipart/form-data">
+		<form method="post" action="" enctype="multipart/form-data" class="stripe_tax_for_woocommerce_registrations_list_form">
 			<?php
 			global $current_section;
 

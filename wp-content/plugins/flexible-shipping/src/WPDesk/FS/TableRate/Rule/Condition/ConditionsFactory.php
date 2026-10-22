@@ -51,7 +51,7 @@ class ConditionsFactory {
 		$product_field_value      = new ProductFieldValue( 55 );
 		$product_field_range      = new ProductFieldRange( 56 );
 		$product_stock_quantity   = new ProductStockQuantity( 60 );
-		$product_stock_status     = new ProductStockStatus( \wc_get_product_stock_status_options(), 61 );
+		$product_stock_status     = new ProductStockStatus( 61 );
 		$shipping_cost            = new ShippingCost( 100 );
 		$time_of_the_day          = new TimeOfTheDay( 70 );
 		$max_dimension            = new MaxDimension( 40 );

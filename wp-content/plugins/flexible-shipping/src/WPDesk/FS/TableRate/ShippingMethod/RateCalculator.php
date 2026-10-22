@@ -9,9 +9,11 @@ namespace WPDesk\FS\TableRate\ShippingMethod;
 
 use FSVendor\WPDesk\Forms\Field;
 use FSVendor\WPDesk\FS\TableRate\Settings\CartCalculationOptions;
+use FSVendor\WPDesk\FS\TableRate\Settings\MethodSettings;
 use FSVendor\WPDesk\FS\TableRate\Settings\MethodSettingsImplementation;
 use FSVendor\Psr\Log\LoggerInterface;
 use FSVendor\Psr\Log\NullLogger;
+use FSVendor\WPDesk\FS\TableRate\Logger\ShippingMethodLogger;
 use WC_Cart;
 use WC_Shipping_Method;
 use WPDesk\FS\TableRate\Rule\Condition\Condition;
@@ -36,9 +38,9 @@ class RateCalculator {
 	const METHOD_LOGO_ALT           = 'method_logo_alt';
 
 	/**
-	 * @var LoggerInterface
+	 * @var LoggerInterface|null
 	 */
-	private $logger;
+	private ?LoggerInterface $logger = null;
 
 	/**
 	 * @var WC_Shipping_Method
@@ -66,9 +68,9 @@ class RateCalculator {
 	private $cost_fields;
 
 	/**
-	 * @var AdditionalCost
+	 * @var AdditionalCost[]
 	 */
-	private $available_additional_costs;
+	private array $available_additional_costs;
 
 	/**
 	 * @var SpecialAction[]
@@ -171,32 +173,38 @@ class RateCalculator {
 	}
 
 	/**
-	 * @param MethodSettingsImplementation $method_settings .
-	 * @param string                       $rate_id         .
-	 * @param bool                         $user_logged_in  .
+	 * @param MethodSettings $method_settings .
+	 * @param string         $rate_id         .
+	 * @param bool           $user_logged_in  .
 	 *
 	 * @return array
 	 */
-	public function calculate_rate( MethodSettingsImplementation $method_settings, $rate_id, $user_logged_in ) {
+	public function calculate_rate( MethodSettings $method_settings, $rate_id, $user_logged_in ) {
 		$logger = $this->get_logger();
 
-		$logger->debug( $method_settings->format_for_log(), $logger->get_configuration_section_context() );
+		if ( $method_settings instanceof MethodSettingsImplementation ) {
+			$logger->debug( $method_settings->format_for_log(), $this->get_logging_context( $logger, 'configuration' ) );
+		}
 
 		$add_method = true;
 		if ( 'yes' === $method_settings->get_visibility() && ! $user_logged_in ) {
-			$logger->debug( __( 'Method available only for logged in users, but user is not logged in.', 'flexible-shipping' ), $logger->get_results_context() );
+			$logger->debug( __( 'Method available only for logged in users, but user is not logged in.', 'flexible-shipping' ), $this->get_logging_context( $logger, 'results' ) );
 			$add_method = false;
 		}
 
 		if ( $add_method ) {
 			if ( $this->shop_currency !== $this->cart_currency ) {
 				// Translators: shop currency.
-				$logger->debug( sprintf( __( 'Shop currency: %1$s', 'flexible-shipping' ), $this->shop_currency ), $logger->get_input_data_context() );
+				$logger->debug( sprintf( __( 'Shop currency: %1$s', 'flexible-shipping' ), $this->shop_currency ), $this->get_logging_context( $logger, 'input' ) );
 				// Translators: cart currency.
-				$logger->debug( sprintf( __( 'Cart currency: %1$s', 'flexible-shipping' ), $this->cart_currency ), $logger->get_input_data_context() );
+				$logger->debug( sprintf( __( 'Cart currency: %1$s', 'flexible-shipping' ), $this->cart_currency ), $this->get_logging_context( $logger, 'input' ) );
 			}
 
-			if ( CartCalculationOptions::PACKAGE === $method_settings->get_cart_calculation() ) {
+			// Older MethodSettings interfaces omit get_cart_calculation().
+			$cart_calculation = $method_settings instanceof MethodSettingsImplementation
+				? $method_settings->get_cart_calculation()
+				: ( $method_settings->get_raw_settings()['cart_calculation'] ?? CartCalculationOptions::CART );
+			if ( CartCalculationOptions::PACKAGE === $cart_calculation ) {
 				$shipping_contents = new ShippingContentsImplementation(
 					$this->package['contents'],
 					$this->prices_includes_tax,
@@ -222,9 +230,9 @@ class RateCalculator {
 			do_action( 'flexible-shipping/rate-calculator/before', $shipping_contents, $method_settings, $logger );
 
 			// Translators: contents value.
-			$logger->debug( sprintf( __( 'Contents value: %1$s %2$s', 'flexible-shipping' ), $shipping_contents->get_contents_cost(), $shipping_contents->get_currency() ), $logger->get_input_data_context() );
+			$logger->debug( sprintf( __( 'Contents value: %1$s %2$s', 'flexible-shipping' ), $shipping_contents->get_contents_cost(), $shipping_contents->get_currency() ), $this->get_logging_context( $logger, 'input' ) );
 			// Translators: contents weight.
-			$logger->debug( sprintf( __( 'Contents weight: %1$s', 'flexible-shipping' ), wc_format_weight( $shipping_contents->get_contents_weight() ) ), $logger->get_input_data_context() );
+			$logger->debug( sprintf( __( 'Contents weight: %1$s', 'flexible-shipping' ), wc_format_weight( $shipping_contents->get_contents_weight() ) ), $this->get_logging_context( $logger, 'input' ) );
 
 			$rate = $this->calculate_rate_for_rates( $method_settings, $shipping_contents, $rate_id, $logger );
 
@@ -237,14 +245,14 @@ class RateCalculator {
 	}
 
 	/**
-	 * @param MethodSettingsImplementation $method_settings   .
-	 * @param ShippingContents             $shipping_contents .
-	 * @param string                       $rate_id           .
-	 * @param LoggerInterface              $logger            .
+	 * @param MethodSettings   $method_settings   .
+	 * @param ShippingContents $shipping_contents .
+	 * @param string           $rate_id           .
+	 * @param LoggerInterface  $logger            .
 	 *
 	 * @return array
 	 */
-	private function calculate_rate_for_rates( MethodSettingsImplementation $method_settings, ShippingContents $shipping_contents, $rate_id, LoggerInterface $logger ) {
+	private function calculate_rate_for_rates( MethodSettings $method_settings, ShippingContents $shipping_contents, $rate_id, LoggerInterface $logger ) {
 		$cost_calculator = new CostsCalculator(
 			$method_settings,
 			$shipping_contents,
@@ -261,37 +269,37 @@ class RateCalculator {
 		$add_method = $cost_calculator->is_triggered();
 
 		// Translators: add method.
-		$logger->debug( sprintf( __( 'Used and displayed in the cart/checkout: %1$s', 'flexible-shipping' ), $add_method ? __( 'yes', 'flexible-shipping' ) : __( 'no', 'flexible-shipping' ) ), $logger->get_results_context() );
+		$logger->debug( sprintf( __( 'Used and displayed in the cart/checkout: %1$s', 'flexible-shipping' ), $add_method ? __( 'yes', 'flexible-shipping' ) : __( 'no', 'flexible-shipping' ) ), $this->get_logging_context( $logger, 'results' ) );
 		$add_method_before_filters = $add_method;
 
 		$add_method = apply_filters( 'flexible_shipping_add_method', $add_method, $method_settings->get_raw_settings(), $this->package, $this->shipping_method );
 		if ( $add_method_before_filters !== $add_method ) {
 			// Translators: add method.
-			$logger->debug( sprintf( __( 'Used and displayed in the cart/checkout after filters: %1$s', 'flexible-shipping' ), $add_method ? __( 'yes', 'flexible-shipping' ) : __( 'no', 'flexible-shipping' ) ), $logger->get_results_context() );
+			$logger->debug( sprintf( __( 'Used and displayed in the cart/checkout after filters: %1$s', 'flexible-shipping' ), $add_method ? __( 'yes', 'flexible-shipping' ) : __( 'no', 'flexible-shipping' ) ), $this->get_logging_context( $logger, 'results' ) );
 		}
 
 		if ( $add_method ) {
 			$cost = $this->set_zero_cost_if_negative( $cost_calculator->get_calculated_cost() );
 
 			// Translators: cost, currency.
-			$logger->debug( sprintf( __( 'Calculated shipping cost: %1$s %2$s', 'flexible-shipping' ), $cost, $this->shop_currency ), $logger->get_results_context() );
+			$logger->debug( sprintf( __( 'Calculated shipping cost: %1$s %2$s', 'flexible-shipping' ), $cost, $this->shop_currency ), $this->get_logging_context( $logger, 'results' ) );
 
 			$is_free_shipping = $this->free_shipping_calculator->is_free_shipping( $method_settings, $this->cart_contents->get_contents_cost() );
 			// Translators: free shipping.
-			$logger->debug( sprintf( __( 'Free shipping: %1$s', 'flexible-shipping' ), $is_free_shipping ? __( 'yes', 'flexible-shipping' ) : __( 'no', 'flexible-shipping' ) ), $logger->get_results_context() );
+			$logger->debug( sprintf( __( 'Free shipping: %1$s', 'flexible-shipping' ), $is_free_shipping ? __( 'yes', 'flexible-shipping' ) : __( 'no', 'flexible-shipping' ) ), $this->get_logging_context( $logger, 'results' ) );
 
 			if ( $is_free_shipping ) {
 				$cost = 0.0;
 				// Translators: shipping cost after free shipping.
-				$logger->debug( sprintf( __( 'Shipping cost after free shipping applied: %1$s', 'flexible-shipping' ), $cost ), $logger->get_results_context() );
+				$logger->debug( sprintf( __( 'Shipping cost after free shipping applied: %1$s', 'flexible-shipping' ), $cost ), $this->get_logging_context( $logger, 'results' ) );
 			}
 
 			// Translators: method id.
-			$logger->debug( sprintf( __( 'Shipping method ID: %1$s', 'flexible-shipping' ), $rate_id ), $logger->get_results_context() );
+			$logger->debug( sprintf( __( 'Shipping method ID: %1$s', 'flexible-shipping' ), $rate_id ), $this->get_logging_context( $logger, 'results' ) );
 
 			$method_title = $this->get_single_method_title( $method_settings->get_raw_settings(), $cost );
 			// Translators: method title.
-			$logger->debug( sprintf( __( 'Shipping method title: %1$s', 'flexible-shipping' ), $method_title ), $logger->get_results_context() );
+			$logger->debug( sprintf( __( 'Shipping method title: %1$s', 'flexible-shipping' ), $method_title ), $this->get_logging_context( $logger, 'results' ) );
 
 			$rate = [
 				'id'          => $rate_id,
@@ -305,6 +313,26 @@ class RateCalculator {
 		}
 
 		return $rate;
+	}
+
+	/**
+	 * @param LoggerInterface $logger  Calculation logger.
+	 * @param string          $section Log section.
+	 *
+	 * @return array
+	 */
+	private function get_logging_context( LoggerInterface $logger, string $section ): array {
+		if ( ! $logger instanceof ShippingMethodLogger ) {
+			return [];
+		}
+		if ( 'configuration' === $section ) {
+			return $logger->get_configuration_section_context();
+		}
+		if ( 'input' === $section ) {
+			return $logger->get_input_data_context();
+		}
+
+		return $logger->get_results_context();
 	}
 
 	/**
@@ -323,11 +351,11 @@ class RateCalculator {
 	}
 
 	/**
-	 * @param MethodSettingsImplementation $method_settings .
+	 * @param MethodSettings $method_settings .
 	 *
 	 * @return array
 	 */
-	private function prepare_meta_data( MethodSettingsImplementation $method_settings ) {
+	private function prepare_meta_data( MethodSettings $method_settings ) {
 		$description = $this->get_method_description( $method_settings );
 		$logo_data   = MethodLogo::get_logo_data( $method_settings->get_raw_settings() );
 
@@ -363,11 +391,11 @@ class RateCalculator {
 	}
 
 	/**
-	 * @param MethodSettingsImplementation $method_settings .
+	 * @param MethodSettings $method_settings .
 	 *
 	 * @return string
 	 */
-	private function get_method_description( MethodSettingsImplementation $method_settings ) {
+	private function get_method_description( MethodSettings $method_settings ) {
 		return wp_kses_post( wpdesk__( $method_settings->get_description(), 'flexible-shipping' ) );
 	}
 

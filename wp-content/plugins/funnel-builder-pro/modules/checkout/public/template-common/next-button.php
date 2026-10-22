@@ -7,12 +7,8 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
 $instance    = wfacp_template();
-$next_action = 'two_step';
-$data_text   = 'step-2';
-if ( $current_action === 'two_step' ) {
-	$next_action = 'third_step';
-	$data_text   = 'step-3';
-}
+$next_action = WFACP_Common::get_next_step_slug( $current_action );
+$data_text   = 'step-' . WFACP_Common::get_step_number( $next_action );
 
 
 $change_next_btn = apply_filters( 'wfacp_change_next_btn_' . $current_action, 'Next', $current_action );
@@ -42,8 +38,8 @@ if ( isset( $formData['form_data']['btn_details']['width'] ) ) {
 	do_action( 'wfacp_before_next_button', $current_action );
 	do_action( 'wfacp_before_step_next_button_' . $current_action, $current_action );
 	?>
-	<button type="button" class="button button-primary wfacp_next_page_button" data-next-step="<?php echo $next_action; ?>" data-current-step='<?php echo $current_action; ?>' value="<?php _e( 'Next Step', 'woofunnels-aero-checkout' ); ?>" data-text="<?php echo $data_text; ?>">
-		<?php _e( $change_next_btn, 'woofunnels-aero-checkout' ); ?>
+	<button type="button" class="button button-primary wfacp_next_page_button" data-next-step="<?php echo esc_attr( $next_action ); ?>" data-current-step='<?php echo esc_attr( $current_action ); ?>' value="<?php esc_attr_e( 'Next Step', 'woofunnels-aero-checkout' ); ?>" data-text="<?php echo esc_attr( $data_text ); ?>">
+		<?php echo wp_kses_post( __( $change_next_btn, 'woofunnels-aero-checkout' ) ); // The label is builder-set text; markup is allowed, script is not. ?>
 	</button>
 	<?php
 	do_action( 'wfacp_after_next_button', $current_action );

@@ -3,6 +3,7 @@
  * @var string[] $integrations .
  * @var string[] $statuses     .
  * @var string   $integration  .
+ * @var string   $status       .
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -22,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
 		<option value=""><?php esc_html_e( 'All shippings', 'flexible-shipping' ); ?></option>
 		<optgroup label="<?php esc_attr_e( 'Shipment status', 'flexible-shipping' ); ?>">
 			<?php foreach ( $statuses as $key => $val ) : ?>
-				<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $key, $integration ); ?>><?php echo wp_kses_post( $val ); ?></option>
+				<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $key, $status ); ?>><?php echo wp_kses_post( $val ); ?></option>
 			<?php endforeach; ?>
 		</optgroup>
 	</select>

@@ -76,7 +76,7 @@ class RecipientsExporter {
     $deliveryQueueJoin = '';
     if ($timeZoneCampaignId !== null) {
       $sendingQueuesTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
-      $queueMetaSelect = 'MAX(delivery_queue.meta)';
+      $queueMetaSelect = 'delivery_queue.meta';
       $deliveryQueueJoin = "LEFT JOIN {$sendingQueuesTable} delivery_queue ON delivery_queue.id = sent.queue_id";
     }
 
@@ -84,12 +84,14 @@ class RecipientsExporter {
     $machineType = UserAgentEntity::USER_AGENT_TYPE_MACHINE;
 
     $countedOpensCondition = $this->trackingConfig->areOpensSeparated()
-      ? '(counted_opens.user_agent_type = :humanType OR counted_opens.user_agent_type IS NULL)'
-      : '(counted_opens.user_agent_type != :machineType OR counted_opens.user_agent_type IS NULL)';
+      ? '(user_agent_type = :humanType OR user_agent_type IS NULL)'
+      : '(user_agent_type != :machineType OR user_agent_type IS NULL)';
 
-    // The derived table chooses the subscriber's first sent row by id so the
-    // exported delivery timezone and local send time stay paired even when
-    // duplicate sent rows exist for a subscriber.
+    // Each stats table is aggregated per subscriber in its own derived table
+    // before joining, so the join never multiplies rows across tables. The
+    // first_sent derived table chooses the subscriber's first sent row by id
+    // so the exported delivery timezone and local send time stay paired even
+    // when duplicate sent rows exist for a subscriber.
     $sql = "SELECT
         s.id AS subscriber_id,
         s.email AS email,
@@ -98,12 +100,12 @@ class RecipientsExporter {
         s.status AS status,
         sent.sent_at AS sent_at,
         {$queueMetaSelect} AS queue_meta,
-        MIN(counted_opens.created_at) AS first_open_at,
-        COUNT(DISTINCT counted_opens.id) AS open_count,
-        COUNT(DISTINCT machine_opens.id) AS machine_open_count,
-        COUNT(DISTINCT clicks.id) AS click_count,
-        MAX(CASE WHEN unsubscribes.id IS NULL THEN 0 ELSE 1 END) AS unsubscribed,
-        MAX(CASE WHEN bounces.id IS NULL THEN 0 ELSE 1 END) AS bounced
+        counted_opens.first_open_at AS first_open_at,
+        COALESCE(counted_opens.open_count, 0) AS open_count,
+        COALESCE(machine_opens.open_count, 0) AS machine_open_count,
+        COALESCE(clicks.click_count, 0) AS click_count,
+        CASE WHEN unsubscribes.subscriber_id IS NULL THEN 0 ELSE 1 END AS unsubscribed,
+        CASE WHEN bounces.subscriber_id IS NULL THEN 0 ELSE 1 END AS bounced
       FROM (
         SELECT subscriber_id, MIN(id) AS first_sent_id
         FROM {$sentTable}
@@ -113,25 +115,34 @@ class RecipientsExporter {
       INNER JOIN {$sentTable} sent ON sent.id = first_sent.first_sent_id
       INNER JOIN {$subscribersTable} s ON s.id = sent.subscriber_id
       {$deliveryQueueJoin}
-      LEFT JOIN {$opensTable} counted_opens
-        ON counted_opens.subscriber_id = sent.subscriber_id
-        AND counted_opens.newsletter_id = sent.newsletter_id
-        AND {$countedOpensCondition}
-      LEFT JOIN {$opensTable} machine_opens
-        ON machine_opens.subscriber_id = sent.subscriber_id
-        AND machine_opens.newsletter_id = sent.newsletter_id
-        AND machine_opens.user_agent_type = :machineType
-      LEFT JOIN {$clicksTable} clicks
-        ON clicks.subscriber_id = sent.subscriber_id
-        AND clicks.newsletter_id = sent.newsletter_id
-        AND (clicks.user_agent_type = :humanType OR clicks.user_agent_type IS NULL)
-      LEFT JOIN {$unsubscribesTable} unsubscribes
-        ON unsubscribes.subscriber_id = sent.subscriber_id
-        AND unsubscribes.newsletter_id = sent.newsletter_id
-      LEFT JOIN {$bouncesTable} bounces
-        ON bounces.subscriber_id = sent.subscriber_id
-        AND bounces.newsletter_id = sent.newsletter_id
-      GROUP BY s.id, s.email, s.first_name, s.last_name, s.status, sent.queue_id, sent.sent_at
+      LEFT JOIN (
+        SELECT subscriber_id, MIN(created_at) AS first_open_at, COUNT(*) AS open_count
+        FROM {$opensTable}
+        WHERE newsletter_id = :newsletterId AND {$countedOpensCondition}
+        GROUP BY subscriber_id
+      ) counted_opens ON counted_opens.subscriber_id = sent.subscriber_id
+      LEFT JOIN (
+        SELECT subscriber_id, COUNT(*) AS open_count
+        FROM {$opensTable}
+        WHERE newsletter_id = :newsletterId AND user_agent_type = :machineType
+        GROUP BY subscriber_id
+      ) machine_opens ON machine_opens.subscriber_id = sent.subscriber_id
+      LEFT JOIN (
+        SELECT subscriber_id, COUNT(*) AS click_count
+        FROM {$clicksTable}
+        WHERE newsletter_id = :newsletterId AND (user_agent_type = :humanType OR user_agent_type IS NULL)
+        GROUP BY subscriber_id
+      ) clicks ON clicks.subscriber_id = sent.subscriber_id
+      LEFT JOIN (
+        SELECT DISTINCT subscriber_id
+        FROM {$unsubscribesTable}
+        WHERE newsletter_id = :newsletterId
+      ) unsubscribes ON unsubscribes.subscriber_id = sent.subscriber_id
+      LEFT JOIN (
+        SELECT DISTINCT subscriber_id
+        FROM {$bouncesTable}
+        WHERE newsletter_id = :newsletterId
+      ) bounces ON bounces.subscriber_id = sent.subscriber_id
       ORDER BY s.email ASC";
 
     $statement = $this->entityManager->getConnection()->executeQuery(

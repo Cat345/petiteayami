@@ -82,7 +82,7 @@ $order            = $this->order instanceof WC_Order ? $this->order : null;
                         <!--[if mso]>
 						<i style="letter-spacing: 25px;mso-font-width:-100%;mso-text-raise:30pt" hidden>&nbsp;</i>
 						<![endif]-->
-                        <span style="mso-text-raise:15pt;"><?php echo apply_filters( 'bwfan_email_review_button_text', esc_html( wp_strip_all_tags( $leave_a_review_text ) ), $product, $order ); ?></span>
+                        <span style="mso-text-raise:15pt;"><?php echo wp_kses_post( apply_filters( 'bwfan_email_review_button_text', esc_html( wp_strip_all_tags( $leave_a_review_text ) ), $product, $order ) ); ?></span>
                         <!--[if mso]>
 						<i style="letter-spacing: 25px;mso-font-width:-100%" hidden>&nbsp;</i>
 						<![endif]-->

@@ -163,6 +163,8 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 					'cart_item_type'          => __( 'Cart Product Type', 'woofunnels-order-bump' ),
 					'cart_coupons'            => __( 'Cart Coupons', 'woofunnels-order-bump' ),
 					'order_coupon_text_match' => __( 'Coupons - Text Match', 'woofunnels-order-bump' ),
+					'order_item_text_match'   => __( 'Order Item - Text Match', 'woofunnels-order-bump' ),
+					'order_item_sku_match'    => __( 'SKU - Text/Regex Match', 'woofunnels-order-bump' ),
 					'cart_shipping_method'    => __( 'Cart Shipping Method', 'woofunnels-order-bump' ),
 				),
 

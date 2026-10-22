@@ -8,6 +8,7 @@
 declare (strict_types=1);
 namespace WooCommerce\PayPalCommerce\ApiClient;
 
+use WooCommerce\PayPalCommerce\ApiClient\Authentication\ResolvingBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\ClientCredentials;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\ConnectBearer;
@@ -63,6 +64,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Factory\ShippingOptionFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\ShippingPreferenceFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\WebhookEventFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\WebhookFactory;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ApiHostResolver;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\CurrencyGetter;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
@@ -73,6 +75,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PaymentLevelEligibility;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PaymentLevelHelper;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PurchaseUnitSanitizer;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ReturnUrlSecret;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\ReferenceTransactionStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\ProductStatusResultCache;
 use WooCommerce\PayPalCommerce\ApiClient\Repository\CustomerRepository;
@@ -97,6 +100,17 @@ return array(
             return (string) $container->get('api.sandbox-host');
         }
         return (string) $container->get('api.production-host');
+    },
+    'api.host-resolver' => static function (ContainerInterface $container): ApiHostResolver {
+        return new ApiHostResolver($container->get('settings.connection-state'));
+    },
+    /**
+     * Scoped the same way as api.host-resolver; see ResolvingBearer's class
+     * docblock for the rationale. The shared api.bearer service below is
+     * intentionally left untouched.
+     */
+    'api.bearer-resolver' => static function (ContainerInterface $container): ResolvingBearer {
+        return new ResolvingBearer($container->get('settings.connection-state'), $container->get('api.paypal-bearer-cache'), $container->get('api.host-resolver'), $container->get('api.key'), $container->get('api.secret'), $container->get('woocommerce.logger.woocommerce'), $container->get('settings.settings-provider'), $container->get('api.token-rate-limiter'));
     },
     'api.paypal-host' => function (ContainerInterface $container): string {
         return PAYPAL_API_URL;
@@ -172,7 +186,7 @@ return array(
         return new PaymentTokensEndpoint($container->get('api.host'), $container->get('api.bearer'), $container->get('woocommerce.logger.woocommerce'));
     },
     'api.endpoint.webhook' => static function (ContainerInterface $container): WebhookEndpoint {
-        return new WebhookEndpoint($container->get('api.host'), $container->get('api.bearer'), $container->get('api.factory.webhook'), $container->get('api.factory.webhook-event'), $container->get('woocommerce.logger.woocommerce'));
+        return new WebhookEndpoint($container->get('api.host-resolver'), $container->get('api.bearer-resolver'), $container->get('api.factory.webhook'), $container->get('api.factory.webhook-event'), $container->get('woocommerce.logger.woocommerce'));
     },
     'api.endpoint.partner-referrals' => static function (ContainerInterface $container): PartnerReferrals {
         return new PartnerReferrals($container->get('api.host'), $container->get('api.bearer'), $container->get('woocommerce.logger.woocommerce'));
@@ -471,6 +485,9 @@ return array(
         $cache = $container->get('api.paypal-bearer-cache');
         $purchase_unit_sanitizer = $container->get('api.helper.purchase-unit-sanitizer');
         return new OrderTransient($cache, $purchase_unit_sanitizer);
+    },
+    'api.helper.return-url-secret' => static function (ContainerInterface $container): ReturnUrlSecret {
+        return new ReturnUrlSecret();
     },
     'api.helper.failure-registry' => static function (ContainerInterface $container): FailureRegistry {
         $cache = new Cache('ppcp-paypal-api-status-cache');

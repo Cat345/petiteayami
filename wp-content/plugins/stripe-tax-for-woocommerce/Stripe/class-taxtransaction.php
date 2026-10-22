@@ -49,9 +49,16 @@ abstract class TaxTransaction {
 		global $wpdb;
 
 		$order = wc_get_order( $order_id );
-		$order->calculate_totals( true );
 
-		$tax_calculation = Calculator::$calculations[ $order_id ];
+		if ( ! isset( Calculator::$calculations[ $order_id ] ) ) {
+			$tax_calculation_input = Order_Input::from_order( $order, null, null );
+
+			if ( isset( $tax_calculation_input['line_items'] ) && is_array( $tax_calculation_input['line_items'] ) ) {
+				Calculator::calculate( $tax_calculation_input, $order_id );
+			}
+		}
+
+		$tax_calculation = Calculator::$calculations[ $order_id ] ?? null;
 
 		if ( ! $tax_calculation ) {
 			return null;
@@ -472,19 +479,23 @@ abstract class TaxTransaction {
 	/**
 	 * Creates a full reversal for a given order and transaction
 	 *
-	 * @param int    $order_id Order ID.
-	 * @param object $transaction Transaction.
+	 * @param int    $order_id       Order ID.
+	 * @param object $transaction    Transaction.
+	 * @param bool   $add_order_note Whether to add an order note for this reversal. Nested/cascading
+	 *                               reversals of prior reversals are silenced so only the final,
+	 *                               top-level full reversal is logged as an order note.
 	 * @return object|null
 	 */
-	public static function create_full_reversal( $order_id, $transaction ) {
+	public static function create_full_reversal( $order_id, $transaction, $add_order_note = true ) {
 		foreach ( $transaction->reversals as $reversal ) {
-			static::create_full_reversal( $order_id, $reversal );
+			static::create_full_reversal( $order_id, $reversal, false );
 		}
 
 		return static::create_full_api_tax_reversal(
 			$order_id,
 			'Refund ' . $transaction->tax_transaction->reference,
-			$transaction->tax_transaction->id
+			$transaction->tax_transaction->id,
+			$add_order_note
 		);
 	}
 
@@ -550,7 +561,7 @@ abstract class TaxTransaction {
 
 		$api_tax_transaction = $stripe_client->tax->transactions->createReversal( $reversal_transaction_request_data );
 
-		$transaction = static::save_transaction( $order_id, $api_tax_transaction );
+		$transaction = static::save_transaction( $order_id, $api_tax_transaction, null, $reversal_transaction_request_data['mode'] );
 
 		return $transaction;
 	}
@@ -562,12 +573,13 @@ abstract class TaxTransaction {
 	 * @param int    $order_id                        Order ID.
 	 * @param string $reference                       Line items.
 	 * @param object $original_api_tax_transaction_id Transaction to reverse id.
+	 * @param bool   $add_order_note                  Whether to add an order note for this reversal.
 	 *
 	 * @return object|null
 	 * @throws ApiErrorException In case of API error.
 	 * @see https://stripe.com/docs/api/tax/transactions/create_api_tax_reversal
 	 */
-	public static function create_full_api_tax_reversal( $order_id, $reference, $original_api_tax_transaction_id ) {
+	public static function create_full_api_tax_reversal( $order_id, $reference, $original_api_tax_transaction_id, $add_order_note = true ) {
 		$stripe_client = StripeClientFactory::get_stripe_client();
 
 		$full_api_tax_reversal_request_data = array(
@@ -579,7 +591,7 @@ abstract class TaxTransaction {
 
 		try {
 			$full_api_tax_reversal = $stripe_client->tax->transactions->createReversal( $full_api_tax_reversal_request_data );
-			$transaction           = static::save_transaction( $order_id, $full_api_tax_reversal );
+			$transaction           = static::save_transaction( $order_id, $full_api_tax_reversal, null, 'full', $add_order_note );
 
 			return $transaction;
 		} catch ( Throwable $err ) {
@@ -663,7 +675,7 @@ abstract class TaxTransaction {
 		}
 
 		foreach ( $reversal_references as $reversal_tax_id => $reversal_reference ) {
-			static::create_full_api_tax_reversal( $order_id, 'Refund' . $reversal_reference, $reversal_tax_id );
+			static::create_full_api_tax_reversal( $order_id, 'Refund' . $reversal_reference, $reversal_tax_id, false );
 		}
 
 		return static::create_full_api_tax_reversal( $order_id, $reference, $original_transaction );
@@ -672,13 +684,15 @@ abstract class TaxTransaction {
 	/**
 	 * Saves a transaction to the database after its creation via API calls.
 	 *
-	 * @param int    $order_id            Order ID.
-	 * @param object $api_tax_transaction Tax creation API call response.
-	 * @param object $api_tax_calculation Tax calculation API call response.
+	 * @param int         $order_id            Order ID.
+	 * @param object      $api_tax_transaction Tax creation API call response.
+	 * @param object      $api_tax_calculation Tax calculation API call response.
+	 * @param string|null $reversal_mode       Requested reversal mode ('partial'|'full'), when applicable.
+	 * @param bool        $add_order_note      Whether to add an order note for this transaction.
 	 *
 	 * @return object
 	 */
-	protected static function save_transaction( $order_id, $api_tax_transaction, $api_tax_calculation = null ) {
+	protected static function save_transaction( $order_id, $api_tax_transaction, $api_tax_calculation = null, $reversal_mode = null, $add_order_note = true ) {
 		global $wpdb;
 
 		$json_api_tax_calculation = wp_json_encode( $api_tax_calculation );
@@ -708,7 +722,59 @@ abstract class TaxTransaction {
 
 		static::prepend_transaction( $order_id, $last_transaction );
 
+		if ( $add_order_note ) {
+			static::add_tax_transaction_order_note( $order_id, $api_tax_transaction, $reversal_mode );
+		}
+
 		return $last_transaction;
+	}
+
+	/**
+	 * Adds a WooCommerce order note for a Stripe Tax transaction.
+	 *
+	 * @param int         $order_id            Order ID.
+	 * @param object      $api_tax_transaction Tax transaction API response object.
+	 * @param string|null $reversal_mode       Requested reversal mode ('partial'|'full'), when applicable.
+	 *
+	 * Note: the Stripe API response's `reversal` object only contains `original_transaction`;
+	 * it does not echo back the requested `mode`. The mode must therefore be supplied by the
+	 * caller (the value used in the create_reversal request) rather than read from the response.
+	 */
+	public static function add_tax_transaction_order_note( $order_id, $api_tax_transaction, $reversal_mode = null ) {
+		if ( is_null( $api_tax_transaction ) || empty( $api_tax_transaction->id ) ) {
+			return;
+		}
+
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return;
+		}
+
+		$txn_id   = $api_tax_transaction->id;
+		$is_test  = isset( $api_tax_transaction->livemode ) ? ! $api_tax_transaction->livemode : false;
+		$txn_type = isset( $api_tax_transaction->type ) ? $api_tax_transaction->type : 'transaction';
+
+		if ( 'reversal' === $txn_type ) {
+			$type_label = ( 'partial' === $reversal_mode ) ? 'Partial Reversal' : 'Full Reversal';
+		} else {
+			$type_label = 'Transaction';
+		}
+
+		$mode_label    = $is_test ? 'Sandbox' : 'Live';
+		$dashboard_url = StripeTaxPluginHelper::get_dashboard_tax_transaction_link( $txn_id, $is_test );
+
+		$note = sprintf(
+			/* translators: 1: operation type (Transaction, Full Reversal, Partial Reversal), 2: opening anchor tag, 3: transaction ID, 4: closing anchor tag, 5: mode (Live or Sandbox) */
+			__( 'Stripe Tax %1$s: %2$s%3$s%4$s (%5$s)', 'stripe-tax-for-woocommerce' ),
+			$type_label,
+			'<a href="' . esc_url( $dashboard_url ) . '" target="_blank">',
+			esc_html( $txn_id ),
+			'</a>',
+			$mode_label
+		);
+
+		$order->add_order_note( $note );
 	}
 
 	/**

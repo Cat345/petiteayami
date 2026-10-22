@@ -32,11 +32,11 @@ class RulesTableSettings {
 		 */
 		return apply_filters(
 			'flexible_shipping_rules_table_settings',
-			array(
+			[
 				self::MULTIPLE_CONDITIONS_AVAILABLE       => false,
 				self::MULTIPLE_ADDITIONAL_COSTS_AVAILABLE => false,
 				self::SPECIAL_ACTIONS_AVAILABLE           => false,
-			)
+			]
 		);
 	}
 
@@ -71,5 +71,4 @@ class RulesTableSettings {
 
 		return isset( $table_settings[ $field_name ] ) && is_bool( $table_settings[ $field_name ] ) ? $table_settings[ $field_name ] : false;
 	}
-
 }

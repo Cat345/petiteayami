@@ -13,6 +13,13 @@ use YOOtheme\Image\Listener\LoadImageUrl;
 
 class ImageController
 {
+    /**
+     * Image operations included when generating and verifying image URL hashes.
+     *
+     * @var list<string>
+     */
+    protected static array $operations = ['type', 'crop', 'resize', 'rotate', 'flip', 'thumbnail'];
+
     protected ?string $cache;
 
     public function __construct(Config $config)
@@ -30,11 +37,12 @@ class ImageController
     {
         $params = $request->getQueryParams();
         $file = $request->getAttribute('routeParams')['file'] ?? '';
-        $cache = Path::join($this->cache, $file);
 
         if (!$this->verifyHash($file, $params)) {
             throw new Exception(400, 'Invalid image hash');
         }
+
+        $cache = Path::join($this->cache, $file);
 
         if (($params['cache'] ?? '') === 'false') {
             $this->cache = null;
@@ -87,7 +95,7 @@ class ImageController
         }
 
         foreach ($params as $key => $args) {
-            if (method_exists($image, $key)) {
+            if (in_array($key, static::$operations, true)) {
                 $image = $image->$key(...explode(',', $args));
             }
         }
@@ -113,8 +121,10 @@ class ImageController
 
             // write image to cache
             if ($cache && !is_file($cache) && rewind($temp) && File::makeDir(dirname($cache))) {
-                if (file_put_contents($cache, $temp, LOCK_EX) === 0) {
-                    // Remove zero byte files
+                $bytes = file_put_contents($cache, $temp, LOCK_EX);
+
+                // Check for zero byte file and remove it
+                if ($bytes === 0) {
                     unlink($cache);
                 }
             }
@@ -134,7 +144,7 @@ class ImageController
      */
     protected function verifyHash(string $file, array $params): bool
     {
-        $query = array_intersect_key($params, array_flip(get_class_methods(ImageDriver::class)));
+        $query = array_intersect_key($params, array_flip(static::$operations));
         $query += ['cachekey' => array_last(explode('-', pathinfo($file, PATHINFO_FILENAME)))];
 
         if ($params['cache'] ?? false) {
@@ -142,6 +152,7 @@ class ImageController
         }
 
         $uri = ($params['src'] ?? '') . '?' . (new Uri(''))->withQueryParams($query)->getQuery();
-        return hash_equals($params['hash'] ?? '', LoadImageUrl::getHash($uri));
+        return hash_equals($params['hash'] ?? '', LoadImageUrl::getHash($uri)) &&
+            $file === LoadImageUrl::getCacheKey($params['src'] ?? '', $query);
     }
 }
