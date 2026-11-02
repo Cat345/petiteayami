@@ -15,5 +15,5 @@ if (!defined('ABSPATH')) exit;
 		'wp-i18n',
 		'wp-polyfill'
 	),
-	'version' => '45403d153e5c6e1b0b18'
+	'version' => '432f23d50c615281a936'
 );

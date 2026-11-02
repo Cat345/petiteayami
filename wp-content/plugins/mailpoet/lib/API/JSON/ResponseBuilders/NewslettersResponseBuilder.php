@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) exit;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -345,6 +346,7 @@ class NewslettersResponseBuilder {
     $countTotal = $sentCount ?? $queue->getCountTotal();
     $countProcessed = $sentCount ?? $queue->getCountProcessed();
     $countToProcess = $sentCount !== null ? 0 : $queue->getCountToProcess();
+    $pauseReason = $aggregateData ? $aggregateData['pauseReason'] : $this->getPauseReason($task);
 
     return [
       'id' => (string)$queue->getId(), // (string) for BC
@@ -363,7 +365,12 @@ class NewslettersResponseBuilder {
       'count_total' => (string)($aggregateData ? $aggregateData['countTotal'] : $countTotal), // (string) for BC
       'count_processed' => (string)($aggregateData ? $aggregateData['countProcessed'] : $countProcessed), // (string) for BC
       'count_to_process' => (string)($aggregateData ? $aggregateData['countToProcess'] : $countToProcess), // (string) for BC
+      'pause_reason' => $pauseReason,
     ];
+  }
+
+  private function getPauseReason(ScheduledTaskEntity $task): ?string {
+    return $task->getStatus() === ScheduledTaskEntity::STATUS_PAUSED ? $task->getPauseReason() : null;
   }
 
   private function getBatchLatestQueuesWithTasks(array $newsletters): array {
@@ -387,7 +394,7 @@ class NewslettersResponseBuilder {
     $queryBuilder = $this->entityManager->createQueryBuilder();
     $results = $queryBuilder
       ->select('PARTIAL sq.{id, createdAt, updatedAt, deletedAt, meta, newsletterRenderedSubject, countTotal, countProcessed, countToProcess}')
-      ->addSelect('PARTIAL t.{id, type, status, priority, scheduledAt, processedAt}')
+      ->addSelect('PARTIAL t.{id, type, status, priority, scheduledAt, processedAt, meta}')
       ->addSelect('IDENTITY(sq.newsletter)')
       ->from(SendingQueueEntity::class, 'sq')
       ->join('sq.task', 't')

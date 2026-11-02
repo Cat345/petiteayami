@@ -94,9 +94,9 @@ class CaptchaUrlFactory {
       'data=' . Router::encodeRequestData($data),
     ];
 
-    $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
+    $url .= ($this->wp->wpParseUrl($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
 
-    $urlParams = parse_url($url);
+    $urlParams = $this->wp->wpParseUrl($url);
     if (!is_array($urlParams) || empty($urlParams['scheme'])) {
       $url = $this->wp->getBloginfo('url') . $url;
     }
@@ -114,7 +114,7 @@ class CaptchaUrlFactory {
       'data=' . Router::encodeRequestData($data),
     ];
 
-    $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
+    $url .= ($this->wp->wpParseUrl($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
     return $url;
   }
 

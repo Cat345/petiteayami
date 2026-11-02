@@ -163,8 +163,20 @@ class Functions {
     return wp_timezone();
   }
 
+  public function registerAbilityCategory(string $slug, array $args): ?\WP_Ability_Category {
+    return wp_register_ability_category($slug, $args);
+  }
+
+  public function registerAbility(string $name, array $args): ?\WP_Ability {
+    return wp_register_ability($name, $args);
+  }
+
   public function currentUserCan($capability) {
     return current_user_can($capability);
+  }
+
+  public function wpDoingCron(): bool {
+    return wp_doing_cron();
   }
 
   public function wpDoingAjax() {
@@ -414,6 +426,25 @@ class Functions {
 
   public function getUserdata($userId) {
     return get_userdata($userId);
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getUserOption(string $option, int $userId = 0) {
+    return get_user_option($option, $userId);
+  }
+
+  /**
+   * @param mixed $newValue
+   * @return int|bool
+   */
+  public function updateUserOption(int $userId, string $optionName, $newValue, bool $isGlobal = false) {
+    return update_user_option($userId, $optionName, $newValue, $isGlobal);
+  }
+
+  public function deleteUserOption(int $userId, string $optionName, bool $isGlobal = false): bool {
+    return delete_user_option($userId, $optionName, $isGlobal);
   }
 
   public function getUserBy($field, $value) {
@@ -709,6 +740,11 @@ class Functions {
     return sanitize_email($email);
   }
 
+  /**
+   * @param string $url
+   * @param int $component
+   * @return ($component is -1 ? array{scheme?: string, host?: string, port?: int<0, 65535>, user?: string, pass?: string, path?: string, query?: string, fragment?: string}|false : string|int|null|false)
+   */
   public function wpParseUrl($url, $component = -1) {
     return wp_parse_url($url, $component);
   }
@@ -795,13 +831,6 @@ class Functions {
    */
   public function hasBlocks($post = null): bool {
     return has_blocks($post);
-  }
-
-  /**
-   * @param int|\WP_Post|null $post
-   */
-  public function postPasswordRequired($post = null): bool {
-    return post_password_required($post);
   }
 
   public function stripShortcodes(string $content): string {
@@ -979,6 +1008,10 @@ class Functions {
     return wp_mkdir_p($dir);
   }
 
+  public function wpIsWritable(string $path): bool {
+    return wp_is_writable($path);
+  }
+
   public function wpGetImageEditor(string $path, $args = []) {
     return wp_get_image_editor($path, $args);
   }
@@ -1154,6 +1187,10 @@ class Functions {
     return wp_strip_all_tags($string, $removeBreaks);
   }
 
+  public function wpDeleteFile(string $file): bool {
+    return wp_delete_file($file);
+  }
+
   public function getTheContent($more_link_text = null, $strip_teaser = false, $post = null) {
     return get_the_content($more_link_text, $strip_teaser, $post);
   }
@@ -1164,6 +1201,10 @@ class Functions {
 
   public function wpIsMaintenanceMode(): bool {
     return wp_is_maintenance_mode();
+  }
+
+  public function wpGetEnvironmentType(): string {
+    return wp_get_environment_type();
   }
 
   public function headersSent(): bool {

@@ -4,8 +4,8 @@ Contributors: berocket, dholovnia
 Donate link: https://berocket.com/?utm_source=wordpress_org&utm_medium=donate&utm_campaign=terms_cond_popup
 Tags: privacy popup, terms and conditions, custom terms and conditions, force terms and conditions, improved terms and conditions
 Requires at least: 5.0
-Tested up to: 7.0.4
-Stable tag: 3.6.4
+Tested up to: 7.1.3
+Stable tag: 3.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,15 @@ If you have problems with our plugins or something is not working as it should, 
 If none of the previous listed actions helps you solve the problem, then, submit a ticket in the forum and describe your problem accurately, specify WordPress and WooCommerce versions you are using and any other information that might help us solve your problem as quickly as possible. Thanks!
 
 == Changelog ==
+
+= 3.7 =
+* Feature – Open the configured public terms page in a new tab from the popup without changing agreement.
+* Feature – Show scroll progress for the existing terms content, including short text and content size changes, without changing consent or closing requirements.
+* Enhancement - Improved compatibility with WooCommerce Store API modules.
+* Fix - Corrected translations of terms and privacy policy text.
+* Enhancement - Added or improved settings import/export and backup restoration.
+* Enhancement - Updated BeRocket Framework to 3.1.3 with CDN release metadata, reduced updater API traffic, isolated invalid catalog records, improved banner tracking, and an SVG account icon.
+* Enhancement - Updated compatibility declarations for WordPress 7.1.3 and WooCommerce 11.2.1.
 
 = 3.6.4 =
 * Enhancement - Updated BeRocket framework.

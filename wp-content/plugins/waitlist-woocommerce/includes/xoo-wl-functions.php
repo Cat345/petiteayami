@@ -109,7 +109,7 @@ function xoo_wl_form_markup( $product_id , $type = 'popup', $args = array() ){
 
 	$args['container_class'][] = 'xoo-wl-btc-'.$type;
 
-	$container_class = implode( " ", $args['container_class'] );
+	$container_class = implode( " ", array_map( 'sanitize_html_class', $args['container_class'] ) );
 
 	$html = '<div class="xoo-wl-btn-container '.$container_class.'">';
 

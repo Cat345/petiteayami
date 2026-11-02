@@ -377,7 +377,7 @@ class FormEditor {
       'endpoint=' . FormPreview::ENDPOINT,
       'action=' . FormPreview::ACTION_VIEW,
     ];
-    $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
+    $url .= ($this->wp->wpParseUrl($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
     return $url;
   }
 

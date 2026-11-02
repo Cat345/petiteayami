@@ -8,6 +8,7 @@ class BeRocket_policy_pages_addon extends BeRocket_framework_addon_lib {
         require_once($pluginpath . '/libraries/post_conditions.php');
         require_once($pluginpath . '/libraries/custom_post_type.php');
         parent::init_active($file_path);
+        BeRocket_terms_cond_popup::getInstance()->register_import_export_post('br_policy_cond_page');
     }
     function get_addon_data() {
         $data = parent::get_addon_data();

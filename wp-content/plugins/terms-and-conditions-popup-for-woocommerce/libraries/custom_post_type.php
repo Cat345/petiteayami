@@ -1,5 +1,14 @@
 <?php
 class BeRocket_terms_cond_popup_lib extends BeRocket_custom_post_class {
+    public $import_export = array(
+        'page' => array(
+            'export_type' => 'post',
+            'post_type' => 'page',
+            'passthrough' => array(''),
+            'on_missing' => 'remove',
+        ),
+        'data' => array('export_type' => 'conditions'),
+    );
     public $conditions;
     protected static $instance;
     function __construct() {
@@ -7,7 +16,8 @@ class BeRocket_terms_cond_popup_lib extends BeRocket_custom_post_class {
             'sortable' => true
         );
         $this->default_settings = array(
-            'page'    => '',
+            'page' => '',
+            'data' => array(),
         );
         $this->add_meta_box('conditions', __( 'Conditions', 'terms-and-conditions-popup-for-woocommerce' ));
         parent::__construct();

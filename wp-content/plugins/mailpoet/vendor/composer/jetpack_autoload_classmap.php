@@ -7335,6 +7335,10 @@ return array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/API/JSON/ResponseBuilders/FormsResponseBuilder.php'
 ),
+'MailPoet\\API\\JSON\\ResponseBuilders\\HeldCampaignsResponseBuilder' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/API/JSON/ResponseBuilders/HeldCampaignsResponseBuilder.php'
+),
 'MailPoet\\API\\JSON\\ResponseBuilders\\NewsletterTemplatesResponseBuilder' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/API/JSON/ResponseBuilders/NewsletterTemplatesResponseBuilder.php'
@@ -7550,6 +7554,26 @@ return array(
 'MailPoet\\Abilities\\Abilities' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Abilities/Abilities.php'
+),
+'MailPoet\\Abilities\\AbilitiesRegistrar' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Abilities/AbilitiesRegistrar.php'
+),
+'MailPoet\\Abilities\\Ability' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Abilities/Ability.php'
+),
+'MailPoet\\Abilities\\RecentNewslettersAbility' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Abilities/RecentNewslettersAbility.php'
+),
+'MailPoet\\Abilities\\SendingStatusAbility' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Abilities/SendingStatusAbility.php'
+),
+'MailPoet\\Abilities\\UnsubscribeTrendAbility' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Abilities/UnsubscribeTrendAbility.php'
 ),
 'MailPoet\\Abilities\\WooCommerceAutomationTemplates' => array(
 'version' => 'dev-trunk',
@@ -8551,6 +8575,10 @@ return array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Config/AccessControl.php'
 ),
+'MailPoet\\Config\\ActivationInProgressException' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Config/ActivationInProgressException.php'
+),
 'MailPoet\\Config\\Activator' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Config/Activator.php'
@@ -8974,6 +9002,10 @@ return array(
 'MailPoet\\Config\\TwigFileSystemCache' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Config/TwigFileSystemCache.php'
+),
+'MailPoet\\Config\\UpdateFailureNotifier' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Config/UpdateFailureNotifier.php'
 ),
 'MailPoet\\Config\\Updater' => array(
 'version' => 'dev-trunk',
@@ -10383,6 +10415,10 @@ return array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Logging/LogsDownload.php'
 ),
+'MailPoet\\Logging\\LogsPageData' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Logging/LogsPageData.php'
+),
 'MailPoet\\Logging\\PluginVersionProcessor' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Logging/PluginVersionProcessor.php'
@@ -10398,6 +10434,10 @@ return array(
 'MailPoet\\Logging\\RestApi\\Endpoints\\LogsListingEndpoint' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Logging/RestApi/Endpoints/LogsListingEndpoint.php'
+),
+'MailPoet\\Logging\\RestApi\\Endpoints\\LogsNamesEndpoint' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Logging/RestApi/Endpoints/LogsNamesEndpoint.php'
 ),
 'MailPoet\\Logging\\RestApi\\LogsFilterTrait' => array(
 'version' => 'dev-trunk',
@@ -10486,6 +10526,10 @@ return array(
 'MailPoet\\Mailer\\Methods\\SendGrid' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Mailer/Methods/SendGrid.php'
+),
+'MailPoet\\Mailer\\SendingEnvironment' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Mailer/SendingEnvironment.php'
 ),
 'MailPoet\\Mailer\\SendingLimitReachedException' => array(
 'version' => 'dev-trunk',
@@ -10766,6 +10810,10 @@ return array(
 'MailPoet\\Migrations\\Db\\Migration_20261002_093000_Db' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Migrations/Db/Migration_20261002_093000_Db.php'
+),
+'MailPoet\\Migrations\\Db\\Migration_20261015_120000_Db' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Migrations/Db/Migration_20261015_120000_Db.php'
 ),
 'MailPoet\\Migrator\\AppMigration' => array(
 'version' => 'dev-trunk',
@@ -11115,6 +11163,18 @@ return array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Newsletter/Sending/NewsletterReplayMetadata.php'
 ),
+'MailPoet\\Newsletter\\Sending\\OverdueCampaignHold' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Newsletter/Sending/OverdueCampaignHold.php'
+),
+'MailPoet\\Newsletter\\Sending\\Placeholders\\PlaceholderCollector' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Newsletter/Sending/Placeholders/PlaceholderCollector.php'
+),
+'MailPoet\\Newsletter\\Sending\\Placeholders\\TemplatePersonalizer' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Newsletter/Sending/Placeholders/TemplatePersonalizer.php'
+),
 'MailPoet\\Newsletter\\Sending\\ScheduledTaskSubscribersListingRepository' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Newsletter/Sending/ScheduledTaskSubscribersListingRepository.php'
@@ -11130,6 +11190,10 @@ return array(
 'MailPoet\\Newsletter\\Sending\\SendingQueuesRepository' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Newsletter/Sending/SendingQueuesRepository.php'
+),
+'MailPoet\\Newsletter\\Sending\\TemplateBatch' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Newsletter/Sending/TemplateBatch.php'
 ),
 'MailPoet\\Newsletter\\Sending\\TimeZoneCampaignScheduler' => array(
 'version' => 'dev-trunk',
@@ -11815,6 +11879,10 @@ return array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Subscribers/RestApi/Endpoints/SubscribersListingEndpoint.php'
 ),
+'MailPoet\\Subscribers\\RestApi\\SubscribersFilterTrait' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Subscribers/RestApi/SubscribersFilterTrait.php'
+),
 'MailPoet\\Subscribers\\SegmentsCountRecalculator' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Subscribers/SegmentsCountRecalculator.php'
@@ -11902,6 +11970,10 @@ return array(
 'MailPoet\\Subscribers\\TrackingConsentController' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Subscribers/TrackingConsentController.php'
+),
+'MailPoet\\Subscribers\\WPUserSubscriberLink' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Subscribers/WPUserSubscriberLink.php'
 ),
 'MailPoet\\Subscription\\AdminUserSubscription' => array(
 'version' => 'dev-trunk',
@@ -12299,6 +12371,10 @@ return array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Util/Notices/InactiveSubscribersNotice.php'
 ),
+'MailPoet\\Util\\Notices\\NonProductionSendingNotice' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Util/Notices/NonProductionSendingNotice.php'
+),
 'MailPoet\\Util\\Notices\\PHPVersionWarnings' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Util/Notices/PHPVersionWarnings.php'
@@ -12346,6 +12422,10 @@ return array(
 'MailPoet\\Util\\Notices\\WordPressPlaygroundNotice' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Util/Notices/WordPressPlaygroundNotice.php'
+),
+'MailPoet\\Util\\RemoteStorage' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Util/RemoteStorage.php'
 ),
 'MailPoet\\Util\\Request' => array(
 'version' => 'dev-trunk',
@@ -12678,6 +12758,10 @@ return array(
 '__TwigTemplate_1a7328011b0cf7158e35fc314e7b6993b8417919d1f5ef0a796941a8e337f4a3' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/generated/twig/75/75045b50c1fe2b98f2a0580cbd09309e3df9be33deb8b2a17534c167b9d77d7d.php'
+),
+'__TwigTemplate_207089b3e015287bbc04bcee6c45e9a624ad67e2a80c754f48d54bb8da112b00' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/generated/twig/b4/b4390447f7078478e4a9ab7d6a8c2c8d74654673fb672c78e84cd3499cfedb50.php'
 ),
 '__TwigTemplate_22a77faa62e190779c8dce6c27d815339e592767581cf8e9672f667844f6939d' => array(
 'version' => 'dev-trunk',

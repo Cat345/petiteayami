@@ -42,5 +42,5 @@ if (!defined('ABSPATH')) exit;
 		'wp-style-engine',
 		'wp-url'
 	),
-	'version' => '78918e8135b65c1b8d07'
+	'version' => '463b8d3567305be7b910'
 );

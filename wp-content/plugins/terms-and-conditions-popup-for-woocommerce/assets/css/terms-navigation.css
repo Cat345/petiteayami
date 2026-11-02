@@ -1,0 +1,57 @@
+.br_terms_navigation {
+    display: none;
+}
+
+#br_popup .br_terms_navigation_panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#br_popup .br_terms_navigation_panel > .br_terms_navigation {
+    display: block;
+    flex: 0 0 auto;
+    padding: 0 15px 12px;
+}
+
+#br_popup .br_terms_full_page {
+    display: inline-block;
+    margin-bottom: 8px;
+    text-decoration: underline;
+}
+
+#br_popup .br_terms_full_page:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+
+#br_popup .br_terms_scroll_progress {
+    height: 4px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #dcdcde;
+}
+
+#br_popup .br_terms_scroll_progress_fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: #2271b1;
+}
+
+#br_popup .br_terms_navigation_panel > .br_popup_inner {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+}
+
+@media print {
+    #br_popup .br_terms_navigation_panel > .br_terms_navigation {
+        display: none;
+    }
+
+    #br_popup .br_terms_navigation_panel {
+        display: block;
+        height: auto;
+    }
+}

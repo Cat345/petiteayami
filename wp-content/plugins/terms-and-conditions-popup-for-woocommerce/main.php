@@ -12,6 +12,8 @@ include_once(plugin_dir_path( __FILE__ ) . "includes/admin/funnels.php");
 
 class BeRocket_terms_cond_popup extends BeRocket_Framework {
     public static $settings_name = 'br-terms_cond_popup-options';
+    public $import_export = array();
+    public $import_export_posts = array();
     protected static $instance;
     public static $error_log = array();
     public static $debug_mode = FALSE;
@@ -124,6 +126,11 @@ class BeRocket_terms_cond_popup extends BeRocket_Framework {
     }
     function init_validation() {
         return parent::init_validation() && $this->check_framework_version();
+    }
+    public function register_import_export_post($post_type) {
+        if( ! in_array($post_type, $this->import_export_posts, true) ) {
+            $this->import_export_posts[] = $post_type;
+        }
     }
     function check_framework_version() {
         return ( ! empty(BeRocket_Framework::$framework_version) && version_compare(BeRocket_Framework::$framework_version, 2.1, '>=') );
@@ -318,8 +325,8 @@ class BeRocket_terms_cond_popup extends BeRocket_Framework {
                     'yes_text'      => __('Accept', 'terms-and-conditions-popup-for-woocommerce'),
                     'no_text'       => __('Decline', 'terms-and-conditions-popup-for-woocommerce'),
                     'location'      => 'popup',
-                    'yes_func'      => 'jQuery("#terms.woocommerce-form__input-checkbox").prop("checked", true).trigger("change");',
-                    'no_func'       => 'jQuery("#terms.woocommerce-form__input-checkbox").prop("checked", false).trigger("change");',
+                    'yes_func'      => 'jQuery("#terms.woocommerce-form__input-checkbox").prop("checked", true).trigger("change"); if(window.brTermsBlocks) { window.brTermsBlocks.setChecked(true); }',
+                    'no_func'       => 'jQuery("#terms.woocommerce-form__input-checkbox").prop("checked", false).trigger("change"); if(window.brTermsBlocks) { window.brTermsBlocks.setChecked(false); }',
                     'yes_classes'   => $options['agree_class'],
                     'no_classes'    => $options['decline_class'],
                 );
@@ -339,26 +346,59 @@ class BeRocket_terms_cond_popup extends BeRocket_Framework {
                 return false;
             }
             //ADD POPUP TO THE PAGE
+            $block_popups = array();
             foreach($popup_pages as $popup_id => $popup_page) {
                 if( ! empty($popup_page['title']) && ! empty($popup_page['content']) ) {
                     $temp_popup_options = array_merge($popup_options, $popup_page['popup_options']);
-                    $popup_id_generated = BeRocket_popup_display::add_popup($temp_popup_options, $popup_page['content'], $popup_page['popup_open']);
+                    $content = $popup_page['content'];
+                    if( $popup_id === 'term_cond_page' ) {
+                        $content = $this->terms_navigation($popup_page['page']) . $content;
+                    }
+                    $popup_id_generated = BeRocket_popup_display::add_popup($temp_popup_options, $content, $popup_page['popup_open']);
+                    if( in_array($popup_id, array('term_cond_page', 'policy_page'), true) && ! empty($popup_page['page']->ID) ) {
+                        $block_popups[] = array(
+                            'url' => get_permalink($popup_page['page']->ID),
+                            'id'  => 'br_popup_'.$popup_id_generated,
+                        );
+                    }
                     do_action('berocket_terms_cond_popup_created', $popup_id_generated, $popup_id, $popup_page, $temp_popup_options);
                 }
             }
+            wp_enqueue_script('berocket_terms_blocks', plugins_url('assets/js/checkout-blocks.js', __FILE__), array('jquery'), BeRocket_terms_cond_popup_version, true);
+            wp_localize_script('berocket_terms_blocks', 'brTermsBlocksSettings', array(
+                'popups' => $block_popups,
+                'hideCheckbox' => ! empty($options['agree_checkbox_remove']),
+            ));
+            wp_enqueue_style('berocket_terms_navigation', plugins_url('assets/css/terms-navigation.css', __FILE__), array(), BeRocket_terms_cond_popup_version);
+            wp_enqueue_script('berocket_terms_navigation', plugins_url('assets/js/terms-navigation.js', __FILE__), array('jquery'), BeRocket_terms_cond_popup_version, true);
+            wp_localize_script('berocket_terms_navigation', 'brTermsNavigationSettings', array(
+                'scrollProgressText' => __('%s% scrolled', 'terms-and-conditions-popup-for-woocommerce'),
+            ));
         }
+    }
+    public function terms_navigation($page) {
+        $html = '<div class="br_terms_navigation">';
+        // A permalink alone does not guarantee that a visitor can open the page.
+        if( $page instanceof WP_Post && 'publish' === $page->post_status && is_post_type_viewable($page->post_type) && empty($page->post_password) ) {
+            $url = get_permalink($page);
+            if( $url ) {
+                $html .= '<a class="br_terms_full_page" href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr__('Open full terms page (opens in a new tab)', 'terms-and-conditions-popup-for-woocommerce') . '">' . esc_html__('Open full terms page', 'terms-and-conditions-popup-for-woocommerce') . '</a>';
+            }
+        }
+        $html .= '<div class="br_terms_scroll_progress" role="progressbar" aria-label="' . esc_attr__('Terms scroll progress', 'terms-and-conditions-popup-for-woocommerce') . '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="br_terms_scroll_progress_fill"></span></div></div>';
+        return $html;
     }
     public function get_terms_content_array($popup_pages) {
         $page_id = wc_get_page_id( "terms" );
         $page_data = $this->get_page_content_array($page_id);
-        $page_data['popup_open']['click']['selector'] = '.woocommerce-terms-and-conditions-link, .wp-block-woocommerce-checkout-terms-block a:nth-child(1)';
+        $page_data['popup_open']['click']['selector'] = '.woocommerce-terms-and-conditions-link';
         $popup_pages['term_cond_page'] = $page_data;
         return $popup_pages;
     }
     public function get_policy_content_array($popup_pages) {
         $page_id = wc_privacy_policy_page_id();
         $page_data = $this->get_page_content_array($page_id);
-        $page_data['popup_open']['click']['selector'] = '.woocommerce-privacy-policy-link, .wp-block-woocommerce-checkout-terms-block a:nth-child(2)';
+        $page_data['popup_open']['click']['selector'] = '.woocommerce-privacy-policy-link';
         $page_data['popup_options']['yes_no_buttons'] = array(
             'show' => false,
         );

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-10-19 11:52:11+0000\n"
+"PO-Revision-Date: 2026-10-26 13:43:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -8,6 +8,111 @@ msgstr ""
 "X-Generator: GlotPress/2.4.0-alpha\n"
 "Language: de\n"
 "Project-Id-Version: MailPoet - MailPoet\n"
+
+#. translators: %s is the list of campaign names
+#: lib/Util/Notices/SenderDomainPausedCampaignsNotice.php:184
+msgid "%s has been paused. To make sure your campaigns reach your subscribers, send it from an authenticated sender domain, then resume it."
+msgid_plural "%s have been paused. To make sure your campaigns reach your subscribers, send them from an authenticated sender domain, then resume them."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %1$s is the list of campaign names, %2$s is a shared domain
+#. name such as gmail.com
+#: lib/Util/Notices/SenderDomainPausedCampaignsNotice.php:170
+msgid "%1$s has been paused. To make sure your campaigns reach your subscribers, send it from an address on your own authenticated domain instead of %2$s, then resume it."
+msgid_plural "%1$s have been paused. To make sure your campaigns reach your subscribers, send them from an address on your own authenticated domain instead of %2$s, then resume them."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %1$s is the list of campaign names, %2$s is a domain name
+#: lib/Util/Notices/SenderDomainPausedCampaignsNotice.php:149
+msgid "%1$s has been paused. To make sure your campaigns reach your subscribers, authenticate %2$s or switch to another authenticated sender domain, then resume it."
+msgid_plural "%1$s have been paused. To make sure your campaigns reach your subscribers, authenticate %2$s or switch to another authenticated sender domain, then resume them."
+msgstr[0] ""
+msgstr[1] ""
+
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:112
+msgid "Unsupported list operator. Allowed values are: isAny, isNone."
+msgstr ""
+
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:89
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:103
+msgid "The list IDs filter must be an array of list IDs."
+msgstr ""
+
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:82
+msgid "The list filter must be a list ID."
+msgstr ""
+
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:66
+msgid "A status filter requires a supported email type."
+msgstr ""
+
+#. translators: %d is the maximum number of values a filter accepts.
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:56
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:95
+msgid "A filter accepts at most %d values."
+msgstr ""
+
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:28
+msgid "Unsupported newsletters filter."
+msgstr ""
+
+#. translators: %s is a comma-separated list of allowed sending results.
+#: lib/Newsletter/RestApi/Endpoints/SendingStatusListingEndpoint.php:172
+msgid "Unsupported result filter. Allowed values are: %s."
+msgstr ""
+
+#: lib/Newsletter/RestApi/Endpoints/SendingStatusListingEndpoint.php:160
+msgid "Unsupported sending status filter."
+msgstr ""
+
+#. translators: %s is a comma-separated list of allowed listing groups.
+#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:258
+msgid "Unsupported group. Allowed values are: %s."
+msgstr ""
+
+#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:249
+msgid "A listing group is required."
+msgstr ""
+
+#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:235
+msgid "Unsupported email type."
+msgstr ""
+
+#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:230
+msgid "A supported email type is required."
+msgstr ""
+
+#. translators: %1$s is the name of a filter option, %2$s is the number of
+#. matching items.
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:196
+msgid "%1$s (%2$s)"
+msgstr "%1$s (%2$s)"
+
+#. translators: %s is the name of a segment.
+#: lib/CustomFields/CustomFieldsRepository.php:544
+msgid "%s (in the trash)"
+msgstr ""
+
+#. translators: %s is a domain such as example.com.
+#: lib/API/JSON/v1/SendingQueue.php:389
+msgid "This email can’t be resumed yet. To make sure your campaigns reach your subscribers, authenticate %s or switch to another authenticated sender domain, then click Resume again."
+msgstr ""
+
+#. translators: %s is a domain such as gmail.com.
+#: lib/API/JSON/v1/SendingQueue.php:386
+msgid "This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an address on your own authenticated domain instead of %s, then click Resume again."
+msgstr ""
+
+#: lib/API/JSON/v1/SendingQueue.php:382
+msgid "This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an authenticated sender domain, then click Resume again."
+msgstr ""
+
+#. translators: %s is a comma-separated list of segment names.
+#: lib/API/JSON/v1/CustomFields.php:58
+msgid "This custom field is used in these segments: %s. Remove it from these segments or delete the segments permanently first."
+msgstr ""
 
 #: lib/Captcha/Validator/CaptchaValidator.php:135
 msgid "Too many incorrect attempts. Here’s a new CAPTCHA to try."
@@ -42,68 +147,63 @@ msgstr ""
 msgid "Segments with more than one condition need an active MailPoet Premium plugin that matches your MailPoet version. Please update MailPoet Premium and try again."
 msgstr ""
 
-#. translators: %s is a comma-separated list of segment names.
-#: lib/API/JSON/v1/CustomFields.php:58
-msgid "This custom field is used in these segments: %s. Remove it from the segments first."
-msgstr ""
-
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:273
 msgid "To keep your subscription active, please sign in to your account and update your payment details. If you already updated them, you can ignore this message."
-msgstr ""
+msgstr "Damit dein Abonnement aktiv bleibt, melde dich bitte in deinem Konto an und aktualisiere deine Zahlungsdaten. Falls du diese bereits aktualisiert hast, kannst du diese Nachricht ignorieren."
 
 #. translators: %s: subscriber first name
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:245
 msgid "Hi %s, it’s been a little while since your last booking, and we’d love to welcome you back."
-msgstr ""
+msgstr "Hallo %s, deine letzte Buchung liegt schon eine Weile zurück, und wir würden uns sehr freuen, dich wieder bei uns begrüßen zu dürfen."
 
 #. translators: %s: subscriber first name
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:236
 msgid "Hi %s, thanks for joining us. We hope everything went smoothly."
-msgstr ""
+msgstr "Hallo %s, danke, dass du dabei bist. Wir hoffen, dass alles reibungslos geklappt hat."
 
 #. translators: %s: subscriber first name
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:227
 msgid "Hi %s, your booking is coming up soon. A little preparation can help you get the most out of it."
-msgstr ""
+msgstr "Hallo %s, dein Termin steht bald an. Mit ein bisschen Vorbereitung kannst du das Beste daraus machen."
 
 #. translators: %s: subscriber first name
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:218
 msgid "Hi %s, here are a few details for your upcoming booking."
-msgstr ""
+msgstr "Hallo %s, hier sind ein paar Details zu deiner bevorstehenden Buchung."
 
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:182
 msgid "There’s still time to find something you’ll love."
-msgstr ""
+msgstr "Es ist noch Zeit, etwas zu finden, das dir gefällt."
 
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:175
 msgid "New favorites may be waiting for you in the shop."
-msgstr ""
+msgstr "Vielleicht warten im Laden schon neue Favoriten auf dich."
 
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:156
 msgid "Thank you for taking the time to leave such a thoughtful review. We’re grateful for your support."
-msgstr ""
+msgstr "Vielen Dank, dass du dir die Zeit genommen hast, eine so ausführliche Bewertung zu schreiben. Wir sind dankbar für deine Unterstützung."
 
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:150
 msgid "We’d like to understand what happened and see how we can make things right. Reply to this email and we’ll take care of it."
-msgstr ""
+msgstr "Wir möchten gerne wissen, was passiert ist, und herausfinden, wie wir das wieder in Ordnung bringen können. Antworte einfach auf diese E-Mail, dann kümmern wir uns darum."
 
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:85
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:108
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:116
 msgid "Complete your purchase"
-msgstr ""
+msgstr "Schließe deinen Kauf ab"
 
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:47
 msgid "We’re absolutely thrilled to have you join us."
-msgstr ""
+msgstr "Wir freuen uns riesig, dass du dabei bist."
 
 #: lib/API/JSON/v1/Newsletters.php:325
 msgid "The email could not be created from the template."
-msgstr ""
+msgstr "Die E-Mail konnte nicht anhand des Templates erstellt werden."
 
 #: lib/API/JSON/v1/Newsletters.php:306
 msgid "A template pattern can only be used when creating a new email."
-msgstr ""
+msgstr "Eine Vorlage kann nur beim Erstellen einer neuen E-Mail verwendet werden."
 
 #. translators: %1$s is the PHP version the site is running, %2$s is the date
 #. the requirement took effect, already translated and in the site’s date
@@ -111,7 +211,7 @@ msgstr ""
 #. the recommended PHP version
 #: lib/Util/Notices/PHPVersionWarnings.php:90
 msgid "Your website is running PHP %1$s. Since %2$s, new versions of MailPoet require PHP %3$s or newer. This site no longer receives MailPoet updates, including security fixes. Ask your hosting provider to upgrade PHP. We recommend PHP %4$s. Read our [link]simple PHP upgrade guide.[/link]"
-msgstr ""
+msgstr "Deine Website läuft mit PHP %1$s. Seit %2$s erfordern neue Versionen von MailPoet PHP %3$s oder neuer. Diese Website erhält keine MailPoet-Updates mehr, auch keine Sicherheitspatches. Bitte deinen Hosting-Anbieter, PHP zu aktualisieren. Wir empfehlen PHP %4$s. Lies unsere [link]Anleitung zum einfachen PHP-Upgrade.[/link]"
 
 #. translators: %1$s is the PHP version the site is running, %2$s is the date
 #. the requirement takes effect, already translated and in the site’s date
@@ -119,103 +219,103 @@ msgstr ""
 #. the recommended PHP version
 #: lib/Util/Notices/PHPVersionWarnings.php:87
 msgid "Your website is running PHP %1$s. Starting %2$s, new versions of MailPoet will require PHP %3$s or newer. MailPoet will keep working on this site, but it won’t receive updates, including security fixes. Ask your hosting provider to upgrade PHP. We recommend PHP %4$s. Read our [link]simple PHP upgrade guide.[/link]"
-msgstr ""
+msgstr "Auf deiner Website läuft PHP %1$s. Ab %2$s benötigen neue Versionen von MailPoet PHP %3$s oder neuer. MailPoet funktioniert auf dieser Website zwar weiterhin, erhält aber keine Updates mehr, auch keine Sicherheitspatches. Bitte deinen Hosting-Anbieter, PHP zu aktualisieren. Wir empfehlen PHP %4$s. Lies unsere [link]Anleitung zum einfachen PHP-Upgrade.[/link]"
 
 #: views/settings_translations.html:152
 msgid "None - I use another spam protection"
-msgstr ""
+msgstr "Keine – Ich nutze einen anderen Spamschutz"
 
 #: views/settings_translations.html:134
 msgid "Built-in CAPTCHA protects your subscription forms against bots. Alternatively, use reCAPTCHA by Google or Cloudflare Turnstile. Unprotected forms are often abused by bots and can hurt your deliverability."
-msgstr ""
+msgstr "Das integrierte CAPTCHA schützt deine Anmeldeformulare vor Bots. Alternativ kannst du reCAPTCHA von Google oder Cloudflare Turnstile nutzen. Ungeschützte Formulare werden oft von Bots missbraucht und können deine Zustellbarkeit beeinträchtigen."
 
 #: views/segments/translations.html:181 views/subscribers/subscribers.html:110
 #: views/homepage.html:73
 msgid "Not enough tracked emails in the last year"
-msgstr ""
+msgstr "Im letzten Jahr gab es nicht genug E-Mails mit Sendungsverfolgung"
 
 #: views/segments/translations.html:124
 msgid "Subscribers we cannot track have no engagement score, so they count as Unknown or Dormant."
-msgstr ""
+msgstr "Abonnenten, die wir nicht nachverfolgen können, haben keine Engagement-Bewertung und werden daher als „Unbekannt“ oder „Ruhend“ eingestuft."
 
 #. translators: %s is a date.
 #: lib/Config/ServicesChecker.php:95
 msgid "Your MailPoet sending plan expires on %s. [link]Reactivate it or update your payment details[/link] to keep sending emails to your subscribers."
-msgstr ""
+msgstr "Dein MailPoet-Versandtarif läuft am %s ab. [link]Reaktiviere es oder aktualisiere deine Zahlungsdaten[/link], um weiterhin E-Mails an deine Abonnenten zu versenden."
 
 #: lib/Captcha/CaptchaDisabledNotice.php:53
 msgid "Turn on CAPTCHA to stop bots from signing up through your MailPoet forms. Bot sign-ups fill your list with fake addresses and hurt your deliverability. If we detect them on your site, we may need to restrict sending until you enable protection. You can ignore this if you are already handling bot protection elsewhere, like a WAF or Cloudflare. [link]Enable CAPTCHA[/link]"
-msgstr ""
+msgstr "Aktiviere CAPTCHA, um zu verhindern, dass sich Bots über deine MailPoet-Formulare anmelden. Bot-Anmeldungen füllen deine Liste mit gefälschten Adressen und beeinträchtigen deine Zustellbarkeit. Wenn wir solche Anmeldungen auf deiner Website feststellen, müssen wir den Versand möglicherweise einschränken, bis du den Schutz aktiviert hast. Du kannst diesen Hinweis ignorieren, wenn du den Bot-Schutz bereits anderweitig sicherstellst, z. B. über eine WAF oder Cloudflare. [link]CAPTCHA aktivieren[/link]"
 
 #: lib/API/JSON/v1/Newsletters.php:438
 msgid "The default confirmation email cannot be deleted."
-msgstr ""
+msgstr "Die Standard-Bestätigungs-E-Mail kann nicht gelöscht werden."
 
 #: lib/API/JSON/v1/Newsletters.php:220 lib/API/JSON/v1/Newsletters.php:240
 msgid "Confirmation emails can only be deleted from the list settings."
-msgstr ""
+msgstr "Bestätigungs-E-Mails können nur in den Listeneinstellungen gelöscht werden."
 
 #: views/settings_translations.html:265
 msgid "Nobody is measured until they allow it, including subscribers already on your list. Use this for the consent rules in France and Italy. Until people answer, only a small share of your list can be measured, and your open and click rates will be based on that share."
-msgstr ""
+msgstr "Niemand wird erfasst, solange er dem nicht zustimmt – auch nicht die Abonnenten, die bereits auf deiner Liste stehen. Nutze das für die Einwilligungsvorschriften in Frankreich und Italien. Solange die Leute nicht antworten, kann nur ein kleiner Teil deiner Liste erfasst werden, und deine Öffnungs- und Klickraten basieren auf diesem Anteil."
 
 #: views/emails/statsNotification.html:384
 #: views/emails/statsNotificationAutomatedEmails.html:287
 msgid "Your %1$s recipient is not tracked, so open and click rates cannot be measured."
 msgid_plural "None of your %1$s recipients are tracked, so open and click rates cannot be measured."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Dein %1$s Empfänger wird nicht nachverfolgt, daher können die Öffnungs- und Klickraten nicht gemessen werden."
+msgstr[1] "Keiner deiner %1$s Empfänger wird nachverfolgt, daher können Öffnungs- und Klickraten nicht gemessen werden."
 
 #: views/emails/statsNotification.html:382
 #: views/emails/statsNotificationAutomatedEmails.html:285
 msgid "%1$s of your recipients is not tracked, so open and click rates are based on the other %2$s."
 msgid_plural "%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1$s deiner Empfänger wird nicht erfasst, daher basieren die Öffnungs- und Klickraten auf den übrigen %2$s."
+msgstr[1] "%1$s deiner Empfänger werden nicht erfasst, daher basieren die Öffnungs- und Klickraten auf den übrigen %2$s."
 
 #: lib/API/JSON/v1/Newsletters.php:266
 msgid "Invalid newsletter body payload."
-msgstr ""
+msgstr "Ungültige Inhalte im Newsletter-Body."
 
 #: lib/Subscribers/ImportExport/ImportExportFactory.php:76
 msgid "Tracking consent updated"
-msgstr ""
+msgstr "Einwilligung zur Nachverfolgung aktualisiert"
 
 #: lib/Subscribers/ImportExport/ImportExportFactory.php:69
 msgid "Tracking consent wording"
-msgstr ""
+msgstr "Formulierung der Einwilligung zur Nachverfolgung"
 
 #: lib/Subscribers/ImportExport/ImportExportFactory.php:68
 msgid "Tracking consent method"
-msgstr ""
+msgstr "Methode zur Erfassung der Einwilligung"
 
 #: lib/Subscribers/ImportExport/ImportExportFactory.php:67
 msgid "Tracking consent"
-msgstr ""
+msgstr "Einwilligung zur Nachverfolgung"
 
 #: views/help.html:58
 msgctxt "A state of the sending queue shown while the configured sending frequency limit is active."
 msgid "Sending frequency limit reached — sending will resume once the interval passes"
-msgstr ""
+msgstr "Grenzwert für die Sendehäufigkeit erreicht – der Sendevorgang wird fortgesetzt, sobald das Intervall abgelaufen ist"
 
 #: views/form/editor.html:183
 msgctxt "Button that inserts the tracking consent checkbox into the form"
 msgid "Add the checkbox"
-msgstr ""
+msgstr "Das Kontrollkästchen hinzufügen"
 
 #: views/form/editor.html:182
 msgid "Your tracking settings ask every subscriber for consent, so this form needs to include the \"Email activity tracking\" checkbox."
-msgstr ""
+msgstr "Deine Tracking-Einstellungen sehen vor, dass jeder Abonnent um seine Einwilligung gebeten wird; daher muss dieses Formular das Kontrollkästchen „E-Mail-Aktivitäten nachverfolgen“ enthalten."
 
 #: assets/dist/js/email-editor-blocks/latest-posts/block.json
 msgctxt "block keyword"
 msgid "dynamic"
-msgstr ""
+msgstr "dynamisch"
 
 #: assets/dist/js/email-editor-blocks/latest-posts/block.json
 msgctxt "block keyword"
 msgid "automated"
-msgstr ""
+msgstr "automatisch"
 
 #: assets/dist/js/email-editor-blocks/latest-posts/block.json
 msgctxt "block keyword"
@@ -225,7 +325,7 @@ msgstr "Blog"
 #: assets/dist/js/email-editor-blocks/latest-posts/block.json
 msgctxt "block keyword"
 msgid "latest"
-msgstr ""
+msgstr "Neueste"
 
 #: assets/dist/js/email-editor-blocks/latest-posts/block.json
 msgctxt "block keyword"
@@ -235,7 +335,7 @@ msgstr "Beiträge"
 #: assets/dist/js/email-editor-blocks/latest-posts/block.json
 msgctxt "block description"
 msgid "Automatically displays your most recent posts in the email when it is sent."
-msgstr ""
+msgstr "Zeigt deine neuesten Beiträge automatisch in der E-Mail an, wenn diese versendet wird."
 
 #: assets/dist/js/email-editor-blocks/latest-posts/block.json
 msgctxt "block title"
@@ -245,7 +345,7 @@ msgstr "Neueste Beiträge"
 #: assets/dist/js/email-editor-blocks/latest-posts-template/block.json
 msgctxt "block description"
 msgid "Block layout that repeats for each of the latest posts."
-msgstr ""
+msgstr "Ein Blocklayout, das sich für jeden der neuesten Beiträge wiederholt."
 
 #: assets/dist/js/email-editor-blocks/latest-posts-template/block.json
 msgctxt "block title"
@@ -255,7 +355,7 @@ msgstr "Beitrags-Template"
 #: assets/dist/js/email-editor-blocks/latest-posts-post-content/block.json
 msgctxt "block description"
 msgid "Displays the full content of each post. Blocks that cannot be rendered in emails are left out when the email is sent."
-msgstr ""
+msgstr "Zeigt den vollständigen Inhalt jedes Beitrags an. Blöcke, die in E-Mails nicht dargestellt werden können, werden beim Versenden der E-Mail weggelassen."
 
 #: lib/EmailEditor/Integrations/MailPoet/Blocks/BlockTypes/LatestPosts.php:996
 msgid "No posts found."
@@ -263,95 +363,95 @@ msgstr "Keine Beiträge gefunden."
 
 #: lib/PostEditorBlocks/WooCommerceBlocksIntegration.php:154
 msgid "Allow tracking of email opens and link clicks."
-msgstr ""
+msgstr "Erlaube das Nachverfolgen von E-Mail-Öffnungen und Link-Klicks."
 
 #: views/segments/translations.html:122
 msgctxt "Tracking consent state: the subscriber has never been asked about tracking"
 msgid "not asked yet"
-msgstr ""
+msgstr "noch nicht gefragt"
 
 #: views/segments/translations.html:121
 msgctxt "Tracking consent state: the subscriber opted out of open and click tracking"
 msgid "opted out"
-msgstr ""
+msgstr "ausgetragen"
 
 #: views/segments/translations.html:120
 msgctxt "Tracking consent state: the subscriber allowed open and click tracking"
 msgid "allowed"
-msgstr ""
+msgstr "erlaubt"
 
 #: views/segments/translations.html:119
 msgctxt "Dynamic segment filter: the subscriber tracking consent state"
 msgid "tracking consent"
-msgstr ""
+msgstr "Einwilligung zur Nachverfolgung"
 
 #: views/segments/translations.html:125
 msgid "Subscribers who opted out of tracking are not counted here, because MailPoet has no open or click data for them."
-msgstr ""
+msgstr "Abonnenten, die sich gegen das Tracking entschieden haben, werden hier nicht berücksichtigt, da MailPoet für sie keine Öffnungs- oder Klickdaten hat."
 
 #: views/segments/translations.html:123
 msgid "MailPoet has no open or click data for subscribers who opted out of tracking, so this filter counts them as not engaged."
-msgstr ""
+msgstr "MailPoet verfügt über keine Öffnungs- oder Klickdaten für Abonnenten, die sich gegen die Nachverfolgung entschieden haben, daher zählt dieser Filter sie als nicht aktiv."
 
 #: views/form/editor.html:167
 msgid "This exact wording is stored with each subscriber as the record of what they agreed to."
-msgstr ""
+msgstr "Genau dieser Wortlaut wird für jeden Teilnehmer gespeichert, um festzuhalten, womit er einverstanden war."
 
 #: views/form/editor.html:166
 msgid "Checkbox text"
-msgstr ""
+msgstr "Text zum Kontrollkästchen"
 
 #: views/form/editor.html:164
 msgid "Ask subscribers to allow tracking of email opens and link clicks. This is separate from the subscription opt-in and is always shown unchecked."
-msgstr ""
+msgstr "Bitte die Abonnenten, das Nachverfolgen von E-Mail-Öffnungen und Link-Klicks zuzulassen. Das ist unabhängig von der Anmeldung zum Newsletter und wird immer deaktiviert angezeigt."
 
 #: views/settings_translations.html:264
 msgid "Ask everyone"
-msgstr ""
+msgstr "Alle fragen"
 
 #: views/settings_translations.html:263
 msgid "New subscribers choose when they sign up. Everyone already on your list keeps being tracked until they turn it off themselves, so your current statistics are unaffected."
-msgstr ""
+msgstr "Neue Abonnenten entscheiden sich bei der Anmeldung. Alle, die bereits auf deiner Liste stehen, werden weiterhin erfasst, bis sie die Erfassung selbst deaktivieren – deine aktuellen Statistiken bleiben also davon unberührt."
 
 #: views/settings_translations.html:262
 msgid "Ask new subscribers"
-msgstr ""
+msgstr "Neue Abonnenten fragen"
 
 #: views/settings_translations.html:261
 msgid "Subscribers see no tracking controls, and nothing is added to your emails, forms or checkout. This is how MailPoet works today."
-msgstr ""
+msgstr "Abonnenten sehen keine Tracking-Elemente, und es wird nichts zu euren E-Mails, Formularen oder dem Bestellvorgang hinzugefügt. So funktioniert MailPoet derzeit."
 
 #: views/settings_translations.html:260
 msgid "Track everyone, don't ask"
-msgstr ""
+msgstr "Jeden verfolgen und nicht nachfragen"
 
 #: views/settings_translations.html:259
 msgid "Choose whether subscribers can decide for themselves whether their opens and clicks are measured. This has no effect when engagement tracking above is set to Basic / None."
-msgstr ""
+msgstr "Lege fest, ob Abonnenten selbst entscheiden können, ob ihre Öffnungen und Klicks erfasst werden. Das hat keine Auswirkungen, wenn die oben genannte Interaktionserfassung auf „Basis“ oder „Keine“ eingestellt ist."
 
 #: views/settings_translations.html:258
 msgid "Subscriber choice (open and click tracking)"
-msgstr ""
+msgstr "Entscheidung des Abonnenten (Erfassung von Öffnungen und Klicks)"
 
 #: lib/Segments/WPUserDeleteNotice.php:167
 msgid "[link]Read more about the WordPress Users list[/link]"
-msgstr ""
+msgstr "[link]Mehr über die WordPress-Benutzerliste erfahren[/link]"
 
 #: lib/Segments/WPUserDeleteNotice.php:161
 msgid "[link]Manage MailPoet subscribers[/link]"
-msgstr ""
+msgstr "[link]MailPoet-Abonnenten verwalten[/link]"
 
 #. translators: %d is the number of users being deleted who are also MailPoet
 #. subscribers.
 #: lib/Segments/WPUserDeleteNotice.php:148
 msgid "<strong>MailPoet:</strong> %d of the users you are deleting is also a MailPoet subscriber. Deleting a WordPress user does not delete their MailPoet subscriber. The subscriber is removed from the \"WordPress Users\" list but kept in MailPoet, so look for them on their other lists or in the Trash."
 msgid_plural "<strong>MailPoet:</strong> %d of the users you are deleting are also MailPoet subscribers. Deleting a WordPress user does not delete their MailPoet subscriber. The subscribers are removed from the \"WordPress Users\" list but kept in MailPoet, so look for them on their other lists or in the Trash."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "<strong>MailPoet:</strong> %d Benutzer, den du löschst, ist auch ein MailPoet-Abonnent. Das Löschen eines WordPress-Benutzers löscht nicht dessen MailPoet-Abonnement. Der Abonnent wird aus der Liste „WordPress-Benutzer“ entfernt, bleibt aber in MailPoet erhalten. Suche ihn daher in den anderen Listen oder im Papierkorb."
+msgstr[1] "<strong>MailPoet:</strong> %d der Nutzer, die du löschst, sind auch MailPoet-Abonnenten. Das Löschen eines WordPress-Nutzers löscht nicht dessen MailPoet-Abonnement. Die Abonnenten werden aus der Liste „WordPress-Nutzer“ entfernt, bleiben aber in MailPoet erhalten. Suche sie daher in den anderen Listen oder im Papierkorb."
 
 #: lib/Segments/WPUserDeleteNotice.php:142
 msgid "<strong>MailPoet:</strong> This user is also a MailPoet subscriber. Deleting a WordPress user does not delete their MailPoet subscriber. The subscriber is removed from the \"WordPress Users\" list but kept in MailPoet, so look for them on their other lists or in the Trash."
-msgstr ""
+msgstr "<strong>MailPoet:</strong> Dieser Benutzer ist auch ein MailPoet-Abonnent. Wenn du einen WordPress-Benutzer löschst, wird dessen MailPoet-Abonnement nicht gelöscht. Der Abonnent wird aus der Liste „WordPress-Benutzer“ entfernt, bleibt aber in MailPoet erhalten. Such ihn also in den anderen Listen oder im Papierkorb."
 
 #: lib/API/JSON/v1/Segments.php:279
 msgid "The recipient count could not be calculated."
@@ -391,16 +491,16 @@ msgstr "Nachverfolgung von E-Mail-Aktivitäten"
 msgid "Allow tracking of email opens and link clicks"
 msgstr "Das Nachverfolgen von E-Mail-Öffnungen und Link-Klicks zulassen"
 
-#: lib/Services/Bridge/API.php:226
+#: lib/Services/Bridge/API.php:227
 msgid "The bounces report response was not in the expected format"
 msgstr "Die Antwort des Bounces-Berichts entsprach nicht dem erwarteten Format."
 
 #. translators: %d is the HTTP response code.
-#: lib/Services/Bridge/API.php:214
+#: lib/Services/Bridge/API.php:215
 msgid "The bounces report request failed with response code %d"
 msgstr "Die Anfrage des Bounces-Berichts ist mit dem Antwortcode %d fehlgeschlagen"
 
-#: lib/Services/Bridge/API.php:212
+#: lib/Services/Bridge/API.php:213
 msgid "The bounces report request failed without a response"
 msgstr "Die Anfrage für den Bounces-Bericht ist ohne Antwort fehlgeschlagen"
 
@@ -474,7 +574,7 @@ msgstr "Es wurden keine Abonnenten ausgewählt."
 msgid "You do not have permission to download logs."
 msgstr "Du hast keine Berechtigung, Protokolle herunterzuladen."
 
-#: lib/Tags/RestApi/Endpoints/TagsGetEndpoint.php:86
+#: lib/Tags/RestApi/Endpoints/TagsGetEndpoint.php:81
 msgid "Unsupported tags filter."
 msgstr "Filter für nicht unterstützte Schlagwörter."
 
@@ -496,16 +596,18 @@ msgstr "Der Ebenenfilter muss ein Array aus Ganzzahlen sein."
 msgid "The name filter must be an array of strings."
 msgstr "Der Namensfilter muss ein Array aus Zeichenketten sein."
 
-#: lib/Logging/RestApi/Endpoints/LogsDeleteEndpoint.php:75
+#: lib/Logging/RestApi/Endpoints/LogsDeleteEndpoint.php:69
 msgid "Search must be a string."
 msgstr "Die Suchanfrage muss eine Zeichenkette sein."
 
-#: lib/Logging/RestApi/Endpoints/LogsDeleteEndpoint.php:42
+#: lib/Logging/RestApi/Endpoints/LogsDeleteEndpoint.php:36
 msgid "Deleting all logs requires confirmation."
 msgstr "Das Löschen aller Protokolle erfordert eine Bestätigung."
 
 #. translators: %s is a comma-separated list of allowed form statuses.
+#. translators: %s is a comma-separated list of allowed email statuses.
 #: lib/Form/RestApi/Endpoints/FormsListingEndpoint.php:140
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:69
 msgid "Unsupported status filter. Allowed values are: %s."
 msgstr "Der Statusfilter wird nicht unterstützt. Zulässige Werte sind: %s."
 
@@ -1350,7 +1452,7 @@ msgstr "Für diese Mehrfachaktion ist ein Schlagwort erforderlich."
 msgid "A list is required for this bulk action."
 msgstr "Für diese Mehrfachaktion ist eine Liste erforderlich."
 
-#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:80
+#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:85
 msgid "No newsletters selected."
 msgstr "Es wurden keine Newsletter ausgewählt."
 
@@ -1377,8 +1479,10 @@ msgstr "Nicht unterstützter Protokoll-Filter."
 #: lib/CustomFields/RestApi/Endpoints/CustomFieldsGetEndpoint.php:73
 #: lib/Form/RestApi/Endpoints/FormsListingEndpoint.php:99
 #: lib/Logging/RestApi/LogsFilterTrait.php:22
+#: lib/Newsletter/RestApi/Endpoints/SendingStatusListingEndpoint.php:156
+#: lib/Newsletter/RestApi/NewslettersFilterValidationTrait.php:23
 #: lib/Segments/RestApi/Endpoints/AbstractSegmentsListingEndpoint.php:114
-#: lib/Tags/RestApi/Endpoints/TagsGetEndpoint.php:75
+#: lib/Tags/RestApi/Endpoints/TagsGetEndpoint.php:70
 msgid "Filters must be an object."
 msgstr "Filter müssen ein Objekt sein."
 
@@ -1946,8 +2050,8 @@ msgstr "Ein individuelles Feld mit diesem Namen existiert bereits."
 msgid "The custom field does not exist."
 msgstr "Das individuelle Feld existiert nicht."
 
-#: lib/CustomFields/RestApi/Endpoints/CustomFieldsBulkActionEndpoint.php:73
-#: lib/CustomFields/RestApi/Endpoints/CustomFieldsBulkActionEndpoint.php:92
+#: lib/CustomFields/RestApi/Endpoints/CustomFieldsBulkActionEndpoint.php:74
+#: lib/CustomFields/RestApi/Endpoints/CustomFieldsBulkActionEndpoint.php:93
 msgid "At least one custom field id is required."
 msgstr "Es ist mindestens eine ID für ein individuelles Feld erforderlich."
 
@@ -1990,11 +2094,11 @@ msgstr "Vor kurzem wurde eine Bestätigungs-E-Mail verschickt. Bitte warte, bevo
 msgid "The maximum number of confirmation emails has already been reached for this subscriber."
 msgstr "Die maximale Anzahl an Bestätigungs-E-Mails für diesen Abonnenten wurde bereits erreicht."
 
-#: lib/API/JSON/v1/Settings.php:432
+#: lib/API/JSON/v1/Settings.php:437
 msgid "Invalid value for deleting unconfirmed subscribers."
 msgstr "Ungültiger Wert für das Löschen unbestätigter Abonnenten."
 
-#: lib/API/JSON/v1/SendingQueue.php:143
+#: lib/API/JSON/v1/SendingQueue.php:156
 #: lib/Newsletter/NewsletterSaveController.php:509
 #: lib/Newsletter/Sending/TimeZoneCampaignScheduler.php:88
 msgid "This email can no longer be edited because one or more time zone batches have already started."
@@ -2290,14 +2394,14 @@ msgstr "Dieses Schlagwort existiert bereits."
 msgid "The tag couldn’t be created in the database"
 msgstr "Das Schlagwort konnte nicht in der Datenbank angelegt werden"
 
-#: lib/API/MP/v1/Subscribers.php:655 lib/API/MP/v1/Subscribers.php:690
-#: lib/API/MP/v1/Subscribers.php:700 lib/API/MP/v1/Subscribers.php:708
+#: lib/API/MP/v1/Subscribers.php:667 lib/API/MP/v1/Subscribers.php:702
+#: lib/API/MP/v1/Subscribers.php:712 lib/API/MP/v1/Subscribers.php:720
 #: lib/API/MP/v1/Tags.php:75 lib/API/MP/v1/Tags.php:170
 #: lib/Tags/RestApi/Endpoints/TagPutEndpoint.php:43
 msgid "Tag name is required."
 msgstr "Der Name des Schlagworts ist erforderlich."
 
-#: lib/API/MP/v1/Subscribers.php:617 lib/API/MP/v1/Subscribers.php:636
+#: lib/API/MP/v1/Subscribers.php:629 lib/API/MP/v1/Subscribers.php:648
 #: lib/API/MP/v1/Tags.php:62 lib/API/MP/v1/Tags.php:112
 #: lib/API/MP/v1/Tags.php:143 lib/API/MP/v1/Tags.php:161
 #: lib/Tags/RestApi/Endpoints/TagDeleteEndpoint.php:29
@@ -2306,7 +2410,7 @@ msgid "The tag does not exist."
 msgstr "Das Schlagwort existiert nicht."
 
 #. translators: %s is an error message
-#: lib/API/MP/v1/Subscribers.php:194 lib/API/MP/v1/Subscribers.php:265
+#: lib/API/MP/v1/Subscribers.php:201 lib/API/MP/v1/Subscribers.php:277
 msgid "Failed to save subscriber tags: %s"
 msgstr "Das Speichern der Abonnenten-Schlagworts ist fehlgeschlagen: %s"
 
@@ -2355,15 +2459,15 @@ msgid "Missing newsletter id."
 msgstr "Newsletter-ID fehlt."
 
 #: lib/API/JSON/v1/StatisticsExport.php:197
-#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:144
+#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:149
 msgid "Unsupported export format. Use csv or xlsx."
 msgstr "Nicht unterstütztes Exportformat. Verwende CSV oder XLSX."
 
-#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:134
+#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:139
 msgid "No newsletters selected for export."
 msgstr "Es wurden keine Newsletter für den Export ausgewählt."
 
-#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:125
+#: lib/Newsletter/RestApi/Endpoints/NewslettersBulkActionEndpoint.php:130
 msgid "Bulk statistics export requires a MailPoet plan with detailed analytics."
 msgstr "Für den Export von Statistiken in großen Mengen ist ein MailPoet-Tarif mit detaillierten Analysen erforderlich."
 
@@ -2605,7 +2709,7 @@ msgstr "Folge auf Produktkauf"
 
 #: lib/Automation/Integrations/MailPoet/Templates/ClassicTemplateEmails.php:89
 msgid "Loving your purchase? Make it even better"
-msgstr ""
+msgstr "Gefällt dir dein Kauf? Mach ihn noch besser"
 
 #. translators: Name of a content pattern used as starting content of an email
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:78
@@ -2939,17 +3043,17 @@ msgstr "Ungültiger Statuswert."
 #: lib/Config/Hooks.php:710 lib/Logging/LogsDownload.php:38
 #: lib/Router/Endpoints/Subscription.php:109
 #: lib/Router/Endpoints/Subscription.php:131
-#: lib/Util/Notices/PermanentNotices.php:223
+#: lib/Util/Notices/PermanentNotices.php:243
 msgid "Security check failed."
 msgstr "Die Sicherheitsüberprüfung ist fehlgeschlagen."
 
-#: lib/Config/Hooks.php:701 lib/Util/Notices/PermanentNotices.php:214
+#: lib/Config/Hooks.php:701 lib/Util/Notices/PermanentNotices.php:234
 msgid "Unauthorized"
 msgstr "Nicht autorisiert"
 
 #: lib/Config/Hooks.php:700
 #: lib/EmailEditor/Integrations/MailPoet/EmailEditorPreviewEmail.php:40
-#: lib/Util/Notices/PermanentNotices.php:213
+#: lib/Util/Notices/PermanentNotices.php:233
 msgid "You do not have permission to perform this action."
 msgstr "Du hast keine Berechtigung, diese Aktion durchzuführen."
 
@@ -2968,6 +3072,10 @@ msgstr "Danke :)"
 #: lib/Config/Hooks.php:689
 msgid "five star"
 msgstr "fünf Sterne"
+
+#: lib/Util/Notices/SenderDomainPausedCampaignsNotice.php:210
+msgid "(No subject)"
+msgstr "(Kein Thema)"
 
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:280
 msgid "Site Description"
@@ -3538,9 +3646,14 @@ msgstr "MailPoet-Vorschau"
 
 #. translators: %d is the number of remaining tables, the whole string will
 #. be: "table1, table2 and 3 more"
+#. translators: %d is the number of paused campaigns that are not listed by
+#. name
 #: lib/Util/Notices/DatabaseEngineNotice.php:105
+#: lib/Util/Notices/SenderDomainPausedCampaignsNotice.php:226
 msgid "and %d more"
-msgstr "und %d weitere"
+msgid_plural "and %d more"
+msgstr[0] "und %d weitere"
+msgstr[1] ""
 
 #. translators: %s is the list of the table names
 #: lib/Util/Notices/DatabaseEngineNotice.php:82
@@ -3615,7 +3728,7 @@ msgid "CAPTCHA verification failed."
 msgstr "Die CAPTCHA-Überprüfung ist fehlgeschlagen."
 
 #. translators: %s is an error message.
-#: lib/API/MP/v1/Subscribers.php:244
+#: lib/API/MP/v1/Subscribers.php:256
 msgid "Failed to update subscriber: %s"
 msgstr "Die Aktualisierung des Abonnenten ist fehlgeschlagen: %s"
 
@@ -3631,11 +3744,11 @@ msgstr "Schriftstile für Text"
 msgid "(no subject)"
 msgstr "(kein Betreff)"
 
-#: lib/Newsletter/Sending/ScheduledTasksRepository.php:405
+#: lib/Newsletter/Sending/ScheduledTasksRepository.php:439
 msgid "Only cancelled tasks can be rescheduled"
 msgstr "Nur abgebrochene Aufgaben können neu geplant werden"
 
-#: lib/Newsletter/Sending/ScheduledTasksRepository.php:395
+#: lib/Newsletter/Sending/ScheduledTasksRepository.php:429
 msgid "Only scheduled and running tasks can be cancelled"
 msgstr "Nur geplante und laufende Aufgaben können abgebrochen werden"
 
@@ -3690,7 +3803,7 @@ msgstr "Geplante Sendeaufgaben"
 msgid "Total cancelled tasks"
 msgstr "Gesamt abgebrochene Aufgaben"
 
-#: lib/Config/Hooks.php:711 lib/Util/Notices/PermanentNotices.php:224
+#: lib/Config/Hooks.php:711 lib/Util/Notices/PermanentNotices.php:244
 msgid "Error"
 msgstr "Fehler"
 
@@ -3791,7 +3904,7 @@ msgstr "MailPoet"
 #: assets/dist/js/email-editor-blocks/latest-posts-post-content/block.json
 msgctxt "block title"
 msgid "Post Content"
-msgstr ""
+msgstr "Beitragsinhalt"
 
 #: views/upgrade_tiers.html:170
 msgid "Read FAQ"
@@ -3889,7 +4002,7 @@ msgstr "Authentifiziere deine Absenderdomain"
 msgid "Improve email delivery rates"
 msgstr "Verbessere die Zustellungsrate von E-Mails"
 
-#: lib/Services/Bridge/API.php:459
+#: lib/Services/Bridge/API.php:460
 msgid "Email violates Sender Domain requirements. Please authenticate the sender domain."
 msgstr "Die E-Mail verstößt gegen die Anforderungen der Absenderdomäne. Bitte authentifiziere die Absenderdomäne."
 
@@ -3927,6 +4040,7 @@ msgid "Campaign name"
 msgstr "Name der Kampagne"
 
 #: lib/Util/Notices/SenderDomainAuthenticationNotices.php:182
+#: lib/Util/Notices/SenderDomainPausedCampaignsNotice.php:159
 msgid "Authenticate domain"
 msgstr "Domain authentisieren"
 
@@ -4179,7 +4293,7 @@ msgstr "Name des Kommentar-Autors"
 msgid "Comment ID"
 msgstr "Kommentar-ID"
 
-#: lib/API/JSON/v1/SendingQueue.php:174
+#: lib/API/JSON/v1/SendingQueue.php:187
 msgid "Unable to find scheduled task associated with this newsletter."
 msgstr "Die mit diesem Newsletter verbundene geplante Aufgabe kann nicht gefunden werden."
 
@@ -4970,7 +5084,7 @@ msgstr "Das MailPoet-Plugin erfordert WooCommerce Version %s oder neuer. Bitte a
 msgid "minute(s)"
 msgstr "Minute(n)"
 
-#: lib/API/MP/v1/Subscribers.php:409
+#: lib/API/MP/v1/Subscribers.php:421
 msgid "This subscriber is already unsubscribed."
 msgstr "Dieser Abonnent ist bereits abgemeldet."
 
@@ -5257,11 +5371,11 @@ msgstr "In die Zwischenablage kopiert."
 msgid "Homepage URL"
 msgstr "URL der Startseite"
 
-#: lib/API/JSON/v1/Settings.php:192
+#: lib/API/JSON/v1/Settings.php:197
 msgid "Setting doesn't exist."
 msgstr "Die Einstellung existiert nicht."
 
-#: lib/API/JSON/v1/Settings.php:181
+#: lib/API/JSON/v1/Settings.php:186
 msgid "You have not specified any setting to be deleted."
 msgstr "Du hast keine zu löschende Einstellung angegeben."
 
@@ -5362,59 +5476,59 @@ msgstr "Fang an, mit deinen Kunden in Kontakt zu treten"
 msgid "Skip survey and deactivate MailPoet"
 msgstr "Befragung überspringen und MailPoet deaktivieren"
 
-#: lib/Services/Bridge/API.php:481
+#: lib/Services/Bridge/API.php:482
 msgid "This domain was already added to the list."
 msgstr "Diese Domain wurde bereits zur Liste hinzugefügt."
 
-#: lib/Services/Bridge/API.php:479
+#: lib/Services/Bridge/API.php:480
 msgid "Invalid domain. Please enter a valid domain name."
 msgstr "Ungültige Domain. Bitte gib einen gültigen Domainnamen ein."
 
-#: lib/Services/Bridge/API.php:477
+#: lib/Services/Bridge/API.php:478
 msgid "Some DNS records were not set up correctly. Please check the records again. You may need to wait up to 24 hours for DNS changes to propagate."
 msgstr "Einige DNS-Einträge wurden nicht korrekt eingerichtet. Bitte überprüfe die Einträge noch einmal. Es kann bis zu 24 Stunden dauern, bis DNS-Änderungen übernommen werden."
 
-#: lib/Services/Bridge/API.php:475
+#: lib/Services/Bridge/API.php:476
 msgid "Domain not found."
 msgstr "Domain nicht gefunden."
 
-#: lib/Services/Bridge/API.php:473
+#: lib/Services/Bridge/API.php:474
 msgid "This email was already added to the list."
 msgstr "Diese E-Mail-Adresse wurde der Liste bereits hinzugefügt."
 
-#: lib/Services/Bridge/API.php:471
+#: lib/Services/Bridge/API.php:472
 msgid "Invalid email."
 msgstr "Ungültige E-Mail-Adresse."
 
-#: lib/Services/Bridge/API.php:469
+#: lib/Services/Bridge/API.php:470
 msgid "You cannot use a free email address. Please use an address from your website’s domain, for example."
 msgstr "Du kannst keine kostenlose E-Mail-Adresse verwenden. Bitte verwende zum Beispiel eine Adresse von der Domain deiner Website."
 
-#: lib/Services/Bridge/API.php:465
+#: lib/Services/Bridge/API.php:466
 msgid "Email volume limit reached."
 msgstr "E-Mail-Volumengrenze erreicht."
 
-#: lib/Services/Bridge/API.php:463
+#: lib/Services/Bridge/API.php:464
 msgid "Insufficient privileges."
 msgstr "Unzureichende Rechte."
 
-#: lib/Services/Bridge/API.php:461
+#: lib/Services/Bridge/API.php:462
 msgid "No valid API key provided."
 msgstr "Kein gültiger API-Schlüssel angegeben."
 
-#: lib/Services/Bridge/API.php:457
+#: lib/Services/Bridge/API.php:458
 msgid "Email violates Sender Domain's DMARC policy. Please set up sender authentication."
 msgstr "Die E-Mail verstößt gegen die DMARC-Richtlinie der Absenderdomäne. Bitte richte eine Absenderauthentifizierung ein."
 
-#: lib/Services/Bridge/API.php:455
+#: lib/Services/Bridge/API.php:456
 msgid "Key is valid, but not approved yet; you can send only to authorized email addresses at the moment."
 msgstr "Der Schlüssel ist gültig, aber noch nicht genehmigt; du kannst im Moment nur an autorisierte E-Mail-Adressen senden."
 
-#: lib/Services/Bridge/API.php:453
+#: lib/Services/Bridge/API.php:454
 msgid "The email address is not authorized."
 msgstr "Die E-Mail-Adresse ist nicht autorisiert."
 
-#: lib/Services/Bridge/API.php:451
+#: lib/Services/Bridge/API.php:452
 msgid "Key is valid, but the action is forbidden."
 msgstr "Der Schlüssel ist gültig, aber die Aktion ist verboten."
 
@@ -5950,18 +6064,19 @@ msgstr "Die Automatisierung mit der ID '%d' kann nicht gelöscht werden, weil er
 msgid "Step with ID '%1$s' is missing required subjects with keys: %2$s"
 msgstr "Schritt mit ID '%1$s' fehlen erforderliche Betreffe mit Schlüssel: %2$s"
 
-#: lib/API/JSON/v1/Services.php:144 lib/API/JSON/v1/Services.php:219
+#: lib/API/JSON/v1/Services.php:149 lib/API/JSON/v1/Services.php:224
 msgid "Your Premium key has been successfully validated, but is not valid for MailPoet Sending Service"
 msgstr "Dein Premium-Schlüssel wurde erfolgreich validiert, ist aber nicht für den MailPoet-Versanddienst gültig"
 
 #. Description of the plugin
-#: mailpoet.php lib/WooCommerce/MultichannelMarketing/MPMarketingChannel.php:58
+#: mailpoet.php:7
+#: lib/WooCommerce/MultichannelMarketing/MPMarketingChannel.php:58
 msgid "Create and send newsletters, post notifications and welcome emails from your WordPress."
 msgstr "Erstellen und Versenden von Newslettern, Benachrichtigungen und Begrüßungs-E-Mails aus deiner WordPress Installation heraus."
 
 #. Plugin URI of the plugin
 #. Author URI of the plugin
-#: mailpoet.php
+#: mailpoet.php:6 mailpoet.php:9
 msgid "https://www.mailpoet.com"
 msgstr "https://www.mailpoet.com"
 
@@ -6038,12 +6153,12 @@ msgid "[link1]Click here to start the authentication[/link1]."
 msgstr "[link1]Hier klicken, um die Autorisierung zu starten[/link1]."
 
 #. translators: %d is the ID of the segment
-#: lib/API/MP/v1/Subscribers.php:587
+#: lib/API/MP/v1/Subscribers.php:599
 msgid "Can't unsubscribe from a list with ID '%d'."
 msgstr "Von einer Liste mit der ID '%d' kann sich nicht abgemeldet werden."
 
 #. translators: %s is an error message
-#: lib/API/MP/v1/Subscribers.php:183 lib/API/MP/v1/Subscribers.php:254
+#: lib/API/MP/v1/Subscribers.php:190 lib/API/MP/v1/Subscribers.php:266
 msgid "Failed to save subscriber custom fields: %s"
 msgstr "Die individuellen Felder des Abonnenten konnten nicht gespeichert werden: %s"
 
@@ -6075,7 +6190,7 @@ msgid "Color"
 msgstr "Farbe"
 
 #. translators: %s is email address which already exists.
-#: lib/Subscribers/SubscriberSaveController.php:323
+#: lib/Subscribers/SubscriberSaveController.php:330
 msgid "A subscriber with E-mail \"%s\" already exists."
 msgstr "Ein Abonnent mit der E-Mail-Adresse „%s“ existiert bereits."
 
@@ -6140,56 +6255,56 @@ msgid "Invalid status: %s"
 msgstr "Ungültiger Status: %s"
 
 #. translators: %s is the error message
-#: lib/API/MP/v1/Subscribers.php:502
+#: lib/API/MP/v1/Subscribers.php:514
 msgid "Subscriber added to lists, but confirmation email failed to send: %s"
 msgstr "Abonnent zu Listen hinzugefügt, aber Bestätigungs-E-Mail wurde nicht gesendet: %s"
 
 #. translators: %s is an error message
-#: lib/API/MP/v1/Subscribers.php:487
+#: lib/API/MP/v1/Subscribers.php:499
 msgid "Subscriber added, but welcome email failed to send: %s"
 msgstr "Abonnent hinzugefügt, aber Willkommens-E-Mail konnte nicht gesendet werden: %s"
 
 #. translators: %s is the error message
-#: lib/API/MP/v1/Subscribers.php:362
+#: lib/API/MP/v1/Subscribers.php:374
 msgid "Failed to save a status of a subscriber : %s"
 msgstr "Der Status eines Abonnenten konnte nicht gespeichert werden: %s"
 
 #. translators: %d is the ID of the segment
-#: lib/API/MP/v1/Subscribers.php:584
+#: lib/API/MP/v1/Subscribers.php:596
 msgid "Can't subscribe to a list with ID '%d'."
 msgstr "Auf eine Liste mit der ID '%d' kann sich nicht angemeldet werden."
 
 #. translators: %d is the ID of the segment
-#: lib/API/MP/v1/Subscribers.php:574
+#: lib/API/MP/v1/Subscribers.php:586
 msgid "Can't subscribe to a WooCommerce Customers list with ID '%d'."
 msgstr "Auf eine WooCommerce-Kundenliste mit der ID '%d' kann sich nicht angemeldet werden."
 
 #. translators: %d is the ID of the segment
-#: lib/API/MP/v1/Subscribers.php:564
+#: lib/API/MP/v1/Subscribers.php:576
 msgid "Can't subscribe to a WordPress Users list with ID '%d'."
 msgstr "Von einer WordPress-Benutzerliste mit der ID '%d' kann sich nicht abgemeldet werden."
 
 #. translators: %d is the ID of the segment
-#: lib/API/MP/v1/Subscribers.php:577
+#: lib/API/MP/v1/Subscribers.php:589
 msgid "Can't unsubscribe from a WooCommerce Customers list with ID '%d'."
 msgstr "Von einer WooCommerce-Kundenliste mit der ID '%d' kann sich nicht abgemeldet werden."
 
 #. translators: %d is the ID of the segment
-#: lib/API/MP/v1/Subscribers.php:567
+#: lib/API/MP/v1/Subscribers.php:579
 msgid "Can't unsubscribe from a WordPress Users list with ID '%d'."
 msgstr "Von einer WordPress-Benutzerliste mit der ID '%d' kann sich nicht abgemeldet werden."
 
 #. translators: %s is the error message.
-#: lib/API/JSON/v1/Settings.php:462
+#: lib/API/JSON/v1/Settings.php:467
 msgid "Unable to deactivate re-engagement emails: %s"
 msgstr "Wiederaufnahme-E-Mails können nicht deaktiviert werden: %s"
 
-#: lib/API/JSON/v1/Settings.php:365
+#: lib/API/JSON/v1/Settings.php:370
 msgid "Sender domain verification failed."
 msgstr "Die Überprüfung der Absenderdomain ist fehlgeschlagen."
 
-#: lib/API/JSON/v1/Settings.php:297 lib/API/JSON/v1/Settings.php:312
-#: lib/API/JSON/v1/Settings.php:341
+#: lib/API/JSON/v1/Settings.php:302 lib/API/JSON/v1/Settings.php:317
+#: lib/API/JSON/v1/Settings.php:346
 msgid "No sender domain specified."
 msgstr "Keine Absenderdomain angegeben."
 
@@ -6225,7 +6340,7 @@ msgid "All Tags"
 msgstr "Alle Schlagwörter"
 
 #. translators: %s is an error message.
-#: lib/API/MP/v1/Subscribers.php:173
+#: lib/API/MP/v1/Subscribers.php:180
 msgid "Failed to add subscriber: %s"
 msgstr "Abonnent kann nicht hinzugefügt werden: %s"
 
@@ -6307,11 +6422,11 @@ msgstr "Abonnenten-ID"
 msgid "%1$s is not of type %2$s."
 msgstr "%1$s ist nicht vom Typ %2$s."
 
-#: lib/Newsletter/Sending/ScheduledTaskSubscribersListingRepository.php:63
+#: lib/Newsletter/Sending/ScheduledTaskSubscribersListingRepository.php:60
 msgid "Unprocessed"
 msgstr "Unbearbeitet"
 
-#: lib/Newsletter/Sending/ScheduledTaskSubscribersListingRepository.php:58
+#: lib/Newsletter/Sending/ScheduledTaskSubscribersListingRepository.php:55
 msgid "Failed"
 msgstr "Fehlgeschlagen"
 
@@ -6466,13 +6581,13 @@ msgstr "E-Mails suchen"
 msgid "Your current MailPoet plan does not support advanced segments. Please [link]upgrade to a MailPoet Premium plan[/link] to reactivate this segment."
 msgstr "Dein aktueller MailPoet-Tarif unterstützt keine fortgeschrittenen Segmente. Bitte [link]führe ein Upgrade auf den MailPoet-Premium-Tarif aus[/link], um dieses Segment zu reaktivieren."
 
-#: lib/API/MP/v1/Subscribers.php:523
+#: lib/API/MP/v1/Subscribers.php:535
 msgid "A subscriber is required."
 msgstr "Ein Abonnent ist erforderlich."
 
 #: views/settings_translations.html:257
 msgid "Basic / None – only use data your site already has about your subscribers. Disable email engagement and cookie-based tracking, and re-engagement emails."
-msgstr "Basis / Keins – nur Daten verwenden, die deine Website bereits von deinen Abonnenten hat. Deaktiviere E-Mail-Aktivitäten, Cookie-basiertes Tracking und Wiederaufnahme-E-Mails."
+msgstr "Basis / Keine – nur Daten verwenden, die deine Website bereits von deinen Abonnenten hat. Deaktiviere E-Mail-Aktivitäten, Cookie-basiertes Tracking und Wiederaufnahme-E-Mails."
 
 #: views/settings_translations.html:256
 msgid "Partial – additionally track email engagement (opens, clicks). Disable cookie-based tracking."
@@ -6675,7 +6790,7 @@ msgstr "Diese E-Mail-Adresse autorisieren"
 msgid "Built-in CAPTCHA (default)"
 msgstr "Eingebautes CAPTCHA (Standard)"
 
-#: lib/Form/Block/BlockRendererHelper.php:45
+#: lib/Form/Block/BlockRendererHelper.php:46
 msgid "Addresses in names are not permitted, please add your name instead."
 msgstr "Adressen in Namen sind nicht erlaubt, bitte füge stattdessen deinen Namen hinzu."
 
@@ -7311,7 +7426,6 @@ msgctxt "It is a placeholder in the select box - verb"
 msgid "Select"
 msgstr "Auswählen"
 
-#: views/form/templatesLegacy/settings/field_form.hbs:37
 #: views/form/editor.html:132
 msgctxt "Form input type"
 msgid "Select"
@@ -8227,7 +8341,7 @@ msgid "You need to have WooCommerce active to access the MailPoet email customiz
 msgstr "Du musst WooCommerce aktivieren, um auf den MailPoet-E-Mail-Customizer für WooCommerce zugreifen zu können."
 
 #. translators: %s is the code.
-#: lib/API/JSON/v1/Services.php:382
+#: lib/API/JSON/v1/Services.php:387
 msgctxt "Error code (inside parentheses)"
 msgid "code: %s"
 msgstr "Code: %s"
@@ -9149,6 +9263,7 @@ msgstr "Liste auswählen"
 
 #: views/settings_translations.html:24
 #: lib/Migrations/App/Migration_20230425_211517.php:15
+#: lib/Subscription/Comment.php:68 lib/Subscription/Registration.php:58
 msgid "Yes, add me to your mailing list"
 msgstr "Ja, füge mich zu der Mailingliste hinzu!"
 
@@ -9458,6 +9573,10 @@ msgstr "Gut"
 #: views/segments/translations.html:185 views/subscribers/subscribers.html:114
 msgid "Excellent"
 msgstr "Hervorragend"
+
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:215
+msgid "Paused"
+msgstr "Pausiert"
 
 #: views/segments/translations.html:12 views/subscribers/subscribers.html:57
 msgid "Created on"
@@ -10568,37 +10687,37 @@ msgid "This value should not be blank."
 msgstr "Dieser Wert sollte nicht leer sein."
 
 #: views/parsley-translations.html:17
-#: lib/Form/Block/BlockRendererHelper.php:301
+#: lib/Form/Block/BlockRendererHelper.php:302
 msgid "This value should be alphanumeric."
 msgstr "Dieser Wert sollte alphanumerisch sein."
 
 #: views/parsley-translations.html:16
-#: lib/Form/Block/BlockRendererHelper.php:299
+#: lib/Form/Block/BlockRendererHelper.php:300
 msgid "This value should be digits."
 msgstr "Dieser Wert sollte aus Ziffern bestehen."
 
 #: views/parsley-translations.html:15
-#: lib/Form/Block/BlockRendererHelper.php:297
+#: lib/Form/Block/BlockRendererHelper.php:298
 msgid "This value should be a valid integer."
 msgstr "Dieser Wert sollte eine gültige Ganzzahl sein."
 
 #: views/parsley-translations.html:14
-#: lib/Form/Block/BlockRendererHelper.php:295
+#: lib/Form/Block/BlockRendererHelper.php:296
 msgid "This value should be a valid number."
 msgstr "Dieser Wert sollte eine gültige Zahl sein."
 
 #: views/parsley-translations.html:13
-#: lib/Form/Block/BlockRendererHelper.php:293
+#: lib/Form/Block/BlockRendererHelper.php:294
 msgid "This value should be a valid url."
 msgstr "Dieser Wert sollte eine gültige URL sein."
 
-#: views/parsley-translations.html:12 lib/Form/Block/BlockRendererHelper.php:39
-#: lib/Form/Block/BlockRendererHelper.php:291
+#: views/parsley-translations.html:12 lib/Form/Block/BlockRendererHelper.php:40
+#: lib/Form/Block/BlockRendererHelper.php:292
 msgid "This value should be a valid email."
 msgstr "Dieser Wert sollte eine gültige E-Mail-Adresse sein."
 
 #: views/parsley-translations.html:10 views/parsley-translations.html:21
-#: lib/Form/Block/BlockRendererHelper.php:303
+#: lib/Form/Block/BlockRendererHelper.php:304
 msgid "This value seems to be invalid."
 msgstr "Dieser Wert scheint ungültig zu sein."
 
@@ -10628,8 +10747,8 @@ msgstr "Fehler bei der Ausführung einer Anfrage, die Server-Anfrage wurde nach 
 
 #. translators: %d is the error code.
 #. translators: %d will be replaced by an error code
-#: views/layout.html:116 lib/Services/Bridge/API.php:315
-#: lib/Services/Bridge/API.php:374 lib/Services/Bridge/API.php:423
+#: views/layout.html:116 lib/Services/Bridge/API.php:316
+#: lib/Services/Bridge/API.php:375 lib/Services/Bridge/API.php:424
 msgid "An error has happened while performing a request, the server has responded with response code %d"
 msgstr "Fehler bei der Ausführung einer Anfrage, der Server antwortete mit dem Code %d"
 
@@ -10762,8 +10881,6 @@ msgstr "Bearbeiten"
 msgid "Name"
 msgstr "Name"
 
-#: views/form/templatesLegacy/settings/field_form.hbs:61
-#: views/form/templatesLegacy/settings/submit.hbs:2
 #: views/newsletter/templates/blocks/abandonedCartContent/settings.hbs:5
 #: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:299
 #: views/newsletter/templates/blocks/automatedLatestContentLayout/settings.hbs:331
@@ -10785,61 +10902,7 @@ msgstr "Fertig"
 msgid "<strong>Tip:</strong> check out [link]this list[/link] of form plugins that integrate with MailPoet."
 msgstr "<strong>Tipp:</strong> Schau dir [link]diese Liste[/link] von Formular-Plugins an, die sich in MailPoet integrieren."
 
-#: views/form/templatesLegacy/settings/validate.hbs:2
-msgid "Validate for:"
-msgstr "Bestätigen für:"
-
-#: views/form/templatesLegacy/settings/segment_selection_item.hbs:11
-msgid "Move"
-msgstr "Verschieben"
-
-#: views/form/templatesLegacy/settings/segment_selection_item.hbs:10
-#: views/form/templatesLegacy/settings/values_item.hbs:20
-msgid "Remove"
-msgstr "Entfernen"
-
-#: views/form/templatesLegacy/settings/segment_selection.hbs:8
-msgid "Add"
-msgstr "Hinzufügen"
-
-#: views/form/templatesLegacy/settings/segment_selection.hbs:4
-msgid "Select the list that you want to add:"
-msgstr "Wähle die Liste, die du hinzufügen möchtest:"
-
-#: views/form/templatesLegacy/settings/required.hbs:2
-msgid "Is this field mandatory?"
-msgstr "Ist dieses Feld ein Pflichtfeld?"
-
-#: views/form/templatesLegacy/settings/label_within.hbs:2
-msgid "Display label within input:"
-msgstr "Zeige Bezeichnung innerhalb des Eingabefelds:"
-
-#: views/form/templatesLegacy/settings/label.hbs:2
-msgid "Label:"
-msgstr "Bezeichnung:"
-
-#: views/form/templatesLegacy/settings/field_form.hbs:46
-msgid "Field name:"
-msgstr "Feldname:"
-
-#: views/form/templatesLegacy/settings/field_form.hbs:11
-msgid "Select a field type:"
-msgstr "Einen Feldtyp auswählen:"
-
-#: views/form/templatesLegacy/settings/field.hbs:24
-msgid "1 line"
-msgid_plural "%d lines"
-msgstr[0] "1 Zeile"
-msgstr[1] "%d Zeilen"
-
-#: views/form/templatesLegacy/settings/field.hbs:19
-msgid "Number of lines:"
-msgstr "Anzahl Zeilen:"
-
 #: views/deactivationPoll/link-poll.html:52
-#: views/form/templatesLegacy/settings/date_default.hbs:11
-#: views/form/templatesLegacy/settings/label_within.hbs:5
-#: views/form/templatesLegacy/settings/required.hbs:9
 #: views/newsletter/templates/blocks/abandonedCartContent/settingsDisplayOptions.hbs:73
 #: views/newsletter/templates/blocks/abandonedCartContent/settingsDisplayOptions.hbs:186
 #: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:124
@@ -10856,10 +10919,6 @@ msgstr "Anzahl Zeilen:"
 #: views/settings_translations.html:61 lib/Form/Block/Segment.php:127
 msgid "Yes"
 msgstr "Ja"
-
-#: views/form/templatesLegacy/settings/date_default.hbs:2
-msgid "Preselect today's date:"
-msgstr "Heutiges Datum setzen:"
 
 #: views/form/front_end_form.html:68
 msgid "An error occurred, make sure you have filled all the required fields."
@@ -10913,7 +10972,7 @@ msgstr "Erstelle ein neues individuelles Feld für deine Abonnenten."
 msgid "Create Custom Field"
 msgstr "Individuelles Feld erstellen"
 
-#: views/form/templatesLegacy/settings/field.hbs:61 views/form/editor.html:192
+#: views/form/editor.html:192
 msgid "Automatically add paragraphs"
 msgstr "Absätze automatisch hinzufügen"
 
@@ -10977,25 +11036,18 @@ msgstr "Eingabefeld zur Aufnahme der Nachnamen der Abonnenten."
 msgid "Input field used to catch subscribers’ first names."
 msgstr "Eingabefeld zur Aufnahme der Vornamen der Abonnenten."
 
-#: views/form/templatesLegacy/settings/values.hbs:4 views/form/editor.html:157
+#: views/form/editor.html:157
 msgid "Add item"
 msgstr "Artikel hinzufügen"
 
-#: views/form/templatesLegacy/settings/validate.hbs:21
 #: views/form/editor.html:156
 msgid "Phone number, (+,-,#,(,) and spaces allowed)"
 msgstr "Telefonnummer, (+, -, #, (,) und Leerzeichen erlaubt)"
 
-#: views/form/templatesLegacy/settings/validate.hbs:16
 #: views/form/editor.html:155
 msgid "Alphanumerical"
 msgstr "Alphanumerisch"
 
-#: views/form/templatesLegacy/settings/validate.hbs:11
-msgid "Numbers only"
-msgstr "Nur Zahlen"
-
-#: views/form/templatesLegacy/settings/validate.hbs:6
 #: views/form/editor.html:153
 msgid "Nothing"
 msgstr "Nichts"
@@ -11004,13 +11056,11 @@ msgstr "Nichts"
 msgid "Preselect today’s date"
 msgstr "Heutiges Datum vorauswählen"
 
-#: views/form/templatesLegacy/settings/date_formats.hbs:9
 #: views/form/editor.html:142
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:489
 msgid "Order"
 msgstr "Bestellung"
 
-#: views/form/templatesLegacy/settings/date_types.hbs:2
 #: views/form/editor.html:141
 msgid "Type of date"
 msgstr "Datumstyp"
@@ -11023,20 +11073,10 @@ msgstr "Anzeigen auf Beiträgen mit diesen Schlagwörtern"
 msgid "Display on posts with these categories"
 msgstr "Anzeigen auf Beiträgen mit diesen Kategorien"
 
-#: views/form/templatesLegacy/settings/field_form.hbs:33
-msgid "Checkbox"
-msgstr "Auswahlbox"
-
-#: views/form/templatesLegacy/settings/field_form.hbs:29
-msgid "Radio buttons"
-msgstr "Radiobuttons"
-
-#: views/form/templatesLegacy/settings/field_form.hbs:25
 #: views/form/editor.html:129
 msgid "Text Area"
 msgstr "Textbereich"
 
-#: views/form/templatesLegacy/settings/field_form.hbs:21
 #: views/form/editor.html:128
 msgid "Text Input"
 msgstr "Texteingabe"
@@ -11405,10 +11445,6 @@ msgstr "Musst du deine E-Mail-Adresse ändern? Trage dich einfach hier aus und r
 msgid "Save"
 msgstr "Speichern"
 
-#: lib/Subscription/Comment.php:68 lib/Subscription/Registration.php:58
-msgid "Yes, please add me to your mailing list."
-msgstr "Ja, bitte füge mich zu der Mailingliste hinzu."
-
 #: lib/Captcha/CaptchaFormRenderer.php:338
 msgid "The characters you entered did not match the CAPTCHA image. Please try again with this new image."
 msgstr "Die von dir eingegebenen Zeichen entsprachen nicht dem CAPTCHA-Bild. Bitte mit diesem neuen Bild erneut versuchen."
@@ -11429,7 +11465,7 @@ msgstr "Bestätige, dass du kein Roboter bist"
 msgid "Please specify a valid form ID."
 msgstr "Bitte gib eine gültige Formular-ID ein."
 
-#: lib/Form/Block/BlockRendererHelper.php:57
+#: lib/Form/Block/BlockRendererHelper.php:58
 #: lib/Subscribers/SubscriberSubscribeController.php:460
 msgid "Please select a list."
 msgstr "Bitte wähle eine Liste aus."
@@ -11593,9 +11629,6 @@ msgid "Email preview"
 msgstr "E-Mail-Vorschau"
 
 #: views/deactivationPoll/link-poll.html:58
-#: views/form/templatesLegacy/settings/date_default.hbs:20
-#: views/form/templatesLegacy/settings/label_within.hbs:8
-#: views/form/templatesLegacy/settings/required.hbs:17
 #: views/newsletter/templates/blocks/abandonedCartContent/settingsDisplayOptions.hbs:79
 #: views/newsletter/templates/blocks/abandonedCartContent/settingsDisplayOptions.hbs:174
 #: views/newsletter/templates/blocks/abandonedCartContent/settingsDisplayOptions.hbs:192
@@ -11831,7 +11864,6 @@ msgstr "Aktueller Tag des Monats als Ordnungszahl, z.B.: 1., 2., 3., etc."
 msgid "Current day of the month number"
 msgstr "Aktueller Tag des Monats (Ziffer)"
 
-#: views/form/templatesLegacy/settings/field_form.hbs:41
 #: views/form/editor.html:140
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:210
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:220
@@ -11896,34 +11928,40 @@ msgstr "Vorname"
 msgid "Subscriber"
 msgstr "Abonnent"
 
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:165
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:212
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:310
 msgid "Not active"
 msgstr "Nicht aktiv"
 
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:160
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:217
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:305
 msgid "Active"
 msgstr "Aktiv"
 
 #: views/layout.html:142
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:132
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:147
-#: lib/Newsletter/Sending/ScheduledTaskSubscribersListingRepository.php:53
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:216
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:277
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:292
+#: lib/Newsletter/Sending/ScheduledTaskSubscribersListingRepository.php:50
 msgid "Sent"
 msgstr "Gesendet"
 
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:127
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:142
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:214
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:272
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:287
 msgid "Sending"
 msgstr "Senden"
 
 #: views/newsletter/templates/blocks/posts/settingsSelection.hbs:11
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:122
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:213
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:267
 msgid "Scheduled"
 msgstr "Geplant"
 
 #: views/newsletter/templates/blocks/posts/settingsSelection.hbs:12
 #: views/newsletter/templates/blocks/products/settingsSelection.hbs:9
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:117
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:212
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:262
 msgid "Draft"
 msgstr "Entwurf"
 
@@ -11936,7 +11974,7 @@ msgstr "Hier klicken, um die Medien zu sehen."
 msgid "Subscribers without a list (%s)"
 msgstr "Abonnenten ohne eine Liste (%s)"
 
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:62
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:135
 #: lib/Subscribers/SubscriberListingRepository.php:1189
 msgid "All Lists"
 msgstr "Alle Listen"
@@ -11964,10 +12002,6 @@ msgstr "WordPress-Benutzer"
 #: views/subscribers/importExport/import/step_data_manipulation.html:17
 msgid "Another record already exists. Please specify a different \"%1$s\"."
 msgstr "Ein anderer Eintrag existiert bereits. Bitte gib eine Alternative an zu „%1$s“."
-
-#: views/form/templatesLegacy/settings/field_form.hbs:16
-msgid "Please specify a type."
-msgstr "Bitte gib einen Typ an."
 
 #: lib/Mailer/Methods/ErrorMappers/MailPoetMapper.php:131
 msgid "Unknown address"
@@ -12088,18 +12122,18 @@ msgid "Sample page to preview your form"
 msgstr "Beispielseite zur Vorschau deines Formulars"
 
 #: views/segments/translations.html:29 views/subscribers/subscribers.html:23
-#: lib/CustomFields/CustomFieldsRepository.php:328
+#: lib/CustomFields/CustomFieldsRepository.php:359
 #: lib/Form/Listing/FormListingRepository.php:47
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:174
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:319
 #: lib/Segments/SegmentListingRepository.php:122
 #: lib/Subscribers/SubscriberListingRepository.php:1059
 msgid "Trash"
 msgstr "Papierkorb"
 
-#: lib/CustomFields/CustomFieldsRepository.php:323
+#: lib/CustomFields/CustomFieldsRepository.php:354
 #: lib/Form/Listing/FormListingRepository.php:42
-#: lib/Newsletter/Listing/NewsletterListingRepository.php:106
-#: lib/Newsletter/Sending/ScheduledTaskSubscribersListingRepository.php:48
+#: lib/Newsletter/Listing/NewsletterListingRepository.php:251
+#: lib/Newsletter/Sending/ScheduledTaskSubscribersListingRepository.php:45
 #: lib/Segments/SegmentListingRepository.php:117
 #: lib/Subscribers/SubscriberListingRepository.php:1029
 msgid "All"
@@ -12190,7 +12224,6 @@ msgstr "Jahr, Monat"
 msgid "Year, month, day"
 msgstr "Jahr, Monat, Tag"
 
-#: views/form/templatesLegacy/blocks/date_years.hbs:5
 #: views/form/editor.html:146 views/subscribers/subscribers.html:89
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:258
 #: lib/Form/Block/Date.php:89 lib/Form/Block/Date.php:105
@@ -12203,7 +12236,6 @@ msgstr "Jahr"
 msgid "Please select a year"
 msgstr "Bitte wähle ein Jahr aus"
 
-#: views/form/templatesLegacy/blocks/date_months.hbs:3
 #: views/form/editor.html:145 views/subscribers/subscribers.html:90
 #: lib/Form/Block/Date.php:80 lib/Form/Block/Date.php:147
 msgid "Month"
@@ -12213,9 +12245,8 @@ msgstr "Monat"
 msgid "Please select a month"
 msgstr "Bitte wähle einen Monat aus"
 
-#: views/form/templatesLegacy/blocks/date_days.hbs:3 views/form/editor.html:144
-#: views/subscribers/subscribers.html:91 lib/Form/Block/Date.php:71
-#: lib/Form/Block/Date.php:213
+#: views/form/editor.html:144 views/subscribers/subscribers.html:91
+#: lib/Form/Block/Date.php:71 lib/Form/Block/Date.php:213
 msgid "Day"
 msgstr "Tag"
 
@@ -12223,15 +12254,15 @@ msgstr "Tag"
 msgid "Please select a day"
 msgstr "Bitte wähle einen Tag aus"
 
-#: lib/Form/Block/BlockRendererHelper.php:68
+#: lib/Form/Block/BlockRendererHelper.php:69
 msgid "Please specify a valid phone number."
 msgstr "Bitte gib eine gültige Telefonnummer an."
 
-#: lib/Form/Block/BlockRendererHelper.php:62 lib/Form/Renderer.php:130
+#: lib/Form/Block/BlockRendererHelper.php:63 lib/Form/Renderer.php:130
 msgid "This field is required."
 msgstr "Dieses Feld wird benötigt."
 
-#: lib/Form/Block/BlockRendererHelper.php:44
+#: lib/Form/Block/BlockRendererHelper.php:45
 msgid "Please specify a valid name."
 msgstr "Bitte gib einen gültigen Namen an."
 
@@ -13724,7 +13755,7 @@ msgid "Newsletter"
 msgstr "Newsletter"
 
 #: lib/Config/Menu.php:235 lib/Config/Menu.php:236
-#: lib/EmailEditor/Integrations/MailPoet/EmailEditor.php:78
+#: lib/EmailEditor/Integrations/MailPoet/EmailEditor.php:79
 msgid "Emails"
 msgstr "E-Mails"
 
@@ -13734,8 +13765,9 @@ msgstr "MailPoet Newsletter"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
-#: views/woo_system_info.html:5 mailpoet.php lib/Config/Capabilities.php:114
-#: lib/Config/Menu.php:205 lib/Config/Menu.php:206 lib/Config/Menu.php:632
+#: views/woo_system_info.html:5 mailpoet.php:4 mailpoet.php:8
+#: lib/Config/Capabilities.php:114 lib/Config/Menu.php:205
+#: lib/Config/Menu.php:206 lib/Config/Menu.php:632
 #: lib/Config/PrivacyPolicy.php:12
 #: lib/EmailEditor/Integrations/MailPoet/Blocks/BlockTypes/LatestPosts.php:178
 #: lib/WooCommerce/MultichannelMarketing/MPMarketingChannel.php:49
@@ -13880,22 +13912,22 @@ msgstr "Diese Liste existiert bereits."
 msgid "List name is required."
 msgstr "Der Listenname ist erforderlich."
 
-#: lib/API/MP/v1/Subscribers.php:146
+#: lib/API/MP/v1/Subscribers.php:152
 msgid "This subscriber already exists."
 msgstr "Dieser Abonnent existiert bereits."
 
-#: lib/API/MP/v1/Subscribers.php:138
+#: lib/API/MP/v1/Subscribers.php:144
 msgid "Subscriber email address is required."
 msgstr "Abonnenten-E-Mail-Adresse ist erforderlich."
 
 #. translators: %s is the count of lists
-#: lib/API/MP/v1/Subscribers.php:599
+#: lib/API/MP/v1/Subscribers.php:611
 msgid "List with ID '%s' does not exist."
 msgid_plural "Lists with IDs '%s' do not exist."
 msgstr[0] "Die Liste mit der ID '%s' existiert nicht."
 msgstr[1] "Listen mit den IDs '%s' existieren nicht."
 
-#: lib/API/MP/v1/Subscribers.php:513
+#: lib/API/MP/v1/Subscribers.php:525
 msgid "At least one segment ID is required."
 msgstr "Mindestens eine Segment-ID ist erforderlich."
 
@@ -13923,7 +13955,7 @@ msgstr "Vorname"
 #: views/subscription/manage_subscription.html:45 views/help.html:76
 #: lib/API/MP/v1/CustomFields.php:27
 #: lib/Automation/Integrations/WordPress/Subjects/UserSubject.php:63
-#: lib/EmailEditor/Integrations/MailPoet/EmailEditor.php:79
+#: lib/EmailEditor/Integrations/MailPoet/EmailEditor.php:80
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:154
 #: lib/Form/Templates/Templates/InitialForm.php:22
 #: lib/Newsletter/Sharing/ShareMetadataBuilder.php:83
@@ -13953,17 +13985,17 @@ msgstr "Bitte gib deine E-Mail-Adresse ein"
 #: lib/API/JSON/v1/Subscribers.php:69 lib/API/JSON/v1/Subscribers.php:127
 #: lib/API/JSON/v1/Subscribers.php:143 lib/API/JSON/v1/Subscribers.php:155
 #: lib/API/JSON/v1/Subscribers.php:199 lib/API/JSON/v1/SubscriberStats.php:66
-#: lib/API/MP/v1/Subscribers.php:540
+#: lib/API/MP/v1/Subscribers.php:552
 #: lib/Subscribers/RestApi/Endpoints/SubscriberConfirmationEmailEndpoint.php:53
 msgid "This subscriber does not exist."
 msgstr "Dieser Abonnent existiert nicht."
 
-#: lib/API/JSON/v1/Settings.php:233
+#: lib/API/JSON/v1/Settings.php:238
 msgid "Can’t use this email yet! Please authorize it first."
 msgstr "Diese E-Mail-Adresse kann nicht benutzt werden, bevor sie autorisiert wird!"
 
-#: lib/API/JSON/v1/Settings.php:224 lib/API/JSON/v1/Settings.php:251
-#: lib/API/JSON/v1/Settings.php:281
+#: lib/API/JSON/v1/Settings.php:229 lib/API/JSON/v1/Settings.php:256
+#: lib/API/JSON/v1/Settings.php:286
 msgid "No email address specified."
 msgstr "Keine E-Mail-Adresse angegeben."
 
@@ -13971,72 +14003,72 @@ msgstr "Keine E-Mail-Adresse angegeben."
 msgid "You have not specified any settings to be saved."
 msgstr "Du hast keine Einstellungen angegeben, die gespeichert werden sollen."
 
-#: lib/API/JSON/v1/Services.php:378
+#: lib/API/JSON/v1/Services.php:383
 msgid "Contact your hosting support to check the connection between your host and https://bridge.mailpoet.com"
 msgstr "Kontaktiere deinen Hosting-Anbieter und bitte ihn, die Verbindung zwischen deinem Host und https://bridge.mailpoet.com zu prüfen"
 
-#: lib/API/JSON/v1/Services.php:375
+#: lib/API/JSON/v1/Services.php:380
 msgid "Service unavailable"
 msgstr "Service nicht verfügbar"
 
-#: lib/API/JSON/v1/Services.php:331
+#: lib/API/JSON/v1/Services.php:336
 msgid "Sending of congratulatory email failed."
 msgstr "Das Versenden einer Glückwunsch-E-Mail ist fehlgeschlagen."
 
 #. translators: %s is the email address, which is not authorized.
-#: lib/API/JSON/v1/Services.php:322
+#: lib/API/JSON/v1/Services.php:327
 msgid "Sender email address '%s' is not authorized."
 msgstr "Absender-E-Mail-Adresse '%s' ist nicht autorisiert."
 
-#: lib/API/JSON/v1/Services.php:306
+#: lib/API/JSON/v1/Services.php:311
 msgid "Sender email address is not set."
 msgstr "Absender-E-Mail-Adresse ist nicht eingestellt."
 
-#: lib/API/JSON/v1/Services.php:317
+#: lib/API/JSON/v1/Services.php:322
 msgid "No FROM email addresses are authorized."
 msgstr "Keine autorisierten Absender-E-Mail-Adressen."
 
 #. translators: %s is the error message.
-#: lib/API/JSON/v1/Services.php:250
+#: lib/API/JSON/v1/Services.php:255
 msgid "Error validating Premium key, please try again later (%s)"
 msgstr "Fehler beim Prüfen deines Premium-Schlüssels, bitte später erneut versuchen (%s)"
 
-#: lib/API/JSON/v1/Services.php:244
+#: lib/API/JSON/v1/Services.php:249
 msgid "Your Premium key is already <a>used on another site</a>"
 msgstr "Dein Premium-Schlüssel wird bereits <a>auf einer anderen Website benutzt</a>"
 
 #. translators: %s is the expiration date.
-#: lib/API/JSON/v1/Services.php:223
+#: lib/API/JSON/v1/Services.php:228
 msgid "Your Premium key expires on %s"
 msgstr "Dein Premium-Schlüssel läuft am %s ab"
 
-#: lib/API/JSON/v1/Services.php:217
+#: lib/API/JSON/v1/Services.php:222
 msgid "Your Premium key has been successfully validated"
 msgstr "Dein Premium-Schlüssel wurde erfolgreich geprüft"
 
-#: lib/API/JSON/v1/Services.php:174
+#: lib/API/JSON/v1/Services.php:179
 msgid "Note that it doesn't work on localhost."
 msgstr "Bedenke, dass es nicht auf localhost funktioniert."
 
 #. translators: %s is the error message.
-#: lib/API/JSON/v1/Services.php:171
+#: lib/API/JSON/v1/Services.php:176
 msgid "Error validating MailPoet Sending Service key, please try again later (%s)."
 msgstr "Fehler bei der Prüfung des MailPoet-Sending-Service-Schlüssels, bitte später erneut versuchen (%s)."
 
-#: lib/API/JSON/v1/Services.php:166
+#: lib/API/JSON/v1/Services.php:171
 msgid "Your MailPoet Sending Service key is already <a>used on another site</a>"
 msgstr "Dein MailPoet Sending Service Schlüssel wird bereits <a>auf einer anderen Website benutzt</a>"
 
 #. translators: %s is the expiration date.
-#: lib/API/JSON/v1/Services.php:148
+#: lib/API/JSON/v1/Services.php:153
 msgid "Your MailPoet Sending Service key expires on %s!"
 msgstr "Dein MailPoet Sending Service Schlüssel läuft am %s ab!"
 
-#: lib/API/JSON/v1/Services.php:142
+#: lib/API/JSON/v1/Services.php:147
 msgid "Your MailPoet Sending Service key has been successfully validated"
 msgstr "Dein MailPoet Sending Service Schlüssel wurde erfolgreich überprüft"
 
-#: lib/API/JSON/v1/Services.php:107 lib/API/JSON/v1/Services.php:195
+#: lib/API/JSON/v1/Services.php:107 lib/API/JSON/v1/Services.php:200
 msgid "Please specify a key."
 msgstr "Bitte gib einen Schlüssel an."
 
@@ -14049,22 +14081,22 @@ msgstr "Newsletter nicht gefunden!"
 msgid "Failed sending task not found!"
 msgstr "Keine fehlgeschlagene Sende-Aufgabe gefunden!"
 
-#: lib/API/JSON/v1/SendingQueue.php:245 lib/API/JSON/v1/SendingQueue.php:279
+#: lib/API/JSON/v1/SendingQueue.php:258 lib/API/JSON/v1/SendingQueue.php:291
 msgid "This newsletter has not been sent yet."
 msgstr "Dieser Newsletter wurde noch nicht gesendet."
 
-#: lib/API/JSON/v1/SendingQueue.php:199
+#: lib/API/JSON/v1/SendingQueue.php:212
 #: lib/Newsletter/Sending/TimeZoneCampaignScheduler.php:98
 #: lib/Newsletter/Sending/TimeZoneCampaignScheduler.php:105
 msgid "There are no subscribers in that list!"
 msgstr "In dieser Liste befinden sich keine Abonnenten!"
 
-#: lib/API/JSON/v1/SendingQueue.php:153
+#: lib/API/JSON/v1/SendingQueue.php:166
 msgid "This newsletter is already being sent."
 msgstr "Dieser Newsletter wurde bereits gesendet."
 
-#: lib/API/JSON/v1/SendingQueue.php:115 lib/API/JSON/v1/SendingQueue.php:257
-#: lib/API/JSON/v1/SendingQueue.php:292
+#: lib/API/JSON/v1/SendingQueue.php:128 lib/API/JSON/v1/SendingQueue.php:270
+#: lib/API/JSON/v1/SendingQueue.php:323
 msgid "This newsletter does not exist."
 msgstr "Dieser Newsletter existiert nicht."
 
@@ -14079,7 +14111,7 @@ msgstr "Diese Liste kann nicht in den Papierkorb gelegt werden."
 
 #: lib/API/JSON/v1/Segments.php:87 lib/API/JSON/v1/Segments.php:138
 #: lib/API/JSON/v1/Segments.php:148 lib/API/JSON/v1/Segments.php:212
-#: lib/API/JSON/v1/Segments.php:234 lib/API/MP/v1/Subscribers.php:554
+#: lib/API/JSON/v1/Segments.php:234 lib/API/MP/v1/Subscribers.php:566
 #: lib/Segments/RestApi/Endpoints/SegmentsBulkActionEndpoint.php:188
 #: lib/Segments/RestApi/Endpoints/SegmentsBulkActionEndpoint.php:238
 #: lib/Segments/RestApi/Endpoints/SegmentsBulkActionEndpoint.php:264
@@ -14113,9 +14145,9 @@ msgstr "Newsletterdaten fehlen."
 msgid "This email has incorrect state."
 msgstr "Diese E-Mail hat einen ungültigen Status."
 
-#: lib/API/JSON/v1/SendingQueue.php:101 lib/API/JSON/v1/SendingQueue.php:265
+#: lib/API/JSON/v1/SendingQueue.php:114 lib/API/JSON/v1/SendingQueue.php:278
 #: lib/Newsletter/NewsletterResendController.php:157
-#: lib/Newsletter/StatusController.php:65 lib/Services/Bridge/API.php:467
+#: lib/Newsletter/StatusController.php:65 lib/Services/Bridge/API.php:468
 msgid "Subscribers limit reached."
 msgstr "Maximalanzahl Abonnenten erreicht."
 
@@ -14225,7 +14257,6 @@ msgstr "Der Segment-Typ ist unbekannt."
 msgid "The segment type is missing."
 msgstr "Der Segment-Typ fehlt."
 
-#: views/form/templatesLegacy/settings/field_form.hbs:53
 #: views/subscribers/importExport/import/step_data_manipulation.html:14
 #: lib/API/JSON/v1/DynamicSegments.php:110 lib/API/JSON/v1/ImportExport.php:124
 #: lib/API/JSON/v1/Segments.php:102

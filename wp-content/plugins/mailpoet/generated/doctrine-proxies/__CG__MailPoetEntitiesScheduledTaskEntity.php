@@ -359,6 +359,28 @@ class ScheduledTaskEntity extends \MailPoet\Entities\ScheduledTaskEntity impleme
     /**
      * {@inheritDoc}
      */
+    public function isOverdueSendConfirmed(): bool
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'isOverdueSendConfirmed', []);
+
+        return parent::isOverdueSendConfirmed();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOverdueSendConfirmed(bool $confirmed): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setOverdueSendConfirmed', [$confirmed]);
+
+        parent::setOverdueSendConfirmed($confirmed);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getInProgress()
     {
 

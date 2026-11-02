@@ -140,9 +140,15 @@ class BeRocket_terms_cond_add_open_popup_variants_settings extends BeRocket_plug
             );
         }
         if( ! empty($popup_open['scroll_block']) ) {
+            $block_selectors = array(
+                '#place_order' => '#place_order, .wc-block-components-checkout-place-order-button',
+                '.woocommerce-terms-and-conditions-link' => '.woocommerce-terms-and-conditions-link, .wp-block-woocommerce-checkout-terms-block a',
+                '#order_review' => '#order_review, .wp-block-woocommerce-checkout-order-summary-block',
+            );
+            $selector = ( empty($popup_open['scroll_block_element']) ? '' : $popup_open['scroll_block_element'] );
             $popup_pages['term_cond_page']['popup_open']['scroll_block'] = array(
                 'type'      => 'scroll_block',
-                'selector'  => ( empty($popup_open['scroll_block_element']) ? '' : $popup_open['scroll_block_element'] )
+                'selector'  => isset($block_selectors[$selector]) ? $block_selectors[$selector] : $selector
             );
         }
         return $popup_pages;

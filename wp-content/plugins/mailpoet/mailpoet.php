@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) exit;
 
 /*
  * Plugin Name: MailPoet
- * Version: 5.43.0
+ * Version: 5.44.0
  * Plugin URI: https://www.mailpoet.com
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
@@ -13,6 +13,8 @@ if (!defined('ABSPATH')) exit;
  * Requires at least: 7.0
  * Text Domain: mailpoet
  * Domain Path: /lang
+ * License: GPLv3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  *
  * WC requires at least: 11.1
  * WC tested up to: 11.2
@@ -23,7 +25,7 @@ if (!defined('ABSPATH')) exit;
  */
 
 $mailpoetPlugin = [
-  'version' => '5.43.0',
+  'version' => '5.44.0',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
   'autoloader' => dirname(__FILE__) . '/vendor/autoload_packages.php',
