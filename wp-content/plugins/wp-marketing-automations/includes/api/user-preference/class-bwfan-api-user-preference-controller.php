@@ -66,8 +66,8 @@ class BWFAN_API_User_Preference_Controller extends BWFAN_API_Controller {
 	 * GET /user-preference/{user_id} — fetch user preferences.
 	 */
 	public function get_user_preference() {
-		/** checking if id present in params **/
-		$user_id = $this->get_sanitized_arg( 'user_id', 'key' );
+		/** Preferences are per-viewer UI meta; bind to the authenticated user, never a URL-supplied id. */
+		$user_id = get_current_user_id();
 		if ( $user_id ) {
 			$user_exists = (bool) get_users( array(
 				'include' => $user_id,
@@ -96,8 +96,8 @@ class BWFAN_API_User_Preference_Controller extends BWFAN_API_Controller {
 	 * PUT /user-preference/{user_id} — update user preferences.
 	 */
 	public function update_user_preference() {
-		/** checking if id present in params **/
-		$user_id = $this->get_sanitized_arg( 'user_id', 'key' );
+		/** Preferences are per-viewer UI meta; bind to the authenticated user, never a URL-supplied id. */
+		$user_id = get_current_user_id();
 		if ( empty( $user_id ) ) {
 			$this->response_code = 404;
 

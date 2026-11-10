@@ -39,6 +39,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Clearfy' ) ) {
 
 			$white_list[] = 'woofunnels';
 			$white_list[] = 'funnelkit-app';
+			$white_list[] = 'funnelkit';
 			$white_list[] = 'woofunnels-analytics';
 			$white_list[] = 'woofunnel_customer';
 

@@ -23,9 +23,13 @@ if ( ! class_exists( 'WFFN_Pro_Admin' ) ) {
 			add_filter( 'wffn_funnel_settings', array( $this, 'funnel_settings_localized' ) );
 			add_filter( 'bwf_settings_config', array( $this, 'add_utm_track_setting' ) );
 			add_filter( 'bwf_general_settings_default_config', array( $this, 'add_journey_default' ) );
+			add_filter( 'bwf_settings_config', array( $this, 'add_google_places_key_status' ), 20 );
+			/** On every admin request, not only the app's: the free plugin asks when it builds its menu. */
+			add_filter( 'wffn_features_held', array( 'WFFN_Lite_Handshake', 'filter_held' ) );
 			if ( $this->is_app_screen() ) {
 				include_once plugin_dir_path( WFFN_PRO_PLUGIN_FILE ) . 'admin/class-wffn-pro-react-app.php';
 				add_filter( 'wffn_localized_text_admin', array( $this, 'add_license_related_code' ) );
+				add_filter( 'wffn_localize_admin', array( $this, 'add_mcp_update_notice_data' ) );
 				add_action( 'admin_enqueue_scripts', array( WFFN_Pro_React_App::get_instance(), 'maybe_prevent_lite_and_enqueue_pro' ), 5 );
 
 			}
@@ -39,6 +43,24 @@ if ( ! class_exists( 'WFFN_Pro_Admin' ) ) {
 			add_filter( 'wffn_rest_tools_list', array( $this, 'add_license_expiry_email_tool' ) );
 			add_filter( 'wffn_rest_tools_action_args', array( $this, 'add_license_expiry_email_tool_arg' ) );
 			add_filter( 'wffn_rest_tools_action_response', array( $this, 'handle_license_expiry_email_tool' ), 10, 2 );
+		}
+
+		/**
+		 * Names the Funnel Builder release the FunnelKit AI screen needs, for the
+		 * notice the screen shows when opened by URL on an older one.
+		 *
+		 * Whether the screen can run is the handshake's call (WFFN_Lite_Handshake
+		 * holds 'funnelkit_ai' when the free plugin does not list it), published
+		 * as lite_handshake by WFFN_Pro_React_App. Nothing is gated on this version.
+		 *
+		 * @param array $data Admin app data (window.wffn).
+		 *
+		 * @return array
+		 */
+		public function add_mcp_update_notice_data( $data ) {
+			$data['funnelkit_mcp_lite_version'] = defined( 'WFFN_PRO_MCP_MIN_LITE_VERSION' ) ? WFFN_PRO_MCP_MIN_LITE_VERSION : '';
+
+			return $data;
 		}
 
 		/**
@@ -303,6 +325,46 @@ if ( ! class_exists( 'WFFN_Pro_Admin' ) ) {
 			}
 
 			return $defaults;
+		}
+
+		/**
+		 * Show, under Lite's Google Maps key field, what Google said about the key.
+		 *
+		 * Address autocomplete is a Pro checkout feature, so Pro adds this: it appears as soon as Pro is updated,
+		 * whatever the Lite version. The key stays the only setting; the type of key is found by
+		 * WFFN_Pro_Google_Places_Key, not chosen.
+		 *
+		 * @param array $settings Settings tabs config.
+		 *
+		 * @return array
+		 */
+		public function add_google_places_key_status( $settings ) {
+			if ( ! is_array( $settings ) || ! isset( $settings['funnelkit_google_maps']['fields'] ) || ! is_array( $settings['funnelkit_google_maps']['fields'] ) ) {
+				return $settings;
+			}
+
+			$fields = array_values( $settings['funnelkit_google_maps']['fields'] );
+			$keys   = wp_list_pluck( $fields, 'key' );
+			if ( in_array( 'funnelkit_google_places_key_status', $keys, true ) ) {
+				return $settings;
+			}
+
+			$result   = WFFN_Pro_Google_Places_Key::get_result();
+			$position = array_search( 'funnelkit_google_map_key', $keys, true );
+			array_splice( $fields, false === $position ? count( $fields ) : $position + 1, 0, array(
+				array(
+					'key'     => 'funnelkit_google_places_key_status',
+					'type'    => 'gmaps_key_status',
+					// No label: the warning sits directly under the key field, and renders
+					// nothing at all once the key works with Places API (New).
+					'label'   => '',
+					'status'  => WFFN_Pro_Google_Places_Key::describe( $result ),
+					'checked' => null !== $result,
+				),
+			) );
+			$settings['funnelkit_google_maps']['fields'] = $fields;
+
+			return $settings;
 		}
 
 		public function add_license_related_code( $texts ) {

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-21T13:15:05+00:00\n"
+"POT-Creation-Date: 2026-11-03T14:53:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: funnel-builder-powerpack\n"
@@ -35,44 +35,66 @@ msgstr ""
 msgid "funnelkit"
 msgstr ""
 
-#: admin/class-wffn-pro-admin.php:206
+#: admin/class-wffn-pro-admin.php:228
 msgid "Facebook Pixel ID"
 msgstr ""
 
-#: admin/class-wffn-pro-admin.php:216
+#: admin/class-wffn-pro-admin.php:238
 msgid "Conversion API Access Token"
 msgstr ""
 
-#: admin/class-wffn-pro-admin.php:224
+#: admin/class-wffn-pro-admin.php:246
 msgid "Conversion API Test event code"
 msgstr ""
 
-#: admin/class-wffn-pro-admin.php:229
+#: admin/class-wffn-pro-admin.php:251
 msgid "Google Analytics ID"
 msgstr ""
 
-#: admin/class-wffn-pro-admin.php:233
+#: admin/class-wffn-pro-admin.php:255
 msgid "Google Ads Conversion ID"
 msgstr ""
 
-#: admin/class-wffn-pro-admin.php:237
+#: admin/class-wffn-pro-admin.php:259
 msgid "Google Ads Conversion Label"
 msgstr ""
 
-#: admin/class-wffn-pro-admin.php:241
+#: admin/class-wffn-pro-admin.php:263
 msgid "Pinterest Tag ID"
 msgstr ""
 
-#: admin/class-wffn-pro-admin.php:245
+#: admin/class-wffn-pro-admin.php:267
 msgid "TikTok Pixel ID"
 msgstr ""
 
-#: admin/class-wffn-pro-admin.php:249
+#: admin/class-wffn-pro-admin.php:271
 msgid "Snapchat Pixel ID"
 msgstr ""
 
 #: includes/class-wffn-conversion-data.php:520
 msgid "No Referrer Founds"
+msgstr ""
+
+#: includes/class-wffn-pro-mcp.php:178
+msgid "FunnelKit Funnel Builder Pro"
+msgstr ""
+
+#. translators: %s: product name.
+#: includes/class-wffn-pro-mcp.php:183
+#, php-format
+msgid "Your %s licence has expired, so this ability is unavailable. Renew the licence to restore it."
+msgstr ""
+
+#. translators: %s: product name.
+#: includes/class-wffn-pro-mcp.php:188
+#, php-format
+msgid "%s is installed but its licence is not activated, so this ability is unavailable. Activate the licence to restore it."
+msgstr ""
+
+#. translators: %s: product name.
+#: includes/class-wffn-pro-mcp.php:193
+#, php-format
+msgid "This ability needs an active %s licence."
 msgstr ""
 
 #: includes/class-wffn-rest-api-endpoint.php:111
@@ -367,7 +389,7 @@ msgstr ""
 
 #: includes/exporter/export-actions/class-wffn-export-leads.php:53
 #: includes/exporter/export-actions/class-wffn-export-orders.php:53
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:317
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:332
 msgid "Date"
 msgstr ""
 
@@ -501,6 +523,267 @@ msgstr ""
 msgid "Opt-ins"
 msgstr ""
 
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:124
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:51
+msgid "Funnel Builder Pro"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:127
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:128
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:129
+msgid "Step Design"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:151
+msgid "Get Step Design"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:166
+msgid "Prepare Step Design"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:245
+msgid "Check Step Design"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:269
+msgid "Get Funnel Widgets"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:302
+msgid "Update Funnel Widget"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:336
+msgid "Move Funnel Widget"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:423
+msgid "Read Design"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:433
+msgid "Edit Design"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:54
+msgid "A/B Tests"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:55
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:56
+msgid "Analytics"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:57
+msgid "Checkout"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:58
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:59
+msgid "Steps"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:60
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:61
+msgid "Upsells"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:90
+msgid "Get Funnel Analytics"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:109
+msgid "Get Dashboard Overview"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:122
+msgid "Get Revenue Attribution"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:135
+msgid "Get Step Stats"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:154
+msgid "List A/B Tests"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:164
+msgid "Get A/B Test"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:180
+msgid "Get A/B Test Results"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:202
+msgid "Create A/B Test"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:224
+msgid "Create A/B Test Variant"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:246
+msgid "Update A/B Test"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:269
+msgid "Start A/B Test"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:289
+msgid "Pause A/B Test"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:309
+msgid "Declare A/B Test Winner"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:330
+msgid "Archive A/B Test Variant"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:352
+msgid "Restore A/B Test Variant"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:373
+msgid "List Funnel Contacts"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:403
+msgid "Get Funnel Contact"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:420
+msgid "List Funnel Orders"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:455
+msgid "List Funnel Leads"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:485
+msgid "List Payment Methods"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:496
+msgid "Get Top Funnels"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:520
+msgid "Get Upsell Offers"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:535
+msgid "Get Order Bump"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:550
+msgid "List Order Bump Skins"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:587
+msgid "Get Upsell Settings"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:602
+msgid "Get Checkout Conditional Fields"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:618
+msgid "Duplicate Funnel"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:645
+msgid "Create Order Bump"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:701
+msgid "Update Order Bump Products"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:732
+msgid "Update Upsell Offer Products"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:765
+msgid "Create Upsell Offer"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:828
+msgid "Update Offer Template"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:873
+msgid "Update Upsell Settings"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:904
+msgid "Update Offer Settings"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:936
+msgid "Update Order Bump Settings"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:968
+msgid "Update Order Bump Design"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:998
+msgid "Update Order Bump Skin"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1051
+msgid "List Step Rule Types"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1111
+msgid "Update Order Bump Rules"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1126
+msgid "Update Upsell Rules"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1141
+msgid "Update Thank You Rules"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1155
+msgid "Get Thank You Rules"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1171
+msgid "Get Offer Performance"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1204
+msgid "Get Funnel Graph"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1222
+msgid "Get Funnel Order"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1238
+msgid "Get Funnel Performance"
+msgstr ""
+
+#. translators: %s: title of the funnel being duplicated.
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:3352
+#, php-format
+msgid "%s - Copy"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:3940
+msgctxt "default title of a newly created upsell offer"
+msgid "Offer"
+msgstr ""
+
 #: includes/optin-pro/actions/class-wffn-optin-action-assign-ld-course.php:204
 #: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
 #: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
@@ -548,7 +831,7 @@ msgstr ""
 #: includes/optin-pro/form-fields/class-wffn-optin-form-field-hidden.php:106
 #: includes/optin-pro/form-fields/class-wffn-optin-form-field-radio.php:121
 #: includes/optin-pro/form-fields/class-wffn-optin-form-field-select.php:134
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:283
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:298
 msgid "Default"
 msgstr ""
 
@@ -1177,12 +1460,14 @@ msgstr ""
 #: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:136
 #: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:18
 #: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:197
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/upsell.php:100
 msgid "Yes"
 msgstr ""
 
 #: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:137
 #: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:19
 #: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:198
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/upsell.php:101
 msgid "No"
 msgstr ""
 
@@ -1260,133 +1545,145 @@ msgid "Current step id."
 msgstr ""
 
 #: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:75
-#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:143
+#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:145
 msgid "Failed"
 msgstr ""
 
-#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:129
+#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:131
 msgid "Rules list loaded"
 msgstr ""
 
-#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:157
+#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:159
 msgid "Rules Updated"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:284
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:299
 msgid "No Rules"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:286
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:301
 msgid "Order"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:287
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:302
 #: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/cart-product-select.php:31
 msgid "Products"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:288
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:303
 msgid "Product Category"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:289
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:304
 msgid "Product Tag"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:290
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:305
 msgid "Total"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:292
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:307
 msgid "Item Count"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:293
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:308
 msgid "Item Type"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:294
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:309
 #: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/coupon-select.php:52
 msgid "Coupons"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:295
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:310
 msgid "If Coupon(s)"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:296
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:311
 msgid "Coupons - Text Match"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:297
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:312
 msgid "Payment Gateway"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:298
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:313
 msgid "Shipping Method"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:299
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:314
 msgid "Order Custom Field"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:301
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:316
 msgid "Customer"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:302
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:317
 msgid "Customer - Is First Order"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:303
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:318
 msgid "Customer - Is Guest"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:305
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:320
 msgid "Customer - User Name"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:306
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:321
 msgid "Customer - User Role"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:307
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:322
 msgid "Customer - Purchased Product: All Time"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:308
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:323
 msgid "Customer - Purchased Category: All Time"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:310
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:325
 msgid "Geography"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:311
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:326
 msgid "Shipping Country"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:312
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:327
 msgid "   Billing Country"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:315
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:330
 msgid "Date/Time"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:316
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:331
 msgid "Day"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:318
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:333
 msgid "Time"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:356
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:338
+msgid "Upsell"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:339
+msgid "Upsell Offer"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:340
+msgid "Upsell Skipped"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:378
 msgid "Rules"
 msgstr ""
 
-#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:391
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:413
 msgid "Rules Updated successfully"
 msgstr ""
 
@@ -1783,6 +2080,24 @@ msgstr ""
 #: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1286
 #, php-format
 msgid "Order Billing state %1$s of %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/upsell.php:13
+msgid "accepted"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/upsell.php:14
+msgid "rejected"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/upsell.php:15
+msgid "came from"
+msgstr ""
+
+#. translators: 1: upsell step title, 2: offer title, 3: offer id
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/upsell.php:46
+#, php-format
+msgid "%1$s - %2$s (#%3$d)"
 msgstr ""
 
 #: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/metabox-rules-rule-template-basic.php:24

@@ -61,6 +61,19 @@ class BWFAN_Table_Validation_Controller {
 	];
 
 	/**
+	 * Primary key column of each core table
+	 *
+	 * @var string[]
+	 */
+	public static $core_primary_keys = [
+		'bwf_actions'      => 'id',
+		'bwf_action_claim' => 'id',
+		'bwf_contact'      => 'id',
+		'bwf_contact_meta' => 'meta_id',
+		'bwf_wc_customers' => 'id',
+	];
+
+	/**
 	 * Get the pro tables to validate
 	 *
 	 * @return array
@@ -213,6 +226,10 @@ class BWFAN_Table_Validation_Controller {
 				$db_errors = array_merge( $db_errors, $pk_checked );
 			}
 		}
+
+		/** Core tables have no table class, so they get the auto-increment repair only */
+		$db_errors = array_merge( $db_errors, self::check_core_tables_auto_increment( $tables ) );
+
 		if ( empty( $db_errors ) ) {
 			bwf_options_update( 'bwfan_table_validation_error', 0 );
 
@@ -444,5 +461,75 @@ class BWFAN_Table_Validation_Controller {
 	                KEY `id` (`id`),
 	                UNIQUE KEY`cid` (`cid`)               
 	                ) $collate;";
+	}
+
+
+	/**
+	 * Add a missing AUTO_INCREMENT on the core tables.
+	 * Adds a missing primary key too, and moves each row with ID 0 to a real ID, because the code
+	 * treats ID 0 as a missing record. Rows are never deleted and real IDs never change.
+	 * Duplicate non-zero IDs can't be repaired safely, so that table is only reported.
+	 *
+	 * @param array $tables Existing table names, with prefix
+	 *
+	 * @return array Array of errors
+	 */
+	public static function check_core_tables_auto_increment( $tables ) {
+		global $wpdb;
+		$db_errors = [];
+
+		foreach ( self::$core_primary_keys as $table => $primary_key ) {
+			$table_name = $wpdb->prefix . $table;
+			if ( ! in_array( $table_name, $tables, true ) ) {
+				continue;
+			}
+
+			$safe_table_name = esc_sql( $table_name );
+			$column          = $wpdb->get_row( $wpdb->prepare( "SHOW COLUMNS FROM `{$safe_table_name}` WHERE Field = %s", $primary_key ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix + hardcoded list
+			if ( empty( $column ) ) {
+				$db_errors[] = "Primary key column '{$primary_key}' not found in table {$table}";
+				continue;
+			}
+
+			if ( false !== stripos( (string) $column['Extra'], 'auto_increment' ) ) {
+				continue;
+			}
+
+			$add_primary = 'PRI' !== $column['Key'];
+			$safe_column = esc_sql( $primary_key );
+
+			if ( $add_primary ) {
+				$duplicate_id = $wpdb->get_var( "SELECT `{$safe_column}` FROM `{$safe_table_name}` WHERE `{$safe_column}` <> 0 GROUP BY `{$safe_column}` HAVING COUNT(*) > 1 LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- hardcoded table/column
+				if ( ! is_null( $duplicate_id ) ) {
+					$db_errors[] = "Table {$table} has duplicate IDs (for example {$duplicate_id}), it needs a manual repair";
+					continue;
+				}
+			}
+
+			$max_id = (int) $wpdb->get_var( "SELECT MAX(`{$safe_column}`) FROM `{$safe_table_name}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- hardcoded table/column
+			$wpdb->query( $wpdb->prepare( 'SET @bwfan_next_id = %d', $max_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( "UPDATE `{$safe_table_name}` SET `{$safe_column}` = (@bwfan_next_id := @bwfan_next_id + 1) WHERE `{$safe_column}` = 0" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- hardcoded table/column
+			if ( ! empty( $wpdb->last_error ) ) {
+				$db_errors[] = "Error moving rows with ID 0 in table {$table}: " . $wpdb->last_error;
+				continue;
+			}
+
+			/** NO_AUTO_VALUE_ON_ZERO stops MySQL renumbering an ID 0 row added by a write during this repair */
+			$sql_mode = (string) $wpdb->get_var( 'SELECT @@SESSION.sql_mode' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $wpdb->prepare( 'SET SESSION sql_mode = %s', trim( $sql_mode . ',NO_AUTO_VALUE_ON_ZERO', ',' ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+			$safe_type = esc_sql( $column['Type'] );
+			$add_key   = $add_primary ? ", ADD PRIMARY KEY (`{$safe_column}`)" : '';
+			$wpdb->query( "ALTER TABLE `{$safe_table_name}` MODIFY COLUMN `{$safe_column}` {$safe_type} NOT NULL AUTO_INCREMENT{$add_key}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- hardcoded table/column; type from SHOW COLUMNS
+			$alter_error = $wpdb->last_error; // The restore below clears last_error
+
+			$wpdb->query( $wpdb->prepare( 'SET SESSION sql_mode = %s', $sql_mode ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+			if ( ! empty( $alter_error ) ) {
+				$db_errors[] = "Error adding AUTO_INCREMENT to primary key column '{$primary_key}' in table {$table}: " . $alter_error;
+			}
+		}
+
+		return $db_errors;
 	}
 }

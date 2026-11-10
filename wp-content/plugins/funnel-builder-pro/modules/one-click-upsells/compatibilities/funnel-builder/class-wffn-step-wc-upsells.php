@@ -350,13 +350,19 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		public function get_entity_edit_link( $step_id ) {
 			$link = parent::get_entity_edit_link( $step_id );
 			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
+				// The Upsell Step opens in the Funnel Builder app; the old page=upstroke screen is only registered while Upsells run as a standalone module.
+				$funnel_id         = absint( get_post_meta( $step_id, '_bwf_in_funnel', true ) );
+				$is_store_checkout = $funnel_id > 0 && method_exists( 'WFFN_Common', 'get_store_checkout_id' ) && $funnel_id === absint( WFFN_Common::get_store_checkout_id() );
+
 				$link = esc_url(
 					BWF_Admin_Breadcrumbs::maybe_add_refs(
 						add_query_arg(
-							array(
-								'page'    => 'upstroke',
-								'section' => 'offers',
-								'edit'    => $step_id,
+							array_filter(
+								array(
+									'page'      => 'bwf',
+									'path'      => $is_store_checkout ? '/store-checkout/upsell/' . $step_id . '/rules' : '/funnel-upsell/' . $step_id . '/rules',
+									'funnel_id' => $is_store_checkout ? false : $funnel_id,
+								)
 							),
 							admin_url( 'admin.php' )
 						)
@@ -441,6 +447,17 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				);
 			}
 
+			$skipped = function_exists( 'WC' ) && WC()->payment_gateways() ? WFOCU_Core()->gateways->get_skipped_gateways() : array();
+			if ( count( $skipped ) > 0 ) {
+				$flags['gateway_skip'] = array(
+					/* translators: %d: number of active payment methods that skip upsells */
+					'label'       => sprintf( _n( 'Skips %d payment method', 'Skips %d payment methods', count( $skipped ), 'woofunnels-upstroke-one-click-upsell' ), count( $skipped ) ),
+					'label_class' => 'bwf-st-c-badge-yellow',
+					'gateways'    => wp_list_pluck( $skipped, 'title' ),
+					'edit'        => '/settings/upstroke/wfocu_gateways',
+				);
+			}
+
 			return $flags;
 		}
 
@@ -510,8 +527,8 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				}
 
 				WFFN_Core()->logger->log(
-					'WFFN upsell funnel details for skip given below ' . print_r(
-						array( /* phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r */
+					'WFFN upsell funnel details for skip given below ' . print_r( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+						array(
 						'funnels'              => $funnels,
 						'has_valid_session'    => ( WFFN_Core()->data->has_valid_session() ),
 						'current_step'         => $current_step,

@@ -40,7 +40,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Force_Login' ) ) {
 
 			$rest_route = $GLOBALS['wp']->query_vars['rest_route'];
 
-			if ( ! is_null( $rest_route ) && strpos( $rest_route, 'woofunnel' ) !== false ) {
+			if ( ! is_null( $rest_route ) && ( strpos( $rest_route, 'woofunnel' ) !== false || 0 === strpos( ltrim( (string) $rest_route, '/' ), 'funnelkit/' ) ) ) {
 				remove_filter( 'rest_authentication_errors', 'v_forcelogin_rest_access', 99 );
 			}
 

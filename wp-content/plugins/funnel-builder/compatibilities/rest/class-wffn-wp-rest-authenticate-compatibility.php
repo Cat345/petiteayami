@@ -37,7 +37,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WP_Rest_Authenticate' ) ) {
 			}
 
 			$rest_route = $GLOBALS['wp']->query_vars['rest_route'];
-			if ( ! is_null( $rest_route ) && false !== strpos( $rest_route, 'woofunnel' ) ) {
+			if ( ! is_null( $rest_route ) && ( false !== strpos( $rest_route, 'woofunnel' ) || 0 === strpos( ltrim( (string) $rest_route, '/' ), 'funnelkit/' ) ) ) {
 				return true;
 			}
 

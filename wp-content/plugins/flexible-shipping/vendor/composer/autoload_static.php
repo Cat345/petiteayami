@@ -186,6 +186,7 @@ class ComposerStaticInit2dde00f4d2f07c77b63199db3b20a865
         'FSVendor\\Octolize\\ShippingExtensions\\Plugin\\Plugin' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/Plugin.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Plugin\\PluginFactory' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Plugin\\PluginSorter' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginSorter.php',
+        'FSVendor\\Octolize\\ShippingExtensions\\Promo\\BlackFriday2026Promo' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Promo/BlackFriday2026Promo.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Promo\\Summer2026Promo' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Promo/Summer2026Promo.php',
         'FSVendor\\Octolize\\ShippingExtensions\\ShippingExtensions' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/ShippingExtensions.php',
         'FSVendor\\Octolize\\ShippingExtensions\\TimedUpdate' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/TimedUpdate.php',

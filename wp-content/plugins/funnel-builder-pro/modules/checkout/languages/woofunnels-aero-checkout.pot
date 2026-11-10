@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-21T13:15:51+00:00\n"
+"POT-Creation-Date: 2026-11-03T14:54:51+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-aero-checkout\n"
@@ -269,26 +269,26 @@ msgid "Failed"
 msgstr ""
 
 #: admin/rest-api/class-wfacp-rest-funnels.php:507
-#: includes/class-wfacp-common.php:2562
+#: includes/class-wfacp-common.php:2583
 msgid "View"
 msgstr ""
 
 #: admin/rest-api/class-wfacp-rest-funnels.php:514
-#: includes/class-wfacp-common.php:2570
+#: includes/class-wfacp-common.php:2591
 msgid "Duplicate"
 msgstr ""
 
 #: admin/rest-api/class-wfacp-rest-funnels.php:521
 #: admin/views/admin.php:13
 #: admin/views/admin.php:35
-#: includes/class-wfacp-common.php:2577
+#: includes/class-wfacp-common.php:2598
 msgid "Export"
 msgstr ""
 
 #: admin/rest-api/class-wfacp-rest-funnels.php:528
 #: includes/class-wfacp-common-helper.php:1189
 #: includes/class-wfacp-common-helper.php:1413
-#: includes/class-wfacp-common.php:2584
+#: includes/class-wfacp-common.php:2605
 msgid "Delete"
 msgstr ""
 
@@ -479,7 +479,7 @@ msgstr ""
 #: builder/elementor/widgets/class-elementor-form.php:813
 #: builder/oxygen/modules/class-oxy-form.php:302
 #: includes/class-wfacp-common-helper.php:1610
-#: includes/class-wfacp-common.php:561
+#: includes/class-wfacp-common.php:582
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:488
 msgid "Fields"
 msgstr ""
@@ -535,8 +535,8 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-testimonial.php:206
 #: builder/customizer/customizer-options/class-section-twidget.php:53
 #: builder/customizer/customizer-options/class-section-twidget.php:67
-#: builder/customizer/templates/embed_forms_1/template.php:611
-#: builder/customizer/templates/embed_forms_1/template.php:630
+#: builder/customizer/templates/embed_forms_1/template.php:614
+#: builder/customizer/templates/embed_forms_1/template.php:633
 msgid "Content"
 msgstr ""
 
@@ -826,8 +826,8 @@ msgstr ""
 #: builder/gutenberg/class-wfacp-gutenberg.php:540
 #: builder/oxygen/modules/class-oxy-form.php:186
 #: builder/oxygen/modules/class-oxy-mini-cart.php:39
-#: includes/class-wfacp-common.php:555
-#: includes/class-wfacp-common.php:4322
+#: includes/class-wfacp-common.php:576
+#: includes/class-wfacp-common.php:4343
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/mini-cart/inspector-control/style.js:140
 msgid "Products"
@@ -930,7 +930,7 @@ msgstr ""
 #: builder/divi/modules/class-divi-mini-cart.php:341
 #: builder/elementor/widgets/class-elementor-summary.php:295
 #: builder/oxygen/modules/class-oxy-mini-cart.php:264
-#: includes/class-wfacp-common.php:571
+#: includes/class-wfacp-common.php:592
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/mini-cart/inspector-control/style.js:535
 msgid "Settings"
@@ -1032,9 +1032,9 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1280
 #: builder/customizer/customizer-options/class-section-form.php:1364
 #: builder/customizer/customizer-options/class-section-form.php:1917
-#: builder/customizer/templates/embed_forms_1/template.php:881
-#: builder/customizer/templates/embed_forms_1/template.php:958
-#: builder/customizer/templates/embed_forms_1/template.php:1183
+#: builder/customizer/templates/embed_forms_1/template.php:884
+#: builder/customizer/templates/embed_forms_1/template.php:961
+#: builder/customizer/templates/embed_forms_1/template.php:1186
 #: builder/divi/class-wfacp-html-block-divi.php:585
 #: builder/divi/class-wfacp-html-block-divi.php:592
 #: builder/divi/modules/class-divi-mini-cart.php:204
@@ -1061,8 +1061,8 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-html-widget.php:457
 #: builder/customizer/customizer-options/class-section-listing.php:235
 #: builder/customizer/customizer-options/class-section-promises.php:111
-#: builder/customizer/templates/embed_forms_1/template.php:994
-#: builder/customizer/templates/embed_forms_1/template.php:1225
+#: builder/customizer/templates/embed_forms_1/template.php:997
+#: builder/customizer/templates/embed_forms_1/template.php:1228
 msgid "Text"
 msgstr ""
 
@@ -1146,8 +1146,8 @@ msgstr ""
 #: importer/class-wfacp-elementor-importer.php:213
 #: importer/class-wfacp-gutenberg-importer.php:121
 #: importer/class-wfacp-oxy-importer.php:138
-#: includes/class-wfacp-common.php:1303
-#: includes/class-wfacp-common.php:4310
+#: includes/class-wfacp-common.php:1324
+#: includes/class-wfacp-common.php:4331
 msgid "Best Value"
 msgstr ""
 
@@ -1163,7 +1163,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-listing.php:231
 #: builder/customizer/customizer-options/class-section-testimonial.php:90
 #: builder/customizer/customizer-options/class-section-testimonial.php:289
-#: builder/customizer/templates/embed_forms_1/template.php:685
+#: builder/customizer/templates/embed_forms_1/template.php:688
 #: builder/customizer/templates/layout_9/template.php:1126
 #: builder/divi/class-wfacp-html-block-divi.php:392
 #: builder/divi/modules/class-divi-form.php:199
@@ -1195,7 +1195,7 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-product-switcher.php:382
 #: builder/customizer/customizer-options/class-section-form.php:1405
-#: builder/customizer/templates/embed_forms_1/template.php:416
+#: builder/customizer/templates/embed_forms_1/template.php:419
 #: builder/divi/class-abstract-wfacp-fields.php:626
 #: builder/elementor/class-abstract-wfacp-fields.php:292
 #: builder/elementor/class-abstract-wfacp-fields.php:368
@@ -1207,8 +1207,8 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-product-switcher.php:405
 #: builder/customizer/customizer-options/class-section-form.php:1808
-#: builder/customizer/templates/embed_forms_1/template.php:388
-#: builder/customizer/templates/embed_forms_1/template.php:455
+#: builder/customizer/templates/embed_forms_1/template.php:391
+#: builder/customizer/templates/embed_forms_1/template.php:458
 #: builder/divi/class-abstract-wfacp-fields.php:634
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/common/block-sizing.js:39
@@ -1228,7 +1228,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-testimonial.php:464
 #: builder/customizer/customizer-options/class-section-twidget.php:276
 #: builder/customizer/templates/layout_9/template.php:1333
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:165
 msgid "Border Color"
 msgstr ""
@@ -1244,11 +1244,10 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-promises.php:238
 #: builder/customizer/customizer-options/class-section-testimonial.php:490
 #: builder/customizer/customizer-options/class-section-twidget.php:302
-#: builder/customizer/templates/embed_forms_1/template.php:532
+#: builder/customizer/templates/embed_forms_1/template.php:535
 #: builder/customizer/templates/layout_9/template.php:1358
 #: builder/oxygen/class-abstract-wfacp-fields.php:666
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/style.js:399
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/style.js:533
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/style.js:670
@@ -1261,7 +1260,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-cart.php:52
 #: builder/customizer/templates/layout_9/template.php:1483
 #: builder/customizer/templates/layout_9/template.php:1623
-#: includes/class-wfacp-common.php:4312
+#: includes/class-wfacp-common.php:4333
 msgid "Your Cart"
 msgstr ""
 
@@ -1306,7 +1305,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-testimonial.php:109
 #: builder/customizer/customizer-options/class-section-twidget.php:140
 #: builder/customizer/templates/layout_9/template.php:1144
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/font/index.js:136
 msgid "Font Size"
 msgstr ""
@@ -1320,7 +1319,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-promises.php:118
 #: builder/customizer/customizer-options/class-section-testimonial.php:146
 #: builder/customizer/customizer-options/class-section-twidget.php:170
-#: builder/customizer/templates/embed_forms_1/template.php:846
+#: builder/customizer/templates/embed_forms_1/template.php:849
 #: builder/customizer/templates/layout_9/template.php:1180
 msgid "Text Alignment"
 msgstr ""
@@ -1402,7 +1401,7 @@ msgid "Coupon"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-cart.php:235
-#: builder/customizer/templates/embed_forms_1/template.php:1702
+#: builder/customizer/templates/embed_forms_1/template.php:1705
 #: builder/customizer/templates/layout_9/template.php:1056
 msgid "Hide Coupon"
 msgstr ""
@@ -1412,13 +1411,13 @@ msgid "Check if you want to hide the coupon from the sidebar order summary"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-cart.php:242
-#: builder/customizer/templates/embed_forms_1/template.php:1716
+#: builder/customizer/templates/embed_forms_1/template.php:1719
 #: builder/customizer/templates/layout_9/template.php:1070
 msgid "Make Collapsible"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-cart.php:243
-#: builder/customizer/templates/embed_forms_1/template.php:1717
+#: builder/customizer/templates/embed_forms_1/template.php:1720
 #: builder/customizer/templates/layout_9/template.php:1071
 msgid "Check if you want to keep coupon field collapsible"
 msgstr ""
@@ -1473,7 +1472,7 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-section-cart.php:272
 #: builder/customizer/customizer-options/class-section-mini-cart-summary.php:119
-#: builder/customizer/templates/embed_forms_1/template.php:2096
+#: builder/customizer/templates/embed_forms_1/template.php:2099
 #: builder/divi/class-abstract-wfacp-fields.php:1215
 #: builder/elementor/class-abstract-wfacp-fields.php:951
 #: builder/gutenberg/class-wfacp-gutenberg.php:512
@@ -1494,7 +1493,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-promises.php:155
 #: builder/customizer/customizer-options/class-section-testimonial.php:408
 #: builder/customizer/customizer-options/class-section-twidget.php:219
-#: builder/customizer/templates/embed_forms_1/template.php:421
+#: builder/customizer/templates/embed_forms_1/template.php:424
 #: builder/customizer/templates/layout_9/template.php:1276
 msgid "Border Type"
 msgstr ""
@@ -1511,7 +1510,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-testimonial.php:437
 #: builder/customizer/customizer-options/class-section-twidget.php:249
 #: builder/customizer/templates/layout_9/template.php:1305
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:151
 msgid "Border Width"
 msgstr ""
@@ -1529,7 +1528,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-promises.php:265
 #: builder/customizer/customizer-options/class-section-testimonial.php:517
 #: builder/customizer/customizer-options/class-section-twidget.php:328
-#: builder/customizer/templates/embed_forms_1/template.php:913
+#: builder/customizer/templates/embed_forms_1/template.php:916
 #: builder/elementor/widgets/class-elementor-form.php:1266
 #: builder/oxygen/modules/class-oxy-form.php:866
 msgid "Colors"
@@ -1568,7 +1567,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:399
 #: builder/customizer/customizer-options/class-section-form.php:527
 #: builder/customizer/customizer-options/class-section-form.php:1642
-#: builder/customizer/templates/embed_forms_1/template.php:747
+#: builder/customizer/templates/embed_forms_1/template.php:750
 #: builder/elementor/class-abstract-wfacp-fields.php:401
 #: builder/oxygen/class-abstract-wfacp-fields.php:204
 #: builder/oxygen/modules/class-oxy-form.php:428
@@ -1579,9 +1578,10 @@ msgid "Typography"
 msgstr ""
 
 #. translators: %s: color hex code e.g: "#f00".
+#. translators: %s: The name of the color e.g: "vivid red".
 #: builder/customizer/customizer-options/class-section-cart.php:758
 #: builder/customizer/customizer-options/class-section-styles.php:173
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/font/index.js:82
 msgid "Font Family"
 msgstr ""
@@ -1610,7 +1610,7 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-section-customer-care.php:182
 #: builder/customizer/customizer-options/class-section-customer-care.php:194
-#: builder/customizer/templates/embed_forms_1/template.php:713
+#: builder/customizer/templates/embed_forms_1/template.php:716
 #: builder/divi/modules/class-divi-form.php:213
 #: builder/divi/modules/class-divi-form.php:251
 #: builder/divi/modules/class-divi-form.php:387
@@ -1795,14 +1795,14 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1233
 #: builder/customizer/customizer-options/class-section-form.php:1260
 #: builder/customizer/customizer-options/class-section-form.php:1899
-#: builder/customizer/templates/embed_forms_1/template.php:495
+#: builder/customizer/templates/embed_forms_1/template.php:498
 #: builder/oxygen/class-wfacp-html-block-oxy.php:294
 #: builder/oxygen/modules/class-oxy-form.php:432
 #: builder/oxygen/modules/class-oxy-form.php:468
 #: builder/oxygen/modules/class-oxy-form.php:608
 #: builder/oxygen/modules/class-oxy-form.php:789
 #: builder/oxygen/modules/class-oxy-form.php:1180
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/typography/index.js:60
 msgid "Color"
 msgstr ""
@@ -1875,8 +1875,8 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1172
 #: builder/elementor/widgets/class-elementor-form.php:1038
 #: builder/gutenberg/class-wfacp-gutenberg.php:595
-#: includes/class-wfacp-common.php:4238
-#: includes/class-wfacp-template.php:2696
+#: includes/class-wfacp-common.php:4259
+#: includes/class-wfacp-template.php:2702
 msgid "All transactions are secure and encrypted."
 msgstr ""
 
@@ -1887,7 +1887,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1300
 #: builder/customizer/customizer-options/class-section-layout.php:97
 #: builder/customizer/customizer-options/class-section-layout.php:133
-#: builder/customizer/templates/embed_forms_1/template.php:381
+#: builder/customizer/templates/embed_forms_1/template.php:384
 msgid "Form"
 msgstr ""
 
@@ -1905,7 +1905,7 @@ msgid "Step "
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1517
-#: includes/class-wfacp-common.php:4317
+#: includes/class-wfacp-common.php:4338
 msgid "NEXT STEP"
 msgstr ""
 
@@ -2020,7 +2020,7 @@ msgstr ""
 #: builder/divi/class-abstract-wfacp-fields.php:643
 #: builder/divi/modules/class-divi-form.php:439
 #: builder/oxygen/class-abstract-wfacp-fields.php:655
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:228
 msgid "Border Radius"
 msgstr ""
@@ -2066,7 +2066,7 @@ msgid "Text Below Place Order Button"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:2108
-#: includes/class-wfacp-common.php:4239
+#: includes/class-wfacp-common.php:4260
 msgid "We Respect Your Privacy & Information"
 msgstr ""
 
@@ -2224,7 +2224,7 @@ msgstr ""
 #: importer/checkout-settings/shoppe.php:73
 #: includes/class-wfacp-common-helper.php:2300
 #: includes/class-wfacp-common-helper.php:2426
-#: includes/class-wfacp-common.php:4281
+#: includes/class-wfacp-common.php:4302
 msgid "Contact Information"
 msgstr ""
 
@@ -2766,133 +2766,133 @@ msgstr ""
 msgid "Divider Color"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:539
+#: builder/customizer/templates/embed_forms_1/template.php:542
 msgid "Form Padding"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:555
+#: builder/customizer/templates/embed_forms_1/template.php:558
 msgid "Top Bar"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:567
+#: builder/customizer/templates/embed_forms_1/template.php:570
 msgid "Visibility"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:577
+#: builder/customizer/templates/embed_forms_1/template.php:580
 msgid "Disable Top Bar"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:595
+#: builder/customizer/templates/embed_forms_1/template.php:598
 #: builder/divi/modules/class-divi-form.php:165
 #: builder/oxygen/modules/class-oxy-form.php:171
 msgid "Select Type"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:764
+#: builder/customizer/templates/embed_forms_1/template.php:767
 msgid "Step Heading"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:805
+#: builder/customizer/templates/embed_forms_1/template.php:808
 msgid "Step Sub-Heading"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:936
+#: builder/customizer/templates/embed_forms_1/template.php:939
 #: builder/divi/modules/class-divi-form.php:193
 #: builder/elementor/widgets/class-elementor-form.php:533
 #: builder/oxygen/modules/class-oxy-form.php:197
 msgid "Step"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1031
-#: builder/customizer/templates/embed_forms_1/template.php:1372
+#: builder/customizer/templates/embed_forms_1/template.php:1034
+#: builder/customizer/templates/embed_forms_1/template.php:1375
 msgid "Tab Border"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1072
-#: builder/customizer/templates/embed_forms_1/template.php:1261
+#: builder/customizer/templates/embed_forms_1/template.php:1075
+#: builder/customizer/templates/embed_forms_1/template.php:1264
 msgid "Count Background"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1108
-#: builder/customizer/templates/embed_forms_1/template.php:1298
+#: builder/customizer/templates/embed_forms_1/template.php:1111
+#: builder/customizer/templates/embed_forms_1/template.php:1301
 msgid "Count Text"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1145
-#: builder/customizer/templates/embed_forms_1/template.php:1335
+#: builder/customizer/templates/embed_forms_1/template.php:1148
+#: builder/customizer/templates/embed_forms_1/template.php:1338
 msgid "Count Border"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1412
+#: builder/customizer/templates/embed_forms_1/template.php:1415
 msgid "This setting is applicable for multistep forms only "
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1491
+#: builder/customizer/templates/embed_forms_1/template.php:1494
 #: builder/elementor/widgets/class-elementor-form.php:505
 #: builder/gutenberg/class-wfacp-gutenberg.php:537
 #: builder/oxygen/modules/class-oxy-form.php:183
-#: includes/class-wfacp-common.php:4294
+#: includes/class-wfacp-common.php:4315
 msgid "Where to ship it?"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1499
+#: builder/customizer/templates/embed_forms_1/template.php:1502
 #: builder/elementor/widgets/class-elementor-form.php:513
 #: builder/gutenberg/class-wfacp-gutenberg.php:545
 #: builder/oxygen/modules/class-oxy-form.php:191
 #: importer/checkout-settings/embed_forms_2.php:85
-#: includes/class-wfacp-common.php:4289
+#: includes/class-wfacp-common.php:4310
 msgid "Confirm your order"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1500
-#: builder/customizer/templates/embed_forms_1/template.php:1509
+#: builder/customizer/templates/embed_forms_1/template.php:1503
+#: builder/customizer/templates/embed_forms_1/template.php:1512
 #: importer/checkout-settings/embed_forms_2.php:87
 #: importer/checkout-settings/embed_forms_3.php:85
 msgid "PROCEED TO NEXT STEP  →"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1505
-#: builder/customizer/templates/embed_forms_1/template.php:1519
-#: includes/class-wfacp-common.php:4321
+#: builder/customizer/templates/embed_forms_1/template.php:1508
+#: builder/customizer/templates/embed_forms_1/template.php:1522
+#: includes/class-wfacp-common.php:4342
 msgid "PRODUCTS"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1510
+#: builder/customizer/templates/embed_forms_1/template.php:1513
 #: importer/checkout-settings/embed_forms_3.php:88
 msgid "PROCEED TO FINAL STEP →"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1514
-#: includes/class-wfacp-common.php:4240
+#: builder/customizer/templates/embed_forms_1/template.php:1517
+#: includes/class-wfacp-common.php:4261
 msgid "GET YOUR FREE COPY OF AMAZING BOOK"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1515
-#: includes/class-wfacp-common.php:4241
+#: builder/customizer/templates/embed_forms_1/template.php:1518
+#: includes/class-wfacp-common.php:4262
 msgid "Shipped in less than 3 days!"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1520
-#: builder/customizer/templates/embed_forms_1/template.php:1525
-#: builder/customizer/templates/embed_forms_1/template.php:1530
+#: builder/customizer/templates/embed_forms_1/template.php:1523
+#: builder/customizer/templates/embed_forms_1/template.php:1528
+#: builder/customizer/templates/embed_forms_1/template.php:1533
 #: importer/checkout-settings/custom_funnel_form_3.php:10
 #: importer/checkout-settings/embed_forms_2.php:82
-#: includes/class-wfacp-common.php:4318
+#: includes/class-wfacp-common.php:4339
 msgid "INFORMATION"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1526
+#: builder/customizer/templates/embed_forms_1/template.php:1529
 #: importer/checkout-settings/custom_funnel_form_3.php:11
 #: importer/checkout-settings/custom_funnel_form_3.php:15
 msgid "REVIEW"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1638
+#: builder/customizer/templates/embed_forms_1/template.php:1641
 #: builder/customizer/templates/layout_9/template.php:998
 msgid "Mini Cart On Mobile View"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1653
+#: builder/customizer/templates/embed_forms_1/template.php:1656
 #: builder/customizer/templates/layout_9/template.php:1006
 #: builder/divi/class-abstract-wfacp-fields.php:59
 #: builder/divi/modules/class-divi-form.php:155
@@ -2912,22 +2912,22 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1659
+#: builder/customizer/templates/embed_forms_1/template.php:1662
 #: builder/customizer/templates/layout_9/template.php:1012
 msgid "Collapse View Text"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1660
+#: builder/customizer/templates/embed_forms_1/template.php:1663
 #: builder/customizer/templates/layout_9/template.php:1013
 #: builder/divi/modules/class-divi-form.php:307
 #: builder/elementor/widgets/class-elementor-form.php:335
 #: builder/gutenberg/class-wfacp-gutenberg.php:604
 #: builder/oxygen/modules/class-oxy-form.php:606
-#: includes/class-wfacp-common.php:4286
+#: includes/class-wfacp-common.php:4307
 msgid "Show Order Summary"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1681
+#: builder/customizer/templates/embed_forms_1/template.php:1684
 #: builder/customizer/templates/layout_9/template.php:1035
 #: builder/divi/modules/class-divi-form.php:308
 #: builder/elementor/widgets/class-elementor-form.php:336
@@ -2937,22 +2937,22 @@ msgstr ""
 msgid "Expanded View Text"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1682
+#: builder/customizer/templates/embed_forms_1/template.php:1685
 #: builder/customizer/templates/layout_9/template.php:1036
 #: builder/divi/modules/class-divi-form.php:308
 #: builder/elementor/widgets/class-elementor-form.php:336
 #: builder/gutenberg/class-wfacp-gutenberg.php:605
 #: builder/oxygen/modules/class-oxy-form.php:620
-#: includes/class-wfacp-common.php:4287
+#: includes/class-wfacp-common.php:4308
 msgid "Hide Order Summary"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:1703
+#: builder/customizer/templates/embed_forms_1/template.php:1706
 #: builder/customizer/templates/layout_9/template.php:1057
 msgid "Check if you want to hide the coupon"
 msgstr ""
 
-#: builder/customizer/templates/embed_forms_1/template.php:2088
+#: builder/customizer/templates/embed_forms_1/template.php:2091
 #: builder/customizer/templates/layout_9/views/template-parts/main-order-pay-summary.php:31
 #: builder/customizer/templates/layout_9/views/template-parts/main-order-summary.php:45
 #: builder/customizer/templates/layout_9/views/template-parts/order-summary.php:65
@@ -2962,7 +2962,7 @@ msgstr ""
 #: includes/class-wfacp-common-helper.php:2377
 #: includes/class-wfacp-common-helper.php:2545
 #: includes/class-wfacp-common-helper.php:2845
-#: includes/class-wfacp-common.php:4306
+#: includes/class-wfacp-common.php:4327
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:151
 msgid "Order Summary"
@@ -3023,8 +3023,8 @@ msgstr ""
 #: importer/checkout-settings/shoppe-step-2.php:165
 #: importer/checkout-settings/shoppe-step-3.php:152
 #: includes/class-wfacp-common-helper.php:288
-#: includes/class-wfacp-common.php:4242
-#: includes/class-wfacp-common.php:4243
+#: includes/class-wfacp-common.php:4263
+#: includes/class-wfacp-common.php:4264
 msgid "WHAT'S INCLUDED IN YOUR PLAN?"
 msgstr ""
 
@@ -3056,31 +3056,31 @@ msgid "Quantity for %s"
 msgstr ""
 
 #: builder/divi/class-abstract-wfacp-fields.php:584
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:106
 msgid "None"
 msgstr ""
 
 #: builder/divi/class-abstract-wfacp-fields.php:585
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:110
 msgid "Solid"
 msgstr ""
 
 #: builder/divi/class-abstract-wfacp-fields.php:586
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:118
 msgid "Double"
 msgstr ""
 
 #: builder/divi/class-abstract-wfacp-fields.php:587
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:114
 msgid "Dotted"
 msgstr ""
 
 #: builder/divi/class-abstract-wfacp-fields.php:588
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:134
 msgid "Dashed"
 msgstr ""
@@ -3096,7 +3096,7 @@ msgstr ""
 #: builder/divi/class-abstract-wfacp-fields.php:635
 #: builder/divi/class-abstract-wfacp-fields.php:644
 #: builder/divi/class-abstract-wfacp-fields.php:689
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:32
 #: builder/gutenberg/src/components/dimensional-control/index.js:202
 msgid "Top"
@@ -3105,7 +3105,7 @@ msgstr ""
 #: builder/divi/class-abstract-wfacp-fields.php:636
 #: builder/divi/class-abstract-wfacp-fields.php:645
 #: builder/divi/class-abstract-wfacp-fields.php:690
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:38
 #: builder/gutenberg/src/components/dimensional-control/index.js:204
 msgid "Bottom"
@@ -3114,7 +3114,7 @@ msgstr ""
 #: builder/divi/class-abstract-wfacp-fields.php:637
 #: builder/divi/class-abstract-wfacp-fields.php:646
 #: builder/divi/class-abstract-wfacp-fields.php:691
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:44
 #: builder/gutenberg/src/components/dimensional-control/index.js:205
 msgid "Left"
@@ -3123,7 +3123,7 @@ msgstr ""
 #: builder/divi/class-abstract-wfacp-fields.php:638
 #: builder/divi/class-abstract-wfacp-fields.php:647
 #: builder/divi/class-abstract-wfacp-fields.php:692
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:50
 #: builder/gutenberg/src/components/dimensional-control/index.js:203
 msgid "Right"
@@ -3316,7 +3316,7 @@ msgstr ""
 #: builder/elementor/widgets/class-elementor-form.php:231
 #: builder/gutenberg/class-wfacp-gutenberg.php:562
 #: builder/oxygen/modules/class-oxy-form.php:555
-#: includes/class-wfacp-common.php:4307
+#: includes/class-wfacp-common.php:4328
 msgid "NEXT STEP →"
 msgstr ""
 
@@ -3330,7 +3330,7 @@ msgstr ""
 #: builder/elementor/widgets/class-elementor-form.php:267
 #: builder/gutenberg/class-wfacp-gutenberg.php:579
 #: builder/oxygen/modules/class-oxy-form.php:581
-#: includes/class-wfacp-common.php:4271
+#: includes/class-wfacp-common.php:4292
 #: public/template-common/next-button.php:53
 msgid "« Return to Cart"
 msgstr ""
@@ -3597,7 +3597,7 @@ msgstr ""
 #: builder/elementor/widgets/class-elementor-form.php:509
 #: builder/gutenberg/class-wfacp-gutenberg.php:541
 #: builder/oxygen/modules/class-oxy-form.php:187
-#: includes/class-wfacp-common.php:4292
+#: includes/class-wfacp-common.php:4313
 msgid "Select your product"
 msgstr ""
 
@@ -3606,7 +3606,7 @@ msgstr ""
 #: importer/checkout-settings/embed_forms_6.php:10
 #: importer/checkout-settings/shopcheckout-multi.php:24
 #: importer/checkout-settings/shopcheckout-three.php:23
-#: includes/class-wfacp-common.php:4319
+#: includes/class-wfacp-common.php:4340
 msgid "Information"
 msgstr ""
 
@@ -3715,7 +3715,7 @@ msgid "Enable Header"
 msgstr ""
 
 #: builder/oxygen/modules/class-oxy-form.php:531
-#: includes/class-wfacp-common.php:4301
+#: includes/class-wfacp-common.php:4322
 msgid "Payment Methods"
 msgstr ""
 
@@ -4040,7 +4040,11 @@ msgstr ""
 msgid "Germanized Pro Multistep Checkout is enabled. This may interrupt the checkout flow. We recommend disabling this feature"
 msgstr ""
 
-#: compatibilities/plugins/class-myparcel-5.php:129
+#: compatibilities/plugins/class-myparcel-5.php:131
+msgid "MyParcel delivery options are not shown on this checkout. Drag the \"MyParcel Delivery Options\" field into the form to show them."
+msgstr ""
+
+#: compatibilities/plugins/class-myparcel-5.php:153
 msgid "MyParcel Delivery Options"
 msgstr ""
 
@@ -4048,9 +4052,17 @@ msgstr ""
 msgid "PostNl Delivery Options"
 msgstr ""
 
+#: compatibilities/plugins/class-wc-post-nl.php:321
+msgid "PostNL delivery options are not shown on this checkout. Drag the \"Shipping Method\" field into the form to show them."
+msgstr ""
+
 #: compatibilities/plugins/class-wf-cart-hooper-.php:27
 #: includes/class-wfacp-common-helper.php:1852
 msgid "Default WooCommerce Checkout Page"
+msgstr ""
+
+#: compatibilities/plugins/class-woocommerce-dpdfrance.php:52
+msgid "DPD France relay point selection is not shown on this checkout. Drag the \"Shipping Method\" field into the form to show it."
 msgstr ""
 
 #: compatibilities/setup-theme/class-brazil-field-2.0.php:447
@@ -4404,7 +4416,7 @@ msgstr ""
 #: importer/checkout-settings/hific.php:50
 #: importer/checkout-settings/optic.php:71
 #: includes/class-wfacp-common-helper.php:2324
-#: includes/class-wfacp-common.php:4278
+#: includes/class-wfacp-common.php:4299
 msgid "Shipping Information"
 msgstr ""
 
@@ -4434,7 +4446,7 @@ msgstr ""
 #: importer/checkout-settings/shopcheckout.php:113
 #: includes/class-wfacp-common-helper.php:2365
 #: includes/class-wfacp-common-helper.php:2536
-#: includes/class-wfacp-common.php:4305
+#: includes/class-wfacp-common.php:4326
 msgid "Your Products"
 msgstr ""
 
@@ -4453,9 +4465,9 @@ msgstr ""
 #: importer/checkout-settings/shopcheckout-step-3.php:211
 #: importer/checkout-settings/shopcheckout-three.php:254
 #: includes/class-wfacp-common-helper.php:2612
-#: includes/class-wfacp-common.php:1732
-#: includes/class-wfacp-common.php:4246
-#: includes/class-wfacp-common.php:4284
+#: includes/class-wfacp-common.php:1753
+#: includes/class-wfacp-common.php:4267
+#: includes/class-wfacp-common.php:4305
 msgid "Use a different shipping address"
 msgstr ""
 
@@ -4470,7 +4482,7 @@ msgstr ""
 #: importer/checkout-settings/salesletter-step-3.php:314
 #: importer/checkout-settings/shopcheckout-multi.php:339
 #: importer/checkout-settings/shopcheckout-step-2.php:299
-#: includes/class-wfacp-common.php:4247
+#: includes/class-wfacp-common.php:4268
 msgid "Use a different Billing address"
 msgstr ""
 
@@ -4478,7 +4490,7 @@ msgstr ""
 #: importer/checkout-settings/classic-step-2.php:298
 #: includes/class-wfacp-common-helper.php:1389
 #: includes/class-wfacp-common-helper.php:2678
-#: includes/class-wfacp-common.php:4326
+#: includes/class-wfacp-common.php:4347
 #: modules/conditional-fields/includes/api/class-rest-controller.php:763
 msgid "Country"
 msgstr ""
@@ -4486,7 +4498,7 @@ msgstr ""
 #: importer/checkout-settings/custom_funnel_form_1.php:105
 #: importer/checkout-settings/custom_funnel_form_2.php:135
 #: importer/checkout-settings/custom_funnel_form_3.php:125
-#: includes/class-wfacp-common.php:4304
+#: includes/class-wfacp-common.php:4325
 msgid "Billing Details"
 msgstr ""
 
@@ -4499,7 +4511,7 @@ msgstr ""
 #: importer/checkout-settings/embed_forms_4.php:23
 #: importer/checkout-settings/embed_forms_5.php:24
 #: importer/checkout-settings/embed_forms_6.php:13
-#: includes/class-wfacp-common.php:4245
+#: includes/class-wfacp-common.php:4266
 msgid "* 100% Secure &amp; Safe Payments *"
 msgstr ""
 
@@ -4513,14 +4525,14 @@ msgstr ""
 #: importer/checkout-settings/e-learning-step-2.php:47
 #: importer/checkout-settings/e-learning-step-3.php:33
 #: importer/checkout-settings/e-learning.php:51
-#: includes/class-wfacp-common.php:4300
+#: includes/class-wfacp-common.php:4321
 msgid "Your Information"
 msgstr ""
 
 #: importer/checkout-settings/e-learning-step-2.php:97
 #: importer/checkout-settings/e-learning-step-3.php:82
 #: importer/checkout-settings/e-learning.php:103
-#: includes/class-wfacp-common.php:4311
+#: includes/class-wfacp-common.php:4332
 msgid "Your Plans"
 msgstr ""
 
@@ -4531,7 +4543,7 @@ msgid "Your Billing Address"
 msgstr ""
 
 #: importer/checkout-settings/embed_forms_2.php:83
-#: includes/class-wfacp-common.php:4283
+#: includes/class-wfacp-common.php:4304
 msgid "Enter basic details"
 msgstr ""
 
@@ -4543,7 +4555,7 @@ msgstr ""
 #: importer/checkout-settings/magnetic-step-2.php:45
 #: importer/checkout-settings/magnetic-step-3.php:28
 #: importer/checkout-settings/magnetic.php:46
-#: includes/class-wfacp-common.php:4291
+#: includes/class-wfacp-common.php:4312
 msgid "Select Your Plan"
 msgstr ""
 
@@ -4552,7 +4564,7 @@ msgid "One-Step Checkout"
 msgstr ""
 
 #: importer/checkout-settings/razor.php:46
-#: includes/class-wfacp-common.php:4290
+#: includes/class-wfacp-common.php:4311
 msgid "Choose Your Product"
 msgstr ""
 
@@ -4596,11 +4608,11 @@ msgstr ""
 msgid "Elementor requires WordPress version %s+. please update the WordPress version to import the template."
 msgstr ""
 
-#: importer/class-wfacp-template-importer.php:231
+#: importer/class-wfacp-template-importer.php:236
 msgid "Server Down"
 msgstr ""
 
-#: importer/class-wfacp-template-importer.php:240
+#: importer/class-wfacp-template-importer.php:245
 msgid "No Template found"
 msgstr ""
 
@@ -5569,12 +5581,12 @@ msgid "Four Step Checkout"
 msgstr ""
 
 #: includes/class-wfacp-common-helper.php:2618
-#: includes/class-wfacp-common.php:1742
+#: includes/class-wfacp-common.php:1763
 msgid "Use a different billing address"
 msgstr ""
 
 #: includes/class-wfacp-common-helper.php:2657
-#: includes/class-wfacp-common.php:4248
+#: includes/class-wfacp-common.php:4269
 msgid "Apartment, suite, unit, etc."
 msgstr ""
 
@@ -5644,7 +5656,7 @@ msgstr ""
 
 #: includes/class-wfacp-common.php:364
 #: includes/class-wfacp-common.php:365
-#: includes/class-wfacp-common.php:3846
+#: includes/class-wfacp-common.php:3867
 #: includes/tracking/class-facebook.php:67
 msgid "Checkout"
 msgstr ""
@@ -5657,335 +5669,334 @@ msgstr ""
 msgid "Add New Checkout page"
 msgstr ""
 
-#: includes/class-wfacp-common.php:430
+#: includes/class-wfacp-common.php:451
 msgid "FunnelKit Boxed"
 msgstr ""
 
-#: includes/class-wfacp-common.php:431
+#: includes/class-wfacp-common.php:452
 msgid "FunnelKit Canvas For Page Builder"
 msgstr ""
 
-#: includes/class-wfacp-common.php:548
+#: includes/class-wfacp-common.php:569
 msgid "Design"
 msgstr ""
 
-#: includes/class-wfacp-common.php:566
+#: includes/class-wfacp-common.php:587
 msgid "Optimizations"
 msgstr ""
 
-#: includes/class-wfacp-common.php:588
+#: includes/class-wfacp-common.php:609
 #, php-format
 msgid "%s Fixed Amount on Regular Price"
 msgstr ""
 
-#: includes/class-wfacp-common.php:589
+#: includes/class-wfacp-common.php:610
 #, php-format
 msgid "%s Fixed Amount on Sale Price"
 msgstr ""
 
-#: includes/class-wfacp-common.php:590
+#: includes/class-wfacp-common.php:611
 msgid "% on Regular Price"
 msgstr ""
 
-#: includes/class-wfacp-common.php:591
+#: includes/class-wfacp-common.php:612
 msgid "% on Sale Price"
 msgstr ""
 
 #. translators: %s: the suggested email address
-#: includes/class-wfacp-common.php:1389
-#: includes/class-wfacp-template.php:812
+#: includes/class-wfacp-common.php:1410
 #, php-format
 msgid "Did you mean %s?"
 msgstr ""
 
-#: includes/class-wfacp-common.php:1767
-#: includes/class-wfacp-common.php:4303
+#: includes/class-wfacp-common.php:1788
+#: includes/class-wfacp-common.php:4324
 msgid "Shipping Phone"
 msgstr ""
 
-#: includes/class-wfacp-common.php:2628
-#: includes/class-wfacp-common.php:2630
+#: includes/class-wfacp-common.php:2649
+#: includes/class-wfacp-common.php:2651
 msgid "Copy"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3570
+#: includes/class-wfacp-common.php:3591
 msgid "Unable to execute a shortcode as it contains a form inside."
 msgstr ""
 
-#: includes/class-wfacp-common.php:3590
+#: includes/class-wfacp-common.php:3611
 #: public/class-wfacp-public.php:2100
 #: public/class-wfacp-public.php:2101
 #: public/class-wfacp-public.php:2102
 msgid "Day"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3596
+#: includes/class-wfacp-common.php:3617
 #: public/class-wfacp-public.php:2115
 #: public/class-wfacp-public.php:2116
 #: public/class-wfacp-public.php:2117
 msgid "Month"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3602
+#: includes/class-wfacp-common.php:3623
 #: public/class-wfacp-public.php:2130
 #: public/class-wfacp-public.php:2131
 #: public/class-wfacp-public.php:2132
 msgid "Year"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3867
+#: includes/class-wfacp-common.php:3888
 #: includes/class-wfacp-post-table.php:148
 msgid "Checkout Page"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4235
+#: includes/class-wfacp-common.php:4256
 msgid "All transactions are secure and encrypted. Credit card information is never stored on our servers."
 msgstr ""
 
-#: includes/class-wfacp-common.php:4236
+#: includes/class-wfacp-common.php:4257
 msgid "All transactions are secured and encrypted."
 msgstr ""
 
-#: includes/class-wfacp-common.php:4237
+#: includes/class-wfacp-common.php:4258
 msgid "All transactions are secured and encrypted"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4244
+#: includes/class-wfacp-common.php:4265
 msgid "* 100% Secure & Safe Payments *"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4249
+#: includes/class-wfacp-common.php:4270
 msgid "Proceed To Final Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4250
+#: includes/class-wfacp-common.php:4271
 msgid "Proceed To Next Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4251
+#: includes/class-wfacp-common.php:4272
 msgid "Enter Customer Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4252
+#: includes/class-wfacp-common.php:4273
 msgid "Complete Your Order Now"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4253
+#: includes/class-wfacp-common.php:4274
 msgid "Select Shipping Method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4254
-#: includes/class-wfacp-template.php:2994
+#: includes/class-wfacp-common.php:4275
+#: includes/class-wfacp-template.php:3000
 msgid "Review Order Summary"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4255
+#: includes/class-wfacp-common.php:4276
 msgid "Your Payment Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4256
+#: includes/class-wfacp-common.php:4277
 msgid "Your payment information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4257
+#: includes/class-wfacp-common.php:4278
 msgid "Your Shipping Address"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4258
+#: includes/class-wfacp-common.php:4279
 msgid "Proceed to Final Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4259
+#: includes/class-wfacp-common.php:4280
 msgid "PROCEED TO FINAL STEP"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4260
+#: includes/class-wfacp-common.php:4281
 msgid "Proceed to Next Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4261
+#: includes/class-wfacp-common.php:4282
 msgid "PROCEED TO NEXT STEP"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4262
+#: includes/class-wfacp-common.php:4283
 msgid "Contact  Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4263
+#: includes/class-wfacp-common.php:4284
 msgid "CONTINUE TO SHIPPING"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4264
+#: includes/class-wfacp-common.php:4285
 msgid "CONTINUE TO PAYMENT"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4265
+#: includes/class-wfacp-common.php:4286
 msgid "Return to Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4266
+#: includes/class-wfacp-common.php:4287
 msgid "Return to Step 1"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4267
+#: includes/class-wfacp-common.php:4288
 msgid "Return to Step 2"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4268
-#: includes/class-wfacp-common.php:4269
+#: includes/class-wfacp-common.php:4289
+#: includes/class-wfacp-common.php:4290
 msgid "Return to Shipping"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4270
+#: includes/class-wfacp-common.php:4291
 msgid "Return to information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4272
+#: includes/class-wfacp-common.php:4293
 msgid "Proceed to shipping"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4273
+#: includes/class-wfacp-common.php:4294
 msgid "Proceed to Shipping"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4274
+#: includes/class-wfacp-common.php:4295
 msgid "PROCEED TO PAYMENT"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4275
+#: includes/class-wfacp-common.php:4296
 msgid "Proceed to payment"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4276
+#: includes/class-wfacp-common.php:4297
 msgid "Proceed to Payment"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4277
+#: includes/class-wfacp-common.php:4298
 msgid "Payment Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4279
+#: includes/class-wfacp-common.php:4300
 msgid "Select Payment Method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4280
+#: includes/class-wfacp-common.php:4301
 msgid "Customer Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4282
+#: includes/class-wfacp-common.php:4303
 msgid "Enter your details"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4285
+#: includes/class-wfacp-common.php:4306
 msgid "Place Your Order Now"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4288
+#: includes/class-wfacp-common.php:4309
 msgid "Confirm Your Order"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4293
+#: includes/class-wfacp-common.php:4314
 msgid "Date Of Birth"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4295
+#: includes/class-wfacp-common.php:4316
 msgid "COMPLETE PURCHASE"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4296
+#: includes/class-wfacp-common.php:4317
 msgid "Payment information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4297
+#: includes/class-wfacp-common.php:4318
 msgid "PLACE ORDER NOW"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4298
+#: includes/class-wfacp-common.php:4319
 msgid "Place Order Now"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4299
+#: includes/class-wfacp-common.php:4320
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:398
 #: modules/conditional-fields/includes/api/class-rest-controller.php:618
 #: modules/conditional-fields/includes/models/class-section-rule.php:77
 msgid "Shipping Address"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4302
+#: includes/class-wfacp-common.php:4323
 msgid "Payment Method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4308
+#: includes/class-wfacp-common.php:4329
 #: public/template-common/next-button.php:41
 msgid "Next Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4309
+#: includes/class-wfacp-common.php:4330
 msgid "Return to"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4313
+#: includes/class-wfacp-common.php:4334
 msgid "Place order"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4314
+#: includes/class-wfacp-common.php:4335
 msgid "Place Order"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4315
+#: includes/class-wfacp-common.php:4336
 msgid "place order"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4316
+#: includes/class-wfacp-common.php:4337
 msgid "PLACE ORDER"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4320
+#: includes/class-wfacp-common.php:4341
 msgid "Payment method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4323
+#: includes/class-wfacp-common.php:4344
 msgid "SHIPPING"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4324
+#: includes/class-wfacp-common.php:4345
 msgid "Payment"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4325
+#: includes/class-wfacp-common.php:4346
 msgid "PAYMENT"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4327
+#: includes/class-wfacp-common.php:4348
 msgid "Method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4328
+#: includes/class-wfacp-common.php:4349
 msgid "Hide"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4329
+#: includes/class-wfacp-common.php:4350
 msgid "Show"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4330
+#: includes/class-wfacp-common.php:4351
 msgid "Apply"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4331
+#: includes/class-wfacp-common.php:4352
 msgid "Shipping"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4332
+#: includes/class-wfacp-common.php:4353
 msgid "Plan"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4333
+#: includes/class-wfacp-common.php:4354
 msgid "PLAN"
 msgstr ""
 
 #: includes/class-wfacp-post-table.php:60
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:194
 msgid "All"
 msgstr ""
@@ -6049,15 +6060,15 @@ msgstr ""
 msgid "Install Oxygen Builder"
 msgstr ""
 
-#: includes/class-wfacp-template.php:846
+#: includes/class-wfacp-template.php:855
 msgid "No results found"
 msgstr ""
 
-#: includes/class-wfacp-template.php:2418
+#: includes/class-wfacp-template.php:2424
 msgid "Payment Gateway"
 msgstr ""
 
-#: includes/class-wfacp-template.php:2419
+#: includes/class-wfacp-template.php:2425
 msgid "Enabled payment methods will display on the frontend."
 msgstr ""
 
@@ -6776,63 +6787,63 @@ msgstr ""
 msgid "Spacing"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/font/index.js:90
 msgid "Select a font family"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/font/index.js:157
 msgid "Weight"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:97
 msgid "Border Style"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:102
 msgid "Not Set"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:122
 msgid "Inset"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:126
 msgid "Outset"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/border/index.js:130
 msgid "Ridge"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/url-input-popover/index.js:22
 msgid "Opens in new tab"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/url-input-popover/index.js:26
 msgid "Nofollow link"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/url-input-popover/index.js:91
 msgid "Search or type url"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:32
 #: builder/gutenberg/src/components/align-buttons-control/index.js:18
 msgid "Align Left"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:37
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:55
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:78
@@ -6840,40 +6851,40 @@ msgstr ""
 msgid "Align Center"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:42
 #: builder/gutenberg/src/components/align-buttons-control/index.js:28
 msgid "Align Right"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:50
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:73
 msgid "Align Top"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:60
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:83
 msgid "Align Bottom"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/advanced-toolbar-control/index.js:65
 msgid "Stretch"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/align-buttons-control/index.js:33
 msgid "Justified"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/align-buttons-control/index.js:54
 msgid "Align"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/dimensional-control/index.js:136
 #: builder/gutenberg/src/components/dimensional-control/index.js:146
 #: builder/gutenberg/src/components/dimensional-control/index.js:156
@@ -6882,62 +6893,62 @@ msgstr ""
 msgid "%s Top"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/dimensional-control/index.js:174
 msgid "Reset"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/text/index.js:141
 msgid "Text Decoration Line"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/text/index.js:178
 msgid "Text Decoration Style"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/text/index.js:196
 msgid "Text Decoration Color"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/text/index.js:226
 msgid "Text Shadow"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/typography/index.js:40
 msgid "H Offset : "
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/typography/index.js:45
 msgid "V Offest"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/typography/index.js:50
 msgid "Blur"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/typography/index.js:55
 msgid "Spread"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/typography/index.js:66
 msgid "Enable Box Shadow Inset"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/typography/index.js:277
 msgid "Letter Spacing"
 msgstr ""
 
-#: builder/gutenberg/dist/wfacp-block-editor.js:10
+#: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/components/typography/index.js:345
 msgid "Line Height"
 msgstr ""

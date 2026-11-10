@@ -1,0 +1,293 @@
+{
+	"categories": [
+		{
+			"key": "all",
+			"label": "All",
+			"description": "The top five set up your store in priority order."
+		},
+		{
+			"key": "create",
+			"label": "Create",
+			"description": "Build funnels, pages and lead magnets from a short brief."
+		},
+		{
+			"key": "convert",
+			"label": "Convert",
+			"description": "Set up order bumps, upsells, downsells, express pay and auto-applied coupons."
+		},
+		{
+			"key": "analyze",
+			"label": "Analyze",
+			"description": "Get revenue, drop-off and tracking reports without opening a dashboard."
+		},
+		{
+			"key": "grow",
+			"label": "Grow",
+			"description": "Track ad sales, test what converts, capture leads and check a funnel before launch."
+		}
+	],
+	"prompts": [
+		{
+			"id": "v6",
+			"category": "create",
+			"title": "Create a Store Checkout for my shop",
+			"does": "Builds a FunnelKit checkout for your shop from a ready-made template, then helps you review it and switch it on.",
+			"prompt": "Set up the FunnelKit Store Checkout - the checkout every order in my shop goes through.\n1. get-store-checkout. If one is already switched on, tell me and stop. If one exists but is off, go to step 3.\n2. Create it with sensible defaults rather than asking me first: list-funnel-templates with group=wc_checkout for this site's page builder, take Shoppe when Funnel Builder Pro is active (Minimalist if the builder has no Shoppe) and HiFiC otherwise, create-store-checkout with mode=template, then poll get-import-status until it is ready. It starts switched off, so shoppers see no change yet.\n3. In one message: tell me what it built - if the template added an Order Bump or Upsell offer, say so and ask which products to put in them - share the preview link, and ask whether I'd like to switch the checkout on or try a different template first (suggest 3, one sentence each). If I pick another, apply it with update-step-template on the checkout Step.\n4. Once I confirm, switch it on with update-store-checkout.\n\nWhen this is done, if the checkout has no Order Bump, suggest adding one next."
+		},
+		{
+			"id": "v3",
+			"category": "convert",
+			"pro": true,
+			"feature": "Order Bumps",
+			"title": "Add an order bump to my checkout",
+			"does": "Adds a one-tick extra offer to a checkout. You pick the product, discount and look, and approve the wording.",
+			"prompt": "Add an order bump to one of my checkouts.\n1. Ask me which checkout - the Store Checkout (get-store-checkout) or a funnel's (list-funnels) - which product to offer and at what discount. Find the checkout step with get-funnel.\n2. list-bump-skins and describe each in a few words; let me pick.\n3. create-order-bump with that skin; update-bump-products with the product and the discount (search-products for=bump).\n4. Draft the checkbox line, description and badge (update-bump-design) - show me first.\n5. Place it below the payment methods on desktop and mobile (update-bump-settings, positions from get-order-bump).\nGive me the checkout link to preview it.\n\nConfirm with me before each step that changes the store. When this is done, tell me the next setup step: add a one-click upsell after checkout."
+		},
+		{
+			"id": "v4",
+			"category": "convert",
+			"pro": true,
+			"feature": "One Click Upsells",
+			"title": "Add a one-click upsell after checkout",
+			"does": "Adds an upsell offer after checkout with the product and discount you pick, and shows where each answer leads.",
+			"prompt": "Add a one-click upsell to one of my funnels.\n1. Ask me which funnel (list-funnels), which product to offer and at what discount, and read the funnel with get-funnel. If it already has an Upsell step, tell me what its offers sell (get-upsell-offers) and ask whether to edit one or add a new one. If there is no Upsell step, suggest 3 offer page templates (list-funnel-templates type=upsell) and wait for my pick, then create-step (Upsell) with it and place it between the checkout and the thank-you step (reorder-funnel-steps).\n2. Take the offer I chose to edit, or make sure the step has a new one (create-offer, with a template I pick as above), then add the product with the discount (search-products for=offer, update-offer-products).\n3. Show me get-upsell-offers: the offer, its price and where accept/decline lead.\n\nConfirm with me before each step that changes the store. When this is done, tell me the next setup step: connect pixel tracking."
+		},
+		{
+			"id": "g1",
+			"category": "grow",
+			"title": "Turn on pixel tracking for Facebook, Google and TikTok",
+			"does": "Asks for your pixel IDs and Google Ads conversion labels, turns on every event for each platform, lets you switch any off and shares how to test them.",
+			"prompt": "Set up conversion tracking for all my funnels.\n1. Read the pixel tracking group of get-global-settings (pass its group_key) and tell me which platforms are already set up. A platform's settings follow its ID setting (type tracking_id) up to the next one.\n2. Ask me for the IDs I use - Facebook Pixel, Google Analytics, Google Ads, TikTok, Pinterest, Snapchat. Skip any platform I do not use. In the same message ask for the optional extras where the platform has them: for Google Ads, the conversion label of each conversion event (its *_conversion_label settings); for Facebook, the Conversions API access token for server events.\n3. Turn on ALL events for each platform I gave you, not just purchase and add-to-cart: every checkbox or checklist of that platform whose label or option reads \"Enable ... Event\" (PageView, ViewContent, AddtoCart, InitiateCheckout, AddPaymentInfo, Purchase, Lead, order bump and funnel step events). Leave everything else (exclusions, logs, advanced matching, content IDs) as it is. Save the IDs, labels and events in one update-global-settings call.\n4. Show me before/after (masked values stay masked) and, per platform, the events now on. Ask whether I want any of them turned off, and turn off only the ones I name.\n5. For each platform I set up, share the test_guides links on its ID setting in get-global-settings, so I can check its events fire.\n\nConfirm with me before saving."
+		},
+		{
+			"id": "c1",
+			"category": "create",
+			"title": "Build a sales funnel for a product",
+			"does": "Asks which product to sell, builds a funnel from a template you pick and puts the product on its checkout.",
+			"prompt": "I want a sales funnel for one of my products.\n\n1. Ask me which product to sell (find it with search-products for=checkout) and whether to clone one of my existing funnels or start fresh (show me list-funnels if I want to clone).\n2. If fresh: ask me for a short design brief (style, colours, audience), then call list-funnel-templates and suggest 3 templates for my page builder that fit, with one sentence each. Wait for my pick.\n3. Create the funnel with create-funnel using the template I choose, named after the product. Poll get-import-status until it is ready.\n4. Put the product on the checkout step with update-checkout-products.\n5. Show me get-funnel: every step with its live link.\n\nConfirm with me before each step that changes the store. This is the last setup step: then suggest what to try next, such as a pre-launch check on the new funnel."
+		},
+		{
+			"id": "g3",
+			"category": "grow",
+			"pro": true,
+			"feature": "AB Testing",
+			"title": "Start an A/B test on a checkout",
+			"does": "Creates a variant of a checkout with your change, splits traffic between the two and starts the test.",
+			"prompt": "Test this hypothesis on the checkout [step-url]: [test-goal].\n1. resolve-url, then create-ab-test on that step (it becomes the control).\n2. create-ab-test-variant copying the control, then change the variant: [describe the change - e.g. switch template with update-step-template, or change optimizations].\n3. Set traffic to [traffic-split] with update-ab-test and give it a title that states the hypothesis.\n4. start-ab-test. If it refuses, tell me what is missing.\nGive me the admin link to watch it."
+		},
+		{
+			"id": "a4",
+			"category": "analyze",
+			"pro": true,
+			"feature": "Funnel Analytics",
+			"title": "Get my weekly funnel revenue report",
+			"does": "Compares the last 7 days with the week before: revenue, top funnels and offers, and best traffic sources.",
+			"prompt": "Build my weekly funnel report for the last 7 days vs the 7 days before:\n* get-dashboard-overview for both windows: revenue (checkout / upsell / bump), orders, contacts, AOV - with % change\n* get-top-funnels: top 5 sales funnels by revenue and top 3 lead funnels by optins\n* get-offer-performance: top 3 offers and bumps\n* get-revenue-attribution: top 5 traffic sources with share\nFormat: a 3-sentence summary first, then the four sections as tables. Use my store currency and timezone."
+		},
+		{
+			"id": "c2",
+			"category": "grow",
+			"title": "Create an optin page that captures leads",
+			"does": "Builds an optin page for a free download, suggests a short form and emails you each new lead.",
+			"prompt": "Create an optin funnel that collects emails for a free download.\n1. Ask me what I am giving away, who it is for and the look I want, then suggest 3 optin templates (list-funnel-templates) and wait for my pick.\n2. create-funnel with that template, named after what I give away; wait with get-import-status.\n3. Show me the optin fields (get-optin-fields) and suggest keeping only first name + email.\n4. After submit, redirect to the confirmation step (or a URL I give) using update-optin-settings.\n5. Ask me which email address should hear about new leads, and turn on the lead notification email to it with update-optin-actions.\nGive me the live link (get-funnel).\n\nConfirm with me before each step that changes the store."
+		},
+		{
+			"id": "v2",
+			"category": "convert",
+			"title": "Turn on express pay and live field validation",
+			"does": "Turns on express checkout buttons and live field checks, and tells you which gateway the buttons need.",
+			"prompt": "On the checkout [step-url] (resolve-url first):\n1. Show me the current optimizations (get-checkout-optimizations).\n2. Turn on express checkout buttons and inline (live) field validation with update-checkout-optimizations, changing only those keys.\n3. Tell me which gateway must be configured for express buttons to actually appear.\nShow before/after values."
+		},
+		{
+			"id": "v9",
+			"category": "convert",
+			"pro": true,
+			"feature": "Product Selection",
+			"title": "Let buyers choose a product on my checkout",
+			"does": "Puts the products you pick on a checkout and lets buyers choose one or several, with any discount you set.",
+			"prompt": "Let buyers choose between products on one of my checkouts.\n1. Ask me which checkout - the Store Checkout (get-store-checkout) or a funnel's (list-funnels, get-funnel) - and read its products with get-checkout-products.\n2. Ask me which products to offer and any discount; find them with search-products for=checkout.\n3. Ask whether buyers pick one product or can pick several, then save it with update-checkout-products: add the products and set selection_mode (2: pick one, 3: pick many).\n4. Show me the products and selection mode as stored, and give me the checkout link to preview it.\n\nConfirm with me before saving."
+		},
+		{
+			"id": "c6",
+			"category": "create",
+			"title": "Add a sales page before a funnel's checkout",
+			"does": "Adds a landing page from a template you pick and places it before the checkout, so visitors see your pitch.",
+			"prompt": "Add a sales page to my funnel \"[funnel-name]\" so visitors see it before the checkout.\n\n1. Find the funnel with list-funnels and show me its steps (get-funnel).\n2. Ask me for a short brief for the page (what it sells, to whom, tone), then call list-funnel-templates type=landing and suggest 3 templates that fit. Wait for my pick.\n3. Add the page with create-step type=landing and that template.\n4. create-step adds the page at the end, so move it right before the checkout with reorder-funnel-steps.\n5. Show me get-funnel with the new page's live link.\n\nConfirm with me before each step that changes the store."
+		},
+		{
+			"id": "a1",
+			"category": "analyze",
+			"title": "Review my store and plan my FunnelKit setup",
+			"does": "Reads your Store Checkout, funnels and tracking, then lists what to set up next, in order. Changes nothing.",
+			"prompt": "Help me set up FunnelKit on this store. Start by reading what is already here, without changing anything:\n1. get-funnel-builder-context: which FunnelKit products are active and their versions, and the site timezone and currency.\n2. get-store-checkout: is a Store Checkout set up, and is it switched on?\n3. list-funnels (page through all of them): every funnel with its steps and draft steps. Open the ones with a checkout with get-funnel to see whether they have an order bump or an upsell step.\n4. get-global-settings with the tracking group_key: which pixel and analytics IDs are set.\n\nThen give me my setup checklist as ONE table - setup step, status (✅ done / ⚠️ partly / ❌ not yet), what you found - for these steps, in this order:\n1. Store Checkout\n2. An order bump (Pro)\n3. A one-click upsell (Pro)\n4. Pixel tracking\n5. A sales funnel\n\nFor a Pro step when Funnel Builder Pro is not active, say in one line what it would add.\nFinish with the one step I should do next and why.\nRead-only: do not change anything."
+		},
+		{
+			"id": "v10",
+			"category": "convert",
+			"pro": true,
+			"feature": "Order Bumps",
+			"title": "Show an order bump only when it fits the cart",
+			"does": "Sets rules for when a bump appears, such as only when a product is in the cart or the total is over an amount.",
+			"prompt": "Show one of my order bumps only to the buyers it fits.\n1. Ask me which funnel or the Store Checkout (list-funnels, get-store-checkout), find the bump with get-funnel and read its current rules with get-order-bump.\n2. Ask me when it should show - for example only when [product] is in the cart, or when the cart total is over [amount].\n3. Read the allowed rule types with list-step-rule-types (for=bump, id = the bump id) and save the rules with update-bump-rules.\n4. Show me the rules as stored, in plain words.\n\nConfirm with me before saving."
+		},
+		{
+			"id": "v11",
+			"category": "convert",
+			"pro": true,
+			"feature": "One Click Upsells",
+			"title": "Show an upsell only to the buyers it fits",
+			"does": "Sets rules for who sees an upsell, such as only orders with a certain product or over an amount.",
+			"prompt": "Show one of my upsells only to the buyers it fits.\n1. Ask me which funnel (list-funnels), find its upsell step with get-funnel and read its current rules with get-upsell-settings.\n2. Ask me who should see it - for example only orders with [product] in them, or orders over [amount].\n3. Read the allowed rule types with list-step-rule-types (for=upsell) and save the rules with update-upsell-rules.\n4. Show me the rules as stored, in plain words, and what buyers who do not match will see next.\n\nConfirm with me before saving."
+		},
+		{
+			"id": "v12",
+			"category": "convert",
+			"pro": true,
+			"feature": "Auto Apply Coupons",
+			"title": "Apply a coupon automatically at checkout",
+			"does": "Applies a WooCommerce coupon you pick as soon as buyers reach a checkout, so they never have to type it.",
+			"prompt": "Apply one of my coupons automatically at checkout.\n1. Ask me which checkout - a funnel (list-funnels, then get-funnel for its checkout step) or my Store Checkout (get-store-checkout) - and which WooCommerce coupon code to apply. The coupon must already exist in WooCommerce.\n2. Read get-checkout-optimizations and show me the current auto-apply coupon settings.\n3. Turn on auto_apply_coupons for that coupon with update-checkout-optimizations, changing nothing else.\n4. Show me the settings as stored and the checkout link so I can test it.\n\nConfirm with me before saving."
+		},
+		{
+			"id": "c9",
+			"category": "create",
+			"pro": true,
+			"feature": "Thank You Page Rules",
+			"title": "Send buyers to a different thank-you page by product",
+			"does": "Adds a thank-you page for the product you choose and sets rules so only its buyers land there.",
+			"prompt": "In my funnel \"[funnel-name]\", buyers of [product-name] should land on their own thank-you page.\n1. Find the funnel with list-funnels and read it with get-funnel.\n2. Add a Thank You step for them with create-step type=wc_thankyou and a template I pick (list-funnel-templates type=wc_thankyou, suggest 3). Make sure it sits after the checkout and any upsells (reorder-funnel-steps).\n3. Read the allowed rule types with list-step-rule-types (for=thankyou, id = the new step id), then set its rules with update-thankyou-rules so only orders containing [product-name] land on it. Other orders keep the existing thank-you page.\n4. Show me each thank-you step with its rules (get-thankyou-rules) and live link.\n\nConfirm with me before each step that changes the store."
+		},
+		{
+			"id": "a9",
+			"category": "analyze",
+			"pro": true,
+			"feature": "Leads",
+			"title": "Show me my latest leads",
+			"does": "Lists the newest optin sign-ups with their email and what they filled in, for all funnels or one you pick.",
+			"prompt": "Show me my latest leads with list-funnel-leads: email, the fields they submitted and when.\nAsk me whether to look at all funnels or one (list-funnels to find it), and how far back to go.\nReturn ONE table, newest first, then tell me which funnel brought the most leads in that time. Read-only."
+		},
+		{
+			"id": "a10",
+			"category": "analyze",
+			"pro": true,
+			"feature": "Payment Methods Check",
+			"title": "Check which payment methods my checkout offers",
+			"does": "Lists the payment methods buyers can use at checkout and what is still needed for express pay buttons to show.",
+			"prompt": "Check which payment methods buyers can use at my checkout.\n1. List the WooCommerce payment gateways with list-payment-methods: title and whether each is enabled.\n2. Read the express pay settings of my Store Checkout or the checkout I name (get-store-checkout or get-funnel, then get-checkout-optimizations).\n3. Tell me which payment methods buyers see, whether express pay buttons can appear with these gateways, and what to set up if not. Read-only."
+		},
+		{
+			"id": "g9",
+			"category": "grow",
+			"title": "Copy a funnel to another FunnelKit site",
+			"does": "Exports a funnel with all its steps and settings so you can import the same funnel on another FunnelKit site.",
+			"prompt": "Copy my funnel \"[funnel-name]\" to another FunnelKit site.\n1. Find it with list-funnels and export it with export-funnel. Do not summarise the export: keep it and its checksum exactly as returned.\n2. If my other site is also connected to you, call import-funnel there with the export and checksum unchanged. Otherwise save the export as a .json file I can import in that site's Funnel Builder.\n3. Show me the new funnel and its steps on the other site (get-funnel there).\n\nConfirm with me before importing."
+		},
+		{
+			"id": "v7",
+			"category": "convert",
+			"pro": true,
+			"feature": "One Click Upsells",
+			"title": "Offer a cheaper product when an upsell is declined",
+			"does": "Offers a cheaper product to buyers who decline the main upsell, and shows where each answer leads.",
+			"prompt": "On the upsell step of \"[funnel-name]\" (get-funnel, get-upsell-offers):\n* Offer 1: [upsell-product] at [discount] off.\n* If declined, Offer 2 (downsell): [downsell-product].\nIf the step already has offers, tell me what they sell and ask whether to edit them or add new ones.\nCreate the missing offers with create-offer, each with a template I pick (list-funnel-templates type=upsell, suggest 3), and set products with update-offer-products (search-products for=offer).\nThen show me the sequence: which offer shows first, what accept leads to and what decline leads to.\nRemember: offers on one step play as one accept/decline sequence to the same audience."
+		},
+		{
+			"id": "a5",
+			"category": "analyze",
+			"title": "Find funnels that are not tracking sales",
+			"does": "Shows which ad pixels each funnel reports sales to, and flags funnels with none or with different pixel IDs.",
+			"prompt": "Read the tracking settings (get-global-settings) and, for each funnel (list-funnels), get-funnel-settings.\nReturn ONE table: funnel, uses global or override, Facebook, GA, Google Ads, TikTok, Pinterest, Snapchat (set/not set).\nFlag funnels with no tracking at all and overrides that differ from the global IDs without an obvious reason."
+		},
+		{
+			"id": "c3",
+			"category": "create",
+			"pro": true,
+			"feature": "Funnel Duplication",
+			"title": "Copy a funnel for a new product or campaign",
+			"does": "Duplicates a funnel with all its steps and swaps in a new product. Copied bumps and upsells are listed.",
+			"prompt": "Find my funnel \"[funnel-name]\" with list-funnels and duplicate it with duplicate-funnel, titled \"[funnel-name] - [product-name]\".\nOn the copy:\n* replace the checkout product with [product-name] (search-products for=checkout, then update-checkout-products)\n* rename each step so its title mentions [product-name] (update-step)\n* list any Order Bumps and Upsell Offers the copy carried over - do not change them yet, just show me their products so I can decide.\nConfirm the plan with me before you duplicate."
+		},
+		{
+			"id": "g4",
+			"category": "grow",
+			"pro": true,
+			"feature": "AB Testing",
+			"title": "Check how my A/B tests are doing",
+			"does": "Shows conversions and revenue per variant for each running test, and whether a winner is clear. Read-only.",
+			"prompt": "List my A/B tests (list-ab-tests). For every Started test, get-ab-test and get-ab-test-results (overall=true).\nReturn ONE table per test: variant, traffic %, views, conversions, conversion rate, revenue, revenue per visitor.\nThen say, for each test, whether the data is enough to call it (use a simple two-proportion significance check and say the confidence), and what to do next.\nRead-only."
+		},
+		{
+			"id": "g8",
+			"category": "grow",
+			"pro": true,
+			"feature": "AB Testing",
+			"title": "Pick the winner of an A/B test",
+			"does": "Recommends a winner and, once you type confirm, makes it the live page and ends the test. Can't be undone.",
+			"prompt": "For my test on \"[funnel-name]\" (list-ab-tests, get-ab-test), show the results (get-ab-test-results overall=true) and recommend a winner.\nWarn me: declaring a winner is irreversible - the winner's design and settings replace the control at the live URL and the test ends.\nOnly after I type \"confirm\", call declare-ab-test-winner with my chosen variant."
+		},
+		{
+			"id": "a3",
+			"category": "analyze",
+			"pro": true,
+			"feature": "Funnel Analytics",
+			"title": "Find the step where a funnel loses buyers",
+			"does": "Shows views and conversions per step, finds the biggest drop-off, and suggests three fixes.",
+			"prompt": "For \"[funnel-name]\" (list-funnels to find it), call get-funnel-analytics (all-time) and list each step: views, conversions, conversion rate, revenue.\nIdentify the step with the biggest drop-off and explain the likely causes for that step type.\nThen pull get-step-stats for that step for [date-range] and tell me whether it is getting better or worse.\nSuggest 3 fixes, each naming the tool you would use."
+		},
+		{
+			"id": "a6",
+			"category": "analyze",
+			"pro": true,
+			"feature": "Funnel Analytics",
+			"title": "See how much bumps and upsells add to revenue",
+			"does": "Shows revenue from bumps and upsells, their share of sales, and order value with and without them.",
+			"prompt": "For [date-range], read get-dashboard-overview and get-offer-performance.\nTell me: total revenue, revenue from order bumps and from upsells, their share, and the AOV with and without them.\nList the 3 offers contributing most. If bumps and upsells are under 10% of revenue, suggest where to add new ones."
+		},
+		{
+			"id": "a8",
+			"category": "analyze",
+			"pro": true,
+			"feature": "UTM and Referrer tracking",
+			"title": "See which traffic sources bring buyers",
+			"does": "Ranks traffic sources by orders, revenue and optins, and warns if many orders lack UTM tags.",
+			"prompt": "For [date-range], call get-revenue-attribution.\nReturn ONE table: source, orders, revenue, optins, revenue share %.\nThen list-funnel-orders for the same window and check how many orders have no UTM attribution - if it is more than 20%, tell me what to fix in my campaign links."
+		},
+		{
+			"id": "g5",
+			"category": "grow",
+			"title": "Email me whenever someone opts in",
+			"does": "Turns on an email to you for each optin, with a clear subject and every field the visitor filled in.",
+			"prompt": "For the optin step of \"[funnel-name]\" (get-funnel), read get-optin-settings.\nWith update-optin-actions, enable the lead notification email to [email] with the subject \"New lead: [funnel-name]\" and a short HTML body listing the submitted fields.\nShow me the stored values."
+		},
+		{
+			"id": "c5",
+			"category": "create",
+			"pro": true,
+			"feature": "Multistep Checkout",
+			"title": "Build a funnel with a multi-page checkout",
+			"does": "Builds a sales funnel whose checkout splits contact, shipping and payment across 2 or 3 pages.",
+			"prompt": "Create a sales funnel for [product-name] with a [2 or 3]-step checkout, so contact, shipping and payment sit on separate pages.\n\n1. Ask me for a short design brief (style, colours, audience), then call list-funnel-templates and suggest 3 funnel templates for my page builder that fit, with one sentence each. Wait for my pick.\n2. Create the funnel with create-funnel using that template, named \"[funnel-name]\", with checkout_steps=[2 or 3]. Poll get-import-status until it is ready and tell me how the checkout form landed.\n3. Put [product-name] on the checkout step (search-products for=checkout, then update-checkout-products).\n4. Show me get-funnel: every step with its live link.\n\nConfirm with me before each step that changes the store."
+		},
+		{
+			"id": "c7",
+			"category": "create",
+			"title": "Add a thank-you page to a funnel",
+			"does": "Adds a thank-you page from a template you pick, placed after the checkout and any upsells.",
+			"prompt": "Give my funnel \"[funnel-name]\" a thank-you page that matches its design.\n\n1. Find the funnel with list-funnels and read it with get-funnel. If it already has a Thank You step, tell me and ask whether I would rather give that one a new design.\n2. Call list-funnel-templates type=wc_thankyou and suggest 3 templates that fit the funnel's look. Wait for my pick.\n3. Add it with create-step type=wc_thankyou and that template. Steps are added at the end, so make sure it sits after the checkout and any upsells (reorder-funnel-steps).\n4. Show me its settings (get-step-settings) and suggest anything worth changing with update-thankyou-settings.\n5. Give me the live link (get-funnel).\n\nConfirm with me before each step that changes the store."
+		},
+		{
+			"id": "c8",
+			"category": "create",
+			"title": "Redesign a funnel page with a new template",
+			"does": "Swaps a funnel page's design for a template you pick. Warns you first, as your edits to it are replaced.",
+			"prompt": "I want a new design for the [step-type] step of my funnel \"[funnel-name]\".\n\n1. Find the funnel with list-funnels and the step with get-funnel.\n2. Ask me what I want to change about the look, then call list-funnel-templates for that step type and suggest 3 templates for my page builder, with one sentence each. Wait for my pick.\n3. Warn me that a new template replaces the page content, so any edits I made to it are lost. Only after I confirm, apply it with update-step-template. (For an upsell, the design belongs to its offers: use update-offer-template instead.)\n4. Give me the live link so I can check it (get-funnel)."
+		},
+		{
+			"id": "g2",
+			"category": "grow",
+			"title": "Check a funnel is ready before I send traffic",
+			"does": "Checks steps, products, prices, express pay, tracking and offers before launch, with a fix for each issue.",
+			"prompt": "Run a pre-launch check. Ask me which funnel (list-funnels), or check my Store Checkout (get-store-checkout):\n* every step published and in the right order (get-funnel, get-step)\n* checkout products, prices, discounts and stock (get-checkout-products)\n* express pay and validation on (get-checkout-optimizations)\n* tracking IDs set globally or for this funnel (get-global-settings, get-funnel-settings)\n* order bumps and upsells have products (if Pro is active)\nReturn a checklist with ✅ / ❌ per item and the fix for every ❌. Read-only."
+		}
+	]
+}

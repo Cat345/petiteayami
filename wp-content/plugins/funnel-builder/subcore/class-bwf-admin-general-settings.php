@@ -221,6 +221,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 					'pint_exclude_from_total'             => array(),
 					'gad_key'                             => '',
 					'gad_conversion_label'                => '',
+					'gad_merchant_id'                     => '',
 					'gad_lead_conversion_label'           => '',
 					'gad_addtocart_checkout_conversion_label' => '',
 					'gad_addtocart_bump_conversion_label' => '',
@@ -485,6 +486,12 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 				$db_options = array();
 			}
 			$options = array_merge( $this->default_general_settings(), $db_options, $options );
+
+			/* Merchant Center IDs are digits only; anything else is saved empty instead of half-used. */
+			if ( isset( $options['gad_merchant_id'] ) ) {
+				$merchant_id                = preg_replace( '/\s+/', '', (string) $options['gad_merchant_id'] );
+				$options['gad_merchant_id'] = ctype_digit( $merchant_id ) ? $merchant_id : '';
+			}
 
 			if ( $options !== 0 ) {
 				update_option( 'bwf_gen_config', $options, true );

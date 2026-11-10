@@ -26,7 +26,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Password_Protected' ) ) {
 				return $status;
 			}
 
-			if ( strpos( $rest_route, 'autonami' ) !== false || strpos( $rest_route, 'woofunnel' ) !== false ) {
+			if ( strpos( $rest_route, 'autonami' ) !== false || strpos( $rest_route, 'woofunnel' ) !== false || 0 === strpos( ltrim( (string) $rest_route, '/' ), 'funnelkit/' ) ) {
 				return false;
 			}
 

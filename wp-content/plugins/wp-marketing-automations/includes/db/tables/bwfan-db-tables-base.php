@@ -10,6 +10,16 @@ abstract class BWFAN_DB_Tables_Base {
 	public $collation = null;
 
 	/**
+	 * Move a row stored with primary key 0 to a real ID when repairing AUTO_INCREMENT.
+	 * Only for table classes whose primary key no other row points to; the rest keep the row as it is.
+	 * Core tables have no table class: BWFAN_Table_Validation_Controller::check_core_tables_auto_increment()
+	 * moves their ID 0 rows, and rows that point to an old ID 0 are not updated.
+	 *
+	 * @var bool
+	 */
+	public $renumber_zero_pk = false;
+
+	/**
 	 * Checking table exists or not
 	 *
 	 * @return bool
@@ -322,9 +332,24 @@ abstract class BWFAN_DB_Tables_Base {
 
 					$query = "ALTER TABLE `{$safe_table_name}` MODIFY COLUMN `{$safe_pk_column}` " . implode( ' ', $modify_parts ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 
+					if ( $this->renumber_zero_pk ) {
+						$db_errors = array_merge( $db_errors, $this->renumber_zero_primary_key( $safe_table_name, $safe_pk_column ) );
+					}
+
+					/**
+					 * MySQL renumbers a row with ID 0 while adding AUTO_INCREMENT, which fails with a
+					 * duplicate entry when ID 1 exists. NO_AUTO_VALUE_ON_ZERO keeps the row as it is.
+					 */
+					$sql_mode = (string) $wpdb->get_var( 'SELECT @@SESSION.sql_mode' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->query( $wpdb->prepare( 'SET SESSION sql_mode = %s', trim( $sql_mode . ',NO_AUTO_VALUE_ON_ZERO', ',' ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
 					$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- hardcoded table/pk; type from SHOW COLUMNS; default esc_sql()d
-					if ( ! empty( $wpdb->last_error ) ) {
-						$db_errors[] = "Error adding AUTO_INCREMENT to primary key column '{$existing_primary_key}' in table {$this->table_name}: " . $wpdb->last_error;
+					$alter_error = $wpdb->last_error; // The restore below clears last_error
+
+					$wpdb->query( $wpdb->prepare( 'SET SESSION sql_mode = %s', $sql_mode ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+					if ( ! empty( $alter_error ) ) {
+						$db_errors[] = "Error adding AUTO_INCREMENT to primary key column '{$existing_primary_key}' in table {$this->table_name}: " . $alter_error;
 					}
 				}
 			}
@@ -335,6 +360,23 @@ abstract class BWFAN_DB_Tables_Base {
 		$db_errors = array_merge( $db_errors, $this->check_and_fix_indexes( $safe_table_name, $expected_unique_keys, $existing_key_names, $column_lookup, true ) );
 
 		return ! empty( $db_errors ) ? $db_errors : true;
+	}
+
+	/**
+	 * Move a row with primary key 0 to the next free ID
+	 *
+	 * @param string $safe_table_name Escaped table name
+	 * @param string $safe_pk_column Escaped primary key column name
+	 *
+	 * @return array Array of errors
+	 */
+	private function renumber_zero_primary_key( $safe_table_name, $safe_pk_column ) {
+		global $wpdb;
+
+		$next_id = (int) $wpdb->get_var( "SELECT MAX(`{$safe_pk_column}`) FROM `{$safe_table_name}`" ) + 1; // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table/pk from class definition
+		$wpdb->query( $wpdb->prepare( "UPDATE `{$safe_table_name}` SET `{$safe_pk_column}` = %d WHERE `{$safe_pk_column}` = 0", $next_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table/pk from class definition; value bound via prepare
+
+		return ! empty( $wpdb->last_error ) ? array( "Error moving row with {$safe_pk_column} 0 in table {$this->table_name}: " . $wpdb->last_error ) : array();
 	}
 
 	/**

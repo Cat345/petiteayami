@@ -1571,6 +1571,7 @@ class BWFAN_API_Contacts_Controller extends BWFAN_API_Controller {
 				$order_data = wc_get_order( $order_id );
 				if ( $order_data instanceof WC_Order ) {
 					$conv_order['coupons']       = $order_data->get_coupon_codes();
+					$conv_order['order_total']   = $order_data->get_total();
 					$conv_order['currency']      = BWFAN_Automations::get_currency( $order_data->get_currency() );
 					$conv_order['customer_info'] = [
 						'email'            => $order_data->get_billing_email(),

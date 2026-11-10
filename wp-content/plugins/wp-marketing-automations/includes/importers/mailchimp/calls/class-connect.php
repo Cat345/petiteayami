@@ -24,6 +24,9 @@ class Connect extends Call {
 		if ( empty( $dc ) && ! empty( $api_key ) ) {
 			$dc = substr( strstr( $api_key, '-' ), 1 );
 		}
+		if ( ! self::is_valid_dc( $dc ) ) {
+			return '';
+		}
 
 		return "https://{$dc}.api.mailchimp.com/3.0/{$api_action}";
 	}

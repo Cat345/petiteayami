@@ -282,18 +282,19 @@ abstract class BWFAN_Event {
 		switch ( $details['id'] ) {
 			case 'condition':
 				$group_id         = $details['group_id'];
-				$group_conditions = $automation_meta['condition'][ $group_id ];
+				/** A condition block can be added to the UI and saved before any rule is configured; no key then exists in the saved conditions */
+				$group_conditions = $automation_meta['condition'][ $group_id ] ?? [];
 				$is_passed        = BWFAN_Core()->rules->match_groups( $group_conditions );
 
 				if ( $is_passed ) {
-					$return_data['actions']  = $automation_meta['actions'][ $group_id ];
+					$return_data['actions']  = $automation_meta['actions'][ $group_id ] ?? [];
 					$return_data['group_id'] = $group_id;
 					$this->validation_passed = true;
 				}
 				break;
 			case 'action':
 				$group_id                = $details['group_id'];
-				$return_data['actions']  = $automation_meta['actions'][ $group_id ];
+				$return_data['actions']  = $automation_meta['actions'][ $group_id ] ?? [];
 				$return_data['group_id'] = $group_id;
 				break;
 			default:

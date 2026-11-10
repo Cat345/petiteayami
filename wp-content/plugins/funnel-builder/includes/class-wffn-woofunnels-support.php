@@ -13,14 +13,8 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 
 			$this->encoded_basename = sha1( WFFN_PLUGIN_BASENAME );
 
-			add_action( 'admin_menu', array( $this, 'register_admin_menu' ), 85 );
-			if ( ! WFFN_Common::skip_automation_page() ) {
-				add_action( 'admin_menu', array( $this, 'register_automations_menu' ), 901 );
-			}
-			if ( ! WFFN_Common::skip_subscriptions_page() && 'activated' !== WFFN_Common::get_plugin_status( 'sublium-subscriptions-for-woocommerce/sublium-subscriptions-for-woocommerce.php' ) ) {
-				add_action( 'admin_menu', array( $this, 'register_subscriptions_menu' ), 902 );
-			}
 			add_action( 'admin_menu', array( $this, 'register_menu_for_pro' ), 999 );
+
 			add_action( 'admin_menu', array( $this, 'add_menus' ), 81 );
 			add_filter( 'woofunnels_register_usage_collectors', array( 'WFFN_Usage_Collector', 'add_to_registry' ), 10, 1 );
 
@@ -93,19 +87,6 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 				WooFunnels_dashboard::$is_core_menu = true;
 			}
 		}
-
-		public function register_admin_menu() {
-			WFFN_Core()->admin->register_admin_menu();
-		}
-
-		public function register_automations_menu() {
-			WFFN_Core()->admin->add_automations_menu();
-		}
-
-		public function register_subscriptions_menu() {
-			WFFN_Core()->admin->add_subscriptions_menu();
-		}
-
 
 		private function get_campaign_url( $campaign ) {
 			$url = 'https://funnelkit.com/exclusive-offer/';

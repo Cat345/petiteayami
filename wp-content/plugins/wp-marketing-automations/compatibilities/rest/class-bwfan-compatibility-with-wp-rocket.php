@@ -24,6 +24,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Wp_Rocket' ) ) {
 			$uris[] = "/wp-json/" . BWFAN_API_NAMESPACE . "/*";
 			$uris[] = "/wp-json/woofunnels/*";
 			$uris[] = "/wp-json/funnelkit-automations/*";
+			$uris[] = "/wp-json/funnelkit/*";
 
 			return $uris;
 		}

@@ -5,14 +5,13 @@ namespace MailPoet\Abilities;
 if (!defined('ABSPATH')) exit;
 
 
-use MailPoet\Features\FeaturesController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 /**
  * Registers read-only MailPoet abilities through the core Abilities API,
- * independent of WooCommerce, behind the mcp_abilities feature flag.
+ * independent of WooCommerce.
  */
 class AbilitiesRegistrar {
   public const CATEGORY = 'mailpoet';
@@ -23,9 +22,6 @@ class AbilitiesRegistrar {
     RecentNewslettersAbility::NAME,
   ];
 
-  /** @var FeaturesController */
-  private $featuresController;
-
   /** @var WPFunctions */
   private $wp;
 
@@ -33,13 +29,11 @@ class AbilitiesRegistrar {
   private $abilities;
 
   public function __construct(
-    FeaturesController $featuresController,
     WPFunctions $wp,
     SendingStatusAbility $sendingStatusAbility,
     UnsubscribeTrendAbility $unsubscribeTrendAbility,
     RecentNewslettersAbility $recentNewslettersAbility
   ) {
-    $this->featuresController = $featuresController;
     $this->wp = $wp;
     $this->abilities = [
       $sendingStatusAbility,
@@ -54,9 +48,6 @@ class AbilitiesRegistrar {
   }
 
   public function registerCategory(): void {
-    if (!$this->isEnabled()) {
-      return;
-    }
     $this->wp->registerAbilityCategory(self::CATEGORY, [
       'label' => __('MailPoet', 'mailpoet'),
       'description' => __('Read MailPoet email marketing data: sending health, subscriber limits, and email statistics.', 'mailpoet'),
@@ -64,9 +55,6 @@ class AbilitiesRegistrar {
   }
 
   public function registerAbilities(): void {
-    if (!$this->isEnabled()) {
-      return;
-    }
     foreach ($this->abilities as $ability) {
       $this->wp->registerAbility(
         $ability->getName(),
@@ -88,9 +76,5 @@ class AbilitiesRegistrar {
         'idempotent' => true,
       ],
     ];
-  }
-
-  private function isEnabled(): bool {
-    return $this->featuresController->isSupported(FeaturesController::FEATURE_MCP_ABILITIES);
   }
 }

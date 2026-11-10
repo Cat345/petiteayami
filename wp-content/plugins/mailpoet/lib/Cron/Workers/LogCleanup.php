@@ -27,7 +27,7 @@ class LogCleanup extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $startTime = microtime(true);
+    $startTime = (float)Carbon::now()->format('U.u');
 
     do {
       $this->cronHelper->enforceExecutionLimit($timer);
@@ -41,7 +41,7 @@ class LogCleanup extends SimpleWorker {
       // or if we've exceeded the maximum execution time
       if (
         $deleted < self::BATCH_SIZE ||
-          (microtime(true) - $startTime) > self::MAX_EXECUTION_TIME
+          ((float)Carbon::now()->format('U.u') - $startTime) > self::MAX_EXECUTION_TIME
       ) {
         break;
       }

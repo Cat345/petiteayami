@@ -351,6 +351,17 @@ if ( ! class_exists( 'WFACP_Elementor' ) ) {
 
 
 		public function enqueue_scripts() {
+			/**
+			 * Elementor puts only the current post's CSS in the head. initialize_elementor_widgets() makes the checkout
+			 * the current post, but any wp_reset_query() before this hook (e.g. from another plugin) resets it to the
+			 * host page, so the checkout CSS is printed in the footer and the form paints unstyled first.
+			 * Runs only when the current post is no longer the checkout (it stays the checkout
+			 * on dedicated checkout URLs) and in External File mode (Internal Embedding prints the CSS inline).
+			 */
+			if ( $this->wfacp_id > 0 && (int) get_the_ID() !== (int) $this->wfacp_id && 'internal' !== get_option( 'elementor_css_print_method' ) && class_exists( '\Elementor\Core\Files\CSS\Post' ) && ! wfacp_elementor_edit_mode() ) {
+				\Elementor\Core\Files\CSS\Post::create( $this->wfacp_id )->enqueue();
+			}
+
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Checking for Elementor preview parameter
 			if ( isset( $_REQUEST['elementor-preview'] ) ) {
 				$preview_id = absint( $_REQUEST['elementor-preview'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck

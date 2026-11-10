@@ -675,8 +675,11 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			}
 			if ( isset( $_COOKIE['_fbc'] ) && ! empty( $_COOKIE['_fbc'] ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.NonceVerification.Recommended -- Reading cookie data for tracking, nonce verification not required
 				$user_data['_fbc'] = wc_clean( wp_unslash( $_COOKIE['_fbc'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
-			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.NonceVerification.Recommended -- Reading cookie data for tracking, nonce verification not required
-				$user_data['_fbc'] = 'fb.1.' . strtotime( sanitize_text_field( wp_unslash( $_COOKIE['wffn_flt'] ) ) ) . '.' . sanitize_text_field( wp_unslash( $_COOKIE['wffn_fbclid'] ) );
+			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.NonceVerification.Recommended -- Reading cookie data for tracking, nonce verification not required
+				$fbc_time = strtotime( get_gmt_from_date( sanitize_text_field( wp_unslash( $_COOKIE['wffn_flt'] ) ) ) );
+				if ( $fbc_time > 0 ) {
+					$user_data['_fbc'] = 'fb.1.' . ( $fbc_time * 1000 ) . '.' . sanitize_text_field( wp_unslash( $_COOKIE['wffn_fbclid'] ) );
+				}
 			}
 
 			foreach ( $get_each_pixel_id as $key => $pixel_id ) {

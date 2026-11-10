@@ -785,7 +785,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 						'ecomm_prodid'     => wp_list_pluck( $google_ads_products, 'id' ),
 						'ecomm_pagetype'   => 'purchase',
 						'ecomm_totalvalue' => array_sum( wp_list_pluck( $google_ads_products, 'price' ) ),
-					)
+					) + $this->get_gad_cart_data( $order->get_total_discount() )
 				);
 				$ga  = apply_filters(
 					'wffn_ecomm_tracking_ga_params',

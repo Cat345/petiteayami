@@ -2375,7 +2375,9 @@ class BWFAN_Rule_Order_Items_Data extends BWFAN_Rule_Base {
 			return $this->return_is_match( false, $rule_data );
 		}
 
+		/** Meta can be non-scalar (serialized arrays/objects) or have surrounding whitespace, so only compare trimmed scalar values */
 		$item_meta_value = wc_get_order_item_meta( $single_item_id, $meta_key );
+		$item_meta_value = is_scalar( $item_meta_value ) ? trim( (string) $item_meta_value ) : '';
 		$value           = ( '' !== $item_meta_value ) ? array( $item_meta_value ) : array();
 
 		// Convert all values to lowercase for case-insensitive comparison

@@ -2316,6 +2316,73 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			}
 		}
 
+		/**
+		 * Whether Elementor's Atomic Editor (V4 elements) is on. The template
+		 * library then serves a template's atomic version where it has one.
+		 *
+		 * @return bool
+		 */
+		public static function is_elementor_atomic_active() {
+			try {
+				if ( ! class_exists( '\Elementor\Plugin' ) || ! isset( \Elementor\Plugin::$instance->experiments ) ) {
+					return false;
+				}
+
+				return \Elementor\Plugin::$instance->experiments->is_feature_active( 'e_atomic_elements' );
+			} catch ( Throwable $e ) {
+				return false;
+			}
+		}
+
+		/**
+		 * Enqueues the email typo suggestion script, shared by the checkout billing email and the optin email field.
+		 * Each page type keeps its own on/off setting and suggestion text and calls this when it is on.
+		 *
+		 * @param string $prompt Suggestion text; %s is replaced with the suggested email. Empty uses the default text.
+		 *
+		 * @return void
+		 */
+		public static function enqueue_email_suggestion( $prompt = '' ) {
+			if ( wp_script_is( 'wffn-email-suggestion', 'enqueued' ) ) {
+				return;
+			}
+
+			$live_or_dev = 'live';
+			$suffix      = '.min';
+			if ( defined( 'WFFN_IS_DEV' ) && true === WFFN_IS_DEV ) {
+				$live_or_dev = 'dev';
+				$suffix      = '';
+			}
+
+			wp_enqueue_script(
+				'wffn-email-suggestion',
+				plugin_dir_url( WFFN_PLUGIN_FILE ) . 'assets/' . $live_or_dev . '/js/email-suggestion' . $suffix . '.js',
+				array(),
+				WFFN_VERSION,
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+
+			/**
+			 * Filters the extra mailbox domains the email typo suggestion matches a mistyped address against.
+			 *
+			 * @param string[] $domains Domains such as 'example.com' or 'example.co.uk', added to the built-in provider list.
+			 */
+			$domains = apply_filters( 'wffn_email_suggestion_domains', array() );
+
+			wp_localize_script(
+				'wffn-email-suggestion',
+				'wffnEmailSuggestionVars',
+				array(
+					/* translators: %s: the suggested email address */
+					'prompt'  => ! empty( $prompt ) ? $prompt : __( 'Did you mean %s?', 'funnel-builder' ),
+					'domains' => array_values( array_filter( array_map( 'sanitize_text_field', (array) $domains ) ) ),
+				)
+			);
+		}
+
 		public static function sanitize_global_css( $css ) {
 			if ( ! is_string( $css ) || '' === $css ) {
 				return '';

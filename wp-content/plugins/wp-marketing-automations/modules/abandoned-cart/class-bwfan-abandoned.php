@@ -74,6 +74,7 @@ class BWFAN_Abandoned_Cart {
 		add_action( 'wp', [ $this, 'handle_restore_cart' ], 5 );
 
 		add_action( 'woocommerce_after_calculate_totals', [ $this, 'trigger_update_on_cart_and_checkout_pages' ] );
+		add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'add_cart_hash_fragment' ] );
 		// prefill the checkout fields after the cart is restored
 		add_filter( 'woocommerce_billing_fields', [ $this, 'prefill_billing_fields' ], 20 );
 		add_filter( 'woocommerce_shipping_fields', [ $this, 'prefill_shipping_fields' ], 20 );
@@ -713,6 +714,22 @@ class BWFAN_Abandoned_Cart {
 		) {
 			$this->cart_updated();
 		}
+	}
+
+	/**
+	 * Pass the cart hash with every checkout refresh, so the tracking script can tell a refresh that
+	 * changed the cart or its totals from one that changed nothing and skip the save for the latter.
+	 *
+	 * @param array $fragments update_order_review fragments.
+	 *
+	 * @return array
+	 */
+	public function add_cart_hash_fragment( $fragments ) {
+		if ( is_array( $fragments ) && function_exists( 'WC' ) && ! is_null( WC()->cart ) ) {
+			$fragments['bwfan_cart_hash'] = WC()->cart->get_cart_hash();
+		}
+
+		return $fragments;
 	}
 
 	/**
@@ -1595,6 +1612,21 @@ class BWFAN_Abandoned_Cart {
 	}
 
 	/**
+	 * Sanitize a single checkout field value, rejecting PHP-serialized strings so a
+	 * serialized object payload can never be stored and later unserialized (object injection).
+	 *
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	public static function sanitize_checkout_field( $value ) {
+		/** Sanitize first: tag/octet stripping could otherwise rebuild a serialized string (O<x>:8:... becomes O:8:...). */
+		$value = sanitize_text_field( $value );
+
+		return is_serialized( $value ) ? '' : $value;
+	}
+
+	/**
 	 * Insert Abandoned Cart
 	 *
 	 * @since 1.0.0
@@ -1640,7 +1672,7 @@ class BWFAN_Abandoned_Cart {
 
 		$exclude_checkout_fields = apply_filters( 'bwfan_ab_exclude_checkout_fields', array() );
 		$data                    = [
-			'fields'               => isset( $_POST['checkout_fields_data'] ) && is_array( $_POST['checkout_fields_data'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['checkout_fields_data'] ) ) : [],
+			'fields'               => isset( $_POST['checkout_fields_data'] ) && is_array( $_POST['checkout_fields_data'] ) ? array_map( array( __CLASS__, 'sanitize_checkout_field' ), wp_unslash( $_POST['checkout_fields_data'] ) ) : [], // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each value sanitised by sanitize_checkout_field()
 			//phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 			'current_page_id'      => isset( $_POST['current_page_id'] ) ? sanitize_text_field( $_POST['current_page_id'] ) : '',
 			//phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput

@@ -26,7 +26,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		public function __construct() {
 
 			/** Admin enqueue scripts*/
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_assets' ), 99 );
+			add_action( WFFN_Features::APP_ENQUEUE_HOOK, array( $this, 'admin_enqueue_assets' ), WFFN_Features::APP_ENQUEUE_PRIORITY );
+			/** The FunnelKit submenu, in one place: see register_admin_menu() */
+			add_action( 'admin_menu', array( $this, 'register_admin_menu' ), 85 );
+			/** Feature menu items are checked for availability before the menu renders */
+			add_action( WFFN_Features::APP_ENQUEUE_HOOK, array( $this, 'filter_available_menus' ), 10 );
 			if ( $this->is_wffn_flex_page( 'all' ) ) {
 				add_action( 'admin_enqueue_scripts', array( $this, 'js_variables' ), 0 );
 			}
@@ -508,42 +512,27 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			return $settings;
 		}
 
-		public function add_automations_menu() {
-
-			if ( class_exists( 'BWFAN_Core' ) ) {
-				return;
-			}
-			$user = WFFN_Role_Capability::get_instance()->user_access( 'menu', 'read' );
-			if ( $user ) {
-				add_submenu_page(
-					'woofunnels',
-					__( 'Automations', 'funnel-builder' ),
-					__( 'Automations', 'funnel-builder' ),
-					$user,
-					'bwf&path=/automations',
-					array(
-						$this,
-						'bwf_funnel_pages',
-					)
-				);
+		/**
+		 * Checks the availability of the feature menu items and removes those that are
+		 * not available (WFFN_Features::is_available).
+		 *
+		 * @return void
+		 */
+		public function filter_available_menus() {
+			foreach ( $this->get_feature_menu_items() as $item ) {
+				if ( ! $this->is_menu_item_available( $item ) ) {
+					remove_submenu_page( 'woofunnels', self::get_menu_slug( $item ) );
+				}
 			}
 		}
 
-		public function add_subscriptions_menu() {
-			$user = WFFN_Role_Capability::get_instance()->user_access( 'menu', 'read' );
-			if ( $user ) {
-				add_submenu_page(
-					'woofunnels',
-					__( 'Subscriptions', 'funnel-builder' ),
-					__( 'Subscriptions', 'funnel-builder' ) . '<span style="padding-left: 2px;color: #f18200; vertical-align: super; font-size: 9px;"> NEW!</span>',
-					$user,
-					'bwf&path=/subscriptions',
-					array(
-						$this,
-						'bwf_funnel_pages',
-					)
-				);
-			}
+		/**
+		 * @param array $item Menu item, optionally with a 'feature' key.
+		 *
+		 * @return bool Whether the item's feature, if it has one, can open on this site.
+		 */
+		public function is_menu_item_available( $item ) {
+			return empty( $item['feature'] ) || WFFN_Features::is_available( $item['feature'] );
 		}
 
 		/**
@@ -728,6 +717,105 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			return $count_html;
 		}
 
+		/**
+		 * Key of the one menu item that carries the NEW badge, in the WP submenu and in the
+		 * app header alike. Keys are those of get_core_menu_items() / get_feature_menu_items()
+		 * or a sibling product key from WFFN_Sibling_Promo::get_products(). '' shows no badge.
+		 *
+		 * @return string
+		 */
+		public function get_new_menu_item() {
+			return 'funnelkit-ai';
+		}
+
+		/**
+		 * Band 1: the fixed FunnelKit screens, in display order. Never reordered, never
+		 * interleaved with anything else.
+		 *
+		 * Item shape: key => array( 'title' => string, 'path' => app route, '' for the dashboard ).
+		 *
+		 * @return array[]
+		 */
+		public function get_core_menu_items() {
+			return array(
+				'dashboard'      => array(
+					'title' => __( 'Dashboard', 'funnel-builder' ),
+					'path'  => '',
+				),
+				'funnels'        => array(
+					'title' => __( 'Funnels', 'funnel-builder' ),
+					'path'  => '/funnels',
+				),
+				'store-checkout' => array(
+					'title' => __( 'Store Checkout', 'funnel-builder' ),
+					'path'  => '/store-checkout',
+				),
+				'analytics'      => array(
+					'title' => __( 'Analytics', 'funnel-builder' ),
+					'path'  => '/analytics',
+				),
+				'templates'      => array(
+					'title' => __( 'Templates', 'funnel-builder' ),
+					'path'  => '/templates',
+				),
+			);
+		}
+
+		/**
+		 * Band 2: built-in feature screens that ship in the admin app, newest last. An item with
+		 * a 'feature' (a WFFN_Features key) is registered here and removed again in
+		 * filter_available_menus() once its availability is known; the header drops it the same way.
+		 *
+		 * @return array[] Same shape as get_core_menu_items(), plus optional 'feature'.
+		 */
+		public function get_feature_menu_items() {
+			return array(
+				'funnelkit-ai' => array(
+					'title'   => __( 'AI & MCP', 'funnel-builder' ),
+					'path'    => '/ai-mcp',
+					'feature' => 'funnelkit_ai',
+				),
+			);
+		}
+
+		/**
+		 * Band 3: FunnelKit Cart, the one sibling product with a permanent entry. Once the Cart
+		 * plugin is active it adds its own page here (slug 'fkcart'), which lands in this same
+		 * position; until then Funnel Builder's Cart page stands in. It is never rotated, snoozed
+		 * or dismissed, unlike the products WFFN_Sibling_Promo handles.
+		 *
+		 * @return array Same shape as a get_core_menu_items() item.
+		 */
+		public function get_cart_menu_item() {
+			return array(
+				'title' => __( 'Cart', 'funnel-builder' ),
+				'path'  => '/cart',
+			);
+		}
+
+		/**
+		 * @return bool Whether FunnelKit Cart is active and registers its own page.
+		 */
+		public function is_cart_active() {
+			return defined( 'FKCART_VERSION' );
+		}
+
+		/**
+		 * The FunnelKit submenu, registered from one place in display order:
+		 *
+		 *   1. core      get_core_menu_items()
+		 *   2. features  get_feature_menu_items()
+		 *   3. cart      get_cart_menu_item(), or the Cart plugin's own page
+		 *   4. sibling   the one other FunnelKit product promoted right now (WFFN_Sibling_Promo)
+		 *   5. settings  Settings
+		 *
+		 * Upgrade to Pro and the seasonal campaign link are not part of this list; they follow
+		 * from WFFN_WooFunnels_Support::register_menu_for_pro() at admin_menu 999.
+		 *
+		 * @hooked admin_menu - 85
+		 *
+		 * @return void
+		 */
 		public function register_admin_menu() {
 			$steps = WFFN_Core()->steps->get_supported_steps();
 			if ( count( $steps ) < 1 ) {
@@ -735,67 +823,83 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			}
 
 			$user = WFFN_Role_Capability::get_instance()->user_access( 'menu', 'read' );
-			if ( $user ) {
+			if ( ! $user ) {
+				return;
+			}
 
-				add_submenu_page(
-					'woofunnels',
-					__( 'Dashboard', 'funnel-builder' ),
-					__( 'Dashboard', 'funnel-builder' ),
-					$user,
-					'bwf',
-					array(
-						$this,
-						'bwf_funnel_pages',
-					)
-				);
+			/** 1. Core */
+			foreach ( $this->get_core_menu_items() as $key => $item ) {
+				$this->add_menu_page( $key, $item, $user );
+			}
 
-				add_submenu_page(
-					'woofunnels',
-					__( 'Funnels', 'funnel-builder' ),
-					__( 'Funnels', 'funnel-builder' ),
-					$user,
-					'bwf&path=/funnels',
-					array(
-						$this,
-						'bwf_funnel_pages',
-					)
-				);
+			/** 2. Features */
+			foreach ( $this->get_feature_menu_items() as $key => $item ) {
+				$this->add_menu_page( $key, $item, $user );
+			}
 
-				add_submenu_page(
-					'woofunnels',
-					__( 'Templates', 'funnel-builder' ),
-					__( 'Templates', 'funnel-builder' ),
-					$user,
-					'bwf&path=/templates',
-					array(
-						$this,
-						'bwf_funnel_pages',
-					)
-				);
-				add_submenu_page(
-					'woofunnels',
-					__( 'Analytics', 'funnel-builder' ),
-					__( 'Analytics', 'funnel-builder' ),
-					$user,
-					'bwf&path=/analytics',
-					array(
-						$this,
-						'bwf_funnel_pages',
-					)
-				);
+			/** 3. Cart: the plugin's own page once active, Funnel Builder's Cart page until then */
+			if ( ! $this->is_cart_active() ) {
+				$this->add_menu_page( 'cart', $this->get_cart_menu_item(), $user );
+			}
 
-				add_submenu_page(
-					'woofunnels',
-					__( 'Store Checkout', 'funnel-builder' ),
-					__( 'Store Checkout', 'funnel-builder' ),
-					$user,
-					'bwf&path=/store-checkout',
+			/** 4. Sibling product promotion: at most one entry, chosen by the promo class */
+			if ( class_exists( 'WFFN_Sibling_Promo' ) ) {
+				WFFN_Sibling_Promo::get_instance()->register_menu( $user );
+			}
+
+			/** 5. Settings, unless a module already registered the legacy Settings page */
+			if ( ! $this->is_menu_registered( 'woofunnels_settings' ) ) {
+				$this->add_menu_page(
+					'settings',
 					array(
-						$this,
-						'bwf_funnel_pages',
-					)
+						'title' => __( 'Settings', 'funnel-builder' ),
+						'path'  => '/settings',
+					),
+					$user
 				);
 			}
+		}
+
+		/**
+		 * Registers one FunnelKit app screen in the submenu. The NEW badge is added when $key is
+		 * get_new_menu_item(), so only one entry ever carries it.
+		 *
+		 * @param string $key Item key.
+		 * @param array  $item Item: 'title' and 'path' (see get_core_menu_items()).
+		 * @param string $user Capability that sees the FunnelKit menu.
+		 *
+		 * @return string|false The page hook, or false when the user cannot see it.
+		 */
+		public function add_menu_page( $key, $item, $user ) {
+			$title = esc_html( $item['title'] );
+			if ( $key === $this->get_new_menu_item() ) {
+				$title .= '<span style="padding-left: 2px;color: #f18200; vertical-align: super; font-size: 9px;"> ' . esc_html_x( 'NEW!', 'admin menu badge', 'funnel-builder' ) . '</span>';
+			}
+
+			return add_submenu_page( 'woofunnels', $item['title'], $title, $user, self::get_menu_slug( $item ), array( $this, 'bwf_funnel_pages' ) );
+		}
+
+		/**
+		 * @param array $item Item with 'path'.
+		 *
+		 * @return string Submenu slug: 'bwf' for the dashboard, 'bwf&path=/x' otherwise.
+		 */
+		public static function get_menu_slug( $item ) {
+			return empty( $item['path'] ) ? 'bwf' : 'bwf&path=' . $item['path'];
+		}
+
+		/**
+		 * @param string $slug Submenu slug.
+		 *
+		 * @return bool Whether the FunnelKit submenu already has that slug.
+		 */
+		public function is_menu_registered( $slug ) {
+			global $submenu;
+			if ( empty( $submenu['woofunnels'] ) || ! is_array( $submenu['woofunnels'] ) ) {
+				return false;
+			}
+
+			return in_array( $slug, wp_list_pluck( $submenu['woofunnels'], 2 ), true );
 		}
 
 		public function is_basic_exists() {
@@ -827,7 +931,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				wp_enqueue_style( 'wffn-flex-admin', $this->get_admin_url() . '/assets/css/admin.css', array(), WFFN_VERSION_DEV );
 
 				if ( WFFN_Core()->admin->is_wffn_flex_page() ) {
-					$this->load_react_app( 'main-20261021131136' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
+					$this->load_react_app( 'main-20261103145155' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 					if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf' && method_exists( 'BWF_Admin_General_Settings', 'get_localized_bwf_data' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						wp_localize_script( 'wffn-contact-admin', 'bwfAdminGen', BWF_Admin_General_Settings::get_instance()->get_localized_bwf_data() );
 

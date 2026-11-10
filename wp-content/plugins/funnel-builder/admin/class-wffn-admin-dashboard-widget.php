@@ -34,6 +34,11 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 
 		public function widget_register() {
 
+			// Screen can be simulated outside wp-admin (e.g. Jetpack's admin-bar REST endpoint) where meta box API isn't loaded.
+			if ( ! function_exists( 'add_meta_box' ) ) {
+				return;
+			}
+
 			$widget_key = 'funnelkit_widget';
 
 			if ( WFFN_Role_Capability::get_instance()->user_access( 'funnel', 'read' ) ) {

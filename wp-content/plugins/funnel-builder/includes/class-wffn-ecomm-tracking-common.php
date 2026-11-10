@@ -1016,6 +1016,27 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 			return empty( $get_gad_conversion_label ) ? false : $get_gad_conversion_label;
 		}
 
+		/**
+		 * Google Ads conversion cart data, sent with the purchase when a Merchant Center ID is set.
+		 *
+		 * @param float $discount Discount total of the purchase.
+		 *
+		 * @return array Empty when no Merchant Center ID is set.
+		 */
+		public function get_gad_cart_data( $discount = 0 ) {
+			$merchant_id = absint( $this->admin_general_settings->get_option( 'gad_merchant_id' ) );
+			if ( 0 === $merchant_id ) {
+				return array();
+			}
+
+			return array(
+				'aw_merchant_id'   => $merchant_id,
+				'aw_feed_country'  => apply_filters( 'wffn_gad_feed_country', WC()->countries->get_base_country() ),
+				'aw_feed_language' => apply_filters( 'wffn_gad_feed_language', strtoupper( substr( get_locale(), 0, 2 ) ) ),
+				'discount'         => (float) $discount,
+			);
+		}
+
 		public function gad_code() {
 			global $post;
 			$step_id = 0;
@@ -1411,8 +1432,11 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 			}
 			if ( isset( $_COOKIE['_fbc'] ) && ! empty( $_COOKIE['_fbc'] ) ) {
 				$user_data['_fbc'] = wffn_clean( wp_unslash( $_COOKIE['_fbc'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
-			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) ) {
-				$user_data['_fbc'] = 'fb.1.' . strtotime( wffn_clean( wp_unslash( $_COOKIE['wffn_flt'] ) ) ) . '.' . wffn_clean( wp_unslash( $_COOKIE['wffn_fbclid'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
+			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
+				$fbc_time = strtotime( get_gmt_from_date( wffn_clean( wp_unslash( $_COOKIE['wffn_flt'] ) ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
+				if ( $fbc_time > 0 ) {
+					$user_data['_fbc'] = 'fb.1.' . ( $fbc_time * 1000 ) . '.' . wffn_clean( wp_unslash( $_COOKIE['wffn_fbclid'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
+				}
 			}
 
 			return $user_data;

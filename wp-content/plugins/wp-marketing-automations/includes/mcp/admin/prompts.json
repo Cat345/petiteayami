@@ -1,0 +1,231 @@
+{
+	"categories": [
+		{
+			"key": "all",
+			"label": "All",
+			"description": "The top four set up Automations in your dashboard's checklist order. Then explore the rest."
+		},
+		{
+			"key": "automate",
+			"label": "Automate",
+			"description": "Build, explain and check automations - always as drafts you review first."
+		},
+		{
+			"key": "email",
+			"label": "Email",
+			"description": "Set up your sender details, design and reuse email templates, and draft broadcasts."
+		},
+		{
+			"key": "contacts",
+			"label": "Contacts",
+			"description": "Look up, segment, tag and add contacts."
+		},
+		{
+			"key": "analyze",
+			"label": "Analyze",
+			"description": "Get automation, cart, email and broadcast numbers without opening a report."
+		}
+	],
+	"prompts": [
+		{
+			"id": "a5",
+			"category": "automate",
+			"title": "Set up abandoned cart reminder emails",
+			"does": "Builds a draft that emails cart reminders after an hour and a day, and stops as soon as the customer orders.",
+			"prompt": "Build a draft automation that recovers abandoned carts: an hour after a cart is abandoned, email the cart with a recovery link; a day later, a last reminder. Stop as soon as they place an order.\n1. list-automations: if one already uses the cart abandoned trigger, tell me what it does and stop - a second one would email the same carts twice.\n2. get-cart-analytics for the last 30 days: if no carts were captured at all (recoverable, recovered and lost are all zero), tell me first that cart tracking may be off, as this automation only runs on captured carts.\n3. Check list-recipes for a ready-made abandoned cart recipe and offer it to me first.\n4. Otherwise, ask me whether to tag customers who come back and order, and with which tag. Check the trigger and the goal with describe-automation-part, then create it with create-automation.\n5. It is saved as a draft: show me every step and the builder link so I can review it and switch it on.\n\nConfirm with me before creating it. When this is done, tell me the next setup step: complete my email settings."
+		},
+		{
+			"id": "s2",
+			"category": "email",
+			"title": "Complete my email settings",
+			"does": "Checks your sender name, address, reply-to and footer, and fixes what is missing once you confirm each change.",
+			"prompt": "Help me complete my FunnelKit Automations email settings - the sender details and footer every email I send uses.\n1. get-email-settings: show me each field, its value and whether it is set, and point out anything missing or risky - a From email off my store's domain or on a free mailbox, or a footer without the unsubscribe link or my business address.\n2. Ask me for the missing or better values in one message, with a suggestion for each.\n3. With Pro: run update-email-settings in review mode and show me every old and new value and each warning. Only after I say yes, save it with the review token. If the From or Reply-to email changes, ask me to type the new address first.\n4. Without Pro, give me the settings_url link so I can make the changes myself.\n5. Tell me to reload Settings if I have it open.\n\nWhen this is done, tell me the next setup step: create an audience."
+		},
+		{
+			"id": "s3",
+			"category": "contacts",
+			"pro": true,
+			"feature": "Audiences",
+			"title": "Create an audience for my broadcasts",
+			"does": "Turns a group you describe, such as recent buyers or VIPs, into a saved audience and tells you how many it reaches.",
+			"prompt": "Create a saved audience I can send broadcasts to.\n1. Ask me who should be in it in plain words - for example customers who ordered in the last 90 days, or everyone tagged VIP - and what to call it. Check list-audiences so the name is new.\n2. Read list-contact-filters (with the group you need) for the right conditions, then tell me how many contacts match with filter-contacts count_only.\n3. After I confirm, save it with create-audience. Contact status cannot be a condition: if I ask for one, tell me to build that audience in the admin.\n4. Show me the summary, the count, any warnings and the link to edit it.\n\nConfirm with me before saving. When this is done, tell me the next setup step: draft my first broadcast."
+		},
+		{
+			"id": "e6",
+			"category": "email",
+			"pro": true,
+			"feature": "Broadcasts",
+			"title": "Draft a broadcast to an audience or list",
+			"does": "Writes a broadcast for the people and topic you choose and saves it as a draft for you to review and schedule.",
+			"prompt": "Draft a broadcast.\n1. get-email-settings: if my business name or address is missing, tell me to complete my email settings first - every broadcast footer shows them.\n2. Ask me who should get it: a saved audience (list-audiences), one of my lists (list-contact-lists) or all my contacts. For a list, target it with filters (list-contact-filters).\n3. Ask me for the subject and what it is about, and write it, keeping the email footer with the unsubscribe link and my business address.\n4. Create it with create-broadcast as a draft, not scheduled. Show me who it will reach, any warnings and the link to review and schedule it.\n\nConfirm with me first. This is the last setup step: then suggest what to try next, such as a thank-you after every order or a branded email template."
+		},
+		{
+			"id": "n3",
+			"category": "analyze",
+			"title": "Review my Automations setup and plan what to build",
+			"does": "Reads your automations, email settings, audiences and broadcasts, then lists what to set up next in your dashboard's order. Changes nothing.",
+			"prompt": "Help me set up FunnelKit Automations on this store. Start by reading what is already here, without changing anything:\n1. get-automations-context with include counts and segments: what is installed, how many contacts and automations there are, and my tags and lists.\n2. list-automations: which automations exist and whether each one is active.\n3. get-cart-analytics for the last 7 days: are abandoned carts being captured? Add up recoverable, recovered and lost carts.\n4. get-email-settings: are my sender details and footer complete?\n5. With FunnelKit Automations Pro: list-audiences and list-broadcasts, to see whether I have an audience and a broadcast.\n\nThen give me my setup checklist as ONE table - setup step, status (✅ done / ⚠️ partly / ❌ not yet), what you found - for these steps, in the order of my dashboard's setup checklist:\n1. Contacts\n2. A first automation (abandoned cart recovery is the one to start with)\n3. Email settings (business name and address, From name and email, Reply-to and footer)\n4. An audience (Pro)\n5. A first broadcast (Pro)\n\nFor a Pro step when FunnelKit Automations Pro is not active, say in one line what it would add.\nFinish with the one step I should do next and why.\nRead-only: do not change anything."
+		},
+		{
+			"id": "a6",
+			"category": "automate",
+			"pro": true,
+			"feature": "Pro Automations",
+			"title": "Thank customers after every order",
+			"does": "Builds a draft that thanks buyers after each order, with a VIP note for big spenders, then asks for a review.",
+			"prompt": "A day after a completed order, send the customer a thank-you. Customers who spent over an amount I choose are tagged as VIPs and get a special thank-you instead - ask me the amount and the tag name. A week later, ask everyone for a review.\n1. list-automations: if one already thanks customers after an order, tell me what it does and ask whether to build this one anyway.\n2. Check the order rules with describe-automation-part, then build it as a draft with create-automation. Show me every step and the builder link.\n\nConfirm with me before creating it. When this is done, suggest welcoming new subscribers next."
+		},
+		{
+			"id": "a4",
+			"category": "automate",
+			"pro": true,
+			"feature": "Pro Automations",
+			"title": "Welcome new subscribers with an email series",
+			"does": "Builds a draft that welcomes new subscribers to a list, sends tips two days later, then tags them.",
+			"prompt": "When someone joins one of my lists, send a welcome email, then a tips email two days later, then tag them.\n1. Ask me which list (list-contact-lists) and which tag to add; offer to create them if they do not exist yet (create-list, create-tags).\n2. list-automations: if one already welcomes people who join that list, tell me what it does and ask whether to build this one anyway.\n3. Check the trigger and the tag action with describe-automation-part.\n4. Build it as a draft with create-automation (source definition), using only merge tags the trigger offers.\n5. Show me every step and the builder link.\n\nConfirm with me before creating it. When this is done, suggest winning back customers who stopped buying next."
+		},
+		{
+			"id": "a7",
+			"category": "automate",
+			"pro": true,
+			"feature": "Pro Automations",
+			"title": "Win back customers who stopped buying",
+			"does": "Builds a draft that emails customers who have not ordered in a while, with an optional coupon, and stops when they buy.",
+			"prompt": "Build a draft win-back automation: when a customer has not ordered for [number-of-days] days, email them to come back; a week later, a last reminder. Stop as soon as they order.\n1. list-automations: if one already uses the customer win-back trigger, tell me what it does and stop.\n2. Check list-recipes for a ready-made win-back recipe and offer it to me first.\n3. Otherwise, ask me whether to include a coupon and how much it takes off. Check the win-back trigger with describe-automation-part, then create it with create-automation. A coupon's code goes into the email only after the automation is created - create-automation says how.\n4. It is saved as a draft: show me every step and the builder link so I can review it and switch it on.\n\nConfirm with me before creating it."
+		},
+		{
+			"id": "a1",
+			"category": "automate",
+			"title": "Explain how one of my automations works",
+			"does": "Explains an automation's trigger, waits, emails and actions in plain words, and flags anything unfinished.",
+			"prompt": "Find my \"[automation-name]\" automation (list-automations) and walk me through it with get-automation: the trigger, every wait, email and action, in order, in plain words.\nPoint out anything that looks unfinished or misconfigured. Read-only."
+		},
+		{
+			"id": "n1",
+			"category": "automate",
+			"title": "Check how my automations are doing",
+			"does": "Counts contacts by state in every automation, flags failures or empty ones, and shows why contacts failed. Read-only.",
+			"prompt": "List my automations (list-automations) and get each one's contact counts with get-automation-stats: active, complete, failed and paused.\nTell me which ones have failures or nobody in them.\nFor the one with the most failures, list its failed contacts with list-automation-contacts (type failed). With Pro, open the first one's journey with get-automation-run and tell me which step failed and why.\nRead-only."
+		},
+		{
+			"id": "e2",
+			"category": "email",
+			"pro": true,
+			"feature": "Email Templates",
+			"title": "Design a branded email template",
+			"does": "Saves an email template in your colours, fonts and logo, starting from the closest ready-made design.",
+			"prompt": "Design an email template in my brand. Ask me what it is for, my brand colours and fonts, and my logo - a URL, or pick it from my Media Library with list-email-images.\n1. Read get-email-design-schema and list-email-starter-designs, and suggest the closest starter design.\n2. Create the template with create-email-template.\n3. Show me preview-email-design and fix anything validate-email-design flags.\n\nConfirm with me before saving. When this is done, suggest using it in my next broadcast or automation email."
+		},
+		{
+			"id": "e3",
+			"category": "email",
+			"pro": true,
+			"feature": "Email Templates",
+			"title": "Check my email templates for problems",
+			"does": "Checks every template for missing or broken links, shortened links, a missing unsubscribe link and emails too large to show in full. Read-only.",
+			"prompt": "Audit my email templates (list-email-templates). For each one, run audit-email-design and list the problems it finds: missing, broken or shortened links, a missing unsubscribe link, and an email too large to show in full. Read-only."
+		},
+		{
+			"id": "c1",
+			"category": "contacts",
+			"title": "Look up a contact's orders and activity",
+			"does": "Summarises one contact's orders, recent email opens and clicks, and the automations they're in. Read-only.",
+			"prompt": "Find [email-or-name] (list-contacts, then get-contact) and give me a summary: their orders (get-contact-orders), recent email engagement (get-contact-engagements) and which automations they're in (get-contact-automations). Read-only."
+		},
+		{
+			"id": "c2",
+			"category": "contacts",
+			"title": "List my tags and lists",
+			"does": "Shows every tag and list, flags ones that look duplicated, and with Pro counts the contacts in each. Read-only.",
+			"prompt": "List all my tags (list-tags) and contact lists (list-contact-lists), and point out any that look duplicated. If filter-contacts is available, count the contacts in each (count_only) for up to 40 of them and point out empty ones. Read-only."
+		},
+		{
+			"id": "c3",
+			"category": "contacts",
+			"pro": true,
+			"feature": "Contact Segments",
+			"title": "Find contacts who match a condition and tag them",
+			"does": "Counts contacts matching a condition you describe, lists the first 20, and tags them once you confirm.",
+			"prompt": "Show me contacts who [condition, e.g. bought in the last 30 days but never opened an email] (list-contact-filters, filter-contacts): how many, and the first 20 with their name, email and the date they were added.\nThen ask whether to tag them. If there are 50 or fewer, after I confirm, add the tag \"[tag-name]\" to each of them with manage-contact-tags-lists. If there are more, do not tag them one by one: tell me to select them on the Contacts page in the admin and add the tag with the bulk action."
+		},
+		{
+			"id": "c5",
+			"category": "contacts",
+			"pro": true,
+			"feature": "Contact Notes",
+			"title": "Add a note to a contact's profile",
+			"does": "Finds a contact by email and saves the note you write on their profile, with the type you pick.",
+			"prompt": "Find [email] (list-contacts) and add this note to their profile with add-contact-note: \"[note]\". Ask me which type fits - billing, shipping, refund, subscription, feedback, log or others. Confirm with me first."
+		},
+		{
+			"id": "n6",
+			"category": "analyze",
+			"pro": true,
+			"feature": "Store Reports",
+			"title": "Give me a store rundown for a day or week",
+			"does": "New contacts, emails sent, revenue and cart recovery for a period you pick, with anything unusual flagged.",
+			"prompt": "Give me the rundown for [period, e.g. yesterday] with get-automations-overview: new contacts, unsubscribes, emails sent, attributed revenue, top emails and automations, the latest broadcast and cart recovery. Point out anything unusual. Read-only."
+		},
+		{
+			"id": "n2",
+			"category": "analyze",
+			"title": "Report this week's abandoned carts",
+			"does": "Shows how many carts were abandoned in the last 7 days, their value and how many were recovered.",
+			"prompt": "Summarise abandoned carts from the last 7 days: how many, their total value and how many were recovered (list-abandoned-carts, get-cart-analytics). Read-only."
+		},
+		{
+			"id": "n4",
+			"category": "analyze",
+			"pro": true,
+			"feature": "Email Analytics",
+			"title": "Report how my emails did this month",
+			"does": "Shows sends, opens and clicks per email this month, and ranks your best and worst against the period before.",
+			"prompt": "How did my emails perform this month? Use get-email-analytics for each email's sends, opens and clicks, and get-email-performance to rank the top emails against the same number of days before. Read-only."
+		},
+		{
+			"id": "n5",
+			"category": "analyze",
+			"pro": true,
+			"feature": "Email Analytics",
+			"title": "Report how my last broadcast did",
+			"does": "Shows opens, clicks, unsubscribes and revenue for your latest broadcast, compared with the one before.",
+			"prompt": "Find my most recent sent broadcast (list-broadcasts: the newest with status completed or ongoing - skip drafts and scheduled ones) and report its results with get-broadcast-stats: sent, opens, clicks, unsubscribes and revenue, compared with the sent one before it. Read-only."
+		},
+		{
+			"id": "a3",
+			"category": "automate",
+			"pro": true,
+			"feature": "Automation Duplication",
+			"title": "Copy an automation to try a variation",
+			"does": "Copies every step of a Next Gen automation into a new draft for you to change, while the original keeps running.",
+			"prompt": "Copy my \"[automation-name]\" automation so I can make a variant.\n1. Find it with list-automations.\n2. create-automation with source duplicate. The copy must stay a draft. If it refuses because mine is an older automation, tell me that only Next Gen automations can be copied.\n3. Show me the copy's steps with get-automation and its builder link.\nConfirm with me before creating it."
+		},
+		{
+			"id": "e4",
+			"category": "email",
+			"pro": true,
+			"feature": "Email Templates",
+			"title": "Change the look or copy of an email template",
+			"does": "Changes the colours, text or buttons of a template you name, and shows a preview before saving.",
+			"prompt": "In my \"[template-name]\" template (list-email-templates, get-email-template), change [what to change, e.g. the green to amber and the button text].\nPreview it with preview-email-design before saving, then save it with edit-email-design. Confirm with me first."
+		},
+		{
+			"id": "e5",
+			"category": "email",
+			"pro": true,
+			"feature": "Email Templates",
+			"title": "Copy an email template for a new campaign",
+			"does": "Clones a template and makes your changes to the copy, so the original stays untouched.",
+			"prompt": "Make a copy of my \"[template-name]\" email template for [campaign] (list-email-templates, then clone-email-template), so the original stays untouched.\nThen make these changes to the copy with edit-email-design and preview them with preview-email-design: [changes]. Use update-email-template only to rename it or change its subject. Confirm with me first."
+		},
+		{
+			"id": "c4",
+			"category": "contacts",
+			"pro": true,
+			"feature": "Lists & Tags",
+			"title": "Add a contact to a list and tag them",
+			"does": "Creates a contact from a name and email, then adds them to the list and tag you choose.",
+			"prompt": "Add [first-name] [last-name] ([email]) as a contact with create-contact, then add them to the \"[list-name]\" list and tag them \"[tag-name]\" (manage-contact-tags-lists). If the list or tag does not exist yet, offer to create it (create-list, create-tags). Confirm with me first."
+		}
+	]
+}

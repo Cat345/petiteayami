@@ -659,7 +659,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 
 			if ( ! empty( $filters['s'] ) ) {
 				$search_name   = '%' . $filters['s'] . '%';
-				$filter_query .= $wpdb->prepare( " AND (CONCAT(contact.f_name,' ',contact.l_name) like %s OR contact.email LIKE %s ", $search_name, $search_name );
+				$filter_query .= $wpdb->prepare( " AND (CONCAT(contact.f_name,' ',contact.l_name) like %s OR contact.email LIKE %s) ", $search_name, $search_name );
 			}
 			/*
 			 * contact_type -> we get data from direct bwf_contact table base on 'lead/purchased' request => ( purchased = customer and lead = blank )

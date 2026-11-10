@@ -553,6 +553,7 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 
 			$rewards_new = $rewards;
 
+			$fs_index = 0;
 			foreach ( $rewards as $r => $reward ) {
 				/** Skip disabled reward rules */
 				if ( isset( $reward['enabled'] ) && ( false === $reward['enabled'] || 'false' === $reward['enabled'] ) ) {
@@ -561,6 +562,12 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 				}
 
 				if ( 'freeshipping' === $reward['type'] ) {
+					if ( $fs_index > 0 ) {
+						/** 2nd+ free shipping milestone maps to the next (higher min amount) method, so milestones don't share one threshold */
+						$methods       = self::get_free_shipping_methods();
+						$shipping_data = isset( $methods[ $fs_index ] ) ? apply_filters( 'fkcart_free_shipping', $methods[ $fs_index ] ) : false;
+					}
+					$fs_index ++;
 					if ( false == $raw_data && ( ! $wc_shipping_enable || empty( $shipping_data ) || ! isset( $shipping_data['method_id'] ) ) ) {
 						unset( $rewards_new[ $r ] );
 						continue;
@@ -753,19 +760,30 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 		}
 
 		/**
-		 * Get current shipping method of user with current zone
+		 * Get the free shipping supported method with the lowest min amount in the user's current zone
 		 *
 		 * @return false|array
 		 */
 		public static function get_shipping_min_amount() {
+			$methods = self::get_free_shipping_methods();
+
+			return count( $methods ) > 0 ? $methods[0] : false;
+		}
+
+		/**
+		 * Get all free shipping supported methods of user with current zone, sorted by min amount (ascending)
+		 *
+		 * @return array
+		 */
+		public static function get_free_shipping_methods() {
 			if ( ! class_exists( '\WC_Geolocation' ) ) {
-				return false;
+				return [];
 			}
 			include_once __DIR__ . '/geolocation.php';
 
 			$geolocation = Geolocation::geolocate_ip( Geolocation::get_ip_address(), true );
 			if ( empty( $geolocation['country'] ) ) {
-				return false;
+				return [];
 			}
 
 			$country   = strtoupper( wc_clean( $geolocation['country'] ) );
@@ -825,6 +843,7 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			$shipping_methods                = $shipping_methods->get_shipping_methods( true );
 			$free_shipping_supported_methods = fkcart_free_shipping_method();
 
+			$free_shipping_methods = [];
 			foreach ( $shipping_methods as $i => $shipping_method ) {
 				if ( ! is_numeric( $i ) || 'yes' !== $shipping_method->enabled ) {
 					continue;
@@ -838,16 +857,18 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 				}
 				$free_shipping = Compatibility::get_free_shipping( $shipping_method );
 				if ( false !== $free_shipping && $free_shipping['min_amount'] > - 1 ) {
-					// return if min amount > -1 otherwise check other available free shipping methods
-					self::getInstance()->meta_data[ $zone_cache_key ] = $free_shipping;
-
-					return self::getInstance()->meta_data[ $zone_cache_key ];
+					// collect if min amount > -1 otherwise check other available free shipping methods
+					$free_shipping_methods[] = $free_shipping;
 				}
 			}
 
-			self::getInstance()->meta_data[ $zone_cache_key ] = false;
+			usort( $free_shipping_methods, function ( $method1, $method2 ) {
+				return floatval( $method1['min_amount'] ) <=> floatval( $method2['min_amount'] );
+			} );
 
-			return false;
+			self::getInstance()->meta_data[ $zone_cache_key ] = $free_shipping_methods;
+
+			return $free_shipping_methods;
 		}
 
 		/**

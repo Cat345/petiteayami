@@ -188,7 +188,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 							$url = add_query_arg( [
 								'bwfan-track-id' => $hash_code,
 								'bwfan-link'     => rawurlencode( $link )
-							], home_url() );
+							], $this->get_tracking_home_url() );
 						}
 					}
 
@@ -271,7 +271,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 				$this->track_open_url = add_query_arg( array(
 					'bwfan-track-action' => 'open',
 					'bwfan-track-id'     => $hash_code,
-				), home_url() );
+				), $this->get_tracking_home_url() );
 				$this->track_open_url = apply_filters( 'bwfan_track_open_url', $this->track_open_url, $data );
 				$old_body             = $body;
 				$body                 = preg_replace_callback( '/<\/body[^>]*>/', array( $this, 'append_tracking_pixel' ), $body, 1 );
@@ -665,7 +665,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 					$this->track_click_utm_parameters['l_hash'] = $l_hash;
 				}
 				$this->track_click_utm_parameters['bwfan-link'] = rawurlencode( str_replace( 'amp;', '', $url ) );
-				$home_url                                       = home_url();
+				$home_url                                       = $this->get_tracking_home_url();
 			} else {
 				unset( $this->track_click_utm_parameters['bwfan-track-action'] );
 				unset( $this->track_click_utm_parameters['bwfan-link'] );
@@ -680,6 +680,16 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 			}
 
 			return add_query_arg( $this->track_click_utm_parameters, $home_url );
+		}
+
+		/**
+		 * Base URL for click, open and unsubscribe tracking links
+		 * Lets a multilingual compatibility return the home URL of the email's language, not of the worker request
+		 *
+		 * @return string
+		 */
+		private function get_tracking_home_url() {
+			return apply_filters( 'bwfan_tracking_home_url', home_url() );
 		}
 
 		/**
@@ -830,6 +840,11 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
          * @return void
          */
         public function update_contact_engagement( $cid, $type = 'open' ) {
+            $cid = absint( $cid );
+            if ( 0 === $cid ) {
+                return;
+            }
+
             $current_time = current_time( 'mysql' );
             $fields       = [];
 
@@ -849,8 +864,18 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
                 return;
             }
 
-            $where = array( 'cid' => intval( $cid ) );
-            BWF_Model_Contact_Fields::update( $fields, $where );
+            $where = array( 'cid' => $cid );
+            if ( ! empty( BWF_Model_Contact_Fields::get_contact_field_by_id( $cid ) ) ) {
+                BWF_Model_Contact_Fields::update( $fields, $where );
+
+                return;
+            }
+
+            /** A contact gets a fields row only once a field is saved for it, so the first open or click may have to create it */
+            if ( false === BWF_Model_Contact_Fields::insert_ignore( array_merge( $where, $fields ) ) ) {
+                /** Another request for the same contact created the row in between */
+                BWF_Model_Contact_Fields::update( $fields, $where );
+            }
         }
 
 		/**

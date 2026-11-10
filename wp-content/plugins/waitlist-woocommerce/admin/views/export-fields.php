@@ -107,7 +107,7 @@ $predefined_fields = array(
 foreach ( $customFields as $field_id => $field_data ) {
 	if( in_array( $field_id , $predefined_fields ) ) continue;
 	$settings = $field_data['settings'];
-	$fields['users_table'][ $field_id ] = $fields['waitlist'][ $field_id ] = array(
+	$fields['users_table'][ $field_id ] = $fields['waitlist_table'][ $field_id ] = array(
 		'title' => $settings['label'] ? $settings['label'] : ( isset( $settings['placeholder'] ) && $settings['placeholder'] ? $settings['placeholder'] : $field_id ),
 		'checked' => $settings['active'] === 'yes' ? 'yes' : 'no'
 	);

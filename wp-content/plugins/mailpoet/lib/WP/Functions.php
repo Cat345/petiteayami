@@ -167,6 +167,9 @@ class Functions {
     return wp_register_ability_category($slug, $args);
   }
 
+  /**
+   * @param lowercase-string&non-falsy-string $name
+   */
   public function registerAbility(string $name, array $args): ?\WP_Ability {
     return wp_register_ability($name, $args);
   }
@@ -487,6 +490,10 @@ class Functions {
     return is_multisite();
   }
 
+  public function getCurrentBlogId(): int {
+    return get_current_blog_id();
+  }
+
   public function isPluginActive($plugin) {
     return is_plugin_active($plugin);
   }
@@ -521,6 +528,14 @@ class Functions {
 
   public function pluginBasename($file) {
     return plugin_basename($file);
+  }
+
+  public function getStylesheetDirectory() {
+    return get_stylesheet_directory();
+  }
+
+  public function getTemplateDirectory() {
+    return get_template_directory();
   }
 
   public function pluginsUrl($path = '', $plugin = '') {
@@ -742,7 +757,7 @@ class Functions {
 
   /**
    * @param string $url
-   * @param int $component
+   * @param int<-1, 7> $component
    * @return ($component is -1 ? array{scheme?: string, host?: string, port?: int<0, 65535>, user?: string, pass?: string, path?: string, query?: string, fragment?: string}|false : string|int|null|false)
    */
   public function wpParseUrl($url, $component = -1) {
@@ -1016,6 +1031,11 @@ class Functions {
     return wp_get_image_editor($path, $args);
   }
 
+  /**
+   * @param non-empty-string $handle
+   * @param non-empty-string|false $src
+   * @param non-empty-string[] $deps
+   */
   public function wpRegisterScript(string $handle, $src, $deps = [], $ver = false, $in_footer = false): bool {
     return wp_register_script($handle, $src, $deps, $ver, $in_footer);
   }
@@ -1064,6 +1084,10 @@ class Functions {
     return rest_url($path, $scheme);
   }
 
+  /**
+   * @param non-falsy-string $namespace
+   * @param non-falsy-string $route
+   */
   public function registerRestRoute(string $namespace, string $route, array $args = [], bool $override = false): bool {
     return register_rest_route($namespace, $route, $args, $override);
   }

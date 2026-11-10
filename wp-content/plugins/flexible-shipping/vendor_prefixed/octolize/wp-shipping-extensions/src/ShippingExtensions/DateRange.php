@@ -25,6 +25,6 @@ class DateRange
     {
         $start_date = strtotime($this->start_date);
         $end_date = strtotime($this->end_date);
-        return current_time('timestamp') < $end_date && current_time('timestamp') > $start_date;
+        return current_time('timestamp') < $end_date && current_time('timestamp') >= $start_date;
     }
 }

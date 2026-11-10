@@ -106,6 +106,7 @@ class BWFAN_Public {
 		$data['ajax_nonce']             = wp_create_nonce( 'bwfan-action-public' );
 		$data['unsubscribe_nonce']      = wp_create_nonce( 'bwfan-unsubscribe-nonce' );
 		$data['message_no_contact']     = __( 'Sorry! We are unable to update preferences as no contact found.', 'wp-marketing-automations' );
+		$data['message_request_failed'] = __( 'Sorry! We could not update your preferences. Please try again.', 'wp-marketing-automations' );
 
 		global $post;
 		$data['current_page_id'] = ( $post instanceof WP_Post ) ? $post->ID : 0;
@@ -127,10 +128,16 @@ class BWFAN_Public {
 
 		if ( ! empty( $setting_data['bwfan_ab_enable'] ) ) {
 			$data['bwfan_ab_enable'] = $setting_data['bwfan_ab_enable'];
-			$checkout_data           = class_exists( 'WC' ) ? WC()->session->get( 'bwfan_data_for_js' ) : '';
+			$checkout_data           = ( function_exists( 'WC' ) && ! is_null( WC()->session ) ) ? WC()->session->get( 'bwfan_data_for_js' ) : '';
 			if ( ! empty( $checkout_data ) ) {
 				$data['bwfan_checkout_js_data'] = $checkout_data;
 			}
+
+			/** Minimum gap in milliseconds between two cart tracking requests from one checkout page. 0 sends one per checkout refresh. */
+			$data['bwfan_ab_tracking_interval'] = max( 0, intval( apply_filters( 'bwfan_ab_tracking_interval', 10000 ) ) );
+
+			/** Same value update_order_review returns as the bwfan_cart_hash fragment, so the first refresh is not mistaken for a cart change. */
+			$data['bwfan_cart_hash'] = ( function_exists( 'WC' ) && ! is_null( WC()->cart ) ) ? WC()->cart->get_cart_hash() : '';
 		}
 
 		if ( isset( $setting_data['bwfan_ab_email_consent'] ) ) {

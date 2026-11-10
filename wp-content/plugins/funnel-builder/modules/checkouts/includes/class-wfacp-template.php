@@ -494,6 +494,11 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			}
 
 			wp_enqueue_script( 'wfacp_checkout_js', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/public' . $js_extension, array( 'jquery' ), WFACP_VERSION_DEV, true );
+
+			if ( isset( $page_settings['enable_email_suggestion'] ) && wc_string_to_bool( $page_settings['enable_email_suggestion'] ) && class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'enqueue_email_suggestion' ) ) {
+				WFFN_Common::enqueue_email_suggestion( isset( $page_settings['email_suggestion_prompt'] ) ? $page_settings['email_suggestion_prompt'] : '' );
+			}
+
 			if ( wc_string_to_bool( $page_settings['enable_smart_buttons'] ) ) {
 				$smart_btn_script = $this->get_smart_button_inline_js( $js_extension );
 				wp_add_inline_script( 'wfacp_checkout_js', $smart_btn_script );
@@ -554,17 +559,6 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			}
 			unset( $page_settings['header_script'], $page_settings['footer_script'] );
 
-			/**
-			 * Filters the extra mailbox domains the email typo suggestion matches a mistyped address against.
-			 *
-			 * @param string[]              $domains  Domains such as 'example.com' or 'example.co.uk', added to the built-in provider list.
-			 * @param WFACP_Template_Common $template The checkout template being rendered.
-			 */
-			$email_suggestion_domains = apply_filters( 'wfacp_email_suggestion_domains', array(), $this );
-
-			/* translators: %s: the suggested email address */
-			$email_suggestion_prompt = ! empty( $page_settings['email_suggestion_prompt'] ) ? $page_settings['email_suggestion_prompt'] : __( 'Did you mean %s?', 'funnel-builder' );
-
 			$data = array(
 				'id'                              => WFACP_Common::get_id(),
 				'title'                           => get_the_title( WFACP_Common::get_id() ),
@@ -588,9 +582,6 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				),
 				'applied_coupons'                 => new stdClass(),
 				'enable_phone_flag'               => wc_string_to_bool( $page_settings['enable_phone_flag'] ) ? 'yes' : 'no',
-				'enable_email_suggestion'         => isset( $page_settings['enable_email_suggestion'] ) && wc_string_to_bool( $page_settings['enable_email_suggestion'] ) ? 'yes' : 'no',
-				'email_suggestion_prompt'         => $email_suggestion_prompt,
-				'email_suggestion_domains'        => array_values( array_filter( array_map( 'sanitize_text_field', (array) $email_suggestion_domains ) ) ),
 				'enable_phone_validation'         => wc_string_to_bool( $page_settings['enable_phone_validation'] ) ? 'yes' : 'no',
 				'enable_smart_buttons'            => $page_settings['enable_smart_buttons'],
 				'intl_util_scripts'               => plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/utils.js',

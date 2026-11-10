@@ -26,7 +26,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Shield_Security' ) ) {
 		 *
 		 * @var array
 		 */
-		private static $funnelkit_identifiers = array( 'autonami/v', 'woofunnels/v1', 'woofunnel_customer/v1', 'funnelkit-automations/' );
+		private static $funnelkit_identifiers = array( 'autonami/v', 'woofunnels/v1', 'woofunnel_customer/v1', 'funnelkit-automations/', 'funnelkit/' );
 
 		/**
 		 * Cached result of is_funnelkit_rest_request() per request.
@@ -97,7 +97,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Shield_Security' ) ) {
 		 * @return array
 		 */
 		public function whitelist_funnelkit_namespaces( $exclusions ) {
-			$namespaces = array( 'woofunnels', 'autonami', 'autonami-app', 'funnelkit-automations', 'autonami-webhook', 'woofunnel_customer' );
+			$namespaces = array( 'woofunnels', 'autonami', 'autonami-app', 'funnelkit-automations', 'funnelkit', 'autonami-webhook', 'woofunnel_customer' );
 			return array_merge( (array) $exclusions, $namespaces );
 		}
 
@@ -113,7 +113,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Shield_Security' ) ) {
 				if ( '' === $rest_route ) {
 					return $status;
 				}
-				if ( false === strpos( $rest_route, 'autonami' ) && false === strpos( $rest_route, 'woofunnel' ) && false === strpos( $rest_route, 'funnelkit-automations' ) ) {
+				if ( false === strpos( $rest_route, 'autonami' ) && false === strpos( $rest_route, 'woofunnel' ) && false === strpos( $rest_route, 'funnelkit-automations' ) && false === strpos( $rest_route, 'funnelkit/' ) ) {
 					return $status;
 				}
 

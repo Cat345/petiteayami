@@ -4,6 +4,10 @@
 
 For the latest changes, see the Changelog section in the [readme.txt file](https://plugins.svn.wordpress.org/flexible-shipping/trunk/readme.txt).
 
+= 6.13.4 - 2026-10-20 =
+* Fixed shipping integration and shipment status filters on the WooCommerce orders screen when HPOS is enabled.
+* Fixed the selected shipment status not being retained in the orders filter.
+
 = 6.13.3 - 2026-10-13 =
 * Improved the contrast of the Flexible Shipping PRO purchase link on the Plugins screen.
 

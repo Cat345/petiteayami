@@ -43,6 +43,11 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 			$this->define_constants();
 			add_action( 'after_setup_theme', array( $this, 'init' ) );
 			add_filter( 'option_bricks_global_settings', array( $this, 'setup_supported_post_types' ) );
+			/**
+			 * Bricks writes this option only from an admin request after the theme switch, so it can be missing
+			 * on a fresh site; WordPress then skips option_* and runs default_option_* instead.
+			 */
+			add_filter( 'default_option_bricks_global_settings', array( $this, 'setup_supported_post_types' ) );
 		}
 
 		/**
@@ -205,7 +210,7 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		 * If the 'postTypes' array is empty, it initializes it as an empty array.
 		 * It then checks each post type in the $post_types array and adds it to the 'postTypes' array if it is not already present.
 		 *
-		 * @param array $bricks_global_settings The global settings for the Bricks integration.
+		 * @param array|mixed $bricks_global_settings The global settings for the Bricks integration, or the option default when it is not saved yet.
 		 *
 		 * @return array The updated $bricks_global_settings array with the added post types.
 		 */
@@ -218,7 +223,11 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 				'wfacp_checkout',
 			);
 
-			if ( empty( $bricks_global_settings['postTypes'] ) ) {
+			if ( ! is_array( $bricks_global_settings ) ) {
+				$bricks_global_settings = array();
+			}
+
+			if ( empty( $bricks_global_settings['postTypes'] ) || ! is_array( $bricks_global_settings['postTypes'] ) ) {
 				$bricks_global_settings['postTypes'] = array();
 			}
 

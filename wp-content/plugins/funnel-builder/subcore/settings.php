@@ -75,6 +75,7 @@ return apply_filters(
 			'fields'   => array(
 				array(
 					'key'              => 'fb_pixel_key',
+					'test_guides'      => array( 'https://funnelkit.com/woocommerce-facebook-pixel/#How_to_Test_the_Browser_and_Server_Events_on_Your_Store' ),
 					'label'            => __( 'Pixel ID & Access Token', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'type'             => 'tracking_id',
 					'placeholder'      => __( '294123501257422', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -462,6 +463,7 @@ return apply_filters(
 			'fields'   => array(
 				array(
 					'key'         => 'ga_key',
+					'test_guides' => array( 'https://funnelkit.com/woocommerce-google-analytics-integration/#How_to_Test_if_the_Events_are_Capturing_on_Google_Analytics', 'https://www.youtube.com/watch?v=CoTjKbzNBiw' ),
 					'type'        => 'tracking_id',
 					'label'       => __( 'Analytics ID', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'placeholder' => __( 'G-9F3K2TGHH4', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -719,6 +721,7 @@ return apply_filters(
 			'fields'   => array(
 				array(
 					'key'         => 'gad_key',
+					'test_guides' => array( 'https://funnelkit.com/woocommerce-google-ads-conversion-tracking/#How_to_Test_Google_Ads_Conversion_Tracking_in_WooCommerce' ),
 					'type'        => 'tracking_id',
 					'label'       => __( 'Conversion ID', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'placeholder' => __( 'AW-837491263', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -892,6 +895,13 @@ return apply_filters(
 					'placeholder'     => __( 'Enter Conversion Label (Optional)', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				),
 				array(
+					'key'         => 'gad_merchant_id',
+					'type'        => 'input',
+					'label'       => __( 'Merchant Center ID', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'placeholder' => __( 'Enter Merchant Center ID (Optional)', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'hint'        => __( 'Sends cart data (purchased items with your Merchant Center feed details) with the purchase conversion.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				),
+				array(
 					'type'         => 'label',
 					'key'          => 'label_section_head_ga',
 					'label'        => __( 'Track Steps', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -1002,6 +1012,7 @@ return apply_filters(
 				array(
 					'type'        => 'tracking_id',
 					'key'         => 'pint_key',
+					'test_guides' => array( 'https://funnelkit.com/woocommerce-pinterest-conversion-tracking/#How%20to%20Test%20the%20WooCommerce%20Pinterest%20Conversion%20Tracking%20on%20Your%20Store' ),
 					'label'       => __( 'Tag ID', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'placeholder' => __( '2614535298742', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'input_hint'  => __( 'Log into your Pinterest Ads Manager Account and find Pixel ID. <a target="_blank" href="https://funnelkit.com/docs/funnel-builder/global-settings/pinterest/">Learn More</a>', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -1252,6 +1263,7 @@ return apply_filters(
 				'fields'   => array(
 					array(
 						'key'         => 'tiktok_pixel',
+						'test_guides' => array( 'https://funnelkit.com/woocommerce-tiktok-pixel/#how-to-test-that-your-tiktok-pixel-is-firing' ),
 						'type'        => 'tracking_id',
 						'label'       => __( 'TikTok ID', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						'placeholder' => __( 'D4L9N62FLPENAMTU4HG9', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -1409,6 +1421,7 @@ return apply_filters(
 				'fields'   => array(
 					array(
 						'key'         => 'snapchat_pixel',
+						'test_guides' => array( 'https://funnelkit.com/woocommerce-snapchat-pixel/#Testing%20the%20Snapchat%20Pixel%20Events%20on%20Your%20WooCommerce%20Store' ),
 						'type'        => 'tracking_id',
 						'label'       => __( 'Pixel ID', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						'placeholder' => __( '7fc81b23-8e1c-4fde-b2bf-e3f67a19d2fa', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch

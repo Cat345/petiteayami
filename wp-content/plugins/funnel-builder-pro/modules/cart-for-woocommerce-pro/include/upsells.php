@@ -43,10 +43,21 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 		 * @param $values
 		 */
 		public function woocommerce_create_order_line_item( $item, $cart_item_key, $values ) {
-			if ( isset( $values['_fkcart_upsell'] ) ) {
+			/**
+			 * Only flag items that genuinely originated from the frontend cart-upsell
+			 * flow — the cart item carries $values['_fkcart_upsell'] === 'yes' (see Lite
+			 * ajax.php). Manually added admin line items never carry this marker. The
+			 * write is idempotent so re-entry — or the Lite stats path which sets the
+			 * same meta on this hook — cannot append a duplicate marker. Keeps Lite and
+			 * Pro agreeing on what counts as an upsell.
+			 */
+			if ( isset( $values['_fkcart_upsell'] ) && 'yes' === $values['_fkcart_upsell'] && 'yes' !== $item->get_meta( '_fkcart_upsell', true ) ) {
 				$item->add_meta_data( '_fkcart_upsell', 'yes' );
 			}
-			if ( isset( $values['_fkcart_free_gift'] ) ) {
+			// Free-gift cart items carry the marker as a truthy flag (set to 1 in
+			// rewards.php), so gate on presence only; idempotent guard prevents
+			// duplicate meta when the line item is re-processed.
+			if ( isset( $values['_fkcart_free_gift'] ) && 'yes' !== $item->get_meta( '_fkcart_free_gift', true ) ) {
 				$item->add_meta_data( '_fkcart_free_gift', 'yes' );
 			}
 		}

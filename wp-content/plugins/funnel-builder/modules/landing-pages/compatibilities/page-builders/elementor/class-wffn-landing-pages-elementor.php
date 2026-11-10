@@ -2,7 +2,7 @@
 
 use Elementor\Plugin;
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_Landing_Pages_Elementor
@@ -10,13 +10,13 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
 if ( ! class_exists( 'WFFN_Landing_Pages_Elementor' ) ) {
 	#[AllowDynamicProperties]
 
-  class WFFN_Landing_Pages_Elementor {
+	class WFFN_Landing_Pages_Elementor {
 
-		private static $ins = null;
-		protected $template_type = [];
-		protected $design_template_data = [];
-		protected $templates = [];
-		private $url = '';
+		private static $ins             = null;
+		protected $template_type        = array();
+		protected $design_template_data = array();
+		protected $templates            = array();
+		private $url                    = '';
 
 		/**
 		 * WFFN_Landing_Pages_Elementor constructor.
@@ -24,28 +24,28 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Elementor' ) ) {
 		public function __construct() {
 			$this->url = plugin_dir_url( __FILE__ );
 
-
 			add_filter( 'bwf_page_template', array( $this, 'get_page_template' ) );
-			add_action( 'init', [ $this, 'setup' ] );
-			add_action( 'wffn_wflp_before_register_templates', array( $this, 'add_default_templates' ),5 );
-
-
+			add_action( 'init', array( $this, 'setup' ) );
+			add_action( 'wffn_wflp_before_register_templates', array( $this, 'add_default_templates' ), 5 );
 		}
 
 		public function add_default_templates() {
 
-			$template = [
+			$template = array(
 				'slug'        => 'elementor',
 				'title'       => __( 'Elementor', 'funnel-builder' ),
 				'button_text' => __( 'Edit', 'funnel-builder' ),
-				'edit_url'    => add_query_arg( [
-					'post'   => WFFN_Core()->landing_pages->get_edit_id(),
-					'action' => 'elementor',
-				], admin_url( 'post.php' ) ),
-			];
+				'edit_url'    => add_query_arg(
+					array(
+						'post'   => WFFN_Core()->landing_pages->get_edit_id(),
+						'action' => 'elementor',
+					),
+					admin_url( 'post.php' )
+				),
+			);
 			WFFN_Core()->landing_pages->admin->register_template_type( $template );
 			$templates = WooFunnels_Dashboard::get_all_templates();
-			$designs   = isset( $templates['landing'] ) ? $templates['landing'] : [];
+			$designs   = isset( $templates['landing'] ) ? $templates['landing'] : array();
 
 			if ( isset( $designs['elementor'] ) && is_array( $designs['elementor'] ) ) {
 				foreach ( $designs['elementor'] as $d_key => $templates ) {
@@ -55,18 +55,18 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Elementor' ) ) {
 				}
 			} else {
 
-				$empty_template = [
-					"type"               => "view",
-					"import"             => "no",
-					"show_import_popup"  => "no",
-					"slug"               => "elementor_1",
-					"build_from_scratch" => true,
+				$empty_template = array(
+					'type'               => 'view',
+					'import'             => 'no',
+					'show_import_popup'  => 'no',
+					'slug'               => 'elementor_1',
+					'build_from_scratch' => true,
 
-				];
+				);
 				WFFN_Core()->landing_pages->admin->register_template( 'elementor_1', $empty_template, 'elementor' );
 			}
 
-			return [];
+			return array();
 		}
 
 		/**
@@ -74,7 +74,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Elementor' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -113,9 +113,8 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Elementor' ) ) {
 
 		public function setup() {
 			if ( did_action( 'elementor/loaded' ) ) {
-				add_action( 'elementor/theme/register_conditions', [ $this, 'register_conditions' ] );
+				add_action( 'elementor/theme/register_conditions', array( $this, 'register_conditions' ) );
 			}
-
 		}
 
 		public function register_conditions( $conditions_manager ) {
@@ -124,12 +123,13 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Elementor' ) ) {
 				return;
 			}
 			require_once __DIR__ . '/conditions/class-wffn-lp-pages.php';
-			$new_condition = new ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_LP_Pages( [
-				'post_type' => WFFN_Core()->landing_pages->get_post_type_slug(),
-			] );
+			$new_condition = new ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_LP_Pages(
+				array(
+					'post_type' => WFFN_Core()->landing_pages->get_post_type_slug(),
+				)
+			);
 			$conditions_manager->get_condition( 'singular' )->register_sub_condition( $new_condition );
 		}
-
 	}
 
 	WFFN_Landing_Pages_Elementor::get_instance();

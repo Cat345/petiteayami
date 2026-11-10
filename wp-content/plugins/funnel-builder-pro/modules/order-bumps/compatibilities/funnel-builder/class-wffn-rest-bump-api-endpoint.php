@@ -1155,15 +1155,17 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 			$products = WFOB_Common::get_prepared_products( $bump_id );
 
 			$design_data = $default_data[ $layout ];
+			$new_skin    = null;
 
 			if ( isset( $design_data['class_name'] ) ) {
-				$temp = new $design_data['class_name']( $bump_id );
+				$new_skin = new $design_data['class_name']( $bump_id );
 
-				$design_data = $temp->override_design_data_keys( $design_data, $design_data['layout'] );
+				$design_data = $new_skin->override_design_data_keys( $design_data, $design_data['layout'] );
 
 			}
 
 			$temp = WFOB_Common::add_product_details_default_layout( $products, $design_data );
+			$temp = WFOB_Common::carry_customised_product_content( $bump_id, $products, get_post_meta( $bump_id, '_wfob_design_data', true ), $temp, $new_skin );
 
 			// Delete transient before update
 			WFOB_Common::delete_transient( $bump_id );

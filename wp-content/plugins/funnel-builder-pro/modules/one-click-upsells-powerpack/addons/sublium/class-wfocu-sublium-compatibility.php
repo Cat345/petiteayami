@@ -34,6 +34,13 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		private $sale_price_basis_cache = array();
 
 		/**
+		 * get_true_regular_price() results for this request, keyed by product_id + currency code.
+		 *
+		 * @var array
+		 */
+		private $true_regular_price_cache = array();
+
+		/**
 		 * Encoding multiplier for Sublium plan variant IDs in product search results.
 		 * combined_id = product_id * PLAN_ID_MULTIPLIER + plan_id
 		 * Must be pure integer so the React app template literal stays valid JSON.
@@ -212,10 +219,14 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		 * "sale_price" field) as the discount basis when "is_on_sale" is also true, so the calling
 		 * functions must set that flag; see append_plan_name()/append_plan_name_on_get().
 		 *
+		 * Both values are in the store's base currency: they also replace $product->get_data() in the
+		 * wfacp_product_raw_data/wfob_product_raw_data discount pipelines, which run in the base currency
+		 * and leave the conversion to the currency plugin's price getters.
+		 *
 		 * @return array{0: float, 1: float} [true_regular_price, offer_price_basis]
 		 */
 		private function get_checkout_bump_display_price( $product, $plan, $discount_type ) {
-			$true_regular_price = $this->get_true_regular_price( $product );
+			$true_regular_price = $this->get_base_regular_price( $product );
 			$is_regular_type    = in_array( $discount_type, array( 'percent_discount_reg', 'fixed_discount_reg' ), true );
 			// $true_regular_price (stable postmeta), not $product->get_price() — the latter may
 			// already reflect a prior pass's plan/discount mutation on a repeatedly-processed cart
@@ -288,7 +299,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 					array(
 						'wfacp_product_rp'      => $true_regular_price,
 						'wfacp_product_p'       => (float) $pro->get_price(),
-						'wfacp_discount_amount' => ! empty( $product_data['discount_amount'] ) ? floatval( $product_data['discount_amount'] ) : 0,
+						'wfacp_discount_amount' => $this->convert_fixed_discount_amount( $product_data['discount_type'], ! empty( $product_data['discount_amount'] ) ? $product_data['discount_amount'] : 0, $pro ),
 						'wfacp_discount_type'   => $product_data['discount_type'],
 					)
 				);
@@ -303,7 +314,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 						array(
 							'wfacp_product_rp'      => $this->get_true_regular_price( $pro ),
 							'wfacp_product_p'       => $plan_price,
-							'wfacp_discount_amount' => floatval( $product_data['discount_amount'] ),
+							'wfacp_discount_amount' => $this->convert_fixed_discount_amount( $product_data['discount_type'], $product_data['discount_amount'], $pro ),
 							'wfacp_discount_type'   => $product_data['discount_type'],
 						)
 					);
@@ -401,6 +412,11 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				// regular price, since callers (e.g. get_bump_product_price_data()) treat an
 				// empty return here as "no price data at all" and fall back to the fully
 				// undiscounted $pro->get_price(), losing the bump's own discount entirely.
+				// A currency or discount compat hooked earlier (e.g. Order Bumps' CURCY compat at 21)
+				// has already priced the bump in the shopper's currency, so leave its data alone.
+				if ( isset( $price_data['price'] ) ) {
+					return $price_data;
+				}
 				$true_regular_price = $this->get_true_regular_price( $pro );
 				$price              = $true_regular_price;
 				if ( ! empty( $product_data['discount_type'] ) && ! empty( $product_data['discount_amount'] ) ) {
@@ -408,13 +424,15 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 						array(
 							'wfob_product_rp'      => $true_regular_price,
 							'wfob_product_p'       => $true_regular_price,
-							'wfob_discount_amount' => floatval( $product_data['discount_amount'] ),
+							'wfob_discount_amount' => $this->convert_fixed_discount_amount( $product_data['discount_type'], $product_data['discount_amount'], $pro ),
 							'wfob_discount_type'   => $product_data['discount_type'],
 						)
 					);
 					$price      = is_null( $discounted ) ? $true_regular_price : $discounted;
 				}
-				$price_data['regular_org'] = $price;
+				// regular_org is the undiscounted regular (shown struck through), price is the discounted
+				// offer — mirrors the Order Bumps currency compat's output for the non-Sublium case.
+				$price_data['regular_org'] = $true_regular_price;
 				$price_data['price']       = $price;
 				return $price_data;
 			}
@@ -432,7 +450,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 					array(
 						'wfob_product_rp'      => $true_regular_price,
 						'wfob_product_p'       => (float) $pro->get_price(),
-						'wfob_discount_amount' => ! empty( $product_data['discount_amount'] ) ? floatval( $product_data['discount_amount'] ) : 0,
+						'wfob_discount_amount' => $this->convert_fixed_discount_amount( $product_data['discount_type'], ! empty( $product_data['discount_amount'] ) ? $product_data['discount_amount'] : 0, $pro ),
 						'wfob_discount_type'   => $product_data['discount_type'],
 					)
 				);
@@ -463,7 +481,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 						array(
 							'wfob_product_rp'      => $this->get_true_regular_price( $pro ),
 							'wfob_product_p'       => $plan_price,
-							'wfob_discount_amount' => floatval( $product_data['discount_amount'] ),
+							'wfob_discount_amount' => $this->convert_fixed_discount_amount( $product_data['discount_type'], $product_data['discount_amount'], $pro ),
 							'wfob_discount_type'   => $product_data['discount_type'],
 						)
 					);
@@ -611,7 +629,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 					array(
 						'wfob_product_rp'      => $true_regular_price,
 						'wfob_product_p'       => (float) $product->get_price( 'edit' ),
-						'wfob_discount_amount' => ! empty( $product_data['discount_amount'] ) ? floatval( $product_data['discount_amount'] ) : 0,
+						'wfob_discount_amount' => $this->convert_fixed_discount_amount( $product_data['discount_type'], ! empty( $product_data['discount_amount'] ) ? $product_data['discount_amount'] : 0, $product ),
 						'wfob_discount_type'   => $product_data['discount_type'],
 					)
 				);
@@ -642,7 +660,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 					array(
 						'wfob_product_rp'      => $this->get_true_regular_price( $product ),
 						'wfob_product_p'       => $unit_price,
-						'wfob_discount_amount' => floatval( $product_data['discount_amount'] ),
+						'wfob_discount_amount' => $this->convert_fixed_discount_amount( $product_data['discount_type'], $product_data['discount_amount'], $product ),
 						'wfob_discount_type'   => $product_data['discount_type'],
 					)
 				);
@@ -1084,13 +1102,10 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 					return $modified_price;
 				}
 
-				// get_true_regular_price() reads raw postmeta rather than calling get_regular_price():
-				// (a) any context still re-triggers the woocommerce_product_get_price filter chain we're
-				// already inside (recursion risk), and (b) for quantity > 1 checkout items,
-				// WFACP_Common::set_product_price() mutates the product object's regular_price prop to
-				// regular_price * quantity, which get_regular_price() would return regardless of context —
-				// discounting off that would double-count quantity once WooCommerce applies its own qty
-				// multiplication on top.
+				// get_true_regular_price(), not $product->get_regular_price(): for quantity > 1 checkout
+				// items WFACP_Common::set_product_price() mutates the product object's regular_price prop
+				// to regular_price * quantity, which would double-count quantity once WooCommerce applies
+				// its own qty multiplication on top. It is in the active currency, like $modified_price.
 				$regular_price = $this->get_true_regular_price( $product );
 				// "on Regular Price": discount off the product's true regular price, bypassing the plan's
 				// own price entirely (becomes the final charge). "on Sale Price": discount off the plan's
@@ -1106,8 +1121,11 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 					}
 					$price = $this->sale_price_basis_cache[ $sale_basis_key ];
 				}
+				// $regular_price/$price are in the shopper's active currency (get_true_regular_price);
+				// convert the base-currency fixed discount amount to match — see
+				// convert_fixed_discount_amount(). Percentage discounts pass through unchanged.
 				$discount_data = array(
-					'discount_amount' => floatval( $options['discount_amount'] ),
+					'discount_amount' => $this->convert_fixed_discount_amount( $discount_type, $options['discount_amount'], $product ),
 					'discount_type'   => $discount_type,
 				);
 
@@ -1257,7 +1275,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				$plan          = $is_sale_type ? \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $recurring_plan_id, $product ) : null;
 				$sale_basis    = ( $is_sale_type && $plan ) ? $plan->get_recurring_cart_price( $regular_price, $product ) : $regular_price;
 				$discount_data = array(
-					'discount_amount' => floatval( $options['discount_amount'] ),
+					'discount_amount' => $this->convert_fixed_discount_amount( $options['discount_type'], $options['discount_amount'], $product ),
 					'discount_type'   => $options['discount_type'],
 				);
 				if ( $is_wfacp ) {
@@ -1332,7 +1350,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 			$plan          = $is_sale_type ? \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $product ) : null;
 			$sale_basis    = ( $is_sale_type && $plan ) ? $plan->get_recurring_cart_price( $regular_price, $product ) : $regular_price;
 			$discount_data = array(
-				'discount_amount' => floatval( $options['discount_amount'] ),
+				'discount_amount' => $this->convert_fixed_discount_amount( $options['discount_type'], $options['discount_amount'], $product ),
 				'discount_type'   => $options['discount_type'],
 			);
 			if ( $is_wfacp ) {
@@ -1550,14 +1568,25 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		}
 
 		/**
-		 * The product's true, single-unit regular price, read directly from postmeta.
+		 * The product's true, single-unit regular price in the shopper's active currency.
 		 *
 		 * $product->get_regular_price() (any context) is not reliable here: for a switcher/bump
 		 * product with quantity > 1, WFACP_Common::set_product_price() mutates the product object's
-		 * regular_price prop to regular_price * quantity (org_quantity) — and that mutation survives
-		 * regardless of get_regular_price()'s context argument, since it changes the underlying prop,
-		 * not just a filter output. Reading raw postmeta sidesteps that entirely, so the same regular
-		 * price is used no matter when in the request this runs relative to that mutation.
+		 * regular_price prop to regular_price * quantity (org_quantity), and WFACP/WFOB overwrite it
+		 * with discounted values — mutations that survive regardless of the context argument, since
+		 * they change the underlying prop. A freshly loaded copy of the product carries none of them,
+		 * while its view-context getter still runs the multi-currency plugins (e.g. a CURCY fixed
+		 * price, or the rate-converted price), which raw _regular_price postmeta — always in the base
+		 * currency — bypasses. For a simple/variation product Sublium filters only the price getter,
+		 * not the regular-price one, so no plan price leaks in.
+		 *
+		 * Caveat: Sublium's Product Bundles compat DOES filter woocommerce_product_get_regular_price
+		 * (bundle.php, priority 100) for a bundle container on a plan, returning an unconverted
+		 * base-currency child aggregate that runs after CURCY's getter (priority 99) and overwrites
+		 * its conversion. Bundle containers therefore still resolve to a base-currency basis here; a
+		 * dedicated bundle path is out of scope for this fix.
+		 *
+		 * Code that feeds a base-currency discount pipeline uses get_base_regular_price() instead.
 		 *
 		 * @param \WC_Product $product
 		 *
@@ -1567,9 +1596,65 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 			if ( ! $product instanceof \WC_Product ) {
 				return 0.0;
 			}
+			$cache_key = $product->get_id() . '_' . get_woocommerce_currency();
+			if ( ! isset( $this->true_regular_price_cache[ $cache_key ] ) ) {
+				$fresh_product = wc_get_product( $product->get_id() );
+				$regular_price = $fresh_product instanceof \WC_Product ? $fresh_product->get_regular_price() : '';
+
+				$this->true_regular_price_cache[ $cache_key ] = '' !== $regular_price && is_numeric( $regular_price ) ? floatval( $regular_price ) : 0.0;
+			}
+
+			return $this->true_regular_price_cache[ $cache_key ];
+		}
+
+		/**
+		 * The product's single-unit regular price in the store's base currency, read directly from
+		 * postmeta so no runtime prop mutation (see get_true_regular_price()) or currency conversion
+		 * applies.
+		 *
+		 * @param \WC_Product $product
+		 *
+		 * @return float
+		 */
+		private function get_base_regular_price( $product ) {
+			if ( ! $product instanceof \WC_Product ) {
+				return 0.0;
+			}
 			$regular_price = get_post_meta( $product->get_id(), '_regular_price', true );
 
 			return '' !== $regular_price && is_numeric( $regular_price ) ? floatval( $regular_price ) : 0.0;
+		}
+
+		/**
+		 * A fixed bump/switcher discount amount in the shopper's active currency.
+		 *
+		 * Fixed "on Regular/Sale Price" discount amounts are entered in the store's base currency, but
+		 * every caller below subtracts them from get_true_regular_price() (and the plan price). When a
+		 * multi-currency plugin converts that regular price, subtracting the raw base amount overcharges
+		 * by the unconverted slice (e.g. 68.42 - 20 = 48.42 instead of the correct 68.42 - 27.37 = 41.05
+		 * at CAD rate 1.3687) — the symptom seen on the order bump / switcher.
+		 *
+		 * Converting the amount with the active multi-currency plugin (wmc_get_price for CURCY) keeps it
+		 * in the same currency as get_true_regular_price(), whose product getters the plugin always runs
+		 * on the frontend. Percentage discounts are currency-neutral and returned unchanged. The filter
+		 * lets another currency compat supply its own conversion.
+		 *
+		 * @param string           $discount_type
+		 * @param float|int|string $discount_amount base-currency amount from the bump/switcher config.
+		 * @param \WC_Product|null  $product
+		 *
+		 * @return float amount in the active currency.
+		 */
+		private function convert_fixed_discount_amount( $discount_type, $discount_amount, $product = null ) {
+			$amount = floatval( $discount_amount );
+			if ( in_array( $discount_type, array( 'fixed_discount_reg', 'fixed_discount_sale' ), true ) ) {
+				if ( function_exists( 'wmc_get_price' ) ) {
+					$amount = floatval( wmc_get_price( $amount ) );
+				}
+				$amount = floatval( apply_filters( 'wfocu_sublium_regular_basis_discount_amount', $amount, floatval( $discount_amount ), $discount_type, $product ) );
+			}
+
+			return $amount;
 		}
 
 		/**

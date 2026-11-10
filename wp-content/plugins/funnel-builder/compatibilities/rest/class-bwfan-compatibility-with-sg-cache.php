@@ -40,6 +40,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_SG_Cache' ) ) {
 			}
 
 			$value[] = '/wp-json/funnelkit-app/*';
+			$value[] = '/wp-json/funnelkit/*';
 			$value[] = '/wp-json/woofunnels-analytics/*';
 			$value[] = '/wp-json/woofunnels/*';
 			$value[] = '/wp-json/woofunnel_customer/*';
@@ -61,6 +62,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_SG_Cache' ) ) {
 			}
 
 			$default[] = '/wp-json/funnelkit-app/*';
+			$default[] = '/wp-json/funnelkit/*';
 			$default[] = '/wp-json/woofunnels-analytics/*';
 			$default[] = '/wp-json/woofunnels/*';
 			$default[] = '/wp-json/woofunnel_customer/*';

@@ -510,7 +510,8 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 						$query_results
 					);
 
-					$i = 0;
+					$i       = 0;
+					$get_ttl = WFOCU_Core()->data->get_option( 'ttl_funnel' );
 					if ( ! empty( $get_orders ) ) {
 
 						do {
@@ -519,6 +520,22 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 								break;
 							}
 							$order = $get_orders[ $i ];
+
+							/**
+							 * The shopper may still be on the 3D Secure step or in the bank app; their return starts the upsell,
+							 * so leave the order to them until the funnel time to live has passed since the webhook put it on hold.
+							 * Older FunnelKit Stripe versions store 'yes' instead of that time, then the order creation time is used.
+							 */
+							$held_since = $order instanceof WC_Order ? $order->get_meta( '_fkwcs_webhook_paid' ) : '';
+							if ( ! is_numeric( $held_since ) ) {
+								$date_created = $order instanceof WC_Order ? $order->get_date_created() : null;
+								$held_since   = $date_created ? $date_created->getTimestamp() : 0;
+							}
+							if ( absint( $held_since ) + ( MINUTE_IN_SECONDS * absint( $get_ttl ) ) > time() ) {
+								unset( $get_orders[ $i ] );
+								++$i;
+								continue;
+							}
 
 							try {
 

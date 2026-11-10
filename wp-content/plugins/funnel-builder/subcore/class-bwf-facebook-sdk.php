@@ -4,7 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 if ( ! class_exists( 'BWF_Facebook_Sdk' ) ) {
 	#[AllowDynamicProperties]
-	class BWF_Facebook_Sdk { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
+	class BWF_Facebook_Sdk {
+ // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		private static $instance = null;
 		protected $container     = array();
 		protected $event_data    = array();
@@ -151,7 +152,7 @@ if ( ! class_exists( 'BWF_Facebook_Sdk' ) ) {
 		 * @return string
 		 */
 		public static function hash( $data ) {
-			if ( null === $data || self::isHashed( $data ) ) {
+			if ( null === $data || '' === $data || self::isHashed( $data ) ) {
 				return $data;
 			}
 

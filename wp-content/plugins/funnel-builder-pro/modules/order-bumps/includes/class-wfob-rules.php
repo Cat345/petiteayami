@@ -154,7 +154,8 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 				__( 'Cart', 'woofunnels-order-bump' )      => array(
 					'cart_total_full'         => __( 'Cart Total', 'woofunnels-order-bump' ),
 					'cart_total'              => __( 'Cart Total (Subtotal)', 'woofunnels-order-bump' ),
-					'cart_item'               => __( 'Cart Product(s)', 'woofunnels-order-bump' ),
+					'cart_single_product_price' => __( 'Cart Single Product Price (any product)', 'woofunnels-order-bump' ),
+					'cart_item'            => __( 'Cart Product(s)', 'woofunnels-order-bump' ),
 					'cart_category'           => __( 'Cart Category(s)', 'woofunnels-order-bump' ),
 					'cart_tags'               => __( 'Cart Product Tags', 'woofunnels-order-bump' ),
 					'cart_item_count'         => __( 'Cart Product Count', 'woofunnels-order-bump' ),

@@ -365,6 +365,28 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 			return $result;
 		}
 
+		/**
+		 * Gateways enabled in WooCommerce but not ticked for upsells; orders paid with them skip every offer.
+		 *
+		 * @return array [ [ 'id' => gateway id, 'title' => gateway title ], ... ]
+		 */
+		public function get_skipped_gateways() {
+			$list    = $this->get_gateways_list();
+			$ticked  = (array) WFOCU_Core()->data->get_option( 'gateways' );
+			$skipped = array();
+
+			foreach ( is_array( $list ) ? $list : array() as $gateway ) {
+				if ( ! in_array( $gateway['value'], $ticked, true ) ) {
+					$skipped[] = array(
+						'id'    => $gateway['value'],
+						'title' => $gateway['name'],
+					);
+				}
+			}
+
+			return $skipped;
+		}
+
 		public function create_express_checkout_token() {
 			$this->get_integration( 'paypal' )->create_express_checkout_token();
 		}

@@ -22,6 +22,9 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			add_action( 'wffn_optin_form_submit', array( $this, 'update_optin_tracking_data' ), 10, 2 );
 			add_filter( 'bwf_add_db_table_schema', array( $this, 'create_db_tables' ), 10, 2 );
 
+			/** Before the analytics order meta of Aero checkout (11), this class (12) and order bumps */
+			add_action( 'woocommerce_checkout_create_order', array( $this, 'maybe_withhold_order_analytics' ), 5, 1 );
+			add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'maybe_withhold_order_analytics' ), 5, 1 );
 			add_action( 'woocommerce_checkout_create_order', array( $this, 'add_tracking_data_in_order_meta' ), 12, 1 );
 			// Block-based checkout (Cart/Checkout blocks via Store API) does not fire
 			add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'add_tracking_data_in_order_meta' ), 12, 1 );
@@ -201,6 +204,15 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		 * @return void
 		 */
 		public function update_optin_tracking_data( $optin_id, $posted_data ) {
+			if ( ! wffn_is_funnel_analytics_allowed(
+				array(
+					'event'   => 'optin_conversion',
+					'step_id' => $optin_id,
+				)
+			) ) {
+				return;
+			}
+
 			/** Server-side base row; the Pro plugin merges its visitor-collected fields through the filter */
 			$get_data = apply_filters( 'bwf_tracking_visitor_data', array(), 'optin', $posted_data ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			$get_data = is_array( $get_data ) ? $get_data : array();
@@ -232,6 +244,36 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		}
 
 		/**
+		 * Mark the order when the visitor's funnel analytics are withheld. Checkout is the last request that carries
+		 * the visitor's consent; the thank-you, IPN, cron and upsell writers read this mark instead of the filter.
+		 *
+		 * @param WC_Order $order
+		 *
+		 * @return void
+		 */
+		public function maybe_withhold_order_analytics( $order ) {
+			if ( ! $order instanceof WC_Order || wffn_is_funnel_analytics_allowed(
+				array(
+					'event' => 'order',
+					'order' => $order,
+				)
+			) ) {
+				return;
+			}
+
+			$order->update_meta_data( '_wffn_analytics_withheld', 'yes' );
+		}
+
+		/**
+		 * @param WC_Order $order
+		 *
+		 * @return bool
+		 */
+		public function is_order_analytics_withheld( $order ) {
+			return $order instanceof WC_Order && 'yes' === $order->get_meta( '_wffn_analytics_withheld' );
+		}
+
+		/**
 		 * @param $order
 		 *
 		 * @return void
@@ -239,7 +281,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		public function add_tracking_data_in_order_meta( $order ) {
 			$order = apply_filters( 'bwf_tracking_insert_order', $order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
-			if ( ! $order instanceof WC_Order ) {
+			if ( ! $order instanceof WC_Order || $this->is_order_analytics_withheld( $order ) ) {
 				return;
 			}
 
@@ -266,6 +308,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		 * @return void
 		 */
 		public function insert_tracking_data_in_upsell_order( $offer_id, $package, $parent_order, $new_order ) {
+			if ( $this->is_order_analytics_withheld( $parent_order ) ) {
+				return;
+			}
+
 			// Handle case if primary order already processed
 			if ( in_array( $parent_order->get_status(), wc_get_is_paid_statuses(), true ) ) {
 				global $wpdb;

@@ -19,7 +19,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_WP_Oauth' ) ) {
 		 */
 		public function bwfan_allow_rest_apis_with_wp_oauth( $status ) {
 			$rest_route = $GLOBALS['wp']->query_vars['rest_route'];
-			if ( strpos( $rest_route, 'autonami' ) !== false || strpos( $rest_route, 'woofunnel' ) !== false ) {
+			if ( strpos( $rest_route, 'autonami' ) !== false || strpos( $rest_route, 'woofunnel' ) !== false || 0 === strpos( ltrim( (string) $rest_route, '/' ), 'funnelkit/' ) ) {
 				BWFAN_Common::remove_actions( 'rest_authentication_errors', 'WO_Server', 'wpoauth_block_unauthenticated_rest_requests' );
 			}
 

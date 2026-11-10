@@ -1546,6 +1546,157 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			return 'left';
 		}
 
+		/**
+		 * Carries the per-product content the admin changed on the current skin into a newly imported skin.
+		 *
+		 * A value counts as changed when it differs from the old skin's default. A skin has two: the model as stored when the
+		 * bump was created, and the model with the skin's override keys as stored by an import, and they disagree on some
+		 * toggles. The skin-level keys saved with the bump (`social_proof_enable`, ...) say which of the two this bump got,
+		 * but only when they still equal one of them: the design editor also writes the selected product's title and
+		 * description into `product_title` and `product_description`. A field is carried only when both skins expose it in
+		 * the Content tab. Unchanged values keep the new skin's defaults, and Style settings stay with the new skin because
+		 * they are its look.
+		 *
+		 * @param int       $wfob_id      Bump id.
+		 * @param array     $products     Bump products keyed by product key.
+		 * @param array     $saved_design Design data saved before the skin change.
+		 * @param array     $new_design   The new skin's design data, product defaults already added.
+		 * @param WFOB_Bump $new_skin     The new skin.
+		 *
+		 * @return array
+		 */
+		public static function carry_customised_product_content( $wfob_id, $products, $saved_design, $new_design, $new_skin ) {
+			if ( ! is_array( $products ) || empty( $products ) || ! is_array( $saved_design ) || empty( $saved_design['layout'] ) || ! $new_skin instanceof WFOB_Bump ) {
+				return $new_design;
+			}
+
+			$old_layout = $saved_design['layout'];
+			$layouts    = WFOB_Bump_Fc::get_layouts();
+			if ( empty( $layouts[ $old_layout ] ) || ! class_exists( $layouts[ $old_layout ] ) ) {
+				return $new_design;
+			}
+			$old_skin   = new $layouts[ $old_layout ]( $wfob_id );
+			$old_fields = $old_skin->get_product_content_field_types();
+
+			$skin_level = $saved_design;
+			foreach ( array_keys( $products ) as $product_key ) {
+				$prefix = 'product_' . $product_key . '_';
+				foreach ( array_keys( $skin_level ) as $key ) {
+					if ( 0 === strpos( $key, $prefix ) ) {
+						unset( $skin_level[ $key ] );
+					}
+				}
+			}
+			$baseline = self::add_product_details_default_layout( $products, $skin_level );
+
+			$models       = array();
+			$created_with = self::get_default_model_data( $wfob_id );
+			$raw_model    = WFOB_Bump_Fc::get_default_models( $old_layout );
+			if ( isset( $created_with[ $old_layout ] ) ) {
+				$models[] = $created_with[ $old_layout ];
+			}
+			if ( is_array( $raw_model ) && ! empty( $raw_model ) ) {
+				$models[] = self::add_product_details_default_layout( $products, $new_skin->override_design_data_keys( $raw_model, $old_layout ) );
+			}
+
+			$field_types = array_intersect_key( $new_skin->get_product_content_field_types(), $old_fields );
+			foreach ( array_keys( $products ) as $product_key ) {
+				foreach ( $field_types as $field => $type ) {
+					$key = 'product_' . $product_key . '_' . $field;
+					if ( ! array_key_exists( $key, $saved_design ) ) {
+						continue;
+					}
+
+					$defaults = array();
+					foreach ( $models as $model ) {
+						if ( array_key_exists( $key, $model ) ) {
+							$defaults[] = $model[ $key ];
+						}
+					}
+					if ( 'image' !== $type && array_key_exists( $key, $baseline ) && ! self::is_customised_content( $baseline[ $key ], $defaults, $type ) ) {
+						$defaults = array( $baseline[ $key ] );
+					}
+
+					if ( 'image' === $type ) {
+						$new_design[ $key ] = self::carry_customised_image_options( $saved_design[ $key ], $new_design[ $key ] ?? array(), $defaults );
+					} elseif ( self::is_customised_content( $saved_design[ $key ], $defaults, $type ) ) {
+						$new_design[ $key ] = $saved_design[ $key ];
+					}
+				}
+			}
+
+			return $new_design;
+		}
+
+		/**
+		 * @param mixed  $value    Saved value.
+		 * @param array  $defaults Values the field had by default on the old skin.
+		 * @param string $type     Content field type.
+		 *
+		 * @return bool
+		 */
+		private static function is_customised_content( $value, $defaults, $type ) {
+			$normalised = self::normalise_content_value( $value, $type );
+			foreach ( $defaults as $default ) {
+				if ( self::normalise_content_value( $default, $type ) === $normalised ) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/**
+		 * Saved design data has been through wp_kses_post() and rich text comes back from the editor wrapped in paragraphs,
+		 * so neither counts as a change.
+		 *
+		 * @param mixed  $value Field value.
+		 * @param string $type  Content field type.
+		 *
+		 * @return string
+		 */
+		private static function normalise_content_value( $value, $type ) {
+			if ( 'checkbox' === $type || 'toggle' === $type ) {
+				return wc_string_to_bool( is_scalar( $value ) ? $value : false ) ? '1' : '';
+			}
+			if ( ! is_scalar( $value ) ) {
+				return wp_json_encode( $value );
+			}
+
+			return trim( preg_replace( '/\s+/', ' ', preg_replace( '#</?p\b[^>]*>#i', ' ', wp_kses_post( (string) $value ) ) ) );
+		}
+
+		/**
+		 * @param mixed $saved    Saved image options.
+		 * @param mixed $new      The new skin's default image options.
+		 * @param array $defaults Image options the field had by default on the old skin.
+		 *
+		 * @return mixed
+		 */
+		private static function carry_customised_image_options( $saved, $new, $defaults ) {
+			if ( ! is_array( $saved ) || ! is_array( $new ) ) {
+				return $new;
+			}
+
+			foreach ( array( 'type', 'custom_url', 'width', 'position' ) as $option ) {
+				if ( ! isset( $saved[ $option ] ) ) {
+					continue;
+				}
+				$is_default = false;
+				foreach ( $defaults as $default ) {
+					if ( is_array( $default ) && isset( $default[ $option ] ) && (string) $default[ $option ] === (string) $saved[ $option ] ) {
+						$is_default = true;
+						break;
+					}
+				}
+				if ( ! $is_default ) {
+					$new[ $option ] = $saved[ $option ];
+				}
+			}
+
+			return $new;
+		}
+
 		public static function add_product_details_default_layout( $products, $default_data ) {
 
 			if ( ! is_array( $products ) || empty( $products ) ) {

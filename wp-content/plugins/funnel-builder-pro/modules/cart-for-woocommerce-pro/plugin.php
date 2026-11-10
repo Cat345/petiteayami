@@ -30,7 +30,7 @@ if ( ! class_exists( '\FKCart\Pro\Plugin' ) ) {
 			}
 
 			define('FKCART_PRO_PATH',__DIR__);
-			define( 'FKCART_PRO_DB_VERSION', '1.0.1' );
+			define( 'FKCART_PRO_DB_VERSION', '1.0.2' );
 
 			include __DIR__ . '/include/upsells.php';
 			include __DIR__ . '/include/rewards.php';

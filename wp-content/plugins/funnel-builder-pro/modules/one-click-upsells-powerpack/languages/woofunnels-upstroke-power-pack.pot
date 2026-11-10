@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-21T13:14:23+00:00\n"
+"POT-Creation-Date: 2026-11-03T14:53:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-upstroke-power-pack\n"
@@ -2303,20 +2303,20 @@ msgid "Upsells amount"
 msgstr ""
 
 #. translators: %s: price charged today
-#: addons/sublium/class-wfocu-sublium-compatibility.php:350
-#: addons/sublium/class-wfocu-sublium-compatibility.php:367
-#: addons/sublium/class-wfocu-sublium-compatibility.php:622
-#: addons/sublium/class-wfocu-sublium-compatibility.php:1165
+#: addons/sublium/class-wfocu-sublium-compatibility.php:361
+#: addons/sublium/class-wfocu-sublium-compatibility.php:378
+#: addons/sublium/class-wfocu-sublium-compatibility.php:640
+#: addons/sublium/class-wfocu-sublium-compatibility.php:1183
 #, php-format
 msgid "Billed %s today."
 msgstr ""
 
-#: addons/sublium/class-wfocu-sublium-compatibility.php:2205
+#: addons/sublium/class-wfocu-sublium-compatibility.php:2290
 #: class-woofunnels-support-wfocu-power-pack.php:220
 msgid "All Products Subscription Plan List"
 msgstr ""
 
-#: addons/sublium/class-wfocu-sublium-compatibility.php:2215
+#: addons/sublium/class-wfocu-sublium-compatibility.php:2300
 msgid "Sublium Plans Selector"
 msgstr ""
 

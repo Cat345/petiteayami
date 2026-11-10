@@ -142,7 +142,8 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 					$value = $this->validate_date( $value ) ? $value : '';
 				}
 
-				$this->fields[ $field_id ] = maybe_unserialize( $value );
+				$unserialized              = bwf_safe_unserialize( $value );
+				$this->fields[ $field_id ] = is_object( $unserialized ) ? $value : $unserialized;
 			}
 
 			unset( $field_id );
@@ -1377,6 +1378,11 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$format      = [];
 			foreach ( $this->fields as $field_id => $field_value ) {
 				$field_value = is_string( $field_value ) ? trim( $field_value ) : $field_value;
+
+				/** Multi-value fields are stored as JSON, so a PHP-serialized string is never a legitimate value; reject it to block object injection on read. */
+				if ( is_string( $field_value ) && is_serialized( $field_value ) ) {
+					$field_value = '';
+				}
 
 				/** Checkbox, Radio and Select field values alter */
 				$allowed_types = array(

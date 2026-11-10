@@ -226,7 +226,7 @@ class Xoo_Wl_Admin_Settings{
 	public function customFields_addon_notice( $aff ){
 		if( defined( 'XOO_WLCF_VERSION' ) || $aff->plugin_slug !== 'waitlist-woocommerce' ) return;
 		?>
-		<a class="xoo-wl-field-addon-notice" href="https://xootix.com/waitlist-for-woocommerce#sp-addons" target="__blank" ><span class="dashicons dashicons-admin-links"></span> Adding custom fields is a separate add-on.</a>
+		<a class="xoo-wl-field-addon-notice" href="https://xootix.com/waitlist-for-woocommerce#sp-addons" target="_blank" ><span class="dashicons dashicons-admin-links"></span> Adding custom fields is a separate add-on.</a>
 		<?php
 	}
 
@@ -377,7 +377,7 @@ class Xoo_Wl_Admin_Settings{
 		$isWaitlistPage = $hook === 'toplevel_page_xoo-wl-view-waitlist' || $hook === 'waitlist_page_xoo-wl-email-history';
 
 		//Enqueue Styles only on plugin settings page
-		if( xoo_wl_helper()->admin->is_settings_page() || $isWaitlistPage ){
+		if( xoo_wl_helper()->admin->is_settings_page() || $isWaitlistPage || $hook === 'waitlist_page_xoo-wl-fields'){
 			wp_enqueue_style( 'xoo-wl-admin-style', XOO_WL_URL . '/admin/assets/css/xoo-wl-admin-style.css', array(), XOO_WL_VERSION, 'all' );
 		}
 
@@ -546,6 +546,7 @@ class Xoo_Wl_Admin_Settings{
 		$args = array();
 
 		$list_view = $this->get_waitlist_view();
+
 
 		$this->cron_not_working_html();
 

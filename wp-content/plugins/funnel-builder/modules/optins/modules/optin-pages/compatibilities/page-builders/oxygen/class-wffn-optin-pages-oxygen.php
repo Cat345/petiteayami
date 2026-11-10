@@ -1,6 +1,6 @@
 <?php //phpcs:ignore WordPress.WP.TimezoneChange.DeprecatedSniff
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_Optin_Pages_Oxygen
@@ -9,10 +9,10 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 
 	#[AllowDynamicProperties]
 
-  class WFFN_Optin_Pages_Oxygen {
-		private static $ins = null;
-		public $modules_instance = [];
-		private $edit_id = 0;
+	class WFFN_Optin_Pages_Oxygen {
+		private static $ins      = null;
+		public $modules_instance = array();
+		private $edit_id         = 0;
 
 		/**
 		 * WFFN_Optin_Pages_Oxygen constructor.
@@ -23,8 +23,8 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 			}
 
 			$this->register();
-			add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
-			add_action( 'oxygen_enqueue_frontend_scripts', [ $this, 'enable_self_page_css' ] );
+			add_action( 'wp_enqueue_scripts', array( $this, 'register_scripts' ) );
+			add_action( 'oxygen_enqueue_frontend_scripts', array( $this, 'enable_self_page_css' ) );
 		}
 
 
@@ -34,76 +34,73 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 			}
 
 			return self::$ins;
-
 		}
 
 
 		private function register() {
 			/* show a section in +Add */
-			add_action( 'wffn_step_duplicated', [ $this, 'assign_empty_template' ] );
-			add_action( 'wfop_page_design_updated', [ $this, 'assign_empty_template' ] );
-			add_action( 'admin_bar_menu', [ $this, 'add_admin_bar_link' ], 1003 );
-			add_action( 'init', [ $this, 'init_extension' ], 21 );
-
+			add_action( 'wffn_step_duplicated', array( $this, 'assign_empty_template' ) );
+			add_action( 'wfop_page_design_updated', array( $this, 'assign_empty_template' ) );
+			add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_link' ), 1003 );
+			add_action( 'init', array( $this, 'init_extension' ), 21 );
 		}
 
 		public function assign_empty_template( $wfop_id ) {
 			if ( $wfop_id < 1 ) {
 				return;
 			}
-
 		}
 
 		public function add_default_templates() {
 
-			$template = [
+			$template = array(
 				'slug'        => 'oxy',
 				'title'       => __( 'Oxygen Classic', 'funnel-builder' ),
 				'button_text' => __( 'Edit', 'funnel-builder' ),
 				'description' => __( 'Use Oxygen Classic Builder modules to create your own designs. Or pick from professionally-designed templates.', 'funnel-builder' ),
-				'edit_url'    => add_query_arg( [
-					'ct_builder'        => true,
-					'oxy_wffn_optin_id' => $this->edit_id
-				], get_permalink( $this->edit_id ) ),
-			];
+				'edit_url'    => add_query_arg(
+					array(
+						'ct_builder'        => true,
+						'oxy_wffn_optin_id' => $this->edit_id,
+					),
+					get_permalink( $this->edit_id )
+				),
+			);
 
 			WFOPP_Core()->optin_pages->register_template_type( $template );
 			$templates = WooFunnels_Dashboard::get_all_templates();
-			$designs   = isset( $templates['optin'] ) ? $templates['optin'] : [];
+			$designs   = isset( $templates['optin'] ) ? $templates['optin'] : array();
 
 			if ( isset( $designs['oxy'] ) && is_array( $designs['oxy'] ) ) {
 				foreach ( $designs['oxy'] as $d_key => $templates ) {
 
-
 					WFOPP_Core()->optin_pages->register_template( $d_key, $templates, 'oxy' );
 
 				}
-
 			} else {
 
-				$empty_template = [
-					"type"               => "view",
-					"import"             => "no",
-					"show_import_popup"  => "no",
-					"slug"               => "oxy_1",
-					"build_from_scratch" => true,
-					"group"              => [
-						"inline",
-						"popup"
-					],
-				];
+				$empty_template = array(
+					'type'               => 'view',
+					'import'             => 'no',
+					'show_import_popup'  => 'no',
+					'slug'               => 'oxy_1',
+					'build_from_scratch' => true,
+					'group'              => array(
+						'inline',
+						'popup',
+					),
+				);
 				WFOPP_Core()->optin_pages->register_template( 'oxy_1', $empty_template, 'oxy' );
 			}
 
-			return [];
-
+			return array();
 		}
 
 		public function init_extension() {
 
 			if ( WFFN_OXYGEN::is_template_editor() ) {
-				add_action( 'wp', [ $this, 'remove_register_template' ] );
-				add_action( 'wp', [ $this, 'prepare_frontend_module' ] );
+				add_action( 'wp', array( $this, 'remove_register_template' ) );
+				add_action( 'wp', array( $this, 'prepare_frontend_module' ) );
 
 				return;
 			}
@@ -119,9 +116,12 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 			$post = get_post( $post_id );
 			if ( ! is_null( $post ) && $post->post_type === WFOPP_Core()->optin_pages->get_post_type_slug() ) {
 				WFOPP_Core()->optin_pages->set_id( $post_id );
-				add_action( 'admin_head', function () {
-					add_filter( 'post_type_link', [ $this, 'change_edit_with_oxygen_link' ], 10, 2 );
-				} );
+				add_action(
+					'admin_head',
+					function () {
+						add_filter( 'post_type_link', array( $this, 'change_edit_with_oxygen_link' ), 10, 2 );
+					}
+				);
 
 				WFFN_OXYGEN::disable_signature_checking();
 				$this->remove_register_template();
@@ -129,9 +129,8 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 
 				return;
 			}
-			add_action( 'wp', [ $this, 'remove_register_template' ] );
-			add_action( 'wp', [ $this, 'prepare_frontend_module' ] );
-
+			add_action( 'wp', array( $this, 'remove_register_template' ) );
+			add_action( 'wp', array( $this, 'prepare_frontend_module' ) );
 		}
 
 		public function prepare_frontend_module() {
@@ -165,19 +164,18 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 
 
 		private function get_modules() {
-			$modules = [
-				'optin_form' => [
+			$modules = array(
+				'optin_form' => array(
 					'name' => __( 'Optin Form', 'funnel-builder' ),
 					'path' => __DIR__ . '/class-oxygen-wffn-optin-form-widget.php',
-				],
-			];
+				),
+			);
 
 			return apply_filters( 'wffn_op_oxy_modules', $modules, $this );
-
 		}
 
 		public function change_edit_with_oxygen_link( $link, $post ) {
-			$link = add_query_arg( [ 'oxy_wffn_optin_id' => $post->ID ], $link );
+			$link = add_query_arg( array( 'oxy_wffn_optin_id' => $post->ID ), $link );
 
 			return $link;
 		}
@@ -197,7 +195,13 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 					if ( $post instanceof WP_Post && $post->post_type === WFOPP_Core()->optin_pages->get_post_type_slug() ) {
 						$wfacp_id     = $post->ID;
 						$href         = $node['href'];
-						$node['href'] = add_query_arg( [ 'ct_builder' => 'true', 'oxy_wffn_optin_id' => $wfacp_id ], $href );
+						$node['href'] = add_query_arg(
+							array(
+								'ct_builder'        => 'true',
+								'oxy_wffn_optin_id' => $wfacp_id,
+							),
+							$href
+						);
 						$wp_admin_bar->add_node( $node );
 					}
 				}
@@ -210,7 +214,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 				if ( WFOPP_Core()->optin_pages->get_post_type_slug() === get_post_type( $post_id ) && WFFN_Common::wffn_is_funnel_pro_active() ) {
 					WFFN_Optin_Pages::enqueue_phone_flag_editor_assets();
 				}
-
 			}
 		}
 
@@ -218,7 +221,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 			if ( apply_filters( 'bwf_enable_oxygen_universal_css', true, $this ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				return;
 			}
-			add_filter( 'pre_option_oxygen_vsb_universal_css_cache', [ $this, 'disable_universal_css' ] );
+			add_filter( 'pre_option_oxygen_vsb_universal_css_cache', array( $this, 'disable_universal_css' ) );
 		}
 
 		public function disable_universal_css( $status ) {
@@ -243,12 +246,10 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 			if ( $post instanceof WP_Post && $post->post_type === WFOPP_Core()->optin_pages->get_post_type_slug() ) {
 				$design = WFOPP_Core()->optin_pages->get_page_design( $post->ID );
 				if ( ( $ct_builder === true ) || ( is_array( $design ) && isset( $design['selected_type'] ) && 'oxy' === $design['selected_type'] ) ) {
-					remove_action( 'template_include', [ WFOPP_Core()->optin_pages, 'may_be_change_template' ], 99 );
+					remove_action( 'template_include', array( WFOPP_Core()->optin_pages, 'may_be_change_template' ), 99 );
 				}
 			}
-
 		}
-
 	}
 
 	WFFN_Optin_Pages_Oxygen::get_instance();

@@ -91,6 +91,8 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 
 			if ( class_exists( 'WFTY_Rules' ) && absint( $step_id ) > 0 ) {
 
+				WFTY_Rules::get_instance()->set_environment_var( 'thankyou_id', $step_id );
+
 				$wfty_rules = WFTY_Rules::get_instance()->get_funnel_rules( $step_id );
 				$list_rules = $this->get_ty_rules( $wfty_rules );
 
@@ -163,6 +165,13 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 			}
 
 			return rest_ensure_response( $resp );
+		}
+
+		public function get_category_based_rules() {
+			$rules   = parent::get_category_based_rules();
+			$rules[] = 'upsell_offer';
+
+			return $rules;
 		}
 
 		public function get_ty_rules( $saved_rules ) {

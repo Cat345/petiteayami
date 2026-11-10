@@ -4,7 +4,7 @@ Donate link: https://octol.io/fs-repo-up
 Tags: WooCommerce shipping, weight based shipping, Table Rate Shipping, conditional shipping, advanced shipping
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 6.13.4
+Stable tag: 6.13.7
 Requires PHP: 7.4
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -311,8 +311,13 @@ If you are upgrading from the old Flexible Shipping version (1.3.2, woo-flexible
 
 == Changelog ==
 
-= 6.13.4 - 2026-10-20 =
-* Fixed shipping integration and shipment status filters on the WooCommerce orders screen when HPOS is enabled.
-* Fixed the selected shipment status not being retained in the orders filter.
+= 6.13.7 - 2026-10-29 =
+* Added information about Black Friday special offer.
+
+= 6.13.6 - 2026-10-27 =
+* Added support for WooCommerce 11.3
+
+= 6.13.5 - 2026-10-20 =
+* Fixed authorization and nonce validation for shipping manifest downloads and cancellations.
 
 For older changelog entries, see the [changelog.txt file](https://plugins.svn.wordpress.org/flexible-shipping/trunk/changelog.txt).

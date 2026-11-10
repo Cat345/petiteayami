@@ -362,7 +362,13 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 						'show_in_admin_bar'   => true,
 						'hierarchical'        => false,
 						'show_in_nav_menus'   => false,
-						'rewrite'             => apply_filters( 'wfacp_rewrite_slug', array( 'slug' => self::get_url_rewrite_slug() ) ),
+						'rewrite'             => apply_filters(
+							'wfacp_rewrite_slug',
+							array(
+								'slug'       => self::get_url_rewrite_slug(),
+								'with_front' => self::rewrite_with_front(),
+							)
+						),
 						'query_var'           => true,
 						'supports'            => array( 'title', 'elementor', 'editor', 'custom-fields', 'revisions', 'thumbnail', 'author' ),
 						'has_archive'         => false,
@@ -410,6 +416,24 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$slug_url              = $bwb_admin_setting_obj->get_option( 'checkout_page_base' );
 
 			return empty( $slug_url ) ? 'checkouts' : $slug_url;
+		}
+
+		/**
+		 * Whether checkout URLs carry the site's permalink prefix (e.g. /blog/).
+		 *
+		 * Every other step type leaves the prefix out. Checkout kept WordPress's default, so stores
+		 * that already run Funnel Builder keep it and their live checkout URLs do not change; installs
+		 * from 1 November 2026 leave it out like the other steps.
+		 *
+		 * @return bool
+		 */
+		public static function rewrite_with_front() {
+			$active = get_option( 'fk_fb_active_date', array() );
+			if ( ! is_array( $active ) || empty( $active['lite'] ) ) {
+				return true;
+			}
+
+			return (int) $active['lite'] < strtotime( '2026-11-01' );
 		}
 
 		public static function get_formatted_product_name( $product ) {
@@ -2417,9 +2441,21 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			// one unit, times the units in the line, shown with or without tax like the cart's price column.
 			// Not from line_subtotal: for a sign-up fee or a free trial that holds what is due today, not what recurs.
 			if ( is_array( $cart_item ) && isset( $cart_item['data'] ) && $cart_item['data'] instanceof WC_Product ) {
-				$temp_price = wc_get_price_to_display( $cart_item['data'], array( 'qty' => ( isset( $cart_item['quantity'] ) && $cart_item['quantity'] > 0 ) ? wc_stock_amount( $cart_item['quantity'] ) : 1, 'display_context' => 'cart' ) );
+				$temp_price = wc_get_price_to_display(
+					$cart_item['data'],
+					array(
+						'qty'             => ( isset( $cart_item['quantity'] ) && $cart_item['quantity'] > 0 ) ? wc_stock_amount( $cart_item['quantity'] ) : 1,
+						'display_context' => 'cart',
+					)
+				);
 			} else {
-				$temp_price = wc_get_price_to_display( $pro, array( 'qty' => ( isset( $qty ) && $qty > 0 ) ? wc_stock_amount( $qty ) : 1, 'display_context' => 'cart' ) );
+				$temp_price = wc_get_price_to_display(
+					$pro,
+					array(
+						'qty'             => ( isset( $qty ) && $qty > 0 ) ? wc_stock_amount( $qty ) : 1,
+						'display_context' => 'cart',
+					)
+				);
 			}
 
 			$temp_data = array(

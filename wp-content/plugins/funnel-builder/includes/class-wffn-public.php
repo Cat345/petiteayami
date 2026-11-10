@@ -42,6 +42,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 			add_action( 'wp', array( $this, 'maybe_register_assets_on_load' ), 10 );
 			add_action( 'wffn_mark_pending_conversions', array( $this, 'mark_pending_conversions' ), 10, 2 );
 			add_action( 'wffn_mark_step_viewed', array( $this, 'mark_funnel_step_viewed' ), 10, 2 );
+			add_filter( 'wfacp_update_report_views', array( $this, 'maybe_skip_checkout_view' ), 10, 2 );
 			add_action( 'woocommerce_thankyou', array( $this, 'maybe_log_thankyou_visited' ), 999, 1 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'maybe_setup_tracking_script' ), 11 );
 			add_action( 'woocommerce_add_to_cart', array( $this, 'maybe_track_add_to_cart' ), 10, 4 );
@@ -261,7 +262,15 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 					)
 				);
 
-				wp_localize_script( 'wffn-public', 'wffnfunnelData', $this->funnel_setup_result );
+				$funnel_data = is_array( $this->funnel_setup_result ) ? $this->funnel_setup_result : array();
+
+				/**
+				 * The page may be served from a full-page cache to other visitors, so this is only the starting
+				 * value: every analytics response refreshes it and the wffn_ay_* cookie follows the fresh one.
+				 */
+				$funnel_data['allow_funnel_analytics'] = wffn_is_funnel_analytics_allowed( array( 'event' => 'page' ) ) ? 1 : 0;
+
+				wp_localize_script( 'wffn-public', 'wffnfunnelData', $funnel_data );
 				wp_localize_script( 'wffn-public', 'wffnfunnelEnvironment', $this->environment );
 
 				wp_localize_script(
@@ -316,11 +325,27 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 			wp_send_json( $result );
 		}
 
+		/**
+		 * Record step views and conversions, fire ecommerce events and close the funnel at its last step.
+		 * Only the recording depends on funnel-analytics consent; events, cache step setup and the funnel
+		 * teardown always run.
+		 *
+		 * @param string $args JSON sent by public.js: events, current_step and analytics_consent (0 when a
+		 *                     consent tool set window.wffn_analytics_consent_granted to false).
+		 *
+		 * @return array
+		 */
 		public function send_frontend_analytics( $args = array() ) {
 			$current_step = WFFN_Core()->data->get_current_step();
 			$response     = array(
-				'track_views' => false,
-				'ecom_event'  => false,
+				'track_views'            => false,
+				'ecom_event'             => false,
+				'allow_funnel_analytics' => wffn_is_funnel_analytics_allowed(
+					array(
+						'event' => 'step',
+						'step'  => $current_step,
+					)
+				) ? 1 : 0,
 			);
 
 			/**
@@ -333,9 +358,14 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 				 * Start Marking Impressions
 				 */
 				$get_data = isset( $args ) ? $args : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				$consent  = true;
 				if ( ! empty( $get_data ) ) {
 					$get_data = is_string( $get_data ) ? json_decode( wp_kses_stripslashes( $get_data ), true ) : $get_data;
 					$get_data = wffn_clean_tracking_data( $get_data );
+					if ( is_array( $get_data ) && isset( $get_data['analytics_consent'] ) ) {
+						$consent = ! empty( $get_data['analytics_consent'] );
+						unset( $get_data['analytics_consent'] );
+					}
 					$get_data = $this->maybe_setup_step_in_cache( $get_data, $current_step );
 					/**
 					 * maybe change current step after cache environment check
@@ -351,16 +381,22 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 						$response['ecom_event'] = true;
 					}
 				}
+				$record = $consent && 1 === $response['allow_funnel_analytics'];
+
 				$funnel = WFFN_Core()->data->get_session_funnel();
-				do_action( 'wffn_mark_pending_conversions', $current_step, $get_step_object, $funnel );
+				if ( $record ) {
+					do_action( 'wffn_mark_pending_conversions', $current_step, $get_step_object, $funnel );
+				}
 
 				/**
 				 *  only track views for the steps that supports
 				 */
 				if ( $get_step_object->supports( 'track_views' ) ) {
-					do_action( 'wffn_mark_step_viewed', $current_step, $get_step_object );
+					if ( $record ) {
+						do_action( 'wffn_mark_step_viewed', $current_step, $get_step_object );
+					}
 					/**
-					 * Now that we have recorded the analytics, we can check if we can mark the funnel ended and clean up the session data
+					 * The funnel ends at its last step whether or not the view was recorded
 					 */
 					$this->maybe_end_funnel_and_clear_data();
 					$response['track_views'] = true;
@@ -368,6 +404,27 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 			}
 
 			return $response;
+		}
+
+		/**
+		 * Checkout views are recorded by the checkout module during update_order_review.
+		 *
+		 * @param bool $skip
+		 * @param int  $wfacp_id
+		 *
+		 * @return bool
+		 */
+		public function maybe_skip_checkout_view( $skip, $wfacp_id ) {
+			if ( true === $skip ) {
+				return $skip;
+			}
+
+			return ! wffn_is_funnel_analytics_allowed(
+				array(
+					'event'   => 'checkout_view',
+					'step_id' => $wfacp_id,
+				)
+			);
 		}
 
 		/**
@@ -1126,6 +1183,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 				$resp = array_merge( $result, $resp );
 			}
 
+			$resp['allow_funnel_analytics'] = wffn_is_funnel_analytics_allowed( array( 'event' => 'page' ) ) ? 1 : 0;
 			if ( is_array( $resp ) && ! empty( $args['data']['track_data'] ) ) {
 				$tracking_result = $this->maybe_record_frontend_analytics( $resp, $args['data']['track_data'] );
 				if ( ! empty( $tracking_result ) ) {

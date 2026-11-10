@@ -1116,6 +1116,21 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			return false;
 		}
 
+		/**
+		 * Google Ads conversion cart data (Merchant Center), built by Funnel Builder when a Merchant Center ID is set.
+		 *
+		 * @param float $discount Discount total of the purchase.
+		 *
+		 * @return array
+		 */
+		public function get_gad_cart_data( $discount = 0 ) {
+			if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) || ! method_exists( 'WFFN_Ecomm_Tracking', 'get_gad_cart_data' ) ) {
+				return array();
+			}
+
+			return WFFN_Ecomm_Tracking::get_instance()->get_gad_cart_data( $discount );
+		}
+
 		public function is_gad_pageview_event() {
 			if ( true === wc_string_to_bool( $this->admin_general_settings->get_option( 'is_gad_page_view_global' ) ) ) {
 				return true;
@@ -1407,7 +1422,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 						'fname'            => WFOCU_WC_Compatibility::get_order_data( $order, 'billing_first_name' ),
 						'lname'            => WFOCU_WC_Compatibility::get_order_data( $order, 'billing_last_name' ),
 						'address'          => $advanced,
-					),
+					) + $this->get_gad_cart_data( $order->get_total_discount() ),
 					false,
 					$order
 				);
@@ -1943,7 +1958,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 						'fname'            => WFOCU_WC_Compatibility::get_order_data( $order, 'billing_first_name' ),
 						'lname'            => WFOCU_WC_Compatibility::get_order_data( $order, 'billing_last_name' ),
 						'address'          => $advanced,
-					),
+					) + $this->get_gad_cart_data(),
 					true,
 					$order,
 					$get_package
@@ -2967,10 +2982,13 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 				$fbc_value         = bwf_clean( wp_unslash( $_COOKIE['_fbc'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 				$user_data['_fbc'] = $fbc_value;
 				$user_data['fbc']  = $fbc_value;
-			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) ) {
+			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
 				$wffn_flt          = bwf_clean( wp_unslash( $_COOKIE['wffn_flt'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 				$wffn_fbclid       = bwf_clean( wp_unslash( $_COOKIE['wffn_fbclid'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
-				$user_data['_fbc'] = 'fb.1.' . strtotime( $wffn_flt ) . '.' . $wffn_fbclid;
+				$fbc_time = strtotime( get_gmt_from_date( $wffn_flt ) );
+				if ( $fbc_time > 0 ) {
+					$user_data['_fbc'] = 'fb.1.' . ( $fbc_time * 1000 ) . '.' . $wffn_fbclid;
+				}
 			}
 
 			return $user_data;

@@ -4,6 +4,9 @@
 class BWFAN_DB_Table_Options extends BWFAN_DB_Tables_Base {
 	public $table_name = 'bwf_options';
 
+	/** bwf_options_update() treats ID 0 as a missing option, and no other row points to this ID */
+	public $renumber_zero_pk = true;
+
 	/**
 	 * Get table's columns
 	 *

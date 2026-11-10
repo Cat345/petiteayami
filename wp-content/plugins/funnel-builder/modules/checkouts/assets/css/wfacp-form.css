@@ -5077,6 +5077,12 @@ body #wfacp-e-form .wfacp_display_none .wfacp_coupon_msg .woocommerce-error:empt
     display: none;
 }
 
+body #wfacp-e-form .wfacp_coupon_field_msg:empty,
+body #wfacp-e-form .wfacp_coupon_error_msg:empty,
+body #wfacp-e-form .wfacp_coupon_remove_msg:empty {
+    display: none;
+}
+
 body #wfacp-e-form .wfacp_display_none p {
     margin-bottom: 0px;
 }

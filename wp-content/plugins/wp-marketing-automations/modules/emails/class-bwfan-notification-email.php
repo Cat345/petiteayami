@@ -266,7 +266,7 @@ class BWFAN_Notification_Email {
 			case 'daily':
 				return ! ( intval( $last_sent->format( 'Ymd' ) ) < intval( $today->format( 'Ymd' ) ) );
 			case 'weekly':
-				return ! ( intval( $last_sent->format( 'YW' ) ) < intval( $today->format( 'YW' ) ) );
+				return ! ( intval( $last_sent->format( 'oW' ) ) < intval( $today->format( 'oW' ) ) );
 			case 'monthly':
 				return ! ( intval( $last_sent->format( 'Ym' ) ) < intval( $today->format( 'Ym' ) ) );
 			default:
@@ -422,9 +422,8 @@ class BWFAN_Notification_Email {
 	 * @throws DateMalformedStringException
 	 */
 	public static function format_date( $date_string ) {
-		/** Convert date string to a DateTime object */
-		$date = new DateTime( $date_string );
-		$date->setTimezone( wp_timezone() );
+		/** Report dates are store timezone calendar dates */
+		$date = new DateTime( $date_string, wp_timezone() );
 
 		return $date->format( 'F j, Y' );
 	}

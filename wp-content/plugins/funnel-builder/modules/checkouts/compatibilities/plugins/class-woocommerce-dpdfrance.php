@@ -11,9 +11,32 @@ if ( ! class_exists( 'WFACP_Compatibility_With_DPD_France' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_DPD_France {
 		public function __construct() {
+			add_filter( 'wfacp_global_dependency_messages', array( $this, 'form_field_notice' ) );
 			add_action( 'wfacp_template_load', array( $this, 'relocate_hooks' ) );
 			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 			add_filter( 'wfacp_show_shipping_options', '__return_true' );
+		}
+
+		/**
+		 * Form editor warning while the Shipping Method field isn't placed on the form,
+		 * since this plugin's checkout UI is only shown there.
+		 */
+		public function form_field_notice( $messages ) {
+			if ( ! function_exists( 'woocommerce_dpdfrance_relais_checkout_controller' ) ) {
+				return $messages;
+			}
+			$messages[] = array(
+				'message'     => __( 'DPD France relay point selection is not shown on this checkout. Drag the "Shipping Method" field into the form to show it.', 'funnel-builder' ),
+				'ids'         => array( 'shipping_calculator' ),
+				'show'        => 'yes',
+				'dismissible' => false,
+				'is_global'   => false,
+				'type'        => 'wfacp_warning',
+				'call_back'   => '',
+				'key'         => 'wfacp_dpdfrance_shipping_method_missing',
+			);
+
+			return $messages;
 		}
 
 		public function relocate_hooks() {

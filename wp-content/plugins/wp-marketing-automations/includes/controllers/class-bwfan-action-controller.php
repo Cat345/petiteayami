@@ -43,7 +43,26 @@ class BWFAN_Action_Controller extends BWFAN_Base_Step_Controller {
 		}
 	}
 
+	/**
+	 * Execute the action in the language of its record (cart or order)
+	 * The worker request can run in any language, so the multilingual compatibility switches to the
+	 * record's language before the unsubscribe link, subject and body are built, and restores it after.
+	 *
+	 * @return array
+	 */
 	public function execute_action() {
+		$language = isset( $this->automation_data['global']['language'] ) && is_string( $this->automation_data['global']['language'] ) ? $this->automation_data['global']['language'] : '';
+
+		do_action( 'bwfan_action_switch_language', $language );
+
+		try {
+			return $this->execute_action_in_language();
+		} finally {
+			do_action( 'bwfan_action_restore_language', $language );
+		}
+	}
+
+	private function execute_action_in_language() {
 		if ( ! $this->action_ins instanceof BWFAN_Action ) {
 			return array(
 				'status'  => BWFAN_Action::$RESPONSE_FAILED,

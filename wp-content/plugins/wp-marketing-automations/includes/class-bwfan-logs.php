@@ -343,6 +343,12 @@ class BWFAN_Logs {
 
 	public function fetch_logs_count( $status ) {
 		global $wpdb;
+
+		/** Fresh installs never create the v1 tables (bwfan_logs); the v1 engine is off there and there is nothing to count */
+		if ( ! BWFAN_Common::is_automation_v1_active() ) {
+			return 0;
+		}
+
 		$query         = 'SELECT count(ID) as logs_count FROM {table_name} WHERE status = %d';
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- hardcoded query; values bound via prepare() %d
 		$query         = $wpdb->prepare( $query, $status ); // WPCS: unprepared SQL OK
@@ -362,7 +368,7 @@ class BWFAN_Logs {
 			$query = $wpdb->prepare( $query, $status, $automation_id ); // WPCS: unprepared SQL OK
 		}
 		$logs_count = BWFAN_Model_Logs::get_results( $query );
-		$logs_count = $logs_count[0]['logs_count'];
+		$logs_count = isset( $logs_count[0]['logs_count'] ) ? absint( $logs_count[0]['logs_count'] ) : 0;
 
 		return $logs_count;
 	}

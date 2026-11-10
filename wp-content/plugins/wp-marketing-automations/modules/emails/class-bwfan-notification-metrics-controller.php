@@ -55,6 +55,26 @@ class BWFAN_Notification_Metrics_Controller {
 	}
 
 	/**
+	 * Store-timezone calendar range as datetime bounds, in UTC for columns stored in UTC.
+	 *
+	 * @param bool $previous Comparison range instead of the reported range.
+	 * @param bool $utc Convert the bounds from the store timezone to UTC.
+	 *
+	 * @return array [ from, to ]
+	 */
+	protected function get_bounds( $previous = false, $utc = true ) {
+		$suffix = $previous ? '_previous' : '';
+		$from   = substr( $this->date_params[ 'from_date' . $suffix ], 0, 10 ) . ' 00:00:00';
+		$to     = substr( $this->date_params[ 'to_date' . $suffix ], 0, 10 ) . ' 23:59:59';
+
+		if ( ! $utc ) {
+			return array( $from, $to );
+		}
+
+		return array( BWFAN_Common::get_utc_date_from_store_date( $from ), BWFAN_Common::get_utc_date_from_store_date( $to ) );
+	}
+
+	/**
 	 * Get percentage change.
 	 *
 	 * @param int $previous_value The previous value.
@@ -77,8 +97,11 @@ class BWFAN_Notification_Metrics_Controller {
 	 * @return array
 	 */
 	public function get_total_contacts() {
-		$contacts          = BWFAN_Dashboards::get_total_contacts( $this->date_params['from_date'], $this->date_params['to_date'] );
-		$previous_contacts = BWFAN_Dashboards::get_total_contacts( $this->date_params['from_date_previous'], $this->date_params['to_date_previous'] );
+		list( $from, $to )           = $this->get_bounds( false, false );
+		list( $prev_from, $prev_to ) = $this->get_bounds( true, false );
+
+		$contacts          = BWFAN_Dashboards::get_total_contacts( $from, $to );
+		$previous_contacts = BWFAN_Dashboards::get_total_contacts( $prev_from, $prev_to );
 
 		// Calculate percentage change
 		$percentage_change = $this->get_percentage_change( $previous_contacts, $contacts );
@@ -99,14 +122,17 @@ class BWFAN_Notification_Metrics_Controller {
 	 * @return array
 	 */
 	public function get_total_engagement_sent() {
-		$engagement_sent          = BWFAN_Dashboards::get_total_engagement_sents( $this->date_params['from_date'], $this->date_params['to_date'], '', '' );
-		$previous_engagement_sent = BWFAN_Dashboards::get_total_engagement_sents( $this->date_params['from_date_previous'], $this->date_params['to_date_previous'], '', '' );
+		list( $from, $to )           = $this->get_bounds();
+		list( $prev_from, $prev_to ) = $this->get_bounds( true );
 
-		$engagement_open          = BWFAN_Dashboards::get_total_email_open( $this->date_params['from_date'], $this->date_params['to_date'], '', '' );
-		$previous_engagement_open = BWFAN_Dashboards::get_total_email_open( $this->date_params['from_date_previous'], $this->date_params['to_date_previous'], '', '' );
+		$engagement_sent          = BWFAN_Dashboards::get_total_engagement_sents( $from, $to, '', '' );
+		$previous_engagement_sent = BWFAN_Dashboards::get_total_engagement_sents( $prev_from, $prev_to, '', '' );
 
-		$engagement_click          = BWFAN_Dashboards::get_total_email_click( $this->date_params['from_date'], $this->date_params['to_date'], '', '' );
-		$previous_engagement_click = BWFAN_Dashboards::get_total_email_click( $this->date_params['from_date_previous'], $this->date_params['to_date_previous'], '', '' );
+		$engagement_open          = BWFAN_Dashboards::get_total_email_open( $from, $to, '', '' );
+		$previous_engagement_open = BWFAN_Dashboards::get_total_email_open( $prev_from, $prev_to, '', '' );
+
+		$engagement_click          = BWFAN_Dashboards::get_total_email_click( $from, $to, '', '' );
+		$previous_engagement_click = BWFAN_Dashboards::get_total_email_click( $prev_from, $prev_to, '', '' );
 
 		return array(
 			'email_sent'  => $this->get_total_email_sent( $engagement_sent, $previous_engagement_sent ),
@@ -223,11 +249,18 @@ class BWFAN_Notification_Metrics_Controller {
 	private function get_total_carts() {
 		require_once BWFAN_PLUGIN_DIR . '/includes/class-bwfan-cart-analytics.php';
 
-		$captured_cart          = BWFAN_Cart_Analytics::get_captured_cart( $this->date_params['from_date'], $this->date_params['to_date'] );
-		$previous_captured_cart = BWFAN_Cart_Analytics::get_captured_cart( $this->date_params['from_date_previous'], $this->date_params['to_date_previous'] );
+		list( $from, $to )           = $this->get_bounds();
+		list( $prev_from, $prev_to ) = $this->get_bounds( true );
 
-		$recovered_cart          = BWFAN_Cart_Analytics::get_recovered_cart( $this->date_params['from_date'], $this->date_params['to_date'] );
-		$previous_recovered_cart = BWFAN_Cart_Analytics::get_recovered_cart( $this->date_params['from_date_previous'], $this->date_params['to_date_previous'] );
+		$captured_cart          = BWFAN_Cart_Analytics::get_captured_cart( $from, $to );
+		$previous_captured_cart = BWFAN_Cart_Analytics::get_captured_cart( $prev_from, $prev_to );
+
+		list( $from, $to )           = $this->get_bounds( false, false );
+		list( $prev_from, $prev_to ) = $this->get_bounds( true, false );
+
+		/** Local bounds in both storage modes: the HPOS query converts them to UTC itself */
+		$recovered_cart          = BWFAN_Cart_Analytics::get_recovered_cart( $from, $to );
+		$previous_recovered_cart = BWFAN_Cart_Analytics::get_recovered_cart( $prev_from, $prev_to );
 
 		$recovered_count          = isset( $recovered_cart[0]['count'] ) ? $recovered_cart[0]['count'] : 0;
 		$previous_recovered_count = isset( $previous_recovered_cart[0]['count'] ) ? $previous_recovered_cart[0]['count'] : 0;
@@ -267,8 +300,11 @@ class BWFAN_Notification_Metrics_Controller {
 	 * @return array
 	 */
 	public function get_conversions() {
-		$total_orders          = BWFAN_Dashboards::get_total_orders( $this->date_params['from_date'], $this->date_params['to_date'], '', '' );
-		$previous_total_orders = BWFAN_Dashboards::get_total_orders( $this->date_params['from_date_previous'], $this->date_params['to_date_previous'], '', '' );
+		list( $from, $to )           = $this->get_bounds();
+		list( $prev_from, $prev_to ) = $this->get_bounds( true );
+
+		$total_orders          = BWFAN_Dashboards::get_total_orders( $from, $to, '', '' );
+		$previous_total_orders = BWFAN_Dashboards::get_total_orders( $prev_from, $prev_to, '', '' );
 
 		return array(
 			'total_orders'  => $this->get_total_orders( $total_orders, $previous_total_orders ),

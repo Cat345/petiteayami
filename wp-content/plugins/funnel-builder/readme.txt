@@ -4,7 +4,7 @@ Tags: woocommerce checkout, checkout, funnel builder, order bump, upsell
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.17.0.1
+Stable tag: 3.18.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -244,7 +244,7 @@ FunnelKit Funnel Builder is the ideal WordPress funnel builder and WooCommerce c
 
 FunnelKit may connect to the following external services, only when the related feature is used:
 
-* **FunnelKit** provides the template library, template images, previews and optional usage tracking. [Terms](https://funnelkit.com/terms-conditions/) and [Privacy Policy](https://funnelkit.com/privacy-policy/)
+* **FunnelKit** provides the template library, template images, previews, optional usage tracking and FunnelKit AI. [Terms](https://funnelkit.com/terms-conditions/) and [Privacy Policy](https://funnelkit.com/privacy-policy/)
 * **Google Fonts** may load when a Google font is selected. [Terms](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy)
 * **Google reCAPTCHA** may be used for opt-in spam prevention. [Terms](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy)
 * **YouTube** may embed tutorial videos on FunnelKit screens. [Terms](https://www.youtube.com/t/terms) and [Privacy Policy](https://policies.google.com/privacy)
@@ -253,6 +253,7 @@ FunnelKit may connect to the following external services, only when the related 
 * **Pinterest** may receive pixel events when a tag is added. [Terms](https://policy.pinterest.com/en/terms-of-service) and [Privacy Policy](https://policy.pinterest.com/en/privacy-policy)
 * **Snapchat** may receive pixel events when a tag is added. [Terms](https://snap.com/en-US/terms) and [Privacy Policy](https://snap.com/en-US/privacy/privacy-policy)
 * **TikTok** may receive pixel events when a tag is added. [Terms](https://www.tiktok.com/legal/page/global/terms-of-service/en) and [Privacy Policy](https://www.tiktok.com/legal/page/global/privacy-policy/en)
+* **Mollie** may load Mollie.js on the checkout to show Mollie express checkout buttons, when Mollie Payments for WooCommerce is active and its express checkout is enabled. [Terms](https://www.mollie.com/user-agreement) and [Privacy Policy](https://www.mollie.com/privacy)
 
 == Source Code ==
 
@@ -405,6 +406,23 @@ Reach our [Support Team](https://funnelkit.com/support/). We answer questions on
 4. Start creating Funnels.
 
 == Change log ==
+
+= 3.18.0 =
+* Added: Funnel: Added FunnelKit AI (MCP) with a dedicated settings screen and secure sign-in, so AI assistants can build and refine your funnel steps. (#9386)
+* Added: Funnel: Added Google Ads Merchant Centre settings so purchase conversions report cart data for richer shopping reports. (#9712)
+* Added: Optin: Email typo suggestions now work on optin pages, sharing one lightweight script with checkout. (#9709)
+* Improved: Checkout: Checkout step URLs now skip the site's permalink prefix, matching every other funnel step. (#9693)
+* Improved: Funnel: Improved compatibility with Elementor. (#9643, #9660)
+* Improved: Checkout: Improved compatibility with WooCommerce Fraud Protection. (#9704, #9736)
+* Improved: Checkout: Improved compatibility with MyParcel, PostNL and DPD France. (#9691)
+* Improved: Checkout: Improved compatibility with Fetchify. (#9730)
+* Improved: Funnel: Improved compatibility with Bricks Builder. (#9701)
+* Improved: Funnel: Improved compatibility with Jetpack. (#9677)
+* Improved: Funnel: Improved compatibility with Perfmatters. (#9720)
+* Improved: Funnel: Improved compatibility with PayPlug. (#9660)
+* Fixed: Checkout: Embed form field errors now show in red, independent of the form content colour. (#9696)
+* Fixed: Funnel: Meta Conversions API now sends only populated customer fields and the correct click ID timestamp for more accurate matching. (#9683)
+* Fixed: Funnel: The Admin UI date picker now keeps the Specific Date calendar open and shows range labels clearly. (#9702)
 
 = 3.17.0.1 =
 * Improved: Funnel: Improved compatibility with Bricks Builder. (#9665)

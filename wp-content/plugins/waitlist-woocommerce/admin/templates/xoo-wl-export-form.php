@@ -3,7 +3,7 @@
 
 <div class="xoo-wl-exp-container">
 
-	<button class="xoo-wl-exp-toogle button-primary">Export Waitlist</button>
+	<button class="xoo-wl-exp-toogle"><?php include XOO_WL_PATH.'/admin/assets/icons/download.svg' ?> Export Waitlist</button>
 
 	<form class="xoo-wl-exp-form">
 

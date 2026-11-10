@@ -17,6 +17,9 @@ class Connect extends Call {
 	 * @return string
 	 */
 	public static function endpoint( $api_key = '', $api_url = '', $api_action = '' ) {
+		if ( ! self::is_valid_api_url( $api_url ) ) {
+			return '';
+		}
 		$base = '';
 		if ( ! preg_match( '/https:\/\/www.activecampaign.com/', $api_url ) ) {
 			$base = '/admin';

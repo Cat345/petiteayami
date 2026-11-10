@@ -27,9 +27,20 @@ abstract class BWFAN_AJAX_Controller {
 	public static function bwfan_select2ajax() {
 		BWFAN_Common::check_nonce();
 
+		/**
+		 * Rule classes (BWFAN_Dynamic_Option_Base) hook 'bwfan_select2_ajax_callable' in their constructor,
+		 * so the posted rule must be instantiated before the filter runs. Nothing else loads rules on admin-ajax.
+		 */
+		if ( BWFAN_Core()->rules instanceof BWFAN_Rules ) {
+			BWFAN_Core()->rules->load_rules_classes();
+			if ( ! empty( $_POST['ruletype'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- check_nonce() above verifies nonce + capability
+				BWFAN_Core()->rules->woocommerce_bwfan_rule_get_rule_object( sanitize_text_field( wp_unslash( $_POST['ruletype'] ) ) ); //phpcs:ignore WordPress.Security.NonceVerification, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+			}
+		}
+
 		$callback = apply_filters( 'bwfan_select2_ajax_callable', '', $_POST ); //phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! is_callable( $callback ) ) {
-			wp_send_json( [] );
+			wp_send_json( [ 'results' => [] ] );
 		}
 
 		$items = call_user_func( $callback, sanitize_text_field( $_POST['search_term']['term'] ) );//phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput

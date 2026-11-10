@@ -1481,7 +1481,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 				'post_title'   => $offer_name_new,
 				'post_type'    => WFOCU_Common::get_offer_post_type_slug(),
 				'post_status'  => ( 1 === absint( $offer_state_new ) ) ? 'publish' : 'draft',
-				'post_content' => $step_post->post_content,
+				'post_content' => wp_slash( $step_post->post_content ),
 				'post_name'    => sanitize_title( $offer_name_new ),
 			);
 

@@ -1289,7 +1289,7 @@ class FreeCachedContainer extends Container
      */
     protected function getAbilitiesRegistrarService()
     {
-        return $this->services['MailPoet\\Abilities\\AbilitiesRegistrar'] = new \MailPoet\Abilities\AbilitiesRegistrar(($this->services['MailPoet\\Features\\FeaturesController'] ?? $this->getFeaturesControllerService()), ($this->services['MailPoet\\WP\\Functions'] ?? ($this->services['MailPoet\\WP\\Functions'] = new \MailPoet\WP\Functions())), ($this->services['MailPoet\\Abilities\\SendingStatusAbility'] ?? $this->getSendingStatusAbilityService()), ($this->services['MailPoet\\Abilities\\UnsubscribeTrendAbility'] ?? $this->getUnsubscribeTrendAbilityService()), ($this->services['MailPoet\\Abilities\\RecentNewslettersAbility'] ?? $this->getRecentNewslettersAbilityService()));
+        return $this->services['MailPoet\\Abilities\\AbilitiesRegistrar'] = new \MailPoet\Abilities\AbilitiesRegistrar(($this->services['MailPoet\\WP\\Functions'] ?? ($this->services['MailPoet\\WP\\Functions'] = new \MailPoet\WP\Functions())), ($this->services['MailPoet\\Abilities\\SendingStatusAbility'] ?? $this->getSendingStatusAbilityService()), ($this->services['MailPoet\\Abilities\\UnsubscribeTrendAbility'] ?? $this->getUnsubscribeTrendAbilityService()), ($this->services['MailPoet\\Abilities\\RecentNewslettersAbility'] ?? $this->getRecentNewslettersAbilityService()));
     }
 
     /**
@@ -4198,7 +4198,7 @@ class FreeCachedContainer extends Container
      */
     protected function getAutomationEmailPreviewOrderProviderService()
     {
-        return $this->services['MailPoet\\EmailEditor\\Integrations\\MailPoet\\AutomationEmailPreviewOrderProvider'] = new \MailPoet\EmailEditor\Integrations\MailPoet\AutomationEmailPreviewOrderProvider(($this->services['MailPoet\\WooCommerce\\Helper'] ?? $this->getHelperService()));
+        return $this->services['MailPoet\\EmailEditor\\Integrations\\MailPoet\\AutomationEmailPreviewOrderProvider'] = new \MailPoet\EmailEditor\Integrations\MailPoet\AutomationEmailPreviewOrderProvider(($this->services['MailPoet\\WooCommerce\\Helper'] ?? $this->getHelperService()), ($this->services['MailPoet\\WP\\Functions'] ?? ($this->services['MailPoet\\WP\\Functions'] = new \MailPoet\WP\Functions())));
     }
 
     /**
@@ -5616,7 +5616,7 @@ class FreeCachedContainer extends Container
      */
     protected function getViewInBrowserControllerService()
     {
-        return $this->services['MailPoet\\Newsletter\\ViewInBrowser\\ViewInBrowserController'] = new \MailPoet\Newsletter\ViewInBrowser\ViewInBrowserController(($this->services['MailPoet\\Subscribers\\LinkTokens'] ?? $this->getLinkTokensService()), ($this->services['MailPoet\\Newsletter\\Url'] ?? $this->getUrlService()), ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\Newsletter\\ViewInBrowser\\ViewInBrowserRenderer'] ?? $this->getViewInBrowserRendererService()), ($this->services['MailPoet\\Newsletter\\Sending\\SendingQueuesRepository'] ?? $this->getSendingQueuesRepositoryService()), ($this->services['MailPoet\\EmailEditor\\Integrations\\MailPoet\\DependencyNotice'] ?? $this->getDependencyNoticeService()), ($this->services['MailPoet\\Subscribers\\SubscribersRepository'] ?? $this->getSubscribersRepositoryService()), ($this->services['MailPoet\\Newsletter\\Sharing\\ShareVisibility'] ?? $this->getShareVisibilityService()), ($this->services['MailPoet\\Newsletter\\Sharing\\ShareMetadataBuilder'] ?? $this->getShareMetadataBuilderService()));
+        return $this->services['MailPoet\\Newsletter\\ViewInBrowser\\ViewInBrowserController'] = new \MailPoet\Newsletter\ViewInBrowser\ViewInBrowserController(($this->services['MailPoet\\Subscribers\\LinkTokens'] ?? $this->getLinkTokensService()), ($this->services['MailPoet\\Newsletter\\Url'] ?? $this->getUrlService()), ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\Newsletter\\ViewInBrowser\\ViewInBrowserRenderer'] ?? $this->getViewInBrowserRendererService()), ($this->services['MailPoet\\Newsletter\\Sending\\SendingQueuesRepository'] ?? $this->getSendingQueuesRepositoryService()), ($this->services['MailPoet\\EmailEditor\\Integrations\\MailPoet\\DependencyNotice'] ?? $this->getDependencyNoticeService()), ($this->services['MailPoet\\Subscribers\\SubscribersRepository'] ?? $this->getSubscribersRepositoryService()), ($this->services['MailPoet\\Newsletter\\Sharing\\ShareVisibility'] ?? $this->getShareVisibilityService()), ($this->services['MailPoet\\Newsletter\\Sharing\\ShareMetadataBuilder'] ?? $this->getShareMetadataBuilderService()), ($this->services['MailPoet\\WP\\Functions'] ?? ($this->services['MailPoet\\WP\\Functions'] = new \MailPoet\WP\Functions())));
     }
 
     /**
@@ -6574,7 +6574,7 @@ class FreeCachedContainer extends Container
      */
     protected function getSubscriberCookieService()
     {
-        return $this->services['MailPoet\\Statistics\\Track\\SubscriberCookie'] = new \MailPoet\Statistics\Track\SubscriberCookie(($this->services['MailPoet\\Util\\Cookies'] ?? ($this->services['MailPoet\\Util\\Cookies'] = new \MailPoet\Util\Cookies())), ($this->services['MailPoet\\Settings\\TrackingConfig'] ?? $this->getTrackingConfigService()));
+        return $this->services['MailPoet\\Statistics\\Track\\SubscriberCookie'] = new \MailPoet\Statistics\Track\SubscriberCookie(($this->services['MailPoet\\Util\\Cookies'] ?? ($this->services['MailPoet\\Util\\Cookies'] = new \MailPoet\Util\Cookies())), ($this->services['MailPoet\\Settings\\TrackingConfig'] ?? $this->getTrackingConfigService()), ($this->services['MailPoet\\WP\\Functions'] ?? ($this->services['MailPoet\\WP\\Functions'] = new \MailPoet\WP\Functions())));
     }
 
     /**

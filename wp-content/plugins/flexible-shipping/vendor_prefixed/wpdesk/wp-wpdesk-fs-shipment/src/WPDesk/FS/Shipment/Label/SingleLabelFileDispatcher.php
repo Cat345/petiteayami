@@ -79,6 +79,10 @@ class SingleLabelFileDispatcher implements Hookable
      */
     public function dispatch_label_if_requested()
     {
+        if (!current_user_can('manage_woocommerce')) {
+            wp_die(esc_html__('Insufficient user permissions!', 'flexible-shipping'), '', array('response' => 403));
+            return;
+        }
         check_admin_referer('flexible_shipping_get_label');
         $shipment_id = filter_input(\INPUT_GET, 'shipment_id', \FILTER_VALIDATE_INT);
         $integration = get_post_meta($shipment_id, '_integration', \true);

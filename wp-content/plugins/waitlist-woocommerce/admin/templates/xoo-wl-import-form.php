@@ -1,6 +1,6 @@
 <div class="xoo-wl-imp-container">
 
-	<button class="xoo-wl-imp-toogle button-primary">Import Waitlist</button>
+	<button class="xoo-wl-imp-toogle"><?php include XOO_WL_PATH.'/admin/assets/icons/upload.svg' ?> Import Waitlist</button>
 
 	<form class="xoo-wl-imp-form" enctype="multipart/form-data" method="post">
 		

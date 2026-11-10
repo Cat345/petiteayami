@@ -616,7 +616,9 @@ class BWFAN_API_Importer_Controller extends BWFAN_API_Controller {
 		}
 
 			// Set a time limit for script execution
-			set_time_limit( 60 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- import/export download may need longer than the default time limit
+			if ( function_exists( 'set_time_limit' ) ) {
+				set_time_limit( 60 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- import/export download may need longer than the default time limit; disabled via disable_functions on some hosts (RunCloud default)
+			}
 
 			// Define header information
 			header( 'Content-Description: File Transfer' );

@@ -470,6 +470,21 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$this->base_country['store_country']    = $default_store_country;
 		}
 
+		/**
+		 * Whether address autocomplete uses Places API (New). Funnel Builder Pro answers from its server-side check of
+		 * the key: only a key Google confirmed for Places API (New) gets it. Anything else stays on the legacy API.
+		 *
+		 * @return bool
+		 */
+		public function use_new_google_places_api() {
+			$google_map_key = $this->get_gmap_key();
+			if ( empty( $google_map_key ) ) {
+				return false;
+			}
+
+			return true === apply_filters( 'wfacp_google_places_use_new_api', false, $google_map_key, $this );
+		}
+
 		final public function get_base_country() {
 			if ( empty( $this->base_country['store_country'] ) ) {
 				$this->base_country['store_country'] = wc_format_country_state_string( get_option( 'woocommerce_default_country', '' ) )['country'];
@@ -647,6 +662,10 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 			wp_enqueue_script( 'wfacp_checkout_js', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/public' . $js_extension, array( 'jquery' ), WFACP_VERSION_DEV, true );
 
+			if ( isset( $page_settings['enable_email_suggestion'] ) && wc_string_to_bool( $page_settings['enable_email_suggestion'] ) && class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'enqueue_email_suggestion' ) ) {
+				WFFN_Common::enqueue_email_suggestion( isset( $page_settings['email_suggestion_prompt'] ) ? $page_settings['email_suggestion_prompt'] : '' );
+			}
+
 			if ( wc_string_to_bool( $page_settings['enable_smart_buttons'] ) ) {
 				if ( apply_filters( 'wfacp_enqueue_smart_buttons_inline_script', false ) ) {
 					$smart_btn_script = $this->get_smart_button_inline_js( $js_extension );
@@ -800,17 +819,6 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$advancedFields  = isset( $checkout_fields['advanced'] ) ? $checkout_fields['advanced'] : array();
 			$min_age         = ( isset( $advancedFields['_bwf_dob']['_bwf_dob'] ) && ! empty( $advancedFields['_bwf_dob']['_bwf_dob'] ) ) ? $advancedFields['_bwf_dob']['_bwf_dob'] : '';
 
-			/**
-			 * Filters the extra mailbox domains the email typo suggestion matches a mistyped address against.
-			 *
-			 * @param string[]              $domains  Domains such as 'example.com' or 'example.co.uk', added to the built-in provider list.
-			 * @param WFACP_Template_Common $template The checkout template being rendered.
-			 */
-			$email_suggestion_domains = apply_filters( 'wfacp_email_suggestion_domains', array(), $this );
-
-			/* translators: %s: the suggested email address */
-			$email_suggestion_prompt = ! empty( $page_settings['email_suggestion_prompt'] ) ? $page_settings['email_suggestion_prompt'] : __( 'Did you mean %s?', 'woofunnels-aero-checkout' );
-
 			$data = array(
 				'id'                                    => WFACP_Common::get_id(),
 				'title'                                 => get_the_title( WFACP_Common::get_id() ),
@@ -840,6 +848,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				'cancel_page_url'                       => $this->get_cancel_page_link(),
 				'enable_hashtag_for_multistep_checkout' => apply_filters( 'wfacp_enable_hashtag_for_multistep_checkout', 'yes', $this ),
 				'gmaps'                                 => $gmap_data,
+				'use_new_google_api'                    => $this->use_new_google_places_api() ? 'yes' : 'no',
 				'template_name'                         => $template_name,
 				'base_country'                          => $this->get_base_country(),
 				'intl_i18n'                             => array(
@@ -851,9 +860,6 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				'enable_google_autocomplete'            => $page_settings['enable_google_autocomplete'],
 				'enable_smart_buttons'                  => $page_settings['enable_smart_buttons'],
 				'enable_phone_flag'                     => wc_string_to_bool( $page_settings['enable_phone_flag'] ) ? 'yes' : 'no',
-				'enable_email_suggestion'               => isset( $page_settings['enable_email_suggestion'] ) && wc_string_to_bool( $page_settings['enable_email_suggestion'] ) ? 'yes' : 'no',
-				'email_suggestion_prompt'               => $email_suggestion_prompt,
-				'email_suggestion_domains'              => array_values( array_filter( array_map( 'sanitize_text_field', (array) $email_suggestion_domains ) ) ),
 				'save_phone_number_type'                => wc_string_to_bool( $page_settings['save_phone_number_type'] ) ? 'yes' : 'no',
 				'enable_phone_validation'               => wc_string_to_bool( $page_settings['enable_phone_validation'] ) ? 'yes' : 'no',
 				'intl_util_scripts'                     => plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/utils.js',

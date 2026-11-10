@@ -49,7 +49,9 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$start_date = false === strpos( $start_date, ' ' ) ? $start_date . ' 00:00:00' : $start_date;
+			$end_date   = false === strpos( $end_date, ' ' ) ? $end_date . ' 23:59:59' : $end_date;
+			$where      = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$where .= " AND  email != '' AND email IS NOT NULL ";
@@ -265,7 +267,9 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$start_date = false === strpos( $start_date, ' ' ) ? $start_date . ' 00:00:00' : $start_date;
+			$end_date   = false === strpos( $end_date, ' ' ) ? $end_date . ' 23:59:59' : $end_date;
+			$where      = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 		$arr = [];
 
@@ -311,7 +315,9 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$start_date = false === strpos( $start_date, ' ' ) ? $start_date . ' 00:00:00' : $start_date;
+			$end_date   = false === strpos( $end_date, ' ' ) ? $end_date . ' 23:59:59' : $end_date;
+			$where      = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$base_query = "SELECT  sum( open ) as email_open" . $interval_query . "  FROM `" . $table . "` WHERE 1 = 1 " . $where . " and c_status = 2 " . $group_by . " ORDER BY " . $order_by . " ASC";
@@ -347,7 +353,9 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$start_date = false === strpos( $start_date, ' ' ) ? $start_date . ' 00:00:00' : $start_date;
+			$end_date   = false === strpos( $end_date, ' ' ) ? $end_date . ' 23:59:59' : $end_date;
+			$where      = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$base_query = "SELECT  sum( click ) as email_click" . $interval_query . "  FROM `" . $table . "` WHERE 1 = 1 " . $where . " and c_status = 2 " . $group_by . " ORDER BY " . $order_by . " ASC";
@@ -383,7 +391,9 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND " . $date_col . " <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$start_date = false === strpos( $start_date, ' ' ) ? $start_date . ' 00:00:00' : $start_date;
+			$end_date   = false === strpos( $end_date, ' ' ) ? $end_date . ' 23:59:59' : $end_date;
+			$where      = $wpdb->prepare( " AND " . $date_col . " >= %s AND " . $date_col . " <= %s ", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$base_query = "SELECT  count( c.id ) as total_orders, sum( c.wctotal ) as total_revenue " . $interval_query . "  FROM  $table as c WHERE 1 = 1 " . $where . " and c.wcid != 0 " . $group_by . " ORDER BY " . $order_by . " ASC";

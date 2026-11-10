@@ -275,6 +275,220 @@ class BWFAN_Common {
 		/** Keep our routes out of the public REST index and OPTIONS schema; dispatch is unchanged */
 		add_filter( 'rest_endpoints', [ __CLASS__, 'hide_rest_routes_from_index' ] );
 		add_filter( 'rest_index', [ __CLASS__, 'hide_rest_namespaces_from_index' ] );
+
+		/** Register the MCP ability packs and dispatch map for Automations */
+		add_filter( 'fkmcp_ability_packs', array( __CLASS__, 'register_mcp_packs' ) );
+		add_filter( 'fkmcp_dispatch_map', array( __CLASS__, 'register_mcp_dispatch_map' ) );
+		add_filter( 'bwfan_mcp_pro_pitch', array( __CLASS__, 'register_mcp_pro_pitch' ) );
+
+		// Late priority so the tab lands after every other plugin's additions
+		// (Pro appends REST API on default priority) - FunnelKit MCP sits last.
+		// 1000, not 999: module copies that predate this move hook at 999 and
+		// the handler below has to run after them to take the tab over.
+
+		// FunnelKit AI connector: the weekly grant purge and the end of a removed or
+		// re-roled user's connections. Here, not in the MCP module: the module never
+		// boots on wp-cron, the front end or core REST (wp/v2/users), where these fire.
+		add_action( 'fkai_cleanup', array( __CLASS__, 'fkai_purge_expired_grants' ) );
+		foreach ( array( 'deleted_user', 'remove_user_from_blog', 'set_user_role', 'remove_user_role' ) as $hook ) {
+			add_action( $hook, array( __CLASS__, 'fkai_revoke_user_grants' ) );
+		}
+	}
+
+	/**
+	 * fkai_cleanup (wp-cron, weekly): deletes grants whose refresh token has expired.
+	 *
+	 * @return void
+	 */
+	public static function fkai_purge_expired_grants() {
+		if ( self::fkai_load_grants() ) {
+			FKMCP_Connector_Grants::purge_expired( time() );
+		}
+	}
+
+	/**
+	 * A deleted, removed or re-roled user loses every FunnelKit AI connection.
+	 *
+	 * @param int $user_id User ID.
+	 *
+	 * @return void
+	 */
+	public static function fkai_revoke_user_grants( $user_id ) {
+		if ( self::fkai_load_grants() ) {
+			FKMCP_Connector_Grants::revoke_user( (int) $user_id );
+		}
+	}
+
+	/**
+	 * Loads the grants class once the grants table exists; false (nothing loaded) before,
+	 * and while the standalone connector plugin is active (it serves the same table).
+	 *
+	 * @return bool
+	 */
+	private static function fkai_load_grants() {
+		if ( defined( 'FKAI_VERSION' ) || (int) get_option( 'fkai_db_version', 0 ) < 1 ) {
+			return false;
+		}
+
+		// The purge asks the client list which grants are still trusted.
+		if ( ! class_exists( 'FKMCP_Connector_Clients' ) ) {
+			require_once BWFAN_PLUGIN_DIR . '/includes/mcp/module/connector/class-fkmcp-connector-clients.php';
+		}
+
+		if ( ! class_exists( 'FKMCP_Connector_Grants' ) ) {
+			require_once BWFAN_PLUGIN_DIR . '/includes/mcp/module/connector/class-fkmcp-connector-grants.php';
+		}
+
+		return true;
+	}
+
+	/**
+	 * The Pro abilities listed on the FunnelKit MCP screen while Pro is not
+	 * installed. Hardcoded here rather than in the shared MCP module: the
+	 * module is bundled by several plugins, and each family advertises only
+	 * its own upgrade.
+	 *
+	 * @param array $pitch
+	 *
+	 * @return array
+	 */
+	public static function register_mcp_pro_pitch( $pitch ) {
+		return array(
+			'id'     => 'automations-pro',
+			'name'   => __( 'Automations Pro', 'wp-marketing-automations' ),
+			'groups' => array(
+				array(
+					'name'  => __( 'Broadcasts', 'wp-marketing-automations' ),
+					'items' => array(
+						array( 'name' => __( 'List Broadcasts', 'wp-marketing-automations' ), 'desc' => __( 'Every broadcast with its status and schedule.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Get Broadcast', 'wp-marketing-automations' ), 'desc' => __( 'One broadcast in full, audience included.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Get Broadcast Stats', 'wp-marketing-automations' ), 'desc' => __( 'Sends, opens, clicks and revenue for a broadcast.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Create Broadcast', 'wp-marketing-automations' ), 'desc' => __( 'Draft an email or SMS Broadcast; it is never scheduled or sent.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Update Broadcast', 'wp-marketing-automations' ), 'desc' => __( 'Change the content or audience of a draft Broadcast.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+					),
+				),
+				array(
+					'name'  => __( 'Audiences', 'wp-marketing-automations' ),
+					'items' => array(
+						array( 'name' => __( 'List Audiences', 'wp-marketing-automations' ), 'desc' => __( 'Saved audiences available for broadcasts.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Get Audience', 'wp-marketing-automations' ), 'desc' => __( 'One audience with its rules and reach.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+					),
+				),
+				array(
+					'name'  => __( 'Analytics', 'wp-marketing-automations' ),
+					'items' => array(
+						array( 'name' => __( 'Get Email Analytics', 'wp-marketing-automations' ), 'desc' => __( 'Open, click and unsubscribe rates over a date range.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Get Email Performance', 'wp-marketing-automations' ), 'desc' => __( 'The best and worst emails or Broadcasts over a window.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Get Automations Overview', 'wp-marketing-automations' ), 'desc' => __( 'New Contacts, unsubscribes, emails sent and revenue in one read.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+					),
+				),
+				array(
+					'name'  => __( 'Link Triggers', 'wp-marketing-automations' ),
+					'items' => array(
+						array( 'name' => __( 'List Link Triggers', 'wp-marketing-automations' ), 'desc' => __( 'Link triggers and the actions they fire.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+					),
+				),
+				array(
+					'name'  => __( 'Building Automations', 'wp-marketing-automations' ),
+					'items' => array(
+						array( 'name' => __( 'List Recipes', 'wp-marketing-automations' ), 'desc' => __( 'Ready-made Automations to start from.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Describe Automation Part', 'wp-marketing-automations' ), 'desc' => __( 'The settings a trigger, action, rule or goal takes.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Create Automation', 'wp-marketing-automations' ), 'desc' => __( 'Build a draft Automation from a recipe, a copy or a full definition, after you review each step.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Update Automation', 'wp-marketing-automations' ), 'desc' => __( 'Edit a draft, or only the emails of a live Automation, after review.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Set Automation Status', 'wp-marketing-automations' ), 'desc' => __( 'Turn an Automation on or off once you confirm.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+					),
+				),
+				array(
+					'name'  => __( 'Email Design', 'wp-marketing-automations' ),
+					'items' => array(
+						array( 'name' => __( 'Preview Email Design', 'wp-marketing-automations' ), 'desc' => __( 'See an email as the recipient will.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Validate Email Design', 'wp-marketing-automations' ), 'desc' => __( 'Check and score a design before it is saved.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Create Email Template', 'wp-marketing-automations' ), 'desc' => __( 'Save a designed email as a template.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Update Email Template', 'wp-marketing-automations' ), 'desc' => __( 'Edit the design of a saved template.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+					),
+				),
+				array(
+					'name'  => __( 'Contacts', 'wp-marketing-automations' ),
+					'items' => array(
+						array( 'name' => __( 'Get Automation Run', 'wp-marketing-automations' ), 'desc' => __( 'Every step a Contact took through an Automation.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Filter Contacts', 'wp-marketing-automations' ), 'desc' => __( 'Count or list the Contacts matching any segment.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'List Contact Filters', 'wp-marketing-automations' ), 'desc' => __( 'The filters available for building a segment.', 'wp-marketing-automations' ), 'scope' => 'read' ),
+						array( 'name' => __( 'Create Contact', 'wp-marketing-automations' ), 'desc' => __( 'Add a new Contact with fields, Tags and Lists.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Update Contact', 'wp-marketing-automations' ), 'desc' => __( 'Write to standard and custom fields.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Manage Contact Tags & Lists', 'wp-marketing-automations' ), 'desc' => __( 'Apply or remove Tags and Lists.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Change Contact Status', 'wp-marketing-automations' ), 'desc' => __( 'Move a Contact between subscription statuses.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Add Contact Note', 'wp-marketing-automations' ), 'desc' => __( 'Leave a note on a Contact.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Delete Contact', 'wp-marketing-automations' ), 'desc' => __( 'Remove a Contact, behind a confirmation.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+						array( 'name' => __( 'Send Email to Contact', 'wp-marketing-automations' ), 'desc' => __( 'Send a one-off email to a Contact.', 'wp-marketing-automations' ), 'scope' => 'write' ),
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * Register the MCP ability packs for Automations.
+	 *
+	 * @param array $packs
+	 *
+	 * @return array
+	 */
+	public static function register_mcp_packs( $packs ) {
+		if ( ! class_exists( 'FKMCP_Pack' ) ) {
+			return $packs;
+		}
+
+		require_once BWFAN_PLUGIN_DIR . '/includes/mcp/class-bwfan-mcp-loader.php';
+		BWFAN_MCP_Loader::load();
+
+		require_once BWFAN_PLUGIN_DIR . '/includes/mcp/class-fkmcp-pack-context.php';
+		require_once BWFAN_PLUGIN_DIR . '/includes/mcp/class-fkmcp-pack-lite-abilities.php';
+
+		$packs[] = new FKMCP_Pack_Context();
+		$packs[] = new FKMCP_Pack_Lite_Abilities();
+
+		return $packs;
+	}
+
+	/**
+	 * Register the MCP dispatch map for Automations: ability slug → controller.
+	 * Canary-tested so an upstream rename fails a suite, not a site. Entries the
+	 * packs route to internally (filter-contacts, list-recovered/lost-carts,
+	 * list-events/actions) are dispatch-only and never registered as tools.
+	 *
+	 * @param array $map
+	 *
+	 * @return array
+	 */
+	public static function register_mcp_dispatch_map( $map ) {
+		$contacts   = BWFAN_PLUGIN_DIR . '/includes/api/contacts/class-bwfan-api-contacts-controller.php';
+		$autonami   = BWFAN_PLUGIN_DIR . '/includes/api/autonami/class-bwfan-api-autonami-controller.php';
+		$automation = BWFAN_PLUGIN_DIR . '/includes/api/automation/class-bwfan-api-automation-controller.php';
+		$carts      = BWFAN_PLUGIN_DIR . '/includes/api/carts/class-bwfan-api-carts-controller.php';
+
+		return array_merge( $map, array(
+			'list-contacts'            => array( 'file' => $contacts, 'class' => 'BWFAN_API_Contacts_Controller', 'handler' => 'get_contacts' ),
+			'get-contact'              => array( 'file' => $contacts, 'class' => 'BWFAN_API_Contacts_Controller', 'handler' => 'get_contact' ),
+			'get-contact-automations'  => array( 'file' => $contacts, 'class' => 'BWFAN_API_Contacts_Controller', 'handler' => 'get_contact_automations' ),
+			'get-contact-orders'       => array( 'file' => $contacts, 'class' => 'BWFAN_API_Contacts_Controller', 'handler' => 'get_contact_orders' ),
+			'get-contact-engagements'  => array( 'file' => $contacts, 'class' => 'BWFAN_API_Contacts_Controller', 'handler' => 'get_conversations' ),
+			'list-automations'         => array( 'file' => $autonami, 'class' => 'BWFAN_API_Autonami_Controller', 'handler' => 'get_automations' ),
+			'get-automation-stats'     => array( 'file' => $autonami, 'class' => 'BWFAN_API_Autonami_Controller', 'handler' => 'get_automation_stats' ),
+			'get-automation'           => array( 'file' => $automation, 'class' => 'BWFAN_API_Automation_Controller', 'handler' => 'get_automation' ),
+			'list-tags'                => array( 'file' => BWFAN_PLUGIN_DIR . '/includes/api/tags/class-bwfan-api-tags-controller.php', 'class' => 'BWFAN_API_Tags_Controller', 'handler' => 'get_tags' ),
+			'list-lists'               => array( 'file' => BWFAN_PLUGIN_DIR . '/includes/api/lists/class-bwfan-api-lists-controller.php', 'class' => 'BWFAN_API_Lists_Controller', 'handler' => 'get_lists' ),
+			'list-custom-fields'       => array( 'file' => BWFAN_PLUGIN_DIR . '/includes/api/fields/class-bwfan-api-fields-controller.php', 'class' => 'BWFAN_API_Fields_Controller', 'handler' => 'get_all_fields' ),
+			'list-abandoned-carts'     => array( 'file' => $carts, 'class' => 'BWFAN_API_Carts_Controller', 'handler' => 'get_recoverable_carts' ),
+			'list-connectors'          => array( 'file' => BWFAN_PLUGIN_DIR . '/includes/api/connectors/class-bwfan-api-connectors-controller.php', 'class' => 'BWFAN_API_Connectors_Controller', 'handler' => 'get_connectors' ),
+			'list-automation-contacts' => array( 'file' => $automation, 'class' => 'BWFAN_API_Automation_Controller', 'handler' => 'get_automation_contacts' ),
+			'get-cart-analytics'       => array( 'file' => $carts, 'class' => 'BWFAN_API_Carts_Controller', 'handler' => 'get_cart_analytics' ),
+
+			'filter-contacts'          => array( 'file' => $contacts, 'class' => 'BWFAN_API_Contacts_Controller', 'handler' => 'get_listing' ),
+			'list-recovered-carts'     => array( 'file' => $carts, 'class' => 'BWFAN_API_Carts_Controller', 'handler' => 'get_recovered_carts' ),
+			'list-lost-carts'          => array( 'file' => $carts, 'class' => 'BWFAN_API_Carts_Controller', 'handler' => 'get_lost_carts' ),
+			'list-events'              => array( 'file' => $autonami, 'class' => 'BWFAN_API_Autonami_Controller', 'handler' => 'get_events' ),
+			'list-actions'             => array( 'file' => $autonami, 'class' => 'BWFAN_API_Autonami_Controller', 'handler' => 'get_actions' ),
+		) );
 	}
 
 	/**
@@ -323,6 +537,7 @@ class BWFAN_Common {
 			'/woofunnels/',
 			'/autonami/',
 			'/funnelkit-automations/',
+			'/funnelkit/',
 			'/funnelkit-app/',
 			'/autonami-app/',
 			'/autonami-admin/',
@@ -1112,6 +1327,7 @@ class BWFAN_Common {
 	 * Remove autonami events on plugin deactivation.
 	 */
 	public static function deactivation() {
+		wp_clear_scheduled_hook( 'fkai_cleanup' ); // FunnelKit AI connector's weekly grant purge
 		if ( bwf_has_action_scheduled( 'bwfan_run_queue' ) ) {
 			bwf_unschedule_actions( 'bwfan_run_queue' );
 		}
@@ -1215,7 +1431,9 @@ class BWFAN_Common {
 		// Keep PHP running if the client disconnects (e.g. the loopback pinger's short timeout fires)
 		// before background work finishes. Must run BEFORE the REST fallback below, which returns
 		// without detaching the connection and would otherwise leave the worker unprotected from abort.
-		ignore_user_abort( true );
+		if ( function_exists( 'ignore_user_abort' ) ) {
+			ignore_user_abort( true ); // disabled via disable_functions on some hosts (RunCloud default)
+		}
 
 		// Close session to release lock (if active)
 		if ( session_status() === PHP_SESSION_ACTIVE ) {
@@ -13918,8 +14136,7 @@ class BWFAN_Common {
 
 		$date = new DateTime( current_time( 'mysql', true ) );
 		$date->setTimezone( wp_timezone() );
-		$date->modify( 'last Month' );
-		$date->setDate( $date->format( 'Y' ), $date->format( 'm' ), 1 );
+		$date->modify( 'first day of last month' );
 		$date->setTime( 0, 0, 0 );
 
 		$dates['from_date'] = $date->format( 'Y-m-d' );
@@ -13929,8 +14146,7 @@ class BWFAN_Common {
 		$date->modify( 'last day of this month' );
 		$dates['to_date'] = $date->format( 'Y-m-d' );
 
-		$last_month->modify( 'last Month' );
-		$last_month->setDate( $last_month->format( 'Y' ), $last_month->format( 'm' ), 1 );
+		$last_month->modify( 'first day of last month' );
 
 		$dates['from_date_previous'] = $last_month->format( 'Y-m-d' );
 
@@ -13950,6 +14166,7 @@ class BWFAN_Common {
 		$dates = [];
 
 		$date = new DateTime( current_time( 'mysql', true ) );
+		$date->setTimezone( wp_timezone() );
 		$date->modify( '-1 day' );
 		$date->setTime( 0, 0, 0 );
 
@@ -14508,7 +14725,9 @@ class BWFAN_Common {
 			$db_updater = WooFunnels_DB_Updater::get_instance();
 			if ( is_object( $db_updater ) && method_exists( $db_updater, 'do_profile_update_async_call' ) ) {
 				$db_updater->do_profile_update_async_call( $user_id );
-				define( 'BWF_DISABLE_CONTACT_PROFILE_UPDATE', 1 );
+				if ( ! defined( 'BWF_DISABLE_CONTACT_PROFILE_UPDATE' ) ) {
+					define( 'BWF_DISABLE_CONTACT_PROFILE_UPDATE', 1 );
+				}
 			}
 		}
 	}

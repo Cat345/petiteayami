@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Automations
  * Plugin URI: https://funnelkit.com/wordpress-marketing-automation-autonami/
  * Description: Recover lost revenue with Abandoned Cart Recovery for WooCommerce. Increase retention with Post Purchase Follow-Up Emails. Send beautiful Newsletters.
- * Version: 3.8.6
+ * Version: 3.9.0
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -209,14 +209,78 @@ final class BWFAN_Core {
 		 * Loads common file
 		 */
 		$this->load_commons();
+
+		/**
+		 * Shared FunnelKit MCP module (admin / REST / CLI requests only)
+		 */
+		$this->load_mcp_module();
+
+	}
+
+	/**
+	 * MCP is an admin/REST/CLI surface — skip the module bootstrap entirely on
+	 * plain frontend requests. REST is sniffed from the URI / rest_route query
+	 * because REST_REQUEST is not defined this early in the request.
+	 *
+	 * is_admin() is true on admin-ajax.php too, so frontend AJAX (WooCommerce
+	 * cart fragments and the like) boots the module as well. Deliberate: a
+	 * narrower gate would have to enumerate every admin-ajax caller that ends
+	 * up building the settings schema, and what it would save is two
+	 * autoloaded option reads.
+	 */
+	private function is_mcp_request() {
+		if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) || wp_doing_ajax() ) {
+			return true;
+		}
+
+		// ?rest_route= is only ever a REST call.
+		if ( ! empty( $_GET['rest_route'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return true;
+		}
+
+		$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		if ( '' === $uri ) {
+			return false;
+		}
+
+		$prefix = function_exists( 'rest_get_url_prefix' ) ? rest_get_url_prefix() : 'wp-json';
+
+		foreach ( array( '/' . trim( $prefix, '/' ) . '/' ) as $needle ) {
+			if ( false !== strpos( $uri, $needle ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Every FunnelKit plugin bundling the MCP module registers a candidate;
+	 * the highest version boots on plugins_loaded (priority 0).
+	 */
+	public function load_mcp_module() {
+		if ( ! $this->is_mcp_request() ) {
+			return;
+		}
+
+		require_once __DIR__ . '/includes/mcp/module/fkmcp-bootstrap.php';
+		fkmcp_register_module(
+			'2.1.3',
+			__DIR__ . '/includes/mcp/module',
+			array(
+				'file'      => __DIR__ . '/includes/mcp/class-fkmcp-host-automations.php',
+				'class'     => 'FKMCP_Host_Automations',
+					'namespace' => 'autonami-app/mcp',
+			)
+		);
 	}
 
 	/**
 	 * Defining constants
 	 */
 	public function define_plugin_properties() {
-		define( 'BWFAN_VERSION', '3.8.6' );
-		define( 'BWFAN_MIN_PRO_VERSION', '3.8.6' );
+		define( 'BWFAN_VERSION', '3.9.0' );
+		define( 'BWFAN_MIN_PRO_VERSION', '3.9.0' );
 		define( 'BWFAN_MIN_WC_VERSION', '5.0' );
 		define( 'BWFAN_SLUG', 'bwfan' );
 		define( 'BWFAN_FULL_NAME', 'FunnelKit Automations' );
@@ -519,6 +583,11 @@ final class BWFAN_Core {
 		add_action( 'bwfan_run_notifications', static function () {
 			BWFAN_Notification_Email::get_instance()->run_notifications();
 		} );
+		if ( is_admin() && isset( $_GET['bwfan_email_preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only preview; test_notification_admin() checks the capability
+			add_action( 'admin_init', static function () {
+				BWFAN_Notification_Email::get_instance()->test_notification_admin();
+			} );
+		}
 	}
 
 	public function register_classes() {

@@ -37,6 +37,8 @@ if ( ! class_exists( 'WFFN_Pro_Public' ) ) {
 			 */
 			$this->register_license_config();
 
+			$this->register_google_places_key();
+
 			/**
 			 * Recording only. An older free plugin still records these itself, so
 			 * stand down there rather than counting everything twice.
@@ -64,6 +66,94 @@ if ( ! class_exists( 'WFFN_Pro_Public' ) ) {
 		private function register_license_config() {
 			add_filter( 'wffn_license_config', array( $this, 'license_config' ), 10, 3 );
 			add_filter( 'wffn_license_expiry', array( $this, 'license_expiry' ) );
+		}
+
+		/**
+		 * Google Maps key check. The stored answer is an autoloaded option, so it is read here first and
+		 * WFFN_Pro_Google_Places_Key is loaded only when there is something to do. The checkout asks during a
+		 * frontend request, so this cannot sit behind is_admin().
+		 *
+		 * @return void
+		 */
+		private function register_google_places_key() {
+			$class = 'WFFN_Pro_Google_Places_Key';
+			add_filter( 'wfacp_google_places_use_new_api', array( $this, 'google_places_use_new_api' ), 10, 2 );
+			add_action( 'update_option_bwf_gen_config', array( $class, 'on_settings_saved' ), 10, 2 );
+			add_action( 'add_option_bwf_gen_config', array( $class, 'on_settings_added' ), 10, 2 );
+			add_action( 'wffn_google_places_key_check', array( $class, 'run_scheduled' ) );
+			add_action( 'admin_init', array( $this, 'maybe_check_google_places_key' ) );
+			add_action( 'rest_api_init', array( $this, 'register_google_places_key_route' ) );
+			add_filter( 'wffn_admin_notifications', array( $this, 'google_places_key_notification' ) );
+		}
+
+		/**
+		 * @return array The stored key check, empty when there is none.
+		 */
+		private function google_places_key_stored() {
+			$stored = get_option( 'wffn_google_places_key_check', array() );
+
+			return is_array( $stored ) && isset( $stored['type'], $stored['checked'] ) ? $stored : array();
+		}
+
+		/**
+		 * @param bool   $use_new Current answer.
+		 * @param string $key     The key the checkout loads.
+		 *
+		 * @return bool
+		 */
+		public function google_places_use_new_api( $use_new, $key = '' ) {
+			$stored = $this->google_places_key_stored();
+			if ( empty( $stored ) || 'new' !== $stored['type'] ) {
+				return $use_new;
+			}
+
+			return WFFN_Pro_Google_Places_Key::use_new_api( $use_new, $key );
+		}
+
+		/**
+		 * A confirmed key is not checked again; any other answer at most once a day.
+		 *
+		 * @return void
+		 */
+		public function maybe_check_google_places_key() {
+			$stored = $this->google_places_key_stored();
+			if ( ! empty( $stored ) && ( 'new' === $stored['type'] || ( time() - (int) $stored['checked'] ) < DAY_IN_SECONDS ) ) {
+				return;
+			}
+
+			WFFN_Pro_Google_Places_Key::maybe_schedule();
+		}
+
+		/**
+		 * @return void
+		 */
+		public function register_google_places_key_route() {
+			register_rest_route( 'funnelkit-app', '/google-places-key/check', array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( 'WFFN_Pro_Google_Places_Key', 'rest_check' ),
+				'permission_callback' => array( 'WFFN_Pro_Google_Places_Key', 'rest_permission' ),
+				'args'                => array(
+					'key' => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+			) );
+		}
+
+		/**
+		 * @param array $notifs Registered notifications.
+		 *
+		 * @return array
+		 */
+		public function google_places_key_notification( $notifs ) {
+			$stored = $this->google_places_key_stored();
+			if ( empty( $stored ) || 'legacy' !== $stored['type'] ) {
+				return $notifs;
+			}
+
+			return WFFN_Pro_Google_Places_Key::add_notification( $notifs );
 		}
 
 		/**

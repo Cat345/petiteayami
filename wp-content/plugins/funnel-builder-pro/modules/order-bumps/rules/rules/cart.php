@@ -147,6 +147,93 @@ if ( ! class_exists( 'wfob_Rule_Cart_Total' ) ) {
 		}
 	}
 }
+if ( ! class_exists( 'wfob_Rule_Cart_Single_Product_Price' ) ) {
+	/**
+	 * Matches when at least one cart product's unit price meets the condition,
+	 * regardless of cart total or quantity (e.g. 3 x 200 doesn't match >= 500, 1 x 500 does).
+	 */
+	#[\AllowDynamicProperties]
+	class wfob_Rule_Cart_Single_Product_Price extends wfob_Rule_Base {
+
+		public function __construct() {
+			parent::__construct( 'cart_single_product_price' );
+		}
+
+		public function get_possible_rule_operators() {
+			$operators = array(
+				'==' => __( 'is equal to', 'woofunnels-order-bump' ),
+				'!=' => __( 'is not equal to', 'woofunnels-order-bump' ),
+				'>'  => __( 'is greater than', 'woofunnels-order-bump' ),
+				'<'  => __( 'is less than', 'woofunnels-order-bump' ),
+				'>=' => __( 'is greater or equal to', 'woofunnels-order-bump' ),
+				'<=' => __( 'is less or equal to', 'woofunnels-order-bump' ),
+			);
+
+			return $operators;
+		}
+
+		public function get_condition_input_type() {
+			return 'Text';
+		}
+
+		public function is_match( $rule_data ) {
+			global $woocommerce;
+			$result = false;
+			if ( ! isset( $rule_data['condition'] ) ) {
+				return $this->return_is_match( $result, $rule_data );
+			}
+			$value = (float) $rule_data['condition'];
+			$items = WC()->cart->get_cart();
+			foreach ( $items as $index => $cart ) {
+				if ( apply_filters( 'wfob_exclude_cart_item_in_rule', false, $cart, __CLASS__ ) ) {
+					continue;
+				}
+				if ( apply_filters( 'wfob_dont_allow_bump_item_in_rule', isset( $cart['_wfob_product'] ), $cart, __CLASS__ ) ) {
+					continue;
+				}
+				if ( empty( $cart['quantity'] ) ) {
+					continue;
+				}
+
+				if ( ! $woocommerce->cart->prices_include_tax ) {
+					$price = $cart['line_subtotal'] / $cart['quantity'];
+				} else {
+					$price = ( $cart['line_subtotal'] + $cart['line_subtotal_tax'] ) / $cart['quantity'];
+				}
+				$price = round( $price, wc_get_price_decimals() );
+
+				switch ( $rule_data['operator'] ) {
+					case '==':
+						$result = $price == $value;
+						break;
+					case '!=':
+						$result = $price != $value;
+						break;
+					case '>':
+						$result = $price > $value;
+						break;
+					case '<':
+						$result = $price < $value;
+						break;
+					case '>=':
+						$result = $price >= $value;
+						break;
+					case '<=':
+						$result = $price <= $value;
+						break;
+					default:
+						$result = false;
+						break;
+				}
+				if ( $result ) {
+					break;
+				}
+			}
+
+			return $this->return_is_match( $result, $rule_data );
+		}
+	}
+}
 if ( ! class_exists( 'wfob_Rule_Cart_Product' ) ) {
 	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Product extends wfob_Rule_Base {

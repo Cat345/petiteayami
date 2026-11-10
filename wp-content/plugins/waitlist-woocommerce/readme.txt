@@ -4,7 +4,7 @@ Donate link: https://www.paypal.me/xootix
 Tags: back in stock, email notification, out of stock, waiting list
 Requires at least: 3.0.1
 Tested up to: 7.1
-Stable tag: 2.9.2
+Stable tag: 2.9.3
 Requires Plugins: woocommerce
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -79,6 +79,10 @@ Everything is already setup.Just activate the plugin & you are done.
 6. The Waitlist admin settings page.
 
 == Changelog ==
+
+= 2.9.3 =
+* admin settings UI update
+* Import/Export add-on - export all users at once
 
 = 2.9.2 =
 * Minor security fix

@@ -14,6 +14,15 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 		public $processed                 = array();
 		public $record                    = array();
 		public $skipped                   = array();
+		private $duplicated_offers        = array();
+		private $duplicated_steps         = array();
+
+		/**
+		 * Offer outcomes of an order, in the order the visitor went through them.
+		 * Kept apart from the upsell event log, which holds no viewed or rejected rows for a
+		 * visitor whose funnel analytics are withheld, so rules would silently never match.
+		 */
+		const OFFER_STATES_META = '_wffn_upsell_offer_states';
 
 		public function __construct() {
 
@@ -23,6 +32,11 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 			add_action( 'wp_ajax_wfty_change_rule_type', array( $this, 'ajax_render_rule_choice' ) );
 			add_action( 'wp_ajax_wfty_save_rules_settings', array( $this, 'update_rules' ) );
 			add_filter( 'wffn_wfty_filter_page_ids', array( $this, 'maybe_parse_rule' ), 12, 2 );
+			add_action( 'wfocu_offer_viewed_event', array( $this, 'record_offer_viewed' ), 10, 2 );
+			add_action( 'wfocu_offer_accepted_event', array( $this, 'record_offer_outcome' ) );
+			add_action( 'wfocu_offer_rejected_event', array( $this, 'record_offer_outcome' ) );
+			add_action( 'wfocu_offer_duplicated', array( $this, 'map_duplicated_offer' ), 10, 2 );
+			add_action( 'wffn_step_duplicated', array( $this, 'remap_duplicated_offer_rules' ) );
 		}
 
 		/**
@@ -249,6 +263,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 			include_once $this->path() . '/rules/order.php';
 			include_once $this->path() . '/rules/customer.php';
 			include_once $this->path() . '/rules/bwf-customer.php';
+			include_once $this->path() . '/rules/upsell.php';
 			if ( is_admin() || defined( 'DOING_AJAX' ) ) {
 				// Include the admin interface builder
 				include_once $this->path() . '/class-wfocu-input-builder.php';
@@ -318,6 +333,13 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 					'time' => __( 'Time', 'funnel-builder-powerpack' ),
 				),
 			);
+
+			if ( class_exists( 'WFOCU_Core' ) ) {
+				$types[ __( 'Upsell', 'funnel-builder-powerpack' ) ] = array(
+					'upsell_offer'   => __( 'Upsell Offer', 'funnel-builder-powerpack' ),
+					'upsell_skipped' => __( 'Upsell Skipped', 'funnel-builder-powerpack' ),
+				);
+			}
 
 			return $types;
 		}
@@ -566,6 +588,130 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 			} catch ( Exception | Error $e ) {
 				return array();
 			}
+		}
+
+		/**
+		 * Offers record against the primary order, while the thank you page can be reached
+		 * from an order an accepted offer created.
+		 *
+		 * @param WC_Order $order
+		 *
+		 * @return WC_Order
+		 */
+		private function get_primary_order( $order ) {
+			$primary_id = $order->get_meta( '_wfocu_primary_order' );
+			$primary    = ! empty( $primary_id ) ? wc_get_order( $primary_id ) : false;
+
+			return $primary instanceof WC_Order ? $primary : $order;
+		}
+
+		/**
+		 * @param WC_Order $order
+		 *
+		 * @return array offer id => accepted, rejected or viewed, last offer visited at the end
+		 */
+		public function get_offer_states( $order ) {
+			$states = $this->get_primary_order( $order )->get_meta( self::OFFER_STATES_META );
+
+			return is_array( $states ) ? $states : array();
+		}
+
+		/**
+		 * @param int $offer_id
+		 * @param int $order_id
+		 *
+		 * @hooked over `wfocu_offer_viewed_event`
+		 */
+		public function record_offer_viewed( $offer_id, $order_id ) {
+			$this->record_offer_state( $offer_id, $order_id, 'viewed' );
+		}
+
+		/**
+		 * @param array $args
+		 *
+		 * @hooked over `wfocu_offer_accepted_event` and `wfocu_offer_rejected_event`
+		 */
+		public function record_offer_outcome( $args ) {
+			$state = 'wfocu_offer_accepted_event' === current_action() ? 'accepted' : 'rejected';
+
+			$this->record_offer_state( $args['offer_id'], $args['order_id'], $state );
+		}
+
+		private function record_offer_state( $offer_id, $order_id, $state ) {
+			$offer_id = absint( $offer_id );
+			$order    = wc_get_order( $order_id );
+			if ( 0 === $offer_id || ! $order instanceof WC_Order ) {
+				return;
+			}
+
+			// A running offer A/B test reports the variant, while rules point at its control offer.
+			$control_id = absint( get_post_meta( $offer_id, '_bwf_ab_variation_of', true ) );
+			$offer_id   = $control_id > 0 ? $control_id : $offer_id;
+
+			$order  = $this->get_primary_order( $order );
+			$states = $this->get_offer_states( $order );
+
+			// The view is reported by the page after it loads, so it can land after the outcome.
+			if ( 'viewed' === $state && isset( $states[ $offer_id ] ) ) {
+				return;
+			}
+
+			unset( $states[ $offer_id ] );
+			$states[ $offer_id ] = $state;
+
+			$order->update_meta_data( self::OFFER_STATES_META, $states );
+			$order->save_meta_data();
+		}
+
+		/**
+		 * @param int $new_offer_id
+		 * @param int $old_offer_id
+		 *
+		 * @hooked over `wfocu_offer_duplicated`
+		 */
+		public function map_duplicated_offer( $new_offer_id, $old_offer_id ) {
+			$this->duplicated_offers[ absint( $old_offer_id ) ] = absint( $new_offer_id );
+
+			foreach ( $this->duplicated_steps as $step_id ) {
+				$this->remap_duplicated_offer_rules( $step_id );
+			}
+		}
+
+		/**
+		 * A duplicated funnel gets new offer ids, so copied rules are pointed at the copied
+		 * offers here. Steps are copied in the funnel's order, so a thank you step copied
+		 * before its upsell step is remembered and remapped when the offer is copied.
+		 *
+		 * @param int $step_id
+		 *
+		 * @hooked over `wffn_step_duplicated`
+		 */
+		public function remap_duplicated_offer_rules( $step_id ) {
+			$rules = get_post_meta( $step_id, '_wfty_rules', true );
+			if ( empty( $rules['basic'] ) || ! is_array( $rules['basic'] ) ) {
+				return;
+			}
+
+			$this->duplicated_steps[ $step_id ] = $step_id;
+			if ( empty( $this->duplicated_offers ) ) {
+				return;
+			}
+
+			foreach ( $rules['basic'] as $group_id => $group ) {
+				foreach ( $group as $rule_id => $rule ) {
+					if ( empty( $rule['rule_type'] ) || 'upsell_offer' !== $rule['rule_type'] || empty( $rule['condition'] ) ) {
+						continue;
+					}
+					$rules['basic'][ $group_id ][ $rule_id ]['condition'] = array_map(
+						function ( $offer_id ) {
+							return isset( $this->duplicated_offers[ absint( $offer_id ) ] ) ? (string) $this->duplicated_offers[ absint( $offer_id ) ] : $offer_id;
+						},
+						(array) $rule['condition']
+					);
+				}
+			}
+
+			update_post_meta( $step_id, '_wfty_rules', $rules );
 		}
 
 		public function get_thankyou_id() {

@@ -21,7 +21,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Breeze_Cache' ) ) {
 		 * @return mixed
 		 */
 		public function exclude_autonami_endpoint_urls( $options ) {
-			$new_urls = [ site_url( 'wp-json/' . BWFAN_API_NAMESPACE . '/*' ), site_url( 'wp-json/woofunnels/*' ), site_url( 'wp-json/funnelkit-automations/*' ) ];
+			$new_urls = [ site_url( 'wp-json/' . BWFAN_API_NAMESPACE . '/*' ), site_url( 'wp-json/woofunnels/*' ), site_url( 'wp-json/funnelkit-automations/*' ), site_url( 'wp-json/funnelkit/*' ) ];
 
 			$excluded_urls = isset( $options['breeze-exclude-urls'] ) && is_array( $options['breeze-exclude-urls'] ) ? $options['breeze-exclude-urls'] : [];
 			$excluded_urls = array_unique( array_merge( $new_urls, $excluded_urls ) );

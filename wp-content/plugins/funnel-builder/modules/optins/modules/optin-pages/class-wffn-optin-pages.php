@@ -238,6 +238,11 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 				wp_localize_script( 'wffn-optin-public', 'wfffOptinVars', $this->maybe_add_js_localized() );
 				global $post;
+
+				$custom_options = ( $post instanceof WP_Post ) ? $this->setup_custom_options( $post->ID ) : array();
+				if ( isset( $custom_options['enable_email_suggestion'] ) && wffn_string_to_bool( $custom_options['enable_email_suggestion'] ) ) {
+					WFFN_Common::enqueue_email_suggestion( $custom_options['email_suggestion_prompt'] );
+				}
 				$page_template = ( $post instanceof WP_Post ) ? get_post_meta( $post->ID, '_wp_page_template', true ) : '';
 				if ( 'default' === $page_template || empty( $page_template ) ) {
 					return;
@@ -397,19 +402,22 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 		public function default_custom_settings() {
 			return array(
-				'custom_css'           => '',
-				'custom_js'            => '',
-				'op_valid_enable'      => 'true',
-				'op_valid_text'        => __( 'This is a required field.', 'funnel-builder' ),
-				'op_valid_email'       => __( 'Enter a valid email address.', 'funnel-builder' ),
-				'op_valid_phone'       => __( 'Enter a valid phone number.', 'funnel-builder' ),
-				'op_intl_i18n'         => array(
+				'custom_css'              => '',
+				'custom_js'               => '',
+				'op_valid_enable'         => 'true',
+				'op_valid_text'           => __( 'This is a required field.', 'funnel-builder' ),
+				'op_valid_email'          => __( 'Enter a valid email address.', 'funnel-builder' ),
+				'op_valid_phone'          => __( 'Enter a valid phone number.', 'funnel-builder' ),
+				'op_intl_i18n'            => array(
 					'searchEmptyState' => __( 'No results found', 'funnel-builder' ),
 				),
-				'op_valid_short_phone' => __( 'Phone number is too short.', 'funnel-builder' ),
-				'op_valid_long_phone'  => __( 'Phone number is too long.', 'funnel-builder' ),
-				'op_valid_code_phone'  => __( 'Invalid country code.', 'funnel-builder' ),
-				'custom_redirect'      => 'false',
+				'op_valid_short_phone'    => __( 'Phone number is too short.', 'funnel-builder' ),
+				'op_valid_long_phone'     => __( 'Phone number is too long.', 'funnel-builder' ),
+				'op_valid_code_phone'     => __( 'Invalid country code.', 'funnel-builder' ),
+				'custom_redirect'         => 'false',
+				'enable_email_suggestion' => 'false',
+				/* translators: %s: the suggested email address */
+				'email_suggestion_prompt' => __( 'Did you mean %s?', 'funnel-builder' ),
 			);
 		}
 
@@ -1713,7 +1721,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		public function get_settings_tab_data( $values = null ) {
 
 			$tabs = array(
-				'validation'      => array(
+				'validation'       => array(
 					'title'    => __( 'Validation', 'funnel-builder' ),
 					'heading'  => __( 'Validation', 'funnel-builder' ),
 					'slug'     => 'validation',
@@ -1765,7 +1773,44 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					'priority' => 5,
 					'values'   => '',
 				),
-				'custom_redirect' => array(
+				'email_suggestion' => array(
+					'title'    => __( 'Email Typo Suggestion', 'funnel-builder' ),
+					'heading'  => __( 'Email Typo Suggestion', 'funnel-builder' ),
+					'hint'     => __( 'Catch email typos like name@gmial.con with a "Did you mean name@gmail.com?" suggestion below the email field. Runs in the browser, no external requests.', 'funnel-builder' ),
+					'slug'     => 'email_suggestion',
+					'fields'   => array(
+						0 => array(
+							'type'   => 'radios',
+							'key'    => 'enable_email_suggestion',
+							'label'  => __( 'Enable', 'funnel-builder' ),
+							'hint'   => '',
+							'values' => array(
+								0 => array(
+									'value' => 'true',
+									'name'  => __( 'Yes', 'funnel-builder' ),
+								),
+								1 => array(
+									'value' => 'false',
+									'name'  => __( 'No', 'funnel-builder' ),
+								),
+							),
+						),
+						1 => array(
+							'type'    => 'input',
+							'key'     => 'email_suggestion_prompt',
+							'label'   => __( 'Suggestion Text', 'funnel-builder' ),
+							/* translators: %s: placeholder the suggested email replaces, shown literally */
+							'hint'    => __( '%s is replaced with the suggested email.', 'funnel-builder' ),
+							'toggler' => array(
+								'key'   => 'enable_email_suggestion',
+								'value' => 'true',
+							),
+						),
+					),
+					'priority' => 8,
+					'values'   => '',
+				),
+				'custom_redirect'  => array(
 					'title'    => __( 'Custom Redirection', 'funnel-builder' ),
 					'heading'  => __( 'Custom Redirection', 'funnel-builder' ),
 					'slug'     => 'custom_redirect',
@@ -1805,7 +1850,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					'priority' => 10,
 					'values'   => '',
 				),
-				'custom_css'      => array(
+				'custom_css'       => array(
 					'title'    => __( 'Custom CSS', 'funnel-builder' ),
 					'heading'  => __( 'Custom CSS', 'funnel-builder' ),
 					'slug'     => 'custom_css',
@@ -1823,7 +1868,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 						'custom_css' => '',
 					),
 				),
-				'custom_js'       => array(
+				'custom_js'        => array(
 					'title'    => __( 'External Scripts', 'funnel-builder' ),
 					'heading'  => __( 'External Scripts', 'funnel-builder' ),
 					'slug'     => 'custom_js',
@@ -1873,6 +1918,15 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					);
 
 					$tabs['validation']['values'] = wffn_clean( $op_fields );
+				}
+
+				if ( ! empty( $values['enable_email_suggestion'] ) ) {
+					$tabs['email_suggestion']['values'] = wffn_clean(
+						array(
+							'enable_email_suggestion' => $values['enable_email_suggestion'],
+							'email_suggestion_prompt' => $values['email_suggestion_prompt'],
+						)
+					);
 				}
 			}
 

@@ -62,6 +62,10 @@ class AddShippingMetabox implements Hookable
     public function handle_add_shipping()
     {
         if (isset($_GET['fs_add_shipping']) && isset($_GET['post']) && isset($_GET['_wpnonce'])) {
+            if (!current_user_can('manage_woocommerce')) {
+                wp_die(esc_html__('Insufficient user permissions!', 'flexible-shipping'), '', array('response' => 403));
+                return;
+            }
             if (wp_verify_nonce(sanitize_key(wp_unslash($_GET['_wpnonce'])), 'fs_add_shipping')) {
                 $integration = sanitize_key($_GET['fs_add_shipping']);
                 $this->add_shipping($integration, $_GET);
@@ -76,6 +80,9 @@ class AddShippingMetabox implements Hookable
      */
     public function add_meta_box($post_type, $post)
     {
+        if (!current_user_can('manage_woocommerce')) {
+            return;
+        }
         if (in_array($post_type, ['woocommerce_page_wc-orders', 'shop_order'], \true)) {
             $select_options = apply_filters('flexible_shipping_add_shipping_options', array());
             if (count($select_options)) {

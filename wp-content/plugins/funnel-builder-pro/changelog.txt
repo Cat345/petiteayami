@@ -1,6 +1,16 @@
 *** FunnelKit Funnel Builder Pro ***
 
 
+= 3.18.0 (Nov 03, 2026) =
+* Added: Order Bumps: Added a Cart Single Product Price display rule that matches any single purchased product above a minimum price. (#9686)
+* Added: Thank you Page: Added an upsell offer state display rule for thank you pages. (#9732)
+* Improved: Checkout: Improved compatibility with Google's new Places API for address autocomplete. (#8971)
+* Improved: Funnel: Sibling product recommendations in the admin menu now adapt to what you already use and can be dismissed. (#9674)
+* Fixed: Checkout: Google address autocomplete no longer fills the apartment field with the neighbourhood for US addresses. (#9681)
+* Improved: Upsells: One Click Upsells thank-you schedule job improved to handle delayed webhooks by gateways. (#9740)
+* Fixed: Order Bumps: Changing an order bump skin now keeps the title, description and other text you set. (#9734)
+* Fixed: Upsells: Cloning an offer to a new upsell now preserves the offer page content exactly. (#9729)
+
 = 3.17.0.1 (Oct 21, 2026) =
 * Improved: A/B: The rules tab now explains that A/B test variants inherit rules from the original offer instead of accepting edits that would not apply. (#9659)
 * Improved: Upsells: Removed the Views info tooltip from upsells offer rows in funnel analytics, causing redundancy. (#9673)

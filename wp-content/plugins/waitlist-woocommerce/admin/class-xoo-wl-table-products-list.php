@@ -97,7 +97,7 @@ class Xoo_WL_Table_Products_List extends WP_List_Table {
 			<?php if( $product ): ?>
 				<div class="xoo-wl-bis-btn xoo-wl-button" data-product_id="<?php echo $product_id ?>"><?php include XOO_WL_PATH.'/admin/assets/icons/email.svg' ?>Email all users</div>
 			<?php endif; ?>
-			<a href="<?php echo admin_url( 'admin.php?page=xoo-wl-view-waitlist&product='.$product_id ) ?>" class="xoo-wl-button xoo-wl-btnoutline" data-product_id="<?php echo $product_id ?>">View Users</a>
+			<a href="<?php echo admin_url( 'admin.php?page=xoo-wl-view-waitlist&product='.$product_id ) ?>" class="xoo-wl-button xoo-wl-btnoutline" data-product_id="<?php echo $product_id ?>"><?php include XOO_WL_PATH.'/admin/assets/icons/view.svg' ?> View Users</a>
 		</div>
 		<?php
 		return ob_get_clean();

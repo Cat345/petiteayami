@@ -7,6 +7,7 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 	class WFACP_WooCommerce_MyParcel5 {
 		public function __construct() {
 			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
+			add_filter( 'wfacp_global_dependency_messages', array( $this, 'delivery_options_notice' ) );
 			add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields' ) );
 			add_action( 'wfacp_after_template_found', array( $this, 'setup_frontend' ) );
 		}
@@ -106,6 +107,29 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 
 		public function is_enabled() {
 			return class_exists( 'MyParcelNLWooCommerce' );
+		}
+
+		/**
+		 * Form editor warning while neither the MyParcel Delivery Options field nor the Shipping Method
+		 * field is placed on the form (print_delivery_options() prints the options after Shipping Method),
+		 * since MyParcel's checkout script then finds no delivery options wrapper.
+		 */
+		public function delivery_options_notice( $messages ) {
+			if ( false === $this->is_enabled() ) {
+				return $messages;
+			}
+			$messages[] = array(
+				'message'     => __( 'MyParcel delivery options are not shown on this checkout. Drag the "MyParcel Delivery Options" field into the form to show them.', 'funnel-builder' ),
+				'ids'         => array( 'wfacp_myparcel_delivery_options', 'shipping_calculator' ),
+				'show'        => 'yes',
+				'dismissible' => false,
+				'is_global'   => false,
+				'type'        => 'wfacp_warning',
+				'call_back'   => '',
+				'key'         => 'wfacp_myparcel_delivery_options_missing',
+			);
+
+			return $messages;
 		}
 
 		public function add_field( $fields ) {

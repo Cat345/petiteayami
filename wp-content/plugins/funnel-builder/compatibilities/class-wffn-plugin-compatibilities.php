@@ -29,6 +29,7 @@ if ( ! class_exists( 'WFFN_Plugin_Compatibilities' ) ) {
 				'class-wffn-pys-compatibility.php'         => class_exists( 'PixelYourSite\EventsManager' ),
 				'class-wffn-paghiper-compatibility.php'    => class_exists( 'WC_Paghiper' ),
 				'class-wffn-wompi-compatibility.php'       => class_exists( 'Wompi_Portal_Pagos_Gateway_Custom' ),
+				'class-wffn-payplug-compatibility.php'     => defined( 'PAYPLUG_GATEWAY_VERSION' ),
 				'rest/class-bwfan-compatibility-with-sg-cache.php' => function_exists( 'sg_cachepress_purge_cache' ),
 				'rest/class-wffn-clearfy-compatibility.php' => class_exists( 'Clearfy_Plugin' ),
 				'rest/class-wffn-force-login-compability.php' => function_exists( 'v_forcelogin_rest_access' ),

@@ -49,7 +49,24 @@ class Call extends WFCO_Call {
 	 * @return string Complete API endpoint URL
 	 */
 	public function get_endpoint_url( $dc, $api_action = '' ) {
+		if ( ! self::is_valid_dc( $dc ) ) {
+			return '';
+		}
+
 		return "https://{$dc}.api.mailchimp.com/3.0/" . $api_action;
+	}
+
+	/**
+	 * Validate the data-center token derived from the API key. Mailchimp data centers are
+	 * alphanumeric (e.g. us21); rejecting anything else stops a crafted API key from
+	 * injecting a host into the endpoint URL (SSRF). An empty return fails closed.
+	 *
+	 * @param mixed $dc
+	 *
+	 * @return bool
+	 */
+	protected static function is_valid_dc( $dc ) {
+		return is_string( $dc ) && 1 === preg_match( '/^[a-z0-9]+$/', $dc );
 	}
 
 	/**

@@ -22,7 +22,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Force_Login' ) ) {
 		public function bwfan_allow_rest_apis_with_force_login( $status ) {
 			$rest_route = $GLOBALS['wp']->query_vars['rest_route'];
 
-			if ( false !== strpos( $rest_route, 'autonami' ) || false !== strpos( $rest_route, 'woofunnel' ) || false !== strpos( $rest_route, 'funnelkit-automations' ) ) {
+			if ( false !== strpos( $rest_route, 'autonami' ) || false !== strpos( $rest_route, 'woofunnel' ) || false !== strpos( $rest_route, 'funnelkit-automations' ) || 0 === strpos( ltrim( (string) $rest_route, '/' ), 'funnelkit/' ) ) {
 				remove_filter( 'rest_authentication_errors', 'v_forcelogin_rest_access', 99 );
 			}
 

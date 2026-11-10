@@ -132,6 +132,7 @@ class BWFAN_WC_Cart_Items extends Merge_Tag_Abstract_Product_Display {
 		$checkout_data    = json_decode( $checkout_data, true );
 		$lang             = is_array( $checkout_data ) && isset( $checkout_data['lang'] ) ? $checkout_data['lang'] : '';
 		$items            = apply_filters( 'bwfan_abandoned_cart_items_visibility', maybe_unserialize( $cart_details['items'] ) );
+		$items            = apply_filters( 'bwfan_abandoned_cart_items_in_language', $items, $lang );
 		$tax_display      = get_option( 'woocommerce_tax_display_cart' );
 		$currency         = is_array( $cart_details ) & isset( $cart_details['currency'] ) ? maybe_unserialize( $cart_details['currency'] ) : '';
 		$products         = [];

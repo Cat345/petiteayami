@@ -1,6 +1,6 @@
 <?php //phpcs:ignore WordPress.WP.TimezoneChange.DeprecatedSniff
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_Landing_Pages_Oxygen
@@ -8,19 +8,19 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
 if ( ! class_exists( 'WFFN_Landing_Pages_Oxygen' ) ) {
 	#[AllowDynamicProperties]
 
-  class WFFN_Landing_Pages_Oxygen {
+	class WFFN_Landing_Pages_Oxygen {
 		private static $ins = null;
-		private $edit_id = 0;
+		private $edit_id    = 0;
 
 		/**
 		 * WFFN_Landing_Pages_Oxygen constructor.
 		 */
 		private function __construct() {
 			$this->register();
-			add_action( 'wp', [ $this, 'disable_signature_checking' ] );
-			add_action( 'init', [ $this, 'init_extension' ], 21 );
+			add_action( 'wp', array( $this, 'disable_signature_checking' ) );
+			add_action( 'init', array( $this, 'init_extension' ), 21 );
 
-			add_action( 'wffn_wflp_before_register_templates', array( $this, 'add_default_templates' ),18);
+			add_action( 'wffn_wflp_before_register_templates', array( $this, 'add_default_templates' ), 18 );
 		}
 
 		public function disable_signature_checking() {
@@ -37,14 +37,12 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Oxygen' ) ) {
 			}
 
 			return self::$ins;
-
 		}
 
 		private function register() {
-			add_action( 'wffn_step_duplicated', [ $this, 'assign_empty_template' ] );
-			add_action( 'wflp_page_design_updated', [ $this, 'assign_empty_template' ] );
-			add_action( 'admin_bar_menu', [ $this, 'add_admin_bar_link' ], 1003 );
-
+			add_action( 'wffn_step_duplicated', array( $this, 'assign_empty_template' ) );
+			add_action( 'wflp_page_design_updated', array( $this, 'assign_empty_template' ) );
+			add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_link' ), 1003 );
 		}
 
 		public function assign_empty_template( $post_id ) {
@@ -56,7 +54,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Oxygen' ) ) {
 
 		public function init_extension() {
 			if ( WFFN_OXYGEN::is_template_editor() ) {
-				add_action( 'wp', [ $this, 'remove_register_template' ] );
+				add_action( 'wp', array( $this, 'remove_register_template' ) );
 
 				return;
 			}
@@ -72,26 +70,28 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Oxygen' ) ) {
 				WFFN_OXYGEN::disable_signature_checking();
 			}
 
-			add_action( 'wp', [ $this, 'remove_register_template' ] );
-
+			add_action( 'wp', array( $this, 'remove_register_template' ) );
 		}
 
 		public function add_default_templates() {
 
-			$template = [
+			$template = array(
 				'slug'        => 'oxy',
 				'title'       => __( 'Oxygen Classic', 'funnel-builder' ),
 				'button_text' => __( 'Edit', 'funnel-builder' ),
 				'description' => __( 'Use Oxygen Classic Builder modules to create your own designs. Or pick from professionally-designed templates.', 'funnel-builder' ),
-				'edit_url'    => add_query_arg( [
-					'ct_builder'     => true,
-					'oxy_wffn_lp_id' => WFFN_Core()->landing_pages->get_edit_id(),
-				], get_permalink( WFFN_Core()->landing_pages->get_edit_id() ) ),
-			];
+				'edit_url'    => add_query_arg(
+					array(
+						'ct_builder'     => true,
+						'oxy_wffn_lp_id' => WFFN_Core()->landing_pages->get_edit_id(),
+					),
+					get_permalink( WFFN_Core()->landing_pages->get_edit_id() )
+				),
+			);
 
 			WFFN_Core()->landing_pages->admin->register_template_type( $template );
 			$templates = WooFunnels_Dashboard::get_all_templates();
-			$designs   = isset( $templates['landing'] ) ? $templates['landing'] : [];
+			$designs   = isset( $templates['landing'] ) ? $templates['landing'] : array();
 
 			if ( isset( $designs['oxy'] ) && is_array( $designs['oxy'] ) ) {
 				foreach ( $designs['oxy'] as $d_key => $templates ) {
@@ -101,18 +101,18 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Oxygen' ) ) {
 				}
 			} else {
 
-				$empty_template = [
-					"type"               => "view",
-					"import"             => "no",
-					"show_import_popup"  => "no",
-					"slug"               => "oxy_1",
-					"build_from_scratch" => true,
+				$empty_template = array(
+					'type'               => 'view',
+					'import'             => 'no',
+					'show_import_popup'  => 'no',
+					'slug'               => 'oxy_1',
+					'build_from_scratch' => true,
 
-				];
+				);
 				WFFN_Core()->landing_pages->admin->register_template( 'oxy_1', $empty_template, 'oxy' );
 			}
 
-			return [];
+			return array();
 		}
 
 		public function add_admin_bar_link() {
@@ -129,7 +129,13 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Oxygen' ) ) {
 					if ( $post instanceof WP_Post && $post->post_type === WFFN_Core()->landing_pages->get_post_type_slug() ) {
 						$wfacp_id     = $post->ID;
 						$href         = $node['href'];
-						$node['href'] = add_query_arg( [ 'ct_builder' => 'true', 'oxy_wffn_lp_id' => $wfacp_id ], $href );
+						$node['href'] = add_query_arg(
+							array(
+								'ct_builder'     => 'true',
+								'oxy_wffn_lp_id' => $wfacp_id,
+							),
+							$href
+						);
 						$wp_admin_bar->add_node( $node );
 					}
 				}
@@ -148,12 +154,10 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Oxygen' ) ) {
 			if ( $post instanceof WP_Post && $post->post_type === WFFN_Core()->landing_pages->get_post_type_slug() ) {
 				$design = WFFN_Core()->landing_pages->get_page_design( $post->ID );
 				if ( ( $ct_builder === true ) || ( is_array( $design ) && isset( $design['selected_type'] ) && 'oxy' === $design['selected_type'] ) ) {
-					remove_action( 'template_include', [ WFFN_Landing_Pages::get_instance(), 'may_be_change_template' ], 99 );
+					remove_action( 'template_include', array( WFFN_Landing_Pages::get_instance(), 'may_be_change_template' ), 99 );
 				}
 			}
-
 		}
-
 	}
 
 	WFFN_Landing_Pages_Oxygen::get_instance();

@@ -450,13 +450,18 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		public function get_entity_edit_link( $step_id ) {
 			$link = parent::get_entity_edit_link( $step_id );
 			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
+				$funnel_id         = absint( get_post_meta( $step_id, '_bwf_in_funnel', true ) );
+				$is_store_checkout = $funnel_id > 0 && method_exists( 'WFFN_Common', 'get_store_checkout_id' ) && $funnel_id === absint( WFFN_Common::get_store_checkout_id() );
+
 				$link = esc_url(
 					BWF_Admin_Breadcrumbs::maybe_add_refs(
 						add_query_arg(
-							array(
-								'page'    => 'wfob',
-								'section' => 'products',
-								'wfob_id' => $step_id,
+							array_filter(
+								array(
+									'page'      => 'bwf',
+									'path'      => $is_store_checkout ? '/store-checkout/bump/' . $step_id . '/product' : '/funnel-bump/' . $step_id . '/product',
+									'funnel_id' => $is_store_checkout ? false : $funnel_id,
+								)
 							),
 							admin_url( 'admin.php' )
 						)

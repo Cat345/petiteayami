@@ -189,10 +189,22 @@ final class BWFAN_Header {
 			unset( $left_nav_data['carts'] );
 		}
 
+		// FunnelKit AI: administrators only, as its REST routes are, on a site that runs the module.
+		if ( self::shows_funnelkit_ai() ) {
+			$tools = isset( $left_nav_data['tools'] ) ? array( 'tools' => $left_nav_data['tools'] ) : array();
+			unset( $left_nav_data['tools'] );
+			$left_nav_data['funnelkit-ai'] = array(
+				'name'  => __( 'AI & MCP', 'wp-marketing-automations' ),
+				'link'  => admin_url( 'admin.php?page=autonami&path=/ai-mcp' ),
+				'badge' => __( 'New', 'wp-marketing-automations' ),
+			);
+			$left_nav_data += $tools;
+		}
+
 		/** Remove the keys which are not present in menu data */
 		if ( ! empty( $menu_data ) && is_array( $menu_data ) ) {
 			$left_nav_data = array_filter( $left_nav_data, function ( $key ) use ( $menu_data ) {
-				return $key === 'tools' || in_array( $key, $menu_data, true );
+				return $key === 'tools' || $key === 'funnelkit-ai' || in_array( $key, $menu_data, true );
 			}, ARRAY_FILTER_USE_KEY );
 			if ( isset( $left_nav_data['tools'] ) && empty( $left_nav_data['tools']['items'] ) ) {
 				unset( $left_nav_data['tools'] );
@@ -200,6 +212,16 @@ final class BWFAN_Header {
 		}
 
 		return $left_nav_data;
+	}
+
+	/**
+	 * Whether the FunnelKit AI page is offered: the module runs on this site and the
+	 * user is an administrator, the same gate as BWFAN_MCP_Settings_API::permission_check().
+	 *
+	 * @return bool
+	 */
+	public static function shows_funnelkit_ai() {
+		return function_exists( 'fkmcp_boot_module' ) && current_user_can( 'manage_options' );
 	}
 
 	/**
@@ -718,7 +740,7 @@ final class BWFAN_Header {
 					$dropdown_data = '<span class="bwf-hover-suheader-menu">';
 					foreach ( $item['items'] as $ikey => $data ) {
 						$class         = $active_slug === $ikey ? 'bwfan_navigation_active' : '';
-						$dropdown_data .= '<a href="' . esc_url( $data['link'] ) . '" class="' . $class . '" data-link-type="bwf-crm">' . $data['name'] . '</a>';
+						$dropdown_data .= '<a href="' . esc_url( $data['link'] ) . '" class="' . esc_attr( $class ) . '" data-link-type="bwf-crm">' . esc_html( $data['name'] ) . '</a>';
 
 						if ( $active_slug === $ikey ) {
 							$active = true;
@@ -738,12 +760,12 @@ final class BWFAN_Header {
 
 				$icon = ( isset( $item['icon'] ) && ! empty( $item['icon'] ) ) ? wp_remote_retrieve_body( wp_remote_get( esc_url( plugin_dir_url( BWFAN_PLUGIN_FILE ) . 'admin/assets/img/menu/' . $item['icon'] . '.svg' ) ) ) : ''; //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 
-				$target = ( isset( $item['target'] ) && ! empty( $item['target'] ) ) ? ' target="' . $item['target'] . '"' : '';
+				$target = ( isset( $item['target'] ) && ! empty( $item['target'] ) ) ? ' target="' . esc_attr( $item['target'] ) . '"' : '';
 
 				$item_link = $item['link'] ?? '#';
 				$item_name = $item['name'] ?? '';
 
-				echo '<span><a href="' . $item_link . '" class="' . $active . '"' . $target . '>' . $icon . $item_name . '</a></span>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<span><a href="' . esc_url( $item_link ) . '" class="' . esc_attr( $active ) . '"' . $target . '>' . $icon . esc_html( $item_name ) . '</a></span>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $icon is trusted inline SVG read from the plugin's own assets; link, class and target escaped above
 			}
 		}
 	}

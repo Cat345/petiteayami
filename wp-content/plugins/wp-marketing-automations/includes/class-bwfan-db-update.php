@@ -329,7 +329,7 @@ class BWFAN_DB_Update {
 				continue;
 			}
 
-			if ( ! in_array( $version, $this->db_changes, true ) ) {
+			if ( ! array_key_exists( $version, $this->db_changes ) ) {
 				delete_option( 'bwfan_db_update' );
 				break;
 			}

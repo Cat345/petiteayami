@@ -291,7 +291,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wc_PostNL' ) ) {
 	}
 
 
-	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_Wc_PostNL(), 'woocommerce-postnl' );
+	if ( class_exists( 'WCPOST' ) || class_exists( 'WooCommerce_PostNL' ) ) {
+		WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_Wc_PostNL(), 'woocommerce-postnl' );
+	}
 }
 /**
  * PostNL for WooCommerce
@@ -302,9 +304,32 @@ if ( ! class_exists( 'WFACP_PostNLWooCommerce' ) ) {
 	#[\AllowDynamicProperties]
 	class WFACP_PostNLWooCommerce {
 		public function __construct() {
+			add_filter( 'wfacp_global_dependency_messages', array( $this, 'form_field_notice' ) );
 			add_action( 'after_setup_theme', array( $this, 'register_field' ) );
 			add_action( 'wfacp_template_load', array( $this, 'remove_action' ) );
 			add_action( 'wfacp_internal_css', array( $this, 'js' ) );
+		}
+
+		/**
+		 * Form editor warning while the Shipping Method field isn't placed on the form,
+		 * since this plugin's checkout UI is only shown there.
+		 */
+		public function form_field_notice( $messages ) {
+			if ( ! class_exists( 'PostNLWooCommerce\\Frontend\\Container' ) ) {
+				return $messages;
+			}
+			$messages[] = array(
+				'message'     => __( 'PostNL delivery options are not shown on this checkout. Drag the "Shipping Method" field into the form to show them.', 'funnel-builder' ),
+				'ids'         => array( 'shipping_calculator' ),
+				'show'        => 'yes',
+				'dismissible' => false,
+				'is_global'   => false,
+				'type'        => 'wfacp_warning',
+				'call_back'   => '',
+				'key'         => 'wfacp_postnl_shipping_method_missing',
+			);
+
+			return $messages;
 		}
 
 		public function register_field() {

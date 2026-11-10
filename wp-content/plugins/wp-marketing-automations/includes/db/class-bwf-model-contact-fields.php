@@ -74,8 +74,8 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 		public static function get_contact_field_by_id( $contact_id ) {
 			global $wpdb;
 			$table = self::_table();
-			$query = "SELECT * from $table where cid = $contact_id LIMIT 0, 1";
-			$field = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; contact id absint()ed by only caller
+			$query = $wpdb->prepare( "SELECT * FROM {$table} WHERE cid = %d LIMIT 0, 1", $contact_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; contact id bound with prepare()
+			$field = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- prepared above
 
 			return ! empty( $field ) ? $field : '';
 		}
@@ -133,9 +133,9 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 			global $wpdb;
 			$table = self::_table();
 
-			$query = "SELECT * FROM $table WHERE cid = $contact_id LIMIT 0, 1";
+			$query = $wpdb->prepare( "SELECT * FROM {$table} WHERE cid = %d LIMIT 0, 1", $contact_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from $wpdb->prefix; contact id bound with prepare()
 
-			return $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- table from $wpdb->prefix; contact id is DB int id
+			return $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- prepared above
 		}
 
 		public static function update_contact_field_column_indexing( $field_id, $searchable = 1 ) {
@@ -200,10 +200,10 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 				$warnings = $wpdb->get_results( "SHOW WARNINGS", ARRAY_A );//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				if ( ! empty( $warnings ) ) {
 					foreach ( $warnings as $warning ) {
-						if ( empty( $warning['Message'] ) || false === strpos( $warning['message'], 'Duplicate entry' ) ) {
+						if ( empty( $warning['Message'] ) || false === strpos( $warning['Message'], 'Duplicate entry' ) ) {
 							continue;
 						}
-						BWFAN_Common::log_test_data( 'WP db error in ' . $table . ' : ' . $warning['message'], 'fka-db-duplicate-error', true );
+						BWFAN_Common::log_test_data( 'WP db error in ' . $table . ' : ' . $warning['Message'], 'fka-db-duplicate-error', true );
 						BWFAN_Common::log_test_data( $data, 'fka-db-duplicate-error', true );
 					}
 				}

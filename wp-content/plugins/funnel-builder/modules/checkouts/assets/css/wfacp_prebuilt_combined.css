@@ -6581,7 +6581,7 @@ body #wfacp-sec-wrapper table.shop_table:not(#product_switching_field) {
 }
 
 /* Email typo suggestion below the checkout email field. The field id beats theme and #wfacp-e-form button rules without !important. */
-body #billing_email_field .wfacp-email-suggestion {
+body #billing_email_field .wffn-email-suggestion {
 	display: none;
 	margin: 6px 0 0;
 	font-size: 13px;
@@ -6589,12 +6589,12 @@ body #billing_email_field .wfacp-email-suggestion {
 	color: #8a5a00;
 }
 
-body #billing_email_field .wfacp-email-suggestion--visible {
+body #billing_email_field .wffn-email-suggestion--visible {
 	display: block;
 }
 
-body #wfacp-e-form #billing_email_field .wfacp-email-suggestion__value,
-body #billing_email_field .wfacp-email-suggestion__value {
+body #wfacp-e-form #billing_email_field .wffn-email-suggestion__value,
+body #billing_email_field .wffn-email-suggestion__value {
 	display: inline;
 	width: auto;
 	min-width: 0;
@@ -6615,8 +6615,8 @@ body #billing_email_field .wfacp-email-suggestion__value {
 	cursor: pointer;
 }
 
-body #wfacp-e-form #billing_email_field .wfacp-email-suggestion__value:hover,
-body #billing_email_field .wfacp-email-suggestion__value:hover {
+body #wfacp-e-form #billing_email_field .wffn-email-suggestion__value:hover,
+body #billing_email_field .wffn-email-suggestion__value:hover {
 	background: none;
 	text-decoration: none;
 }

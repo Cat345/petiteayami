@@ -314,6 +314,8 @@ class BWFAN_Rules_Loader extends BWFAN_Rules {
 	public function maybe_set_rules_ajax_select_names() {
 		$data = BWFAN_Core()->automations->get_automation_details();
 		if ( isset( $data['condition'] ) && is_array( $data['condition'] ) && count( $data['condition'] ) > 0 ) {
+			/** Rule classes load lazily; without them woocommerce_bwfan_rule_get_rule_object() returns null and no nice names are collected */
+			$this->load_rules_classes();
 			foreach ( $data['condition'] as $groups ) {
 				if ( is_array( $groups ) && count( $groups ) > 0 ) {
 					foreach ( $groups as $rulegroups ) {

@@ -45,6 +45,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_AIOS' ) ) {
 				'woofunnels/v1',
 				'woofunnel_customer/v1',
 				'funnelkit-automations',
+				// AIOS matches each entry as ^entry/ on the route, so a trailing slash here never matches and blocks the connector; the bare namespace cannot match funnelkit-app/ or funnelkit-automations/.
 				'funnelkit',
 			);
 

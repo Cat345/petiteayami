@@ -48,7 +48,24 @@ class Call extends WFCO_Call {
 	 * @return string The complete endpoint URL.
 	 */
 	public function get_endpoint_url( $api_url, $api_action = '' ) {
+		if ( ! self::is_valid_api_url( $api_url ) ) {
+			return '';
+		}
+
 		return $api_url . '/api/3/' . $api_action;
+	}
+
+	/**
+	 * Validate the admin-supplied ActiveCampaign account URL before it is fetched, so the
+	 * importer cannot be pointed at an internal or non-HTTPS host (SSRF). An empty return
+	 * makes the request fail closed in make_wp_requests().
+	 *
+	 * @param mixed $api_url
+	 *
+	 * @return bool
+	 */
+	protected static function is_valid_api_url( $api_url ) {
+		return is_string( $api_url ) && 0 === stripos( $api_url, 'https://' ) && false !== wp_http_validate_url( $api_url );
 	}
 
 	/**

@@ -174,7 +174,10 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form .woocommerce-terms-and-conditions h1']['color'] = $form_content_color;
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form .woocommerce-terms-and-conditions h2']['color'] = $form_content_color;
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form .woocommerce-terms-and-conditions h3']['color'] = $form_content_color;
-				$this->steps_inline_styles['desktop']['body #et_builder_outer_content #wfacp-e-form p']['color']             = $form_content_color . ' !important';
+				$this->steps_inline_styles['desktop']['body #et_builder_outer_content #wfacp-e-form p:not(.checkout-inline-error-message)']['color'] = $form_content_color . ' !important';
+
+				/* Keep WooCommerce inline field errors red; the generic "p" content color above outranks the base error style. */
+				$this->steps_inline_styles['desktop']['body .wfacp_main_form p.checkout-inline-error-message']['color'] = '#e15334';
 
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form span.woocommerce-input-wrapper label.checkbox']['color']                         = $form_content_color;
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form table.shop_table.woocommerce-checkout-review-order-table thead tr th']['color']  = $form_content_color;
@@ -331,7 +334,7 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 				'.select2-search--dropdown .select2-search__field',
 				'#wfacp_qr_model_wrap *',
 				'.select2-results__options',
-				'body #et_builder_outer_content #wfacp-e-form p',
+				'body #et_builder_outer_content #wfacp-e-form p:not(.checkout-inline-error-message)',
 				'body .wfacp_modal_outerwrap .wfacp_modal_innerwrap #wfacp_modal_content',
 				'body.wfacpef_page #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap',
 				'#et-boc .et-l span.select2-selection.select2-selection--multiple',

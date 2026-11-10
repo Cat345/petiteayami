@@ -48,52 +48,58 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 			$this->data['level_1_navigation_active'] = $active;
 		}
 
+		/**
+		 * The app header's left navigation, in the same order as the WP submenu and from the
+		 * same lists: WFFN_Admin core items, feature items, Cart (the Cart plugin adds its own
+		 * link through wffn_header_menu once active), then the sibling product promoted right
+		 * now. Call on WFFN_Features::APP_ENQUEUE_HOOK or later, as feature availability is
+		 * decided there.
+		 *
+		 * @return array[] keyed by item key: 'name', 'link', 'badge' (string, one item at most), 'feature'.
+		 */
 		public static function left_navigation() {
-			$header_menu = array(
-				'dashboard'      => array(
-					'name' => __( 'Dashboard', 'funnel-builder' ),
-					'link' => admin_url( 'admin.php?page=bwf' ),
-				),
-				'funnels'        => array(
-					'name' => __( 'Funnels', 'funnel-builder' ),
-					'link' => admin_url( 'admin.php?page=bwf&path=/funnels' ),
-				),
-				'store-checkout' => array(
-					'name' => __( 'Store Checkout', 'funnel-builder' ),
-					'link' => admin_url( 'admin.php?page=bwf&path=/store-checkout' ),
-				),
-				'analytics'      => array(
-					'name' => __( 'Analytics', 'funnel-builder' ),
-					'link' => admin_url( 'admin.php?page=bwf&path=/analytics' ),
-				),
-				'templates'      => array(
-					'name' => __( 'Templates', 'funnel-builder' ),
-					'link' => admin_url( 'admin.php?page=bwf&path=/templates' ),
-				),
+			$admin       = WFFN_Core()->admin;
+			$header_menu = array();
+
+			foreach ( array_merge( $admin->get_core_menu_items(), $admin->get_feature_menu_items() ) as $key => $item ) {
+				if ( $admin->is_menu_item_available( $item ) ) {
+					$header_menu[ $key ] = self::nav_item( $key, $item );
+				}
+			}
+			if ( ! $admin->is_cart_active() ) {
+				$header_menu['cart'] = self::nav_item( 'cart', $admin->get_cart_menu_item() );
+			}
+
+			$header_menu = apply_filters( 'wffn_header_menu', $header_menu );
+			if ( class_exists( 'WFFN_Sibling_Promo' ) && is_array( $header_menu ) ) {
+				$header_menu = WFFN_Sibling_Promo::get_instance()->add_header_menu( $header_menu );
+			}
+
+			return $header_menu;
+		}
+
+		/**
+		 * One header entry from a WFFN_Admin menu item. The NEW badge is set only for the key
+		 * WFFN_Admin::get_new_menu_item() names, as in the WP submenu.
+		 *
+		 * @param string $key Item key.
+		 * @param array  $item Item: 'title', 'path', optional 'feature'.
+		 *
+		 * @return array
+		 */
+		public static function nav_item( $key, $item ) {
+			$nav = array(
+				'name' => $item['title'],
+				'link' => admin_url( 'admin.php?page=' . WFFN_Admin::get_menu_slug( $item ) ),
 			);
-
-			if ( 'activated' !== WFFN_Common::get_plugin_status( 'cart-for-woocommerce/plugin.php' ) ) {
-				$header_menu['cart'] = array(
-					'name' => __( 'Cart', 'funnel-builder' ),
-					'link' => admin_url( 'admin.php?page=bwf&path=/cart' ),
-				);
+			if ( $key === WFFN_Core()->admin->get_new_menu_item() ) {
+				$nav['badge'] = __( 'New', 'funnel-builder' );
+			}
+			if ( ! empty( $item['feature'] ) ) {
+				$nav['feature'] = $item['feature'];
 			}
 
-			if ( ! WFFN_Common::skip_automation_page() ) {
-				$header_menu['automations'] = array(
-					'name' => __( 'Automations', 'funnel-builder' ),
-					'link' => admin_url( 'admin.php?page=bwf&path=/automations' ),
-				);
-			}
-
-			if ( ! WFFN_Common::skip_subscriptions_page() && 'activated' !== WFFN_Common::get_plugin_status( 'sublium-subscriptions-for-woocommerce/sublium-subscriptions-for-woocommerce.php' ) ) {
-				$header_menu['subscriptions'] = array(
-					'name' => __( 'Subscriptions', 'funnel-builder' ),
-					'link' => admin_url( 'admin.php?page=bwf&path=/subscriptions' ),
-				);
-			}
-
-			return apply_filters( 'wffn_header_menu', $header_menu );
+			return $nav;
 		}
 
 		private static function prepare_web_url( $link ) {

@@ -873,6 +873,12 @@ class BWFAN_Automation_V2 {
 				BWFAN_Model_Automationmeta::insert_automation_meta_data( $this->automation_id, $merger_points );
 				unset( $meta_data_arr['merger_points'] );
 			}
+		} else {
+			/** No forks: keep an empty row, as a new automation gets, so get_automation_API_data() doesn't re-save on every read */
+			$meta_data = $this->get_automation_meta_data();
+			if ( ! isset( $meta_data['merger_points'] ) ) {
+				BWFAN_Model_Automationmeta::insert_automation_meta_data( $this->automation_id, [ 'merger_points' => '' ] );
+			}
 		}
 
 		/** Save splits with all steps */

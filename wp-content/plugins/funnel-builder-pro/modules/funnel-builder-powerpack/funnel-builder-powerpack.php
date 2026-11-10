@@ -111,6 +111,15 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			 * Bump on every release that depends on newly moved or added free-plugin code.
 			 */
 			define( 'WFFN_PRO_MIN_LITE_VERSION', '3.16.1' );
+			/**
+			 * The Funnel Builder release that serves the FunnelKit MCP settings
+			 * screen this app renders, and whose MCP runtime the Pro ability
+			 * pack builds on. Named in the update message the screen shows when
+			 * the free plugin under it has no MCP endpoints, and checked before
+			 * the Pro pack registers. Bump when the free plugin's MCP screen
+			 * lands in a later release.
+			 */
+			define( 'WFFN_PRO_MCP_MIN_LITE_VERSION', '3.16.1' );
 			define( 'WFFN_PRO_SLUG', 'wffn_pro' );
 			define( 'WFFN_PRO_FULL_NAME', 'FunnelKit Funnel Builder Pro' );
 			define( 'WFFN_PRO_PLUGIN_FILE', __FILE__ );
@@ -153,6 +162,7 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			 * plugin per WP.org review; PowerPack is its only load point.
 			 */
 			require_once __DIR__ . '/license/loader.php';
+			require_once __DIR__ . '/includes/class-wffn-pro-mcp.php';
 
 			/**
 			 * Initialize Localization
@@ -167,8 +177,17 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 		}
 
 
+		/**
+		 * Both domains this plugin's strings are written against: the header's
+		 * own 'funnel-builder-powerpack', which most of the code uses, and
+		 * 'funnel-builder-pro', which the rest does. Either alone leaves a
+		 * large part of the plugin untranslatable.
+		 */
 		public function localization() {
+			// phpcs:disable FunnelBuilder.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- Commercial plugin, not distributed on WordPress.org, so the 4.6 JIT translation loading this sniff assumes does not apply; matches the same suppression already used in the checkout and one-click-upsells modules.
 			load_plugin_textdomain( 'funnel-builder-pro', false, plugin_basename( __DIR__ ) . '/languages' );
+			load_plugin_textdomain( 'funnel-builder-powerpack', false, plugin_basename( __DIR__ ) . '/languages' );
+			// phpcs:enable FunnelBuilder.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound
 		}
 
 		/**

@@ -857,6 +857,7 @@ if ( ! class_exists( 'WFOCU_Admin' ) ) {
 					'styleClasses' => array( 'wfocu_gsettings_sec_chlist' ),
 					'hint'         => sprintf( __( "Could not find your gateway in the list? <a target='_blank' href='%s' >Check enabled Payment Methods</a>", 'woofunnels-upstroke-one-click-upsell' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ),
 					'values'       => $gateways_list,
+					'skip_warn'    => true, // Listed gateways are active on the store, so an unticked one skips upsells.
 				);
 			}
 

@@ -13,7 +13,6 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 		private static $ins = null;
 
 		public function __construct() {
-			add_action( 'admin_menu', array( $this, 'maybe_register_admin_menu' ), 900 );
 			add_filter(
 				'woofunnels_global_settings',
 				function ( $menu ) {
@@ -99,34 +98,6 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 			}
 
 			return self::$ins;
-		}
-
-		public function maybe_register_admin_menu() {
-			global $submenu;
-			if ( isset( $submenu['woofunnels'] ) ) {
-				foreach ( $submenu['woofunnels'] as $menu ) {
-					if ( 'woofunnels_settings' === $menu[2] ) {
-						$found = 1;
-						break;
-					}
-				}
-			}
-			$user = WFFN_Role_Capability::get_instance()->user_access( 'menu', 'read' );
-			if ( $user ) {
-				if ( empty( $found ) ) {
-					add_submenu_page(
-						'woofunnels',
-						__( 'Settings', 'funnel-builder' ),
-						__( 'Settings', 'funnel-builder' ),
-						$user,
-						'bwf&path=/settings',
-						array(
-							$this,
-							'callback',
-						)
-					);
-				}
-			}
 		}
 
 		public function render_tab_html( $current ) {

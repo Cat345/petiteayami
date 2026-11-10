@@ -870,3 +870,44 @@ body.et-db #et-boc .show_popup_form .bwf_pp_wrap .g-recaptcha{
     opacity: 1;
     visibility: visible;
 }
+
+/* Email typo suggestion below the optin email field. */
+.bwfac_form_sec .wffn-email-suggestion {
+    display: none;
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #8a5a00;
+}
+
+.bwfac_form_sec .wffn-email-suggestion--visible {
+    display: block;
+}
+
+.bwfac_form_sec button.wffn-email-suggestion__value {
+    display: inline;
+    width: auto;
+    min-width: 0;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    font: inherit;
+    line-height: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+    text-decoration: underline;
+    color: #0b57d0;
+    cursor: pointer;
+}
+
+.bwfac_form_sec button.wffn-email-suggestion__value:hover,
+.bwfac_form_sec button.wffn-email-suggestion__value:focus {
+    background: none;
+    color: #0b57d0;
+    text-decoration: none;
+}

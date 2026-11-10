@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Funnel Builder
  * Plugin URI: https://funnelkit.com/wordpress-funnel-builder/
  * Description: Create high-converting sales funnels on WordPress that look professional by following a well-guided step-by-step process.
- * Version: 3.17.0.1
+ * Version: 3.18.0
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -170,14 +170,72 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			 * Loads hooks
 			 */
 			$this->load_hooks();
+
+			/**
+			 * Shared FunnelKit MCP module (admin / REST / CLI requests only)
+			 */
+			$this->load_mcp_module();
 		}
+
+		/**
+		 * MCP is an admin/REST/CLI surface — skip the module bootstrap entirely
+		 * on plain frontend requests. REST is sniffed from the URI / rest_route
+		 * query because REST_REQUEST is not defined this early in the request.
+		 */
+		private function is_mcp_request() {
+			if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) || wp_doing_ajax() ) {
+				return true;
+			}
+
+			// ?rest_route= is only ever a REST call.
+			if ( ! empty( $_GET['rest_route'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				return true;
+			}
+
+			$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			if ( '' === $uri ) {
+				return false;
+			}
+
+			$prefix = function_exists( 'rest_get_url_prefix' ) ? rest_get_url_prefix() : 'wp-json';
+
+			foreach ( array( '/' . trim( $prefix, '/' ) . '/', '/.well-known/oauth-', '/.well-known/openid-configuration' ) as $needle ) {
+				if ( false !== strpos( $uri, $needle ) ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * Every FunnelKit plugin bundling the MCP module registers a candidate;
+		 * the highest version boots on plugins_loaded (priority 0).
+		 */
+		public function load_mcp_module() {
+			if ( ! $this->is_mcp_request() ) {
+				return;
+			}
+
+			require_once __DIR__ . '/includes/mcp/module/fkmcp-bootstrap.php';
+			fkmcp_register_module(
+				'2.1.3',
+				__DIR__ . '/includes/mcp/module',
+				array(
+					'file'      => __DIR__ . '/includes/mcp/class-fkmcp-host-fb.php',
+					'class'     => 'FKMCP_Host_FB',
+					'namespace' => 'funnelkit-app/mcp',
+				)
+			);
+		}
+
 
 		/**
 		 * Defining constants
 		 */
 		public function define_plugin_properties() {
 
-			define( 'WFFN_VERSION', '3.17.0.1' );
+			define( 'WFFN_VERSION', '3.18.0' );
 			define( 'WFFN_BWF_VERSION', '1.10.12.84' );
 
 			define( 'WFFN_MIN_WC_VERSION', '3.5.0' );
@@ -289,7 +347,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			include_once __DIR__ . '/admin/rest-api-helpers/class-wffn-rest-api-helpers.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-optin-api-endpoint.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-checkout-api-endpoint.php';
-			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-wizard.php';
+				include_once __DIR__ . '/admin/rest-api/class-wffn-rest-wizard.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-funnel-contacts.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-funnel-orders.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-api-dashboard-endpoint.php';
@@ -326,7 +384,28 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			require __DIR__ . '/includes/class-wffn-public.php';
 			require __DIR__ . '/includes/class-wffn-funnel.php';
 			require __DIR__ . '/includes/class-wffn-woofunnels-support.php';
+			if ( is_admin() ) {
+				add_action( 'admin_menu', array( $this, 'load_sibling_promo' ), 1 );
+			}
 			require __DIR__ . '/merge-tags/class-bwf-contact-tags.php';
+		}
+
+		/**
+		 * The sibling-product promotion only changes what the admin menu shows, so it is loaded on
+		 * admin page requests alone: admin_menu does not fire for admin-ajax, admin-post, REST,
+		 * cron or the storefront, and an upload through async-upload.php is skipped here.
+		 *
+		 * @hooked admin_menu - 1
+		 *
+		 * @return void
+		 */
+		public function load_sibling_promo() {
+			global $pagenow;
+			if ( wp_doing_ajax() || 'async-upload.php' === $pagenow ) {
+				return;
+			}
+			require_once __DIR__ . '/includes/class-wffn-sibling-promo.php';
+			WFFN_Sibling_Promo::get_instance();
 		}
 
 		/**
@@ -416,6 +495,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 
 			return self::$_instance;
 		}
+
 
 
 		/**

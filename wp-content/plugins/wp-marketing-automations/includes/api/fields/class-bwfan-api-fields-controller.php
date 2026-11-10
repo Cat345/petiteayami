@@ -143,7 +143,7 @@ class BWFAN_API_Fields_Controller extends BWFAN_API_Controller {
 	 * PUT /v3/fields/{id} — update field
 	 */
 	public function update_field() {
-		$field_id = $this->get_sanitized_arg( 'field_id', 'text_field' );
+		$field_id = $this->get_sanitized_arg( 'field_id', 'absint' );
 		$group_id = $this->get_sanitized_arg( 'group_id', 'text_field' );
 		$group_id = ! empty( $group_id ) && is_numeric( $group_id ) ? $group_id : 0;
 		if ( empty( $field_id ) ) {
@@ -212,7 +212,7 @@ class BWFAN_API_Fields_Controller extends BWFAN_API_Controller {
 	 */
 	public function delete_field() {
 
-		$field_id = $this->get_sanitized_arg( 'field_id', 'text_field' );
+		$field_id = $this->get_sanitized_arg( 'field_id', 'absint' );
 
 		$delete_field = BWFCRM_Fields::delete_field( $field_id );
 

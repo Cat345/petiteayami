@@ -321,6 +321,25 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		}
 
 		/**
+		 * Per-product content fields this skin lets the admin edit in the Content tab.
+		 *
+		 * @return array Field key without its `product_{key}_` prefix => field type.
+		 */
+		public function get_product_content_field_types() {
+			$placeholder = 'wfob_field_probe';
+			$prefix      = 'product_' . $placeholder . '_';
+			$types       = array();
+
+			foreach ( array_merge( $this->get_product_content_schema( array(), $placeholder ), $this->admin_product_image_field( array(), $placeholder ) ) as $field ) {
+				if ( isset( $field['key'], $field['type'] ) && 0 === strpos( $field['key'], $prefix ) ) {
+					$types[ substr( $field['key'], strlen( $prefix ) ) ] = $field['type'];
+				}
+			}
+
+			return $types;
+		}
+
+		/**
 		 *
 		 * admin schema to use in the css & other setting at backend
 		 *

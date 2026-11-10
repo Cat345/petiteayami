@@ -36,7 +36,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Perfmatters' ) ) {
 
 			$rest_route = $GLOBALS['wp']->query_vars['rest_route'];
 
-			if ( strpos( $rest_route, 'autonami' ) !== false || strpos( $rest_route, 'woofunnel' ) !== false ) {
+			if ( strpos( $rest_route, 'autonami' ) !== false || strpos( $rest_route, 'woofunnel' ) !== false || 0 === strpos( ltrim( (string) $rest_route, '/' ), 'funnelkit/' ) ) {
 				remove_filter( 'rest_authentication_errors', 'perfmatters_rest_authentication_errors', 20 );
 			}
 

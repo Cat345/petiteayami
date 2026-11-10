@@ -36,8 +36,9 @@ class BWFAN_unsubscribe {
 		add_action( 'wp_ajax_bwfan_unsubscribe_user', array( $this, 'bwfan_unsubscribe_user' ) );
 		add_action( 'wp_ajax_nopriv_bwfan_unsubscribe_user', array( $this, 'bwfan_unsubscribe_user' ) );
 		if ( ! is_admin() ) {
-			add_action( 'wp', array( $this, 'bwfan_display_body_content' ) );
+			/** Before the body content, which exits on the distraction-free page */
 			add_action( 'wp', array( $this, 'unsubscribe_page_non_crawlable' ) );
+			add_action( 'wp', array( $this, 'bwfan_display_body_content' ) );
 			add_action( 'wp', array( $this, 'unsubscribe_static_page' ), 100 );
 			/** Shortcodes for unsubscribe */
 			add_shortcode( 'bwfan_unsubscribe_button', array( $this, 'bwfan_unsubscribe_button' ) );
@@ -214,6 +215,13 @@ class BWFAN_unsubscribe {
 		$one_click = filter_input( INPUT_GET, 'List-Unsubscribe' );
 		if ( 'One-Click' === $one_click ) {
 			$this->one_click = 1;
+
+			/** Unsubscribe on the server, so the link works without JS or when the AJAX call fails. A HEAD request is a link check, not a click */
+			$this->set_data();
+			$method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '';
+			if ( 'GET' === $method && ! empty( $uid ) && ! empty( $this->recipient ) && hash_equals( (string) $this->uid, $uid ) ) {
+				$this->mark_unsubscribe( false );
+			}
 		}
 
 		add_filter( 'bwfan_public_scripts_include', '__return_true' );
@@ -921,6 +929,7 @@ class BWFAN_unsubscribe {
 
 		$automation_id = empty( $automation_id ) ? filter_input( INPUT_GET, 'automation_id', FILTER_SANITIZE_NUMBER_INT ) : $automation_id;
 		$broadcast_id  = empty( $broadcast_id ) ? filter_input( INPUT_GET, 'broadcast_id', FILTER_SANITIZE_NUMBER_INT ) : $broadcast_id;
+		$broadcast_id  = empty( $broadcast_id ) ? filter_input( INPUT_GET, 'bid', FILTER_SANITIZE_NUMBER_INT ) : $broadcast_id;
 		$form_feed_id  = empty( $form_feed_id ) ? filter_input( INPUT_GET, 'form_feed_id', FILTER_SANITIZE_NUMBER_INT ) : $form_feed_id;
 		$tid           = empty( $tid ) ? filter_input( INPUT_GET, 'tid', FILTER_SANITIZE_NUMBER_INT ) : $tid;
 		$sid           = empty( $sid ) ? filter_input( INPUT_GET, 'sid', FILTER_SANITIZE_NUMBER_INT ) : $sid;
@@ -932,6 +941,9 @@ class BWFAN_unsubscribe {
 		} elseif ( is_numeric( $this->recipient ) ) {
 			$mode = 2;
 		} else {
+			if ( false === $return ) {
+				return;
+			}
 			$this->return_message( 1 );
 		}
 
@@ -945,6 +957,9 @@ class BWFAN_unsubscribe {
 		);
 		$unsubscribers = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
 		if ( $unsubscribers > 0 ) {
+			if ( false === $return ) {
+				return;
+			}
 			$this->return_message( 6 );
 		}
 
@@ -990,36 +1005,28 @@ class BWFAN_unsubscribe {
 	}
 
 	/**
-	 * Mark contact subscribe
+	 * Resubscribe the contact when the "unsubscribe from all" box was unticked
+	 * Only an unsubscribed contact is resubscribed, any other status stays as it is
 	 *
 	 * @return void
 	 */
 	protected function mark_subscribe() {
+		if ( ! $this->crm_contact instanceof BWFCRM_Contact ) {
+			$this->return_message();
+
+			return;
+		}
+
+		/** Nothing to change, tell the contact they are not unsubscribed instead of a success message */
+		if ( BWFCRM_Contact::$DISPLAY_STATUS_UNSUBSCRIBED !== $this->crm_contact->get_display_status() ) {
+			$this->return_message( 8 );
+
+			return;
+		}
+
 		$this->crm_contact->resubscribe();
 
-		$mode = 1;
-		if ( is_numeric( $this->recipient ) ) {
-			$mode = 2;
-		} else {
-			$this->return_message();
-		}
-		global $wpdb;
-		$query = $wpdb->prepare(
-			"SELECT ID, recipient FROM {$wpdb->prefix}bwfan_message_unsubscribe WHERE `recipient` = %s AND `mode` = %d ORDER BY ID DESC",
-			sanitize_text_field( $this->recipient ),
-			$mode
-		);
-		$unsubscribers = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
-		if ( ! empty( $unsubscribers ) ) {
-			foreach ( $unsubscribers as $unsubscriber ) {
-				$id = $unsubscriber['ID'];
-				BWFAN_Model_Message_Unsubscribe::delete( $id );
-			}
-
-			$this->return_message( 5 );
-		}
-
-		$this->return_message( 6 );
+		$this->return_message( 5 );
 	}
 
 	/**
@@ -1130,6 +1137,7 @@ class BWFAN_unsubscribe {
 			1 => __( 'Sorry! We are unable to update preferences as no contact found.', 'wp-marketing-automations' ),
 			2 => __( 'Your subscription preference has been updated.', 'wp-marketing-automations' ),
 			7 => __( 'Security check failed', 'wp-marketing-automations' ),
+			8 => __( 'You have not been unsubscribed. Please tick the unsubscribe option and click the button again.', 'wp-marketing-automations' ),
 		];
 
 		$error_messages = apply_filters( 'bwfcrm_unsubscribe_error_messages', $default_messages );
@@ -1161,6 +1169,13 @@ class BWFAN_unsubscribe {
 			wp_send_json( array(
 				'success' => 0,
 				'message' => ! empty( $error_messages[7] ) ? $error_messages[7] : $default_messages[7],
+			) );
+		}
+
+		if ( 8 === absint( $type ) ) {
+			wp_send_json( array(
+				'success' => 0,
+				'message' => ! empty( $error_messages[8] ) ? $error_messages[8] : $default_messages[8],
 			) );
 		}
 	}

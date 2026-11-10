@@ -3,7 +3,7 @@
 namespace FSVendor\Octolize\ShippingExtensions;
 
 use FSVendor\Octolize\ShippingExtensions\Plugin\PluginFactory;
-use FSVendor\Octolize\ShippingExtensions\Promo\Summer2026Promo;
+use FSVendor\Octolize\ShippingExtensions\Promo\BlackFriday2026Promo;
 use FSVendor\Octolize\ShippingExtensions\Tracker\Tracker;
 use FSVendor\Octolize\ShippingExtensions\Tracker\ViewPageTracker;
 use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
@@ -15,7 +15,7 @@ use FSVendor\WPDesk_Plugin_Info;
 class ShippingExtensions implements Hookable
 {
     use HookableParent;
-    private const VERSION = 20;
+    private const VERSION = 21;
     private const OCTOLIZE_WP_SHIPPING_EXTENSIONS_INITIATED_FILTER = 'octolize/shipping-extensions/initiated';
     /**
      * @var WPDesk_Plugin_Info .
@@ -50,8 +50,8 @@ class ShippingExtensions implements Hookable
             $this->add_hookable(new Tracker($tracker));
             $this->add_hookable(new PageViewTracker($tracker));
             $this->add_hookable(new WooCommerceSuggestions());
-            $this->add_hookable(new Summer2026Promo());
-            $this->add_hookable(new TimedUpdates(array_merge([Summer2026Promo::get_timed_update()], PluginFactory::get_timed_updates())));
+            $this->add_hookable(new BlackFriday2026Promo());
+            $this->add_hookable(new TimedUpdates(array_merge([BlackFriday2026Promo::get_timed_update()], PluginFactory::get_timed_updates())));
         }
         $this->hooks_on_hookable_objects();
     }

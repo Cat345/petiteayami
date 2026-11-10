@@ -66,6 +66,26 @@ if ( ! function_exists( 'wffn_show_notice' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wffn_is_funnel_analytics_allowed' ) ) {
+	/**
+	 * Whether funnel analytics may be recorded for the visitor of the current request.
+	 *
+	 * Site policy or a consent tool with a PHP API decides through the wffn_allow_funnel_analytics filter, so it
+	 * is only meaningful in the visitor's own request: IPN, cron and admin requests carry no consent. Orders keep
+	 * the decision taken at checkout in the _wffn_analytics_withheld meta for the writers that run later.
+	 * Only a recognisable false value (false, 0, '0', 'no', 'off', '') withholds analytics.
+	 *
+	 * @param array $context What is about to be recorded: 'event', and 'step', 'step_id' or 'order' where known.
+	 *
+	 * @return bool
+	 */
+	function wffn_is_funnel_analytics_allowed( $context = array() ) {
+		$allow = apply_filters( 'wffn_allow_funnel_analytics', true, $context );
+
+		return false !== filter_var( $allow, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
+	}
+}
+
 /**
  * Converts a string (e.g. 'yes' or 'no' , 'true') to a bool.
  *

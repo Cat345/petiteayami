@@ -28,6 +28,14 @@ var BWFAN_Public;
         capture_email_xhr: null,
         checkout_fields: [],
         is_block_checkout: false,
+        cart_hash: '',
+        pushengage_token: null,
+        pending_email: '',
+        tracking_queued: false,
+        tracking_timer: null,
+        last_sent_signature: null,
+        last_sent_at: 0,
+        order_placed: false,
 
         /**
          * Translate a WC Blocks DOM id/name to the canonical billing_ / shipping_ key
@@ -47,6 +55,7 @@ var BWFAN_Public;
         init: function () {
             /** Block checkout shim: swap form scope + selectors when WC Checkout block is active. */
             this.is_block_checkout = !!(typeof bwfanParamspublic !== 'undefined' && parseInt(bwfanParamspublic._is_block_based_checkout)>0);
+            this.cart_hash = (typeof bwfanParamspublic !== 'undefined' && bwfanParamspublic.bwfan_cart_hash) ? bwfanParamspublic.bwfan_cart_hash : '';
             if (this.is_block_checkout) {
                 var $blockForm = $('div.wp-block-woocommerce-checkout, .wc-block-checkout');
                 if ($blockForm.length) {
@@ -124,7 +133,8 @@ var BWFAN_Public;
                 return;
             }
             var checkout_fields_data = bwfanParamspublic.bwfan_checkout_js_data;
-            if ('no' === checkout_fields_data) {
+            /** Restored cart fields arrive as an object; an empty PHP array becomes [] and has nothing to restore. */
+            if (!checkout_fields_data || !$.isPlainObject(checkout_fields_data.fields) || 'function' !== typeof window.populate_fields_value) {
                 return;
             }
             var localstorage_data = window.localStorage.getItem('wfacp_form_values');
@@ -147,9 +157,9 @@ var BWFAN_Public;
                 delete final_data.shipping_method;
             }
 
-            if (final_data.hasOwnProperty('ship_to_different_address')) {
+            /** Saved as 1 or 0; only a 1 means the shopper chose a different shipping address */
+            if (1 === parseInt(final_data.ship_to_different_address, 10)) {
                 $('#ship-to-different-address-checkbox').prop('checked', true).trigger('change');
-                delete final_data.shipping_method;
             }
 
             window.localStorage.setItem('wfacp_form_values', JSON.stringify(final_data));
@@ -181,11 +191,15 @@ var BWFAN_Public;
                 BWFAN_Public.bwfan_process_email(billing_email);
             }
         },
-        bwfan_get_checkout_data: function () {
+        bwfan_get_email: function () {
             var email = $('#billing_email').val();
             if ((!email || email === '') && BWFAN_Public.is_block_checkout) {
                 email = $('#email').val();
             }
+            return email;
+        },
+        bwfan_get_checkout_data: function () {
+            var email = BWFAN_Public.bwfan_get_email();
             if (email && email !== '') {
                 BWFAN_Public.bwfan_process_email(email);
             }
@@ -326,26 +340,76 @@ var BWFAN_Public;
                 BWFAN_Public.checkout_fields_data[field] = field_value;
             }
         },
-        bwfan_process_email: async function (email) {
-            if ('undefined' === typeof email) {
-                return;
+        /** Minimum gap in ms between two tracking requests; 0 sends one per call. */
+        bwfan_get_tracking_interval: function () {
+            var interval = parseInt(bwfanParamspublic.bwfan_ab_tracking_interval, 10);
+            return (isNaN(interval) || interval < 0) ? 10000 : interval;
+        },
+        bwfan_get_tracking_url: function () {
+            return bwfanParamspublic.wc_ajax_url.toString().replace('%%endpoint%%', 'bwfan_insert_abandoned_cart');
+        },
+        bwfan_can_track: function (email) {
+            if ('string' !== typeof email || BWFAN_Public.order_placed) {
+                return false;
+            }
+            /** A half-typed address (john@, john@mail) is rejected by the server anyway; do not spend a request on it. */
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+                return false;
             }
             if (('0' == bwfanParamspublic.bwfan_ab_enable || bwfanParamspublic.bwfan_ab_enable == "")) {
-                return;
-            }
-            /**
-             * Removed abort as it was making a loop when bonanza is enabled
-             */
-            if (null !== BWFAN_Public.capture_email_xhr) {
-                return;
-            }
-            if ('' === email) {
-                return;
+                return false;
             }
             if ($('#bwfan_gdpr_consent').length && 1 != $('#bwfan_gdpr_consent').val()) {
+                return false;
+            }
+            if (BWFAN_Public.is_block_checkout && window.wp && wp.data) {
+                try {
+                    var checkout = wp.data.select('wc/store/checkout');
+                    if (checkout && (checkout.isProcessing() || checkout.isAfterProcessing() || checkout.isComplete())) {
+                        return false;
+                    }
+                } catch (e) {
+                }
+            }
+            return true;
+        },
+        /**
+         * Every capture trigger lands here. A save identical to the last one sent is skipped, and at
+         * most one request goes out per interval: calls inside it fold into one trailing save of the
+         * latest state, and bwfan_flush_tracking() sends what is still pending when the page is left.
+         */
+        bwfan_process_email: function (email) {
+            if (!BWFAN_Public.bwfan_can_track(email)) {
                 return;
             }
-
+            BWFAN_Public.pending_email = email;
+            /**
+             * Removed abort as it was making a loop when bonanza is enabled.
+             * The request in flight runs this again when it returns, so the latest state is not lost.
+             */
+            if (null !== BWFAN_Public.capture_email_xhr) {
+                BWFAN_Public.tracking_queued = true;
+                return;
+            }
+            var interval = BWFAN_Public.bwfan_get_tracking_interval();
+            var payload = BWFAN_Public.bwfan_get_tracking_payload(email);
+            var signature = BWFAN_Public.bwfan_get_tracking_signature(payload);
+            if (interval > 0 && signature === BWFAN_Public.last_sent_signature) {
+                return;
+            }
+            var wait = BWFAN_Public.last_sent_at + interval - Date.now();
+            if (wait > 0) {
+                if (null === BWFAN_Public.tracking_timer) {
+                    BWFAN_Public.tracking_timer = setTimeout(function () {
+                        BWFAN_Public.tracking_timer = null;
+                        BWFAN_Public.bwfan_process_email(BWFAN_Public.pending_email);
+                    }, wait);
+                }
+                return;
+            }
+            BWFAN_Public.bwfan_send_tracking(payload, signature);
+        },
+        bwfan_get_tracking_payload: function (email) {
             var aero_id = ($('#wfacp_aero_checkout_id').length > 0) ? $('#wfacp_aero_checkout_id').attr('content') : '';
             var step = '';
             if (aero_id) {
@@ -375,8 +439,6 @@ var BWFAN_Public;
                     'utm_content': utm_content,
                 };
             }
-
-            var pushengage_token = await BWFAN_Public.getPushToken();
 
             /**
              * Block checkout: scrape all currently-rendered block inputs into checkout_fields_data
@@ -424,40 +486,127 @@ var BWFAN_Public;
                 }
             }
 
+            return {
+                'email': email,
+                'action': 'bwfan_insert_abandoned_cart',
+                'checkout_fields_data': $.extend(true, {}, BWFAN_Public.checkout_fields_data),
+                'last_edit_field': BWFAN_Public.last_edit_field,
+                'current_step': step,
+                'current_page_id': bwfanParamspublic.current_page_id,
+                'timezone': timezone,
+                'aerocheckout_page_id': aero_id,
+                'pushengage_token': BWFAN_Public.pushengage_token,
+                '_wpnonce': bwfanParamspublic.ajax_nonce
+            };
+        },
+        /** What makes two saves the same row write: last_edit_field alone does not. */
+        bwfan_get_tracking_signature: function (payload) {
+            return JSON.stringify([payload.email, payload.checkout_fields_data, payload.current_step, payload.aerocheckout_page_id, BWFAN_Public.bwfan_get_cart_hash()]);
+        },
+        /** Block checkout has no update_order_review fragment, so read the cart from the Store API data store instead. */
+        bwfan_get_cart_hash: function () {
+            if (!BWFAN_Public.is_block_checkout || !window.wp || !wp.data) {
+                return BWFAN_Public.cart_hash;
+            }
+            try {
+                var cart_store = wp.data.select('wc/store/cart');
+                var cart = cart_store.getCartData();
+                return JSON.stringify([
+                    $.map(cart.items || [], function (item) {
+                        return item.key + ':' + item.quantity;
+                    }),
+                    $.map(cart.coupons || [], function (coupon) {
+                        return coupon.code;
+                    }),
+                    cart_store.getCartTotals().total_price
+                ]);
+            } catch (e) {
+                return BWFAN_Public.cart_hash;
+            }
+        },
+        bwfan_mark_tracking_sent: function (payload, signature) {
+            BWFAN_Public.last_sent_signature = signature;
+            BWFAN_Public.last_sent_at = Date.now();
             /** Snapshot the values this POST carries — the change-listener dedupe compares against posted state, not the live cache. */
-            BWFAN_Public.last_posted_fields_data = $.extend(true, {}, BWFAN_Public.checkout_fields_data);
+            BWFAN_Public.last_posted_fields_data = payload.checkout_fields_data;
+        },
+        bwfan_send_tracking: function (payload, signature) {
+            BWFAN_Public.bwfan_mark_tracking_sent(payload, signature);
+            BWFAN_Public.capture_email_xhr = true;
 
-            BWFAN_Public.capture_email_xhr = $.ajax({
-                url: bwfanParamspublic.wc_ajax_url.toString().replace('%%endpoint%%', 'bwfan_insert_abandoned_cart'),
-                type: 'POST',
-                global: false,
-                data: {
-                    'email': email,
-                    'action': 'bwfan_insert_abandoned_cart',
-                    'checkout_fields_data': BWFAN_Public.checkout_fields_data,
-                    'last_edit_field': BWFAN_Public.last_edit_field,
-                    'current_step': step,
-                    'current_page_id': bwfanParamspublic.current_page_id,
-                    'timezone': timezone,
-                    'aerocheckout_page_id': aero_id,
-                    'pushengage_token': pushengage_token,
-                    '_wpnonce': bwfanParamspublic.ajax_nonce
-                },
-                success: function (res) {
-                    if (parseInt(res.id) > 0 && 0 === $('#bwfan_cart_id').length) {
-                        var cartIdHtml = '<input type="hidden" id="bwfan_cart_id" name="bwfan_cart_id" value="' + res.id + '" />';
-                        var $anchor = $('#billing_email_field');
-                        if (!$anchor.length && BWFAN_Public.is_block_checkout) {
-                            $anchor = $('div.wp-block-woocommerce-checkout, .wc-block-checkout').first();
+            BWFAN_Public.getPushToken().then(function (pushengage_token) {
+                BWFAN_Public.pushengage_token = pushengage_token;
+                payload.pushengage_token = pushengage_token;
+
+                BWFAN_Public.capture_email_xhr = $.ajax({
+                    url: BWFAN_Public.bwfan_get_tracking_url(),
+                    type: 'POST',
+                    global: false,
+                    data: payload,
+                    success: function (res) {
+                        if (parseInt(res.id) > 0 && 0 === $('#bwfan_cart_id').length) {
+                            var cartIdHtml = '<input type="hidden" id="bwfan_cart_id" name="bwfan_cart_id" value="' + res.id + '" />';
+                            var $anchor = $('#billing_email_field');
+                            if (!$anchor.length && BWFAN_Public.is_block_checkout) {
+                                $anchor = $('div.wp-block-woocommerce-checkout, .wc-block-checkout').first();
+                            }
+                            if ($anchor.length) {
+                                $anchor.after(cartIdHtml);
+                            }
+                            console.log('Cart ID: ' + res.id + ' captured.');
                         }
-                        if ($anchor.length) {
-                            $anchor.after(cartIdHtml);
-                        }
-                        console.log('Cart ID: ' + res.id + ' captured.');
+                    },
+                    error: function () {
+                        BWFAN_Public.last_sent_signature = null;
                     }
-                }
-            }).always(function () {
-                BWFAN_Public.capture_email_xhr = null;
+                }).always(function () {
+                    BWFAN_Public.capture_email_xhr = null;
+                    if (BWFAN_Public.tracking_queued) {
+                        BWFAN_Public.tracking_queued = false;
+                        BWFAN_Public.bwfan_process_email(BWFAN_Public.pending_email);
+                    }
+                });
+            });
+        },
+        /**
+         * Page hidden or left: send the state still waiting on the interval. A keepalive fetch
+         * outlives the page, where an XHR would be cancelled with it.
+         */
+        bwfan_flush_tracking: function () {
+            if ('' === BWFAN_Public.pending_email) {
+                return;
+            }
+            /** The field being typed in has not fired change yet. */
+            if (document.activeElement) {
+                BWFAN_Public.bwfan_captureCheckoutField.call(document.activeElement);
+            }
+            var email = BWFAN_Public.bwfan_get_email();
+            var keepalive = 'function' === typeof window.fetch && 'undefined' !== typeof window.Request && 'keepalive' in window.Request.prototype;
+            if (!BWFAN_Public.bwfan_can_track(email) || (!keepalive && 'function' !== typeof navigator.sendBeacon)) {
+                return;
+            }
+            var payload = BWFAN_Public.bwfan_get_tracking_payload(email);
+            var signature = BWFAN_Public.bwfan_get_tracking_signature(payload);
+            if (signature === BWFAN_Public.last_sent_signature) {
+                return;
+            }
+            clearTimeout(BWFAN_Public.tracking_timer);
+            BWFAN_Public.tracking_timer = null;
+            BWFAN_Public.bwfan_mark_tracking_sent(payload, signature);
+
+            var body = $.param(payload);
+            /** Firefox before 133 ignores keepalive, and the unload would cancel the fetch; sendBeacon outlives the page there. */
+            if (!keepalive) {
+                navigator.sendBeacon(BWFAN_Public.bwfan_get_tracking_url(), new Blob([body], {type: 'application/x-www-form-urlencoded; charset=UTF-8'}));
+                return;
+            }
+            window.fetch(BWFAN_Public.bwfan_get_tracking_url(), {
+                method: 'POST',
+                keepalive: true,
+                credentials: 'same-origin',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+                body: body
+            }).catch(function () {
             });
         },
 
@@ -492,7 +641,42 @@ var BWFAN_Public;
     BWFAN_Public.abandoned_cart = function () {
         if ('0' != bwfanParamspublic.bwfan_ab_enable && bwfanParamspublic.bwfan_ab_enable != "") {
             BWFAN_Public.bwfan_capture_email();
+
+            window.addEventListener('pagehide', BWFAN_Public.bwfan_flush_tracking);
+            document.addEventListener('visibilitychange', function () {
+                if ('hidden' === document.visibilityState) {
+                    BWFAN_Public.bwfan_flush_tracking();
+                }
+            });
+            /** The order now owns the cart; a save after it would race the recovered/removed marking. */
+            BWFAN_Public.checkout_form.on('checkout_place_order_success', function () {
+                BWFAN_Public.order_placed = true;
+                clearTimeout(BWFAN_Public.tracking_timer);
+                BWFAN_Public.tracking_timer = null;
+            });
+            BWFAN_Public.bwfan_watch_block_cart();
         }
+    };
+
+    /**
+     * Block checkout has no updated_checkout event: watch the Store API cart instead, so a coupon,
+     * quantity or shipping change with no field edit still saves the cart row.
+     */
+    BWFAN_Public.bwfan_watch_block_cart = function () {
+        if (!BWFAN_Public.is_block_checkout || !window.wp || !wp.data || 'function' !== typeof wp.data.subscribe) {
+            return;
+        }
+        var last_cart_hash = BWFAN_Public.bwfan_get_cart_hash();
+        var cart_timeout = null;
+        wp.data.subscribe(function () {
+            var cart_hash = BWFAN_Public.bwfan_get_cart_hash();
+            if (cart_hash === last_cart_hash) {
+                return;
+            }
+            last_cart_hash = cart_hash;
+            clearTimeout(cart_timeout);
+            cart_timeout = setTimeout(BWFAN_Public.bwfan_get_checkout_data, 500);
+        });
     };
 
     BWFAN_Public.get_selected_unsubscribe_lists = function () {
@@ -547,7 +731,9 @@ var BWFAN_Public;
             var tid = $('#bwfan_tid');
             tid = (0 === tid.length) ? urlParams.get('tid') : tid.val();
 
-            var oneClick = $('#bwfan_one_click').val();
+            /** Only the automatic click on page load is a one-click unsubscribe, a person's own click respects the box */
+            var oneClick = $this.data('bwfan_auto_click') ? $('#bwfan_one_click').val() : '0';
+            $this.removeData('bwfan_auto_click');
 
             var uid = $('#bwfan_form_uid_id');
             uid = (0 === uid.length) ? urlParams.get('bwfan_form_uid_id') : uid.val();
@@ -596,7 +782,7 @@ var BWFAN_Public;
                     }
 
                     if (0 === result.success) {
-                        $('.bwfan_response').addClass('bwfan_error');
+                        $('.bwfan_response').removeClass('bwfan_success').addClass('bwfan_error');
                         $('.bwfan_response').fadeIn().html(result.message);
 
                         if (typeof bwfan_unsubscribe_preference !== 'undefined' && bwfan_unsubscribe_preference == 'one_click') {
@@ -611,9 +797,9 @@ var BWFAN_Public;
                         return;
                     }
 
-                    $('.bwfan_response').addClass('bwfan_success');
+                    $('.bwfan_response').removeClass('bwfan_error').addClass('bwfan_success');
                     $('.bwfan_response').fadeIn().html(result.message);
-                    if ('1' === $('#bwfan_one_click').val()) {
+                    if ('1' === oneClick) {
                         $('#bwfan-list-unsubscribe-all').prop('checked', true);
                     }
 
@@ -621,14 +807,26 @@ var BWFAN_Public;
                         $('.bwfan-unsubscribe-lists').hide();
                         $('a#bwfan_unsubscribe').hide();
                     } else {
-                        /** Content is refresh after success */
+                        /** Content is refresh after success, without the one-click arg which would unsubscribe again on the server */
+                        var refreshUrl = new URL(location.href);
+                        refreshUrl.searchParams.delete('List-Unsubscribe');
                         $('#bwfan-unsubscribe-lists').load(
-                            location.href + ' #bwfan-unsubscribe-lists > *'
+                            refreshUrl.toString() + ' #bwfan-unsubscribe-lists > *'
                         );
                         setTimeout(function () {
                             $('.bwfan_response').fadeOut('slow');
                         }, 2500);
                     }
+                },
+                error: function () {
+                    $this.removeClass('bwfan_loading');
+
+                    if (0 === $this.parent().find('.bwfan_response').length) {
+                        $this.after("<div class='bwfan_response'></div>");
+                    }
+
+                    $('.bwfan_response').removeClass('bwfan_success').addClass('bwfan_error');
+                    $('.bwfan_response').stop(true, true).fadeIn().html(bwfanParamspublic.message_request_failed);
                 }
             });
         });
@@ -1337,7 +1535,7 @@ var BWFAN_Public;
             var uid = $('#bwfan_form_uid_id');
             uid = (0 === uid.length) ? urlParams.get('bwfan_form_uid_id') : uid.val();
             if ((uid !== '' && uid !== null) || (recipient !== '' && recipient !== null)) {
-                $('#bwfan_unsubscribe').click();
+                $('#bwfan_unsubscribe').data('bwfan_auto_click', 1).click();
             }
 
             if (uid !== '' && uid !== null) {
@@ -1348,31 +1546,15 @@ var BWFAN_Public;
         }
     });
     var updateCartTimeout = null;
-    $(document).on('updated_checkout', function () {
+    $(document).on('updated_checkout', function (e, data) {
+        /** Cart contents and totals as of this refresh: a refresh that changed nothing is not a new save. */
+        if (data && data.fragments && 'undefined' !== typeof data.fragments.bwfan_cart_hash) {
+            BWFAN_Public.cart_hash = data.fragments.bwfan_cart_hash;
+        }
         if (updateCartTimeout !== null) {
             clearTimeout(updateCartTimeout);
         }
-        updateCartTimeout = setTimeout(function (){
-            var email = $('#billing_email').val();
-            if ((!email || email === '') && BWFAN_Public && BWFAN_Public.is_block_checkout) {
-                email = $('#email').val();
-            }
-            if (email && email !== '') {
-                BWFAN_Public.bwfan_process_email(email);
-            }
-        }, 500);
-    });
-
-    /**
-     * WC Blocks fires its own store_api_checkout / wc-blocks_checkout_render events on every Store API
-     * push. Re-fire process_email on a debounce so the cart row gets touched on cart/shipping changes.
-     */
-    $(document).on('wc-blocks_checkout_render wc-blocks-checkout-update', function () {
-        if (!BWFAN_Public || !BWFAN_Public.is_block_checkout) return;
-        var email = $('#email').val();
-        if (email && email !== '') {
-            BWFAN_Public.bwfan_process_email(email);
-        }
+        updateCartTimeout = setTimeout(BWFAN_Public.bwfan_get_checkout_data, 500);
     });
 
     /**

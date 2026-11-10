@@ -1036,6 +1036,11 @@ class BWFAN_Tasks {
 	public function fetch_tasks_count( $automation_id, $status ) {
 		global $wpdb;
 
+		/** Fresh installs never create the v1 tables (bwfan_tasks); the v1 engine is off there and there is nothing to count */
+		if ( ! BWFAN_Common::is_automation_v1_active() ) {
+			return 0;
+		}
+
 		$task_table        = $wpdb->prefix . 'bwfan_tasks';
 		$automation_table  = $wpdb->prefix . 'bwfan_automations';
 		$query_select      = "SELECT count($task_table.ID) as tasks_count";
@@ -1068,7 +1073,7 @@ class BWFAN_Tasks {
 		$new_query1 = $wpdb->prepare( "{$query_select} {$query_from} {$query_where} ", $params ); //phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
 
 		$tasks_count = BWFAN_Model_Tasks::get_results( $new_query1 );
-		$tasks_count = $tasks_count[0]['tasks_count'];
+		$tasks_count = isset( $tasks_count[0]['tasks_count'] ) ? absint( $tasks_count[0]['tasks_count'] ) : 0;
 
 		return $tasks_count;
 	}

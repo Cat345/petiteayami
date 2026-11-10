@@ -45,7 +45,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Security_By_CleanTalk' ) ) {
 					return $status;
 				}
 
-				if ( false === strpos( $rest_route, 'autonami' ) && false === strpos( $rest_route, 'woofunnel' ) && false === strpos( $rest_route, 'funnelkit-automations' ) ) {
+				if ( false === strpos( $rest_route, 'autonami' ) && false === strpos( $rest_route, 'woofunnel' ) && false === strpos( $rest_route, 'funnelkit-automations' ) && false === strpos( $rest_route, 'funnelkit/' ) ) {
 					return $status;
 				}
 

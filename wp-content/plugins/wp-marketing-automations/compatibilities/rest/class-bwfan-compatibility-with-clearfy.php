@@ -26,6 +26,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Clearfy' ) ) {
 			$white_list[] = 'woofunnels-analytics';
 			$white_list[] = 'autonami';
 			$white_list[] = 'funnelkit-automations';
+			$white_list[] = 'funnelkit';
 
 			return $white_list;
 		}

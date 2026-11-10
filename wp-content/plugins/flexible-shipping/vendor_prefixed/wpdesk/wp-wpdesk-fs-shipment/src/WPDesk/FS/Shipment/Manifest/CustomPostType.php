@@ -51,7 +51,7 @@ class ManifestCustomPostType implements Hookable
         if (post_type_exists('shipping_manifest')) {
             return;
         }
-        register_post_type('shipping_manifest', ['labels' => ['name' => __('Shipping Manifests', 'flexible-shipping'), 'singular_name' => __('Shipping Manifest', 'flexible-shipping'), 'menu_name' => __('Shipping Manifests', 'flexible-shipping'), 'parent_item_colon' => '', 'all_items' => __('Shipping Manifests', 'flexible-shipping'), 'view_item' => __('View Shipping Manifests', 'flexible-shipping'), 'add_new_item' => __('Add new Shipping Manifest', 'flexible-shipping'), 'add_new' => __('Add new Shipping Manifests', 'flexible-shipping'), 'edit_item' => __('Edit Shipping Manifest', 'flexible-shipping'), 'update_item' => __('Save Shipping Manifest', 'flexible-shipping'), 'search_items' => __('Search Shipping Manifests', 'flexible-shipping'), 'not_found' => __('Shipping Manifests not found', 'flexible-shipping'), 'not_found_in_trash' => __('Shipping Manifests not found in trash', 'flexible-shipping')], 'description' => __('Shipping Manifests.', 'flexible-shipping'), 'public' => \false, 'show_ui' => \true, 'capability_type' => 'post', 'capabilities' => ['create_posts' => \false], 'map_meta_cap' => \true, 'publicly_queryable' => \false, 'exclude_from_search' => \true, 'hierarchical' => \false, 'query_var' => \true, 'supports' => ['title'], 'has_archive' => \false, 'show_in_nav_menus' => \false, 'show_in_menu' => 'edit.php?post_type=shop_order', 'menu_icon' => 'dashicons-upload']);
+        register_post_type('shipping_manifest', ['labels' => ['name' => __('Shipping Manifests', 'flexible-shipping'), 'singular_name' => __('Shipping Manifest', 'flexible-shipping'), 'menu_name' => __('Shipping Manifests', 'flexible-shipping'), 'parent_item_colon' => '', 'all_items' => __('Shipping Manifests', 'flexible-shipping'), 'view_item' => __('View Shipping Manifests', 'flexible-shipping'), 'add_new_item' => __('Add new Shipping Manifest', 'flexible-shipping'), 'add_new' => __('Add new Shipping Manifests', 'flexible-shipping'), 'edit_item' => __('Edit Shipping Manifest', 'flexible-shipping'), 'update_item' => __('Save Shipping Manifest', 'flexible-shipping'), 'search_items' => __('Search Shipping Manifests', 'flexible-shipping'), 'not_found' => __('Shipping Manifests not found', 'flexible-shipping'), 'not_found_in_trash' => __('Shipping Manifests not found in trash', 'flexible-shipping')], 'description' => __('Shipping Manifests.', 'flexible-shipping'), 'public' => \false, 'show_ui' => \true, 'capability_type' => 'post', 'capabilities' => array('edit_posts' => 'manage_woocommerce', 'edit_others_posts' => 'manage_woocommerce', 'delete_posts' => 'manage_woocommerce', 'publish_posts' => 'manage_woocommerce', 'read_private_posts' => 'manage_woocommerce', 'read' => 'manage_woocommerce', 'delete_private_posts' => 'manage_woocommerce', 'delete_published_posts' => 'manage_woocommerce', 'delete_others_posts' => 'manage_woocommerce', 'edit_private_posts' => 'manage_woocommerce', 'edit_published_posts' => 'manage_woocommerce', 'create_posts' => \false), 'map_meta_cap' => \true, 'publicly_queryable' => \false, 'exclude_from_search' => \true, 'hierarchical' => \false, 'query_var' => \true, 'supports' => ['title'], 'has_archive' => \false, 'show_in_nav_menus' => \false, 'show_in_menu' => 'edit.php?post_type=shop_order', 'menu_icon' => 'dashicons-upload']);
     }
     public function admin_menu()
     {
@@ -153,6 +153,13 @@ class ManifestCustomPostType implements Hookable
     }
     public function cancel_manifest()
     {
+        if (empty($_GET['flexible_shipping_cancel_manifest'])) {
+            return;
+        }
+        if (!current_user_can('manage_woocommerce')) {
+            wp_die(esc_html__('Insufficient user permissions!', 'flexible-shipping'), '', array('response' => 403));
+            return;
+        }
         if (!empty($_GET['flexible_shipping_cancel_manifest']) && !empty($_GET['nonce'])) {
             $nonce = sanitize_text_field($_GET['nonce']);
             if (!wp_verify_nonce($nonce, 'flexible_shipping_cancel_manifest')) {
@@ -175,25 +182,37 @@ class ManifestCustomPostType implements Hookable
             }
         }
     }
+    /**
+     * Download a manifest after checking permissions and the request nonce.
+     *
+     * @return void
+     * @internal
+     */
     public function download_manifest()
     {
-        if (!empty($_GET['flexible_shipping_download_manifest']) && !empty($_GET['nonce'])) {
-            $nonce = sanitize_text_field($_GET['nonce']);
-            if (!wp_verify_nonce($nonce, 'flexible_shipping_download_manifest')) {
-                echo __('Invalid nonce!', 'flexible-shipping');
-            }
-            try {
-                $shipping_manifest_id = sanitize_key($_GET['flexible_shipping_download_manifest']);
-                $shipping_manifest = fs_get_manifest($shipping_manifest_id);
-                $manifest = $shipping_manifest->get_manifest();
-                header("Content-type: application/octet-stream");
-                header("Content-Disposition: attachment; filename=" . $manifest['file_name']);
-                echo $manifest['content'];
-            } catch (Exception $e) {
-                echo $e->getMessage();
-            }
-            exit;
+        if (empty($_GET['flexible_shipping_download_manifest'])) {
+            return;
         }
+        if (!current_user_can('manage_woocommerce')) {
+            wp_die(esc_html__('Insufficient user permissions!', 'flexible-shipping'), '', array('response' => 403));
+            return;
+        }
+        if (empty($_GET['nonce']) || !is_string($_GET['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['nonce'])), 'flexible_shipping_download_manifest')) {
+            wp_die(esc_html__('Invalid nonce!', 'flexible-shipping'), '', array('response' => 403));
+            return;
+        }
+        try {
+            $shipping_manifest_id = sanitize_key(wp_unslash($_GET['flexible_shipping_download_manifest']));
+            $shipping_manifest = fs_get_manifest($shipping_manifest_id);
+            $manifest = $shipping_manifest->get_manifest();
+            header('Content-type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . sanitize_file_name($manifest['file_name']) . '"');
+            echo $manifest['content'];
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Downloaded file content must remain unescaped.
+        } catch (\Exception $e) {
+            echo esc_html($e->getMessage());
+        }
+        exit;
     }
     public function hide_publish_metabox()
     {

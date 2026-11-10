@@ -136,26 +136,27 @@
 
 	public function get_waitlist_meta_bulk( array $xoo_wl_ids ) {
 
-		$xoo_wl_ids = array_values(
-			array_unique(
-				array_map( 'absint', $xoo_wl_ids )
-			)
-		);
+	    $xoo_wl_ids = array_values(
+	        array_unique(
+	            array_filter(
+	                array_map( 'absint', $xoo_wl_ids )
+	            )
+	        )
+	    );
 
-		if ( empty( $xoo_wl_ids ) ) {
-			return array();
-		}
+	    if ( empty( $xoo_wl_ids ) ) {
+	        return array();
+	    }
 
-		// Prime meta cache (ONE query)
-		update_meta_cache( 'xoo_wl', $xoo_wl_ids );
+	    update_meta_cache( 'xoo_wl', $xoo_wl_ids );
 
-		$meta = array();
+	    $meta = array();
 
-		foreach ( $xoo_wl_ids as $id ) {
-			$meta[ $id ] = $this->get_waitlist_meta( $id );
-		}
+	    foreach ( $xoo_wl_ids as $id ) {
+	        $meta[ $id ] = $this->get_waitlist_meta( $id );
+	    }
 
-		return $meta;
+	    return $meta;
 	}
 
 

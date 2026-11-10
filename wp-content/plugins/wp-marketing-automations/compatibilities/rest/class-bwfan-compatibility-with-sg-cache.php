@@ -28,6 +28,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_SG_Cache' ) ) {
 			$value[] = "/wp-json/" . BWFAN_API_NAMESPACE . "/*";
 			$value[] = "/wp-json/woofunnels/*";
 			$value[] = "/wp-json/funnelkit-automations/*";
+			$value[] = "/wp-json/funnelkit/*";
 
 			return BWFAN_Common::unique( $value );
 		}

@@ -4,7 +4,7 @@ Tags: cart abandonment, follow up emails, email marketing, newsletter, marketing
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.8.6
+Stable tag: 3.9.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -419,10 +419,32 @@ FunnelKit Automations is 100% self-hosted and fully GDPR compliant.
 FunnelKit may connect to the following external services, only when the related feature is used:
 
 * **FunnelKit** provides the recipes, announcements and optional usage tracking. [Terms](https://funnelkit.com/terms-conditions/) and [Privacy Policy](https://funnelkit.com/privacy-policy/)
+* **FunnelKit AI** (app.funnelkit.com, and app-staging.funnelkit.com for testing) connects this store to AI apps such as Claude and ChatGPT, only after an administrator turns on "Enable FunnelKit AI" under FunnelKit → Settings → FunnelKit AI and approves a connection on this site. The plugin never contacts these hosts itself: the FunnelKit AI gateway calls this site's /wp-json/funnelkit/ endpoints on your behalf, carrying the requests the AI app makes and the results your site returns. [Terms](https://funnelkit.com/terms-conditions/) and [Privacy Policy](https://funnelkit.com/privacy-policy/)
 * **Google Fonts** may load on manage profile and unsubscribe page if prebuild option is selected. [Terms](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy)
 * **YouTube** may embed tutorial videos on FunnelKit screens. [Terms](https://www.youtube.com/t/terms) and [Privacy Policy](https://policies.google.com/privacy)
 
 == Change log ==
+
+= 3.9.0 (Nov 3, 2026) =
+* Added: FunnelKit AI. Connect Claude, ChatGPT, Cursor or VS Code to your store and use ready-made prompts for automations, contacts, emails and reports. Needs WordPress 6.9+. (#4954)
+* Improved: Cart tracking sends fewer requests on checkout refresh, reducing server load. Block checkout cart changes are now captured. (#4941)
+* Fixed: Unsubscribe page no longer resubscribes contacts on an unticked save, recovers from failed requests, and the one-click link works without JavaScript. (#4928)
+* Fixed: Weekly performance report now returns correct data and follows the store timezone. (#4947)
+* Fixed: "Verify Table Collations and Columns" repairs lost AUTO_INCREMENT and primary keys. (#4950)
+* Fixed: Last Open and Last Click dates now save for contacts in case custom fields missing. (#4952)
+* Fixed: WPML cart items, tracking links and actions follow the cart language. (#4926)
+* Fixed: Report side-panel "time ago" dates follow the site timezone. (#4928)
+
+= 3.8.6.2 (Oct 28, 2026) =
+* Improved: Hardened data validation across abandoned cart capture and contact fields. (#4936)
+* Improved: Refined legacy automation screen functionality and admin preference handling for better reliability. (#4937)
+* Improved: Improved importers for ActiveCampaign, Mailchimp, and Kit. (#4939)
+* Improved: Optimized custom field management for greater stability and reliability. (#4940)
+
+= 3.8.6.1 (Oct 26, 2026) =
+* Fixed: Restored search results for Lists, Tags, Products, Coupons, Users and category conditions in the Legacy automation builder. (#4932)
+* Fixed: The "Order Item Data" rule now ignores surrounding whitespace in order item meta values and safely handles non-text meta. (#4930)
+* Fixed: Prevented fatal errors in background workers and CSV exports on hosts that disable `ignore_user_abort` or `set_time_limit` in PHP, such as RunCloud defaults.
 
 = 3.8.6 (Oct 22, 2026) =
 * Improved: Hardened REST authentication handling for admin browser sessions, reported via Patchstack.(#4911)

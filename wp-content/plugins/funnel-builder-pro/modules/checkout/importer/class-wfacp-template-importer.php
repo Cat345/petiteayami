@@ -206,6 +206,11 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 
 			if ( 'elementor' === $builder && class_exists( 'WFFN_Common' ) ) {
 				$requestBody['elementor_container'] = WFFN_Common::is_elementor_container_active() ? 'active' : 'inactive';
+
+				// With the Atomic Editor on, the template library serves a template's atomic version.
+				if ( method_exists( 'WFFN_Common', 'is_elementor_atomic_active' ) ) {
+					$requestBody['elementor_atomic'] = WFFN_Common::is_elementor_atomic_active() ? 'active' : 'inactive';
+				}
 			}
 
 			$requestBody = wp_json_encode( $requestBody );

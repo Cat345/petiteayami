@@ -204,7 +204,7 @@ if ( ! bwfan_is_autonami_pro_active() && ! class_exists( 'BWFAN_Funnel_Optin_For
 		 * @return bool
 		 */
 		public function validate_v2_event_settings( $automation_data ) {
-			if ( absint( $automation_data['form_id'] ) !== absint( $automation_data['event_meta']['bwfan-optin_form_submit_form_id'] ) ) {
+			if ( ! isset( $automation_data['event_meta']['bwfan-optin_form_submit_form_id'] ) || absint( $automation_data['form_id'] ) !== absint( $automation_data['event_meta']['bwfan-optin_form_submit_form_id'] ) ) {
 				return false;
 			}
 
