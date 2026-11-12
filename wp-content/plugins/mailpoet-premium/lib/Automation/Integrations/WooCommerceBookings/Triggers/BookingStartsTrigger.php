@@ -126,7 +126,7 @@ class BookingStartsTrigger implements Trigger {
       return;
     }
 
-    $booking->update_meta_data($metaKey, true);
+    $booking->update_meta_data($metaKey, '1');
     $booking->save();
 
     // Set currentAutomationId so isTriggeredBy() can match this automation.

@@ -42,7 +42,7 @@ class CustomAction implements Action {
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
-    $this->authorization->authorizeRun($args->getAutomation(), [], $this->getAuthorizationMessage());
+    $this->authorization->authorizeRun($args->getAutomation(), [AutomationAuthorization::CAPABILITY_MANAGE_OPTIONS], $this->getAuthorizationMessage());
 
     $step = $args->getStep();
     $hook = $step->getArgs()['hook'];
@@ -88,7 +88,7 @@ class CustomAction implements Action {
         throw ValidationException::create()->withMessage($message)->withError('hook', $message);
       }
     }
-    $this->authorization->authorizeSave($args->getAutomation(), [], $this->getAuthorizationMessage());
+    $this->authorization->authorizeSave($args->getAutomation(), [AutomationAuthorization::CAPABILITY_MANAGE_OPTIONS], $this->getAuthorizationMessage());
   }
 
   public function onDuplicate(Step $step): Step {
@@ -97,6 +97,6 @@ class CustomAction implements Action {
   }
 
   private function getAuthorizationMessage(): string {
-    return __('The user who last saved this automation is not allowed to manage automations.', 'mailpoet-premium');
+    return __('The user who last saved this automation is not allowed to run custom actions.', 'mailpoet-premium');
   }
 }

@@ -7303,6 +7303,10 @@ return array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/API/JSON/API.php'
 ),
+'MailPoet\\API\\JSON\\AjaxErrorMessages' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/API/JSON/AjaxErrorMessages.php'
+),
 'MailPoet\\API\\JSON\\Endpoint' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/API/JSON/Endpoint.php'
@@ -7482,10 +7486,6 @@ return array(
 'MailPoet\\API\\JSON\\v1\\WoocommerceProductVariations' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/API/JSON/v1/WoocommerceProductVariations.php'
-),
-'MailPoet\\API\\JSON\\v1\\WoocommerceSettings' => array(
-'version' => 'dev-trunk',
-'path' => $baseDir . '/lib/API/JSON/v1/WoocommerceSettings.php'
 ),
 'MailPoet\\API\\MP\\v1\\API' => array(
 'version' => 'dev-trunk',
@@ -10650,6 +10650,10 @@ return array(
 'MailPoet\\Migrations\\App\\Migration_20261006_143614_App' => array(
 'version' => 'dev-trunk',
 'path' => $baseDir . '/lib/Migrations/App/Migration_20261006_143614_App.php'
+),
+'MailPoet\\Migrations\\App\\Migration_20261103_092807_App' => array(
+'version' => 'dev-trunk',
+'path' => $baseDir . '/lib/Migrations/App/Migration_20261103_092807_App.php'
 ),
 'MailPoet\\Migrations\\Db\\DbMigrationTemplate' => array(
 'version' => 'dev-trunk',

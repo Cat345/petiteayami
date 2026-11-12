@@ -231,10 +231,10 @@ class __TwigTemplate_53b89d2127c3e3553aef87a0684de61c60938709506258cd8a7cd55ed96
             // line 77
             yield $this->extensions['MailPoet\Twig\I18n']->translate("Close");
             yield "\"
-        src='";
+        src=\x27";
             // line 78
             yield $this->extensions['MailPoet\Twig\Assets']->generateImageUrl((("form_close_icon/" . ($context["close_button_icon"] ?? null)) . ".svg"));
-            yield "'
+            yield "\x27
       />
     ";
         }

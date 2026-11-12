@@ -125,7 +125,7 @@ class BookingCreatedTrigger implements Trigger {
     }
 
     // Mark this booking as triggered to prevent duplicates
-    $booking->update_meta_data(self::META_KEY_TRIGGERED, true);
+    $booking->update_meta_data(self::META_KEY_TRIGGERED, '1');
     $booking->save();
 
     // Build booking subject args, including order_id if available for guest customer handling

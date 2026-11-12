@@ -216,6 +216,17 @@ class FormEntity extends \MailPoet\Entities\FormEntity implements \MailPoetVendo
     /**
      * {@inheritDoc}
      */
+    public function getCloseButtonIcon(string $default): string
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getCloseButtonIcon', [$default]);
+
+        return parent::getCloseButtonIcon($default);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getStyles()
     {
 

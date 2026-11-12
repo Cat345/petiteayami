@@ -103,8 +103,7 @@ class WooCommerceBooking {
     if (!$booking) {
       return '';
     }
-    $persons = $booking->get_persons();
-    return is_array($persons) ? (string)array_sum($persons) : (string)$persons;
+    return (string)$booking->get_persons_total();
   }
 
   /**

@@ -80,7 +80,7 @@ class SubscriptionTrialEndedTrigger implements Trigger {
     if (!$subscription instanceof \WC_Subscription) {
       return;
     }
-    $orderId = $subscription->get_last_order() ?? 0;
+    $orderId = $subscription->get_last_order() ?: 0;
     $this->wp->doAction(Hooks::TRIGGER, $this, [
       new Subject(WooCommerceSubscriptionSubject::KEY, ['subscription_id' => $subscription->get_id()]),
       new Subject(OrderSubject::KEY, ['order_id' => $orderId]),

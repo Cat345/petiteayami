@@ -12,12 +12,6 @@
 */
 
 /*!
-  react-datepicker v9.1.0
-  https://github.com/Hacker0x01/react-datepicker
-  Released under the MIT License.
-*/
-
-/*!
  * Select2 4.1.0-rc.0
  * https://select2.github.io
  *

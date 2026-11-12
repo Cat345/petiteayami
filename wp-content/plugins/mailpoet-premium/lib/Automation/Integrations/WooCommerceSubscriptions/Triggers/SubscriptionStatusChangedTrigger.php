@@ -82,7 +82,7 @@ class SubscriptionStatusChangedTrigger implements Trigger {
     if (!$subscription instanceof \WC_Subscription) {
       return;
     }
-    $orderId = $subscription->get_last_order() ?? 0;
+    $orderId = $subscription->get_last_order() ?: 0;
     $this->wp->doAction(Hooks::TRIGGER, $this, [
       new Subject(WooCommerceSubscriptionStatusChangeSubject::KEY, ['from' => $oldStatus, 'to' => $newStatus]),
       new Subject(WooCommerceSubscriptionSubject::KEY, ['subscription_id' => $subscription->get_id()]),

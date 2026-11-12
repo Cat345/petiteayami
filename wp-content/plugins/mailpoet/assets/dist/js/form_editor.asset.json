@@ -6,6 +6,7 @@
 		"react",
 		"react-dom",
 		"react-jsx-runtime",
+		"wp-a11y",
 		"wp-api-fetch",
 		"wp-block-editor",
 		"wp-block-library",
@@ -27,7 +28,9 @@
 		"wp-primitives",
 		"wp-private-apis",
 		"wp-rich-text",
-		"wp-url"
+		"wp-theme",
+		"wp-url",
+		"wp-warning"
 	],
-	"version": "48911ea31c01bc40db6a"
+	"version": "0a59d941f882397f96e4"
 }

@@ -38,9 +38,9 @@ class __TwigTemplate_207089b3e015287bbc04bcee6c45e9a624ad67e2a80c754f48d54bb8da1
     {
         $macros = $this->macros;
         // line 2
-        yield "  var mailpoet_logs_default_from = '";
+        yield "  var mailpoet_logs_default_from = \x27";
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["logs_default_from"] ?? null), "js", null, true);
-        yield "';
+        yield "\x27;
   var mailpoet_logs_api = ";
         // line 3
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["api"] ?? null));

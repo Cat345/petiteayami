@@ -29,6 +29,7 @@ use WP_User;
 class AutomationAuthorization {
   public const AUTHORIZED_BY_META = 'mailpoet-premium:authorized-by';
   public const CAPABILITY_MANAGE_WOOCOMMERCE = 'manage_woocommerce';
+  public const CAPABILITY_MANAGE_OPTIONS = 'manage_options';
 
   /** @var AutomationStorage */
   private $storage;

@@ -11,14 +11,6 @@
 	http://jedwatson.github.io/classnames
 */
 
-/*!
- * Select2 4.1.0-rc.0
- * https://select2.github.io
- *
- * Released under the MIT license
- * https://github.com/select2/select2/blob/master/LICENSE.md
- */
-
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 
 /*! js-cookie v3.0.8 | MIT */
@@ -43,6 +35,26 @@
  * react-dom-server.browser.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * @license React
+ * use-sync-external-store-shim.production.js
+ *
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * @license React
+ * use-sync-external-store-shim/with-selector.production.js
+ *
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

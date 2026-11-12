@@ -86,7 +86,7 @@ class BookingFields {
         Field::TYPE_NUMBER,
         __('Woo Booking persons count', 'mailpoet-premium'),
         function(WooCommerceBookingPayload $payload) {
-          return $payload->getBooking()->get_persons();
+          return $payload->getBooking()->get_persons_total();
         }
       ),
       new Field(

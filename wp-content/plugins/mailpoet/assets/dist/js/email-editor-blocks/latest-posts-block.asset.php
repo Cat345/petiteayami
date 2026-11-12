@@ -16,5 +16,5 @@ if (!defined('ABSPATH')) exit;
 		'wp-polyfill',
 		'wp-primitives'
 	),
-	'version' => '7d3981f440c21c35e394'
+	'version' => '814e7f1910db76530bb9'
 );

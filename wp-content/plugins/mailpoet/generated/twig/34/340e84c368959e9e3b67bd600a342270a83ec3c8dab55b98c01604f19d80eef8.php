@@ -141,7 +141,7 @@ class __TwigTemplate_983c70cc527e9ec7b888be667e99a11703d8dd9de70fb8285afd14f53c3
                         <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"word-break:break-word;word-wrap:break-word;padding-top:0;border-collapse:collapse;padding-bottom:20px;padding-left:20px;padding-right:20px\">
                           <table style=\"border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;border-collapse:collapse\" width=\"100%\" cellpadding=\"0\">
                             <tr>
-                              <td class=\"mailpoet_paragraph\" style=\"word-break:break-word;word-wrap:break-word;text-align:right;border-collapse:collapse;color:#000000;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;font-size:16px;line-height:25.6px\">
+                              <td class=\"mailpoet_paragraph\" style=\"word-break:break-word;word-wrap:break-word;text-align:right;border-collapse:collapse;color:#000000;font-family:Arial,\x27Helvetica Neue\x27,Helvetica,sans-serif;font-size:16px;line-height:25.6px\">
                                 <span style=\"color: #ffffff;\">
                                   <a href=\"https://www.mailpoet.com/how-to-improve-open-rates/\" title=\"";
         // line 86
@@ -157,7 +157,7 @@ class __TwigTemplate_983c70cc527e9ec7b888be667e99a11703d8dd9de70fb8285afd14f53c3
                             </tr></table>
                           <table style=\"border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;border-collapse:collapse\" width=\"100%\" cellpadding=\"0\">
                             <tr>
-                              <td class=\"mailpoet_paragraph\" style=\"word-break:break-word;word-wrap:break-word;text-align:right;border-collapse:collapse;color:#000000;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;font-size:16px;line-height:25.6px\">
+                              <td class=\"mailpoet_paragraph\" style=\"word-break:break-word;word-wrap:break-word;text-align:right;border-collapse:collapse;color:#000000;font-family:Arial,\x27Helvetica Neue\x27,Helvetica,sans-serif;font-size:16px;line-height:25.6px\">
                                 <span style=\"color: #ffffff;\"><a href=\"https://www.mailpoet.com/how-to-improve-click-rates/\" title=\"";
         // line 95
         yield $this->extensions['MailPoet\Twig\I18n']->translate("How to Improve Open and Click Rates");
@@ -171,7 +171,7 @@ class __TwigTemplate_983c70cc527e9ec7b888be667e99a11703d8dd9de70fb8285afd14f53c3
                             </tr></table>
                           <table style=\"border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;border-collapse:collapse\" width=\"100%\" cellpadding=\"0\">
                             <tr>
-                              <td class=\"mailpoet_paragraph\" style=\"word-break:break-word;word-wrap:break-word;text-align:right;border-collapse:collapse;color:#000000;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;font-size:16px;line-height:25.6px\">
+                              <td class=\"mailpoet_paragraph\" style=\"word-break:break-word;word-wrap:break-word;text-align:right;border-collapse:collapse;color:#000000;font-family:Arial,\x27Helvetica Neue\x27,Helvetica,sans-serif;font-size:16px;line-height:25.6px\">
                                 <a href=\"";
         // line 103
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["linkSettings"] ?? null), "html", null, true);

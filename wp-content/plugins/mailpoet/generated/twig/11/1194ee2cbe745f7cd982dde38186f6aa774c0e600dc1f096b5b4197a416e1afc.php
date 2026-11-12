@@ -41,7 +41,7 @@ class __TwigTemplate_c57fdfc1a59b00dc7129161c18976ad5ba36cdd436a8430e0c1963def69
         yield "
 ";
         // line 9
-        yield "Parsley.addMessages('mailpoet', {
+        yield "Parsley.addMessages(\x27mailpoet\x27, {
   defaultMessage: ";
         // line 10
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode($this->extensions['MailPoet\Twig\I18n']->translate("This value seems to be invalid."));
@@ -126,7 +126,7 @@ class __TwigTemplate_c57fdfc1a59b00dc7129161c18976ad5ba36cdd436a8430e0c1963def69
         yield "
 });
 
-Parsley.setLocale('mailpoet');
+Parsley.setLocale(\x27mailpoet\x27);
 ";
         return; yield '';
     }

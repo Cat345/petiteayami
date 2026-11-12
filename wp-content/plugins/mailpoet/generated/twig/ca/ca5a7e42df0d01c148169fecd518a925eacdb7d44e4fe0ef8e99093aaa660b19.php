@@ -75,7 +75,7 @@ class __TwigTemplate_2bbd0548d5462e9781dcc2649091521a405c5b3b1847f123d5fb51dce2e
             </tr>
             <tr>
               <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"word-break:break-word;word-wrap:break-word;padding-top:0;border-collapse:collapse;padding-bottom:20px;padding-left:20px;padding-right:20px\">
-                <h1 style=\"text-align:center;padding:0;font-style:normal;font-weight:normal;margin:0 0 12px;color:#111111;font-family:'Trebuchet MS','Lucida Grande','Lucida Sans Unicode','Lucida Sans',Tahoma,sans-serif;font-size:40px;line-height:64px\">
+                <h1 style=\"text-align:center;padding:0;font-style:normal;font-weight:normal;margin:0 0 12px;color:#111111;font-family:\x27Trebuchet MS\x27,\x27Lucida Grande\x27,\x27Lucida Sans Unicode\x27,\x27Lucida Sans\x27,Tahoma,sans-serif;font-size:40px;line-height:64px\">
                   <strong>";
         // line 26
         yield $this->extensions['MailPoet\Twig\I18n']->translate("Your monthly stats are in!");
@@ -121,7 +121,7 @@ class __TwigTemplate_2bbd0548d5462e9781dcc2649091521a405c5b3b1847f123d5fb51dce2e
               </tr>
               <tr>
                 <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word\">
-                  <h2 class=\"title\" style=\"margin:0 0 7.8px;color:#222222;font-family:lato,'helvetica neue',helvetica,arial,sans-serif;font-size:26px;line-height:31.2px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
+                  <h2 class=\"title\" style=\"margin:0 0 7.8px;color:#222222;font-family:lato,\x27helvetica neue\x27,helvetica,arial,sans-serif;font-size:26px;line-height:31.2px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
                     <strong>
                       <a href=\"";
             // line 65
@@ -199,7 +199,7 @@ class __TwigTemplate_2bbd0548d5462e9781dcc2649091521a405c5b3b1847f123d5fb51dce2e
             yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["newsletter"], "linkStats", [], "any", false, false, false, 121), "html", null, true);
             yield "\" style=\"color:#ffffff;text-decoration:none !important;display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-align:center;background-color:";
             yield $this->extensions['MailPoet\Twig\Functions']->statsColor(CoreExtension::getAttribute($this->env, $this->source, $context["newsletter"], "clicked", [], "any", false, false, false, 121));
-            yield ";border-color:#0074a2;border-width:0px;border-radius:3px;border-style:solid;width:80px;line-height:20px;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:10px;font-weight:normal\">
+            yield ";border-color:#0074a2;border-width:0px;border-radius:3px;border-style:solid;width:80px;line-height:20px;font-family:Arial, \x27Helvetica Neue\x27, Helvetica, sans-serif;font-size:10px;font-weight:normal\">
                               ";
             // line 122
             yield $this->extensions['MailPoet\Twig\Functions']->clickedStatsText(CoreExtension::getAttribute($this->env, $this->source, $context["newsletter"], "clicked", [], "any", false, false, false, 122));
@@ -213,7 +213,7 @@ class __TwigTemplate_2bbd0548d5462e9781dcc2649091521a405c5b3b1847f123d5fb51dce2e
                 </tr>
                 <tr>
                   <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word\">
-                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
+                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:\x27Courier New\x27,Courier,\x27Lucida Sans Typewriter\x27,\x27Lucida Typewriter\x27,monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
                       <span style=\"color: ";
             // line 133
             yield $this->extensions['MailPoet\Twig\Functions']->statsColor(CoreExtension::getAttribute($this->env, $this->source, $context["newsletter"], "clicked", [], "any", false, false, false, 133));
@@ -269,7 +269,7 @@ class __TwigTemplate_2bbd0548d5462e9781dcc2649091521a405c5b3b1847f123d5fb51dce2e
                 <tbody>
                 <tr>
                   <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word\">
-                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
+                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:\x27Courier New\x27,Courier,\x27Lucida Sans Typewriter\x27,\x27Lucida Typewriter\x27,monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
                       <span>
                         <strong>";
             // line 179
@@ -293,7 +293,7 @@ class __TwigTemplate_2bbd0548d5462e9781dcc2649091521a405c5b3b1847f123d5fb51dce2e
                 <tbody>
                 <tr>
                   <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word\">
-                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
+                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:\x27Courier New\x27,Courier,\x27Lucida Sans Typewriter\x27,\x27Lucida Typewriter\x27,monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
                       <span>
                         <strong>";
             // line 198
@@ -338,7 +338,7 @@ class __TwigTemplate_2bbd0548d5462e9781dcc2649091521a405c5b3b1847f123d5fb51dce2e
                 <tbody>
                 <tr>
                   <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word\">
-                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
+                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:\x27Courier New\x27,Courier,\x27Lucida Sans Typewriter\x27,\x27Lucida Typewriter\x27,monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
                       <span>
                         <strong>";
             // line 238
@@ -362,7 +362,7 @@ class __TwigTemplate_2bbd0548d5462e9781dcc2649091521a405c5b3b1847f123d5fb51dce2e
                 <tbody>
                 <tr>
                   <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word\">
-                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
+                    <h3 style=\"margin:0 0 5.4px;color:#333333;font-family:\x27Courier New\x27,Courier,\x27Lucida Sans Typewriter\x27,\x27Lucida Typewriter\x27,monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\">
                       <span>
                         <strong>";
             // line 257
@@ -398,7 +398,7 @@ class __TwigTemplate_2bbd0548d5462e9781dcc2649091521a405c5b3b1847f123d5fb51dce2e
       <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;border-collapse:collapse\">
         <tbody>
         <tr>
-          <td class=\"mailpoet_paragraph mailpoet_padded_side\" style=\"word-break:break-word;word-wrap:break-word;text-align:center;border-collapse:collapse;color:#7f7f7f;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;font-size:13px;line-height:20px;padding-left:20px;padding-right:20px;padding-bottom:10px\">
+          <td class=\"mailpoet_paragraph mailpoet_padded_side\" style=\"word-break:break-word;word-wrap:break-word;text-align:center;border-collapse:collapse;color:#7f7f7f;font-family:Arial,\x27Helvetica Neue\x27,Helvetica,sans-serif;font-size:13px;line-height:20px;padding-left:20px;padding-right:20px;padding-bottom:10px\">
             ";
                 // line 284
                 if ((CoreExtension::getAttribute($this->env, $this->source, $context["newsletter"], "trackedSent", [], "any", false, false, false, 284) > 0)) {

@@ -85,7 +85,7 @@ return $this;
 }
 public function string(string $value)
 {
-$this->source .= \sprintf('"%s"', addcslashes($value, "\x00\t\"\$\\"));
+$this->source .= \sprintf('"%s"', str_replace("'", '\\x27', addcslashes($value, "\x00\t\"\$\\")));
 return $this;
 }
 public function repr($value)

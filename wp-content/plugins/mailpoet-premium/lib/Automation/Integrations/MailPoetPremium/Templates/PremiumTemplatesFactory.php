@@ -17,8 +17,6 @@ use MailPoet\WooCommerce\WooCommerceBookings\Helper as WooCommerceBookingsHelper
 use MailPoet\WP\Functions as WPFunctions;
 
 class PremiumTemplatesFactory {
-  private const MIN_WOOCOMMERCE_VERSION_FOR_GENERATED_COUPON_BLOCK = '10.8.0';
-
   /** @var AutomationBuilder */
   private $builder;
 
@@ -99,7 +97,7 @@ class PremiumTemplatesFactory {
   }
 
   private function createBirthdayEmailTemplate(): AutomationTemplate {
-    $usesDiscountPattern = $this->woocommerce->isWooCommerceActive() && $this->supportsGeneratedCouponBlock();
+    $usesDiscountPattern = $this->woocommerce->isWooCommerceActive();
 
     return new AutomationTemplate(
       'birthday-email',
@@ -345,22 +343,15 @@ class PremiumTemplatesFactory {
   }
 
   private function createWinBackInactiveCustomersTemplate(): AutomationTemplate {
-    $supportsGeneratedCouponBlock = $this->supportsGeneratedCouponBlock();
-
     return new AutomationTemplate(
       'win-back-inactive-customers',
       'purchase',
       __('Win back inactive customers', 'mailpoet-premium'),
-      $supportsGeneratedCouponBlock
-        ? __(
-          'Re-engage customers who haven’t purchased in 30 days. Sends a reminder, waits 14 days, then offers a discount if they still haven’t returned.',
-          'mailpoet-premium'
-        )
-        : __(
-          'Re-engage customers who haven’t purchased in 30 days. Sends a reminder, waits 14 days, then follows up with recommended products if they still haven’t returned.',
-          'mailpoet-premium'
-        ),
-      function (bool $preview = false) use ($supportsGeneratedCouponBlock): Automation {
+      __(
+        'Re-engage customers who haven’t purchased in 30 days. Sends a reminder, waits 14 days, then offers a discount if they still haven’t returned.',
+        'mailpoet-premium'
+      ),
+      function (bool $preview = false): Automation {
         $reminderEmailArgs = $this->createTemplateEmailArgs(
           'win-back-customer-reminder',
           __('We miss you', 'mailpoet-premium'),
@@ -368,16 +359,10 @@ class PremiumTemplatesFactory {
           __('Fresh picks are waiting for you', 'mailpoet-premium')
         );
         $followUpEmailArgs = $this->createTemplateEmailArgs(
-          $supportsGeneratedCouponBlock ? 'win-back-customer' : 'win-back-customer-final-nudge',
-          $supportsGeneratedCouponBlock
-            ? __('Here’s 15% off to welcome you back', 'mailpoet-premium')
-            : __('Still thinking it over?', 'mailpoet-premium'),
-          $supportsGeneratedCouponBlock
-            ? __('Here’s 15% off to welcome you back', 'mailpoet-premium')
-            : __('Still thinking it over?', 'mailpoet-premium'),
-          $supportsGeneratedCouponBlock
-            ? __('Your limited-time welcome-back offer', 'mailpoet-premium')
-            : __('Fresh picks are waiting', 'mailpoet-premium')
+          'win-back-customer',
+          __('Here’s 15% off to welcome you back', 'mailpoet-premium'),
+          __('Here’s 15% off to welcome you back', 'mailpoet-premium'),
+          __('Your limited-time welcome-back offer', 'mailpoet-premium')
         );
         $tagIds = $this->getTemplateTagIds($preview, ['re-engaged']);
         $automation = $this->builder->createFromSequence(
@@ -446,18 +431,11 @@ class PremiumTemplatesFactory {
           __('Your cart is waiting', 'mailpoet-premium'),
           __('Your items are still waiting', 'mailpoet-premium')
         );
-        $supportsGeneratedCouponBlock = $this->supportsGeneratedCouponBlock();
         $discountEmailArgs = $this->createTemplateEmailArgs(
-          $supportsGeneratedCouponBlock ? 'abandoned-cart-with-discount-content' : 'abandoned-cart-content',
-          $supportsGeneratedCouponBlock
-            ? __('Your cart is waiting, and so is your 10% off!', 'mailpoet-premium')
-            : __('Your cart is still waiting', 'mailpoet-premium'),
-          $supportsGeneratedCouponBlock
-            ? __('Your cart is waiting, and so is your 10% off!', 'mailpoet-premium')
-            : __('Your cart is still waiting', 'mailpoet-premium'),
-          $supportsGeneratedCouponBlock
-            ? __('A special discount awaits you', 'mailpoet-premium')
-            : __('Your items are still waiting', 'mailpoet-premium')
+          'abandoned-cart-with-discount-content',
+          __('Your cart is waiting, and so is your 10% off!', 'mailpoet-premium'),
+          __('Your cart is waiting, and so is your 10% off!', 'mailpoet-premium'),
+          __('A special discount awaits you', 'mailpoet-premium')
         );
 
         $automation = $this->builder->createFromSequence(
@@ -711,16 +689,11 @@ class PremiumTemplatesFactory {
       __('Reward positive reviewers', 'mailpoet-premium'),
       __('Thank customers who leave a 4 or 5-star review and offer a discount on their next order.', 'mailpoet-premium'),
       function (bool $preview = false): Automation {
-        $supportsGeneratedCouponBlock = $this->supportsGeneratedCouponBlock();
         $emailArgs = $this->createTemplateEmailArgs(
-          $supportsGeneratedCouponBlock ? 'reward-positive-reviewer' : 'positive-review-follow-up',
+          'reward-positive-reviewer',
           __('Thanks for your review', 'mailpoet-premium'),
-          $supportsGeneratedCouponBlock
-            ? __('Thanks for your review! Here’s a treat 🎁', 'mailpoet-premium')
-            : __('Thanks for your review!', 'mailpoet-premium'),
-          $supportsGeneratedCouponBlock
-            ? __('Enjoy a discount on your next order', 'mailpoet-premium')
-            : __('We’re thrilled you had a good experience', 'mailpoet-premium')
+          __('Thanks for your review! Here’s a treat 🎁', 'mailpoet-premium'),
+          __('Enjoy a discount on your next order', 'mailpoet-premium')
         );
         $tagIds = $this->getTemplateTagIds($preview, ['left-positive-review']);
 
@@ -1469,20 +1442,5 @@ class PremiumTemplatesFactory {
     if ($endNoBranch && $noStep instanceof Step) {
       $noStep->setNextSteps([]);
     }
-  }
-
-  private function supportsGeneratedCouponBlock(): bool {
-    $wooCommerceVersion = $this->woocommerceHelper->getWooCommerceVersion();
-    if (!$wooCommerceVersion) {
-      return false;
-    }
-
-    $numericVersionLength = strspn($wooCommerceVersion, '0123456789.');
-    $numericVersion = substr($wooCommerceVersion, 0, $numericVersionLength);
-    if ($numericVersion === '') {
-      return false;
-    }
-
-    return version_compare($numericVersion, self::MIN_WOOCOMMERCE_VERSION_FOR_GENERATED_COUPON_BLOCK, '>=');
   }
 }

@@ -6,6 +6,8 @@
  * https://github.com/select2/select2/blob/master/LICENSE.md
  */
 
+/*! @license DOMPurify 3.4.12 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.12/LICENSE */
+
 /*! @source http://purl.eligrey.com/github/Blob.js/blob/master/Blob.js */
 
 /*! VelocityJS.org (1.5.2). (C) 2014 Julian Shapiro. MIT @license: en.wikipedia.org/wiki/MIT_License */

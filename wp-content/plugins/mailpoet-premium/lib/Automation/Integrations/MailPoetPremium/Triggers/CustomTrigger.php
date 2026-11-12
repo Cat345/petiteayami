@@ -40,6 +40,9 @@ class CustomTrigger implements Trigger {
   /** @var Functions */
   private $wp;
 
+  /** @var array<string, true> */
+  private $hooksBeingHandled = [];
+
   public function __construct(
     AutomationStorage $automationStorage,
     SubscribersRepository $subscribersRepository,
@@ -151,8 +154,18 @@ class CustomTrigger implements Trigger {
     }
     $hooks = array_unique($hooks);
     foreach ($hooks as $hook) {
-      $this->wp->addAction($hook, function (...$args) use ($hook) {
-        $this->handleHookCall($hook, $args);
+      // The trigger starts only from do_action(). WordPress counts do_action()
+      // calls of a hook but not apply_filters() calls, so a grown count means
+      // the hook runs as an action. As a filter, the value passes through
+      // unchanged.
+      $actionCount = $this->wp->didAction($hook);
+      $this->wp->addFilter($hook, function (...$args) use ($hook, &$actionCount) {
+        $currentActionCount = $this->wp->didAction($hook);
+        if ($currentActionCount > $actionCount) {
+          $actionCount = $currentActionCount;
+          $this->handleHookCall($hook, $args);
+        }
+        return $args[0] ?? null;
       }, 10, 2);
     }
   }
@@ -186,6 +199,12 @@ class CustomTrigger implements Trigger {
       $customData = [];
     }
 
+    // Handling the hook runs other hooks (e.g. is_email). When one of their
+    // listeners fires this hook again, it would recurse without end.
+    if (isset($this->hooksBeingHandled[$hook])) {
+      return;
+    }
+    $this->hooksBeingHandled[$hook] = true;
     try {
       $this->handle($hook, $email, $customData);
     } catch (\Throwable $e) {
@@ -193,6 +212,8 @@ class CustomTrigger implements Trigger {
         'Custom trigger for hook "{hook}" failed: {message}',
         ['hook' => $hook, 'message' => $e->getMessage()]
       );
+    } finally {
+      unset($this->hooksBeingHandled[$hook]);
     }
   }
 }

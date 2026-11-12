@@ -65,6 +65,16 @@ class FormEntity {
     self::TEXTAREA_BLOCK_TYPE,
   ];
 
+  // Keep in sync with assets/js/src/form-editor/components/close-button-settings.tsx
+  public const CLOSE_BUTTON_ICONS = [
+    'classic',
+    'classic_white',
+    'round_black',
+    'round_white',
+    'square_black',
+    'square_white',
+  ];
+
   /**
    * @ORM\Column(type="string")
    * @var string
@@ -121,6 +131,11 @@ class FormEntity {
    */
   public function getSettings() {
     return $this->settings;
+  }
+
+  public function getCloseButtonIcon(string $default): string {
+    $icon = $this->settings['close_button'] ?? null;
+    return in_array($icon, self::CLOSE_BUTTON_ICONS, true) ? $icon : $default;
   }
 
   /**

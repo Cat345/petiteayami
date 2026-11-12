@@ -95,7 +95,7 @@ class __TwigTemplate_e9532cf0026e4c617bee1d3c81fed011d9d7ae14ad609d02eaa36481262
                     </tr>
                     <tr>
                       <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word\">
-                        <h1 style=\"margin:0 0 12px;color:#111111;font-family:'Trebuchet MS','Lucida Grande','Lucida Sans Unicode','Lucida Sans',Tahoma,sans-serif;font-size:40px;line-height:64px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\"><strong>";
+                        <h1 style=\"margin:0 0 12px;color:#111111;font-family:\x27Trebuchet MS\x27,\x27Lucida Grande\x27,\x27Lucida Sans Unicode\x27,\x27Lucida Sans\x27,Tahoma,sans-serif;font-size:40px;line-height:64px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal\"><strong>";
         // line 50
         yield $this->extensions['MailPoet\Twig\I18n']->translate("Congrats!");
         yield "<br />
@@ -113,7 +113,7 @@ class __TwigTemplate_e9532cf0026e4c617bee1d3c81fed011d9d7ae14ad609d02eaa36481262
                       <td class=\"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side\" valign=\"top\" style=\"border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word\">
                         <table style=\"border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0\" width=\"100%\" cellpadding=\"0\">
                           <tr>
-                            <td class=\"mailpoet_paragraph\" style=\"border-collapse:collapse;color:#000000;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;font-size:16px;line-height:25.6px;word-break:break-word;word-wrap:break-word;text-align:center\">
+                            <td class=\"mailpoet_paragraph\" style=\"border-collapse:collapse;color:#000000;font-family:Arial,\x27Helvetica Neue\x27,Helvetica,sans-serif;font-size:16px;line-height:25.6px;word-break:break-word;word-wrap:break-word;text-align:center\">
                               ";
         // line 63
         yield $this->extensions['MailPoet\Twig\I18n']->translate("This email was sent automatically with the MailPoet Sending Service after you activated your key in your MailPoet settings.");
@@ -172,7 +172,7 @@ class __TwigTemplate_e9532cf0026e4c617bee1d3c81fed011d9d7ae14ad609d02eaa36481262
                         <td class=\"mailpoet_spacer\" bgcolor=\"#fe5301\" height=\"20\" valign=\"top\" style=\"border-collapse:collapse\"></td>
                       </tr>
                       <tr>
-                        <td class=\"mailpoet_header_footer_padded mailpoet_footer\" style=\"border-collapse:collapse;padding:10px 20px;line-height:25.6px;text-align:right;color:#222222;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px\">
+                        <td class=\"mailpoet_header_footer_padded mailpoet_footer\" style=\"border-collapse:collapse;padding:10px 20px;line-height:25.6px;text-align:right;color:#222222;font-family:Arial, \x27Helvetica Neue\x27, Helvetica, sans-serif;font-size:16px\">
 
                         </td>
                       </tr>

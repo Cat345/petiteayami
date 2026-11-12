@@ -46,7 +46,6 @@ class WooCommerceBookingPayload implements Payload {
       return $this->previewProduct;
     }
 
-    // @phpstan-ignore-next-line - WC_Booking::get_product() not recognized by PHPStan
     return $this->booking->get_product() ?: null;
   }
 }

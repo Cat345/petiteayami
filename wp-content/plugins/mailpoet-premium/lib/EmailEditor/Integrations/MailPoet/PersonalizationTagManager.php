@@ -549,13 +549,9 @@ class PersonalizationTagManager {
       $booking->set_all_day(false);
       // Set dates for created and modified tags
       $booking->set_date_created(time() - (7 * DAY_IN_SECONDS)); // 7 days ago
-      $booking->set_date_modified(time() - DAY_IN_SECONDS); // 1 day ago
+      $booking->set_date_modified(gmdate('c', time() - DAY_IN_SECONDS)); // 1 day ago
 
-      // Set persons count if the method exists.
-      /** @phpstan-ignore-next-line function.alreadyNarrowedType -- WC Bookings stub is optimistic about minimum version that ships set_persons(). */
-      if (method_exists($booking, 'set_persons')) {
-        $booking->set_persons(2);
-      }
+      $booking->set_person_counts([1 => 2]);
 
       // Create the payload
       $payload = new WooCommerceBookingPayload($booking);

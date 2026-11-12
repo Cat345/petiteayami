@@ -80,10 +80,10 @@ class __TwigTemplate_9641d7769a94575cd44aaeff4df310da82a8fe07490b66905fc1e575dba
         // line 13
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["current_wp_user"] ?? null));
         yield ";
-      var mailpoet_current_wp_user_firstname = '";
+      var mailpoet_current_wp_user_firstname = \x27";
         // line 14
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["current_wp_user_firstname"] ?? null), "js", null, true);
-        yield "';
+        yield "\x27;
       var mailpoet_lists = ";
         // line 15
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["lists"] ?? null));
@@ -118,10 +118,10 @@ class __TwigTemplate_9641d7769a94575cd44aaeff4df310da82a8fe07490b66905fc1e575dba
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["products"] ?? null));
         yield ";
 
-      var mailpoet_account_url = '";
+      var mailpoet_account_url = \x27";
         // line 25
         yield $this->extensions['MailPoet\Twig\Functions']->addReferralId(((("https://account.mailpoet.com/?s=" . ($context["subscriber_count"] ?? null)) . "&email=") . $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["current_wp_user"] ?? null), "user_email", [], "any", false, false, false, 25), "js")));
-        yield "';
+        yield "\x27;
 
       var mailpoet_woocommerce_automatic_emails = ";
         // line 27
@@ -144,52 +144,52 @@ class __TwigTemplate_9641d7769a94575cd44aaeff4df310da82a8fe07490b66905fc1e575dba
         // line 32
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["api"] ?? null));
         yield ";
-      var mailpoet_user_locale = '";
+      var mailpoet_user_locale = \x27";
         // line 33
         yield $this->extensions['MailPoet\Twig\I18n']->getLocale();
-        yield "';
+        yield "\x27;
       var mailpoet_congratulations_success_images = [
-        '";
+        \x27";
         // line 35
         yield $this->extensions['MailPoet\Twig\Assets']->generateCdnUrl("newsletter/congratulate-1.png");
-        yield "',
-        '";
+        yield "\x27,
+        \x27";
         // line 36
         yield $this->extensions['MailPoet\Twig\Assets']->generateCdnUrl("newsletter/congratulate-2.png");
-        yield "',
-        '";
+        yield "\x27,
+        \x27";
         // line 37
         yield $this->extensions['MailPoet\Twig\Assets']->generateCdnUrl("newsletter/congratulate-3.png");
-        yield "',
-        '";
+        yield "\x27,
+        \x27";
         // line 38
         yield $this->extensions['MailPoet\Twig\Assets']->generateCdnUrl("newsletter/congratulate-4.png");
-        yield "',
+        yield "\x27,
       ];
-      var mailpoet_congratulations_error_image = '";
+      var mailpoet_congratulations_error_image = \x27";
         // line 40
         yield $this->extensions['MailPoet\Twig\Assets']->generateCdnUrl("newsletter/error.png");
-        yield "';
-      var mailpoet_congratulations_loading_image = '";
+        yield "\x27;
+      var mailpoet_congratulations_loading_image = \x27";
         // line 41
         yield $this->extensions['MailPoet\Twig\Assets']->generateCdnUrl("newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png");
-        yield "';
-      var mailpoet_emails_page = '";
+        yield "\x27;
+      var mailpoet_emails_page = \x27";
         // line 42
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["mailpoet_email_page"] ?? null), "js", null, true);
-        yield "';
-      var mailpoet_review_request_illustration_url = '";
+        yield "\x27;
+      var mailpoet_review_request_illustration_url = \x27";
         // line 43
         yield $this->extensions['MailPoet\Twig\Assets']->generateCdnUrl("review-request/review-request-illustration.20190815-1427.svg");
-        yield "';
-      var mailpoet_installed_at = '";
+        yield "\x27;
+      var mailpoet_installed_at = \x27";
         // line 44
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["settings"] ?? null), "installed_at", [], "any", false, false, false, 44), "js", null, true);
-        yield "';
-      var mailpoet_editor_javascript_url = '";
+        yield "\x27;
+      var mailpoet_editor_javascript_url = \x27";
         // line 45
         yield $this->extensions['MailPoet\Twig\Assets']->getJavascriptScriptUrl("newsletter_editor.js");
-        yield "';
+        yield "\x27;
       var mailpoet_newsletters_count = ";
         // line 46
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["newsletters_count"] ?? null), "js", null, true);
