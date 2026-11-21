@@ -253,6 +253,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Divi' ) ) {
 					return;
 				}
 
+				// Detect the checkout before swapping: detection must see the requested page (the Store Checkout),
+				// not the step swapped in below, or it treats the step as opened directly and replaces the cart.
+				if ( ! WFACP_Core()->template_loader->is_wfacp_checkout_page() ) {
+					return;
+				}
+
 				global $post, $wp_query;
 				$post = $checkout_post;
 				setup_postdata( $post );

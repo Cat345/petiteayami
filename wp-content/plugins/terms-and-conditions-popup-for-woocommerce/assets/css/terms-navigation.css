@@ -39,10 +39,43 @@
     background: #2271b1;
 }
 
+#br_popup .br_terms_scroll_progress_row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#br_popup .br_terms_scroll_progress_row > .br_terms_scroll_progress {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+}
+
+#br_popup .br_terms_scroll_percentage {
+    min-width: 4ch;
+    font-size: 0.875em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
+    text-align: end;
+    white-space: nowrap;
+}
+
 #br_popup .br_terms_navigation_panel > .br_popup_inner {
     flex: 1 1 auto;
     min-height: 0;
     height: auto;
+}
+
+#br_popup .br_terms_readable {
+    max-width: 70ch;
+    margin-inline: auto;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+#br_popup .br_terms_readable p,
+#br_popup .br_terms_readable li {
+    line-height: inherit;
 }
 
 @media print {

@@ -389,6 +389,24 @@ class BWFAN_Automation_Controller {
 		}
 
 		/**
+		 * Step row exists but its node is missing from the automation graph (steps meta).
+		 * Traversal can never advance from here, so the step would re-run on every cycle.
+		 * Mark the contact failed instead of processing the step.
+		 */
+		if ( false === $this->traverse_ins->get_current_step() ) {
+			BWFAN_Common::log_test_data( 'Step node not found in automation graph, step ID: ' . $this->step_id . ', automation ID: ' . $this->automation_id . ', contact ID: ' . $this->contact_id, 'traverse-error' );
+			$this->set_trail_item( [ 'error_msg' => __( 'Step not found in the automation', 'wp-marketing-automations' ) ], 3 );
+
+			$this->end_current_process = true;
+			$this->status              = self::$STATUS_FAILED;
+			$this->attempts            = 0;
+			$this->last_step_id        = $this->step_id;
+			$this->update_automation_contact();
+
+			return;
+		}
+
+		/**
 		 * NEW — Disabled step bypass (Disable Step feature). Runs before the type switch.
 		 * Pro-only — without Pro the disabled state is inert and the step runs normally
 		 * (e.g. a site downgraded from Pro with existing status-5 steps).

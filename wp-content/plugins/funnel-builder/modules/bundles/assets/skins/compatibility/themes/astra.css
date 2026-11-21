@@ -1,0 +1,70 @@
+/**
+ * Astra 4.x — drive the widget's colours from the theme's palette.
+ *
+ * Each `--wffn-bundles-*` colour reads Astra's equivalent token, falling back to the
+ * literal `_shared.css` ships, so a renamed Astra token degrades to today's
+ * appearance rather than to an invalid value.
+ *
+ * The selector is (0,2,1), above the `.wffn-bundles-design-<hash>` block
+ * `Product_Display::emit_design_vars()` writes at (0,1,0), so the theme palette
+ * intentionally wins over a Design-tab colour the merchant left on its default.
+ * A colour they actually changed is re-emitted at (0,2,2) by
+ * `Css_Vars::for_merchant_colors()` and beats this file.
+ *
+ * Astra slots, verified on a live install:
+ *   --ast-global-color-0  #046bd2  accent      (a{color}, input:checked, ::selection)
+ *   --ast-global-color-2  #1e293b  headings    (matches the rendered h1)
+ *   --ast-global-color-3  #334155  body text   (matches the rendered body)
+ *   --ast-global-color-4  #FFFFFF  page bg     (matches the rendered body bg)
+ *   --ast-global-color-5  #F0F5FA  secondary bg
+ *   --ast-border-color    #D1D5DB  borders     (= --ast-global-color-7)
+ *
+ * Deliberately not mapped
+ *   Status colours (`--wffn-bundles-success`, `--wffn-bundles-warning*`, `--wffn-bundles-error*`) — Astra
+ *   has no semantic equivalent, and these have to stay readable as status.
+ *   Geometry and type scale — the widget's layout is theme-independent.
+ *   `--wffn-bundles-icon-gift` — an SVG data URI with a baked-in fill, not a colour.
+ *
+ * No `!important`: (0,2,0) out-specifies every layer this needs to beat, and it
+ * would additionally override inline styles, which is not wanted.
+ */
+body.wffn-bundles-theme-astra .wffn-bundles,
+body.wffn-bundles-theme-astra .wffn-bundles-portal,
+body.wffn-bundles-theme-astra .wffn-bundles-variant-modal {
+	/* Surfaces */
+	--wffn-bundles-bg: var(--ast-global-color-4, #fff);
+	--wffn-bundles-bg-active: var(--ast-global-color-5, #fafafa);
+	--wffn-bundles-step-bg: var(--ast-global-color-5, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--ast-global-color-5, #fafafa);
+
+	/* Borders */
+	--wffn-bundles-border: var(--ast-border-color, #dedfea);
+	--wffn-bundles-border-active: var(--ast-global-color-0, #353030);
+	--wffn-bundles-connector: var(--ast-border-color, #353030);
+
+	/* Selection control */
+	--wffn-bundles-radio: var(--ast-border-color, #c5c5cd);
+	--wffn-bundles-radio-active: var(--ast-global-color-0, #353030);
+
+	/* Text */
+	--wffn-bundles-heading-color: var(--ast-global-color-2, #353030);
+	--wffn-bundles-title-color: var(--ast-global-color-2, #353030);
+	--wffn-bundles-desc-color: var(--ast-global-color-3, #82828e);
+
+	/* Pricing */
+	--wffn-bundles-regular-price-color: var(--ast-global-color-3, #82828e);
+	--wffn-bundles-sale-price-color: var(--ast-global-color-2, #353030);
+	--wffn-bundles-price-desc-color: var(--ast-global-color-3, #82828e);
+
+	/* Badge and progress */
+	--wffn-bundles-badge-bg: var(--ast-global-color-0, #353030);
+	--wffn-bundles-badge-fg: var(--ast-global-color-4, #fff);
+	--wffn-bundles-progress-fill: var(--ast-global-color-0, #353030);
+
+	/* Form controls */
+	--wffn-bundles-control-fg: var(--ast-global-color-3, #353030);
+	--wffn-bundles-control-bg: var(--ast-comment-inputs-background, #fff);
+	--wffn-bundles-control-border: var(--ast-border-color, #dedfea);
+	--wffn-bundles-control-accent: var(--ast-global-color-0, #353030);
+	--wffn-bundles-control-muted: var(--ast-global-color-3, #82828e);
+}

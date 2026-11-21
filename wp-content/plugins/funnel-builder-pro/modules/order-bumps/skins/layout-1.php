@@ -105,10 +105,13 @@ if ( '' !== $cart_item_key ) {
 	$price_data['quantity'] = $qty;
 }
 $printed_price = '';
-if ( apply_filters( 'wfob_show_product_price', true, $wc_product, $cart_item_key, $price_data ) ) {
+/** This filter is documented in includes/skins-classes/bump.php */
+if ( apply_filters( 'wfob_show_product_price', true, $wc_product, $cart_item_key, $price_data, $product_key, $this->get_id() ) ) {
 	$printed_price = WFOB_Common::decode_merge_tags( '{{price}}', $price_data, $wc_product, $data, $cart_item, $cart_item_key, $product_key, $design_data );
 } else {
-	$printed_price = apply_filters( 'wfob_show_product_price_placeholder', $printed_price, $wc_product, $cart_item_key, $price_data );
+	/** This filter is documented in includes/skins-classes/bump.php */
+	$filtered      = apply_filters( 'wfob_show_product_price_placeholder', $printed_price, $wc_product, $cart_item_key, $price_data, $product_key, $this->get_id() );
+	$printed_price = is_scalar( $filtered ) ? (string) $filtered : '';
 }
 $output_response    = isset( $output_response['response'][ $product_key ] ) ? $output_response['response'][ $product_key ] : array();
 $wfob_error_message = '';
@@ -140,7 +143,8 @@ if ( isset( $design_data['layout'] ) ) {
 	$selected_layout = $design_data['layout'];
 }
 $checkbox_class       = 'wfob_bump_product';
-$allow_choose_options = apply_filters( 'wfob_allow_choose_options', isset( $data['variable'] ), $wc_product, $cart_item_key );
+/** This filter is documented in includes/skins-classes/bump.php */
+$allow_choose_options = apply_filters( 'wfob_allow_choose_options', isset( $data['variable'] ), $wc_product, $cart_item_key, $product_key, $this->get_id() );
 if ( ( true == $allow_choose_options || ( isset( $data['variable'] ) && $cart_variation_id == 0 ) ) && empty( $cart_item_key ) ) {
 	$checkbox_class = 'wfob_choose_variation';
 }
@@ -242,6 +246,10 @@ if ( ( true == $allow_choose_options || ( isset( $data['variable'] ) && $cart_va
 						</div>
 					</div>
 				</div>
+				<?php
+				/** This action is documented in skins/layout-default.php */
+				do_action( 'wfob_after_bump_content', $this->get_id(), $wc_product, $product_key, $cart_item_key );
+				?>
 			</div>
 		</div>
 		<?php do_action( 'wfob_after_wrapper', $this->get_id(), $wc_product, $product_key, $cart_item_key ); ?>

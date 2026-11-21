@@ -531,7 +531,7 @@ class ImportSettings
                                     if ($new_query->have_posts()) {
                                         $parent_filter_info = $new_query->posts[0];
                                         $post_new = get_post($parent_filter['has_parent_filter_post_id']);
-                                        $post_new->post_content = maybe_unserialize($post_new->post_content);
+                                        $post_new->post_content = flrt_safe_unserialize($post_new->post_content);
                                         $post_new->post_content['parent_filter'] = (string) $parent_filter_info->ID;
                                         $post_new->post_content = maybe_serialize($post_new->post_content);
                                         wp_update_post(wp_slash($post_new));

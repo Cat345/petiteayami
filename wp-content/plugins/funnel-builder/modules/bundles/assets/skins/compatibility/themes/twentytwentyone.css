@@ -1,0 +1,68 @@
+/**
+ * Twenty Twenty-One — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install:
+ *   --global--color-primary     #28303d  headings, body text and borders
+ *   --global--color-secondary   #39414d  muted text
+ *   --global--color-background  #d1e4dd  page background (pale green)
+ *   --global--color-border      #28303d  = primary
+ *   --global--color-light-gray  #f0f0f0  light surface
+ *   --global--color-white       #fff
+ *
+ * Deliberately not mapped
+ * `--wffn-bundles-border` / `--wffn-bundles-radio`. This theme resolves its border colour to the
+ * same value as its text (#28303d), so taking it would paint every resting
+ * offer card the same near-black as the selected one and leave the ring width
+ * as the only signal of what the shopper picked. The resting border keeps the
+ * plugin's light literal so the selected state still reads.
+ *
+ * `--wffn-bundles-bg` likewise: the page is tinted (#d1e4dd), and a card painted the
+ * colour of the page it sits on stops reading as a card.
+ */
+body.wffn-bundles-theme-twentytwentyone .wffn-bundles,
+body.wffn-bundles-theme-twentytwentyone .wffn-bundles-portal,
+body.wffn-bundles-theme-twentytwentyone .wffn-bundles-variant-modal {
+	--wffn-bundles-bg-active: var(--global--color-light-gray, #fafafa);
+	--wffn-bundles-step-bg: var(--global--color-light-gray, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--global--color-light-gray, #fafafa);
+
+	--wffn-bundles-border-active: var(--global--color-primary, #353030);
+	--wffn-bundles-radio-active: var(--global--color-primary, #353030);
+	--wffn-bundles-badge-bg: var(--global--color-primary, #353030);
+	--wffn-bundles-progress-fill: var(--global--color-primary, #353030);
+	--wffn-bundles-control-accent: var(--global--color-primary, #353030);
+	--wffn-bundles-badge-fg: var(--global--color-white, #fff);
+	--wffn-bundles-connector: var(--global--color-secondary, #353030);
+
+	--wffn-bundles-heading-color: var(--global--color-primary, #353030);
+	--wffn-bundles-title-color: var(--global--color-primary, #353030);
+	--wffn-bundles-sale-price-color: var(--global--color-primary, #353030);
+	--wffn-bundles-desc-color: var(--global--color-secondary, #82828e);
+	--wffn-bundles-regular-price-color: var(--global--color-secondary, #82828e);
+	--wffn-bundles-price-desc-color: var(--global--color-secondary, #82828e);
+	--wffn-bundles-control-fg: var(--global--color-primary, #353030);
+	--wffn-bundles-control-muted: var(--global--color-secondary, #82828e);
+}
+
+/* The theme fills every `button:not(:hover):not(:active)` at (0,3,1), above the skins' buttons;
+   restored under the same pair so the skins' hover and focus rules still apply. */
+body.wffn-bundles-theme-twentytwentyone :is(.wffn-bundles, .wffn-bundles-portal) button:is(.wffn-bundles-gift-pick, .wffn-bundles-gift-choose, .wffn-bundles-mm-add):not(:hover):not(:active) {
+	background-color: var(--wffn-bundles-control-bg);
+	color: var(--wffn-bundles-control-fg);
+}
+body.wffn-bundles-theme-twentytwentyone .wffn-bundles button.wffn-bundles-gift-pick:not(:hover):not(:active) {
+	color: var(--wffn-bundles-control-muted);
+}
+body.wffn-bundles-theme-twentytwentyone .wffn-bundles-portal button.wffn-bundles-gift-modal-x:not(:hover):not(:active) {
+	background-color: transparent;
+}
+body.wffn-bundles-theme-twentytwentyone .wffn-bundles-portal button.wffn-bundles-gift-choice-btn:not(:hover):not(:active) {
+	background-color: var(--wffn-bundles-control-accent);
+	color: #fff;
+}
+/* The mode tiles' label takes the button's font size, and the theme's is 1.25rem. */
+body.wffn-bundles-theme-twentytwentyone .wffn-bundles button.wffn-bundles-mm-mode-btn {
+	font-size: var(--global--font-size-xs, 1rem);
+}

@@ -88,7 +88,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Qty_Selector_Widget' ) ) {
 				$product_options = array();
 			}
 			foreach ( $products as $key => $product ) {
-				$product_options[ $key ] = $product->name;
+				$product_options[ $key ] = \WFOCU_Common::get_offer_product_label( $product );
 			}
 
 			$offer_settings       = get_post_meta( $offer_id, '_wfocu_setting', true );

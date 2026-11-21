@@ -1,0 +1,40 @@
+/**
+ * Twenty Twenty-Two — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install — the theme's five theme.json slots:
+ *   --wp--preset--color--foreground  #000000  headings + body text
+ *   --wp--preset--color--background  #ffffff  page background
+ *   --wp--preset--color--primary     #1a4548  accent (dark teal)
+ *   --wp--preset--color--secondary   #ffe2c7  peach tint, not a text colour
+ *   --wp--preset--color--tertiary    #F6F6F6  light surface
+ *
+ * Deliberately not mapped
+ * The muted text tokens (`--wffn-bundles-desc-color` and the two secondary price
+ * colours) and `--wffn-bundles-border`. This palette has no muted grey and no border
+ * slot — `secondary` is a peach background tint, and using it for small print
+ * would render the description nearly invisible on white. Those keep the
+ * plugin's literals.
+ */
+body.wffn-bundles-theme-twentytwentytwo .wffn-bundles,
+body.wffn-bundles-theme-twentytwentytwo .wffn-bundles-portal,
+body.wffn-bundles-theme-twentytwentytwo .wffn-bundles-variant-modal {
+	--wffn-bundles-bg: var(--wp--preset--color--background, #fff);
+	--wffn-bundles-bg-active: var(--wp--preset--color--tertiary, #fafafa);
+	--wffn-bundles-step-bg: var(--wp--preset--color--tertiary, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--wp--preset--color--tertiary, #fafafa);
+
+	--wffn-bundles-border-active: var(--wp--preset--color--primary, #353030);
+	--wffn-bundles-radio-active: var(--wp--preset--color--primary, #353030);
+	--wffn-bundles-badge-bg: var(--wp--preset--color--primary, #353030);
+	--wffn-bundles-progress-fill: var(--wp--preset--color--primary, #353030);
+	--wffn-bundles-control-accent: var(--wp--preset--color--primary, #353030);
+	--wffn-bundles-badge-fg: var(--wp--preset--color--background, #fff);
+
+	--wffn-bundles-heading-color: var(--wp--preset--color--foreground, #353030);
+	--wffn-bundles-title-color: var(--wp--preset--color--foreground, #353030);
+	--wffn-bundles-sale-price-color: var(--wp--preset--color--foreground, #353030);
+	--wffn-bundles-control-fg: var(--wp--preset--color--foreground, #353030);
+	--wffn-bundles-control-bg: var(--wp--preset--color--background, #fff);
+}

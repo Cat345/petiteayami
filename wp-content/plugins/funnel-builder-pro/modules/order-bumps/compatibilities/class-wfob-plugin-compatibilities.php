@@ -14,6 +14,10 @@ if ( ! class_exists( 'WFOB_Plugin_Compatibilities' ) ) {
 		}
 
 		public static function frontend_compatibility() {
+			// Bundles' glue is large: its loader is read once a bundle is saved and Bundles is switched on, and reads the glue only on a request that can use it.
+			$bundles    = 'WFFN\Bundles\Plugin';
+			$bundles_on = defined( 'WFFN_BUNDLES_VERSION' ) && ( ! method_exists( $bundles, 'is_in_use' ) || $bundles::is_in_use() ) && ( ! method_exists( $bundles, 'is_enabled' ) || $bundles::is_enabled() );
+
 			$files = array(
 				'class-aero.php'                           => class_exists( 'WFACP_Core' ),
 				'class-all-product-subscription.php'       => class_exists( 'WCS_ATT_Cart' ),
@@ -44,6 +48,7 @@ if ( ! class_exists( 'WFOB_Plugin_Compatibilities' ) ) {
 				'class-wfob-compatibility-wpc-variations-radio-buttons.php' => class_exists( 'WPClever_Woovr' ),
 				'class-wfob-compatibility-with-aelia-cs.php' => class_exists( 'Aelia\WC\CurrencySwitcher\WC_Aelia_CurrencySwitcher' ),
 				'class-wfob-compatibility-wp-clever-smart-bundle.php' => function_exists( 'woosb_init' ),
+				'class-wfob-funnelkit-bundles-loader.php'  => $bundles_on,
 				'class-wfob-compatibility-woocommerce-product-bundles.php' => function_exists( 'WC_PB' ),
 				'class-wfob-plugin-improved-variable-product-attributes.php' => class_exists( 'WC_Improved_Variable_Product_Attributes_Init' ),
 				'class-wfob-quick-view-variable-discounting.php' => class_exists( 'WFOB_Core' ),

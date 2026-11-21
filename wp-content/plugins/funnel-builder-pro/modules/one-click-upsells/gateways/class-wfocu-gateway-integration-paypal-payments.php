@@ -632,19 +632,31 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 				$resp_body = json_decode( $retrived_body );
 
 				if ( isset( $resp_body->status ) && 'COMPLETED' === $resp_body->status ) {
-					if ( isset( $resp_body->payment_source->paypal->attributes->vault->id ) && isset( $resp_body->payment_source->paypal->attributes->vault->status ) && 'CREATED' === $resp_body->payment_source->paypal->attributes->vault->status ) {
+					if ( isset( $resp_body->payment_source->paypal->attributes->vault->id ) && isset( $resp_body->payment_source->paypal->attributes->vault->status ) && in_array( $resp_body->payment_source->paypal->attributes->vault->status, array( 'CREATED', 'VAULTED' ), true ) ) {
 						/*
 						 * Successfully created vault token
 						 * This token can be used in subsequent transactions to charge the buyer's PayPal account, than requiring them to identify and log in for every purchase.
 						 */
-						$txn_id = $resp_body->payment_source->paypal->attributes->vault->id;
+						$txn_id = $resp_body->purchase_units[0]->payments->captures[0]->id;
 
-						$get_order->update_meta_data( 'wfocu_ppcp_renewal_payment_token', $txn_id );
+						$get_order->update_meta_data( 'wfocu_ppcp_renewal_payment_token', $resp_body->payment_source->paypal->attributes->vault->id );
 						$get_order->save_meta_data();
 						WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': vault token created' );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 					} else {
 						$txn_id = $resp_body->purchase_units[0]->payments->captures[0]->id;
+
+						/**
+						 * Vault was requested but PayPal returned no token yet (status APPROVED), reuse the token vaulted at checkout for renewals
+						 */
+						if ( isset( $resp_body->payment_source->paypal->attributes->vault ) && empty( $get_order->get_meta( 'wfocu_ppcp_renewal_payment_token' ) ) ) {
+							$checkout_vault_id = $this->get_checkout_vault_id( $get_order, $token, $environment );
+							if ( ! empty( $checkout_vault_id ) ) {
+								$get_order->update_meta_data( 'wfocu_ppcp_renewal_payment_token', $checkout_vault_id );
+								$get_order->save_meta_data();
+								WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': vault token taken from checkout PayPal order' );
+							}
+						}
 					}
 
 					// Extract and store PayPal fees from the capture response.
@@ -714,6 +726,37 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 				$get_order->update_meta_data( '_ppcp_paypal_intent', 'CAPTURE' );
 				$get_order->save_meta_data();
 			}
+		}
+
+		/**
+		 * Get the PayPal vault token created during checkout for the parent order.
+		 *
+		 * @param WC_Order $order The parent order.
+		 * @param string   $token Bearer token.
+		 * @param string   $environment Payment mode.
+		 *
+		 * @return string
+		 */
+		public function get_checkout_vault_id( $order, $token, $environment ) {
+			$checkout_paypal_order_id = $order->get_meta( '_ppcp_paypal_order_id' );
+			if ( empty( $checkout_paypal_order_id ) ) {
+				return '';
+			}
+
+			$response = wp_remote_get( $this->get_api_base( $environment ) . 'v2/checkout/orders/' . $checkout_paypal_order_id, array(
+				'timeout' => 30,
+				'headers' => array(
+					'Authorization' => 'Bearer ' . $token,
+					'Content-Type'  => 'application/json',
+				),
+			) );
+			if ( is_wp_error( $response ) ) {
+				return '';
+			}
+
+			$body = json_decode( wp_remote_retrieve_body( $response ) );
+
+			return isset( $body->payment_source->paypal->attributes->vault->id ) ? $body->payment_source->paypal->attributes->vault->id : '';
 		}
 
 		/**

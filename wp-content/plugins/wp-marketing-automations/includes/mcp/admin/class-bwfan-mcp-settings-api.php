@@ -708,12 +708,60 @@ class BWFAN_MCP_Settings_API {
 	 */
 	private static function timed_probe( $url, $method, $status, $body = null, $headers = array() ) {
 		$start    = microtime( true );
-		$response = self::probe( $url, $method, self::agent(), $status, $body, $headers, self::GATEWAY_WAIT * 2 );
+		$deadline = self::GATEWAY_WAIT * 2;
+		$query    = self::query_form( $url );
+		$response = self::probe( null !== $query ? $query : $url, $method, self::agent(), $status, $body, $headers, $deadline );
+
+		// As the gateway asks (its D47): the published path only when the first answer did not come from
+		// WordPress - an HTML 200 (a page cache ignoring the query string) or an HTML 404 (a server rule).
+		if ( null !== $query && self::not_from_wordpress( $response ) ) {
+			$left     = max( 1, $deadline - ( microtime( true ) - $start ) );
+			$response = self::probe( $url, $method, self::agent(), $status, $body, $headers, $left );
+		}
 
 		return array(
 			'response' => $response,
 			'seconds'  => microtime( true ) - $start,
 		);
+	}
+
+	/**
+	 * The same REST route at its ?rest_route= address, which a server rule on the path (such as
+	 * nginx refusing /.well-known/) never sees; null for a URL outside the REST root or when the
+	 * site already uses that form.
+	 *
+	 * @param string $url A rest_url() address.
+	 *
+	 * @return string|null
+	 */
+	private static function query_form( $url ) {
+		$root = rest_url( '/' );
+
+		if ( false !== strpos( $root, 'rest_route=' ) || 0 !== strpos( $url, $root ) ) {
+			return null;
+		}
+
+		$rest  = explode( '?', substr( $url, strlen( $root ) ), 2 );
+		$route = '/' . ltrim( $rest[0], '/' );
+
+		return home_url( '/' ) . '?rest_route=' . $route . ( isset( $rest[1] ) && '' !== $rest[1] ? '&' . $rest[1] : '' );
+	}
+
+	/**
+	 * An answer WordPress's REST server cannot have given: an HTML 200 or 404.
+	 *
+	 * @param array|WP_Error $response HTTP response.
+	 *
+	 * @return bool
+	 */
+	private static function not_from_wordpress( $response ) {
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $response );
+
+		return in_array( $code, array( 200, 404 ), true ) && false !== stripos( (string) wp_remote_retrieve_header( $response, 'content-type' ), 'text/html' );
 	}
 
 	/**

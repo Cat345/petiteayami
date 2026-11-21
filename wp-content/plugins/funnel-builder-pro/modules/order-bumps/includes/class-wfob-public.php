@@ -91,6 +91,7 @@ class WFOB_Public {
 
 		add_action( 'wfob_before_add_to_cart', array( $this, 'wfob_before_add_to_cart' ) );
 		add_action( 'wfob_after_add_to_cart', array( $this, 'wfob_after_add_to_cart' ) );
+		add_action( 'wfob_add_to_cart_refused', array( $this, 'wfob_after_add_to_cart' ) );
 
 		if ( is_checkout() ) {
 			add_action( 'wfacp_after_checkout_page_found', array( $this, 'wfacp_hooks' ) );
@@ -1066,6 +1067,11 @@ class WFOB_Public {
 		return $price;
 	}
 
+	/**
+	 * Run the bump rules again once a bump is added or removed; a refused add leaves the cart as it was.
+	 *
+	 * @return void
+	 */
 	public function re_run_rules_after_bump_removed() {
 		$this->setup_bump_runs = false;
 		$this->setup_order_bumps( array(), true );
@@ -1112,14 +1118,24 @@ class WFOB_Public {
 			if ( ! class_exists( 'WFACP_Common' ) ) {
 				return;
 			}
-			$cart_item = $instance->removed_cart_contents[ $cart_item_key ];
+			$cart_item = $instance->removed_cart_contents[ $cart_item_key ] ?? array();
 			if ( isset( $cart_item['_wfob_product_key'] ) ) {
-				$key   = $cart_item['_wfob_product_key'];
-				$bumps = WC()->session->get( '_wfob_selected_bump', array() );
-				if ( isset( $bumps[ $key ] ) ) {
-					unset( $bumps );
+				$key     = $cart_item['_wfob_product_key'];
+				$bumps   = (array) WC()->session->get( '_wfob_selected_bump', array() );
+				$changed = false;
+				// Entries are kept per checkout; drop only the one stored for this cart line.
+				foreach ( $bumps as $checkout_id => $items ) {
+					if ( isset( $items[ $key ][0] ) && $items[ $key ][0] === $cart_item_key ) {
+						unset( $bumps[ $checkout_id ][ $key ] );
+						if ( empty( $bumps[ $checkout_id ] ) ) {
+							unset( $bumps[ $checkout_id ] );
+						}
+						$changed = true;
+					}
 				}
-				WC()->session->set( '_wfob_selected_bump', $bumps );
+				if ( $changed ) {
+					WC()->session->set( '_wfob_selected_bump', $bumps );
+				}
 			}
 		} catch ( Exception | Error $e ) {
 		}
@@ -1143,7 +1159,21 @@ class WFOB_Public {
 			}
 			$items = $bumps[ $wfacp_id ];
 			foreach ( $items as $data ) {
-				$item_data      = $data[1];
+				$item_data = $data[1];
+				/**
+				 * Filters whether a bump line stored for this checkout is re-added after a page switch.
+				 *
+				 * The re-add carries only the bump's own keys; a line built from more than those can opt out.
+				 *
+				 * @since 1.28.0
+				 *
+				 * @param bool  $re_add    Whether to re-add the line.
+				 * @param array $item_data The line's stored cart item data.
+				 * @param int   $wfacp_id  Checkout id.
+				 */
+				if ( ! apply_filters( 'wfob_re_add_selected_bump', true, $item_data, $wfacp_id ) ) {
+					continue;
+				}
 				$bump_item_data = array(
 					'_wfob_product'     => true,
 					'_wfob_options'     => $item_data['_wfob_options'],

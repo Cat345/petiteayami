@@ -60,6 +60,8 @@ class BeRocket_terms_cond_popup extends BeRocket_Framework {
             'agree_button'      => '',
             'popup_width'       => '',
             'popup_height'      => '',
+            'document_view'     => '',
+            'reading_progress_style' => '',
             'timer'             => '',
             'agree_checkbox_remove' => '',
             'agree_class'       => '',
@@ -216,6 +218,26 @@ class BeRocket_terms_cond_popup extends BeRocket_Framework {
                     "name"      => "popup_height",
                     "value"     => '1',
                 ),
+                'document_view' => array(
+                    'label'   => __('Document View', 'terms-and-conditions-popup-for-woocommerce'),
+                    'type'    => 'selectbox',
+                    'name'    => 'document_view',
+                    'value'   => '',
+                    'options' => array(
+                        array('value' => '', 'text' => esc_html__('Default', 'terms-and-conditions-popup-for-woocommerce')),
+                        array('value' => 'readable', 'text' => esc_html__('Readable', 'terms-and-conditions-popup-for-woocommerce')),
+                    ),
+                ),
+                'reading_progress_style' => array(
+                    'label'   => __('Reading Progress Style', 'terms-and-conditions-popup-for-woocommerce'),
+                    'type'    => 'selectbox',
+                    'name'    => 'reading_progress_style',
+                    'value'   => '',
+                    'options' => array(
+                        array('value' => '', 'text' => esc_html__('Thin Bar', 'terms-and-conditions-popup-for-woocommerce')),
+                        array('value' => 'percentage', 'text' => esc_html__('Bar with Percentage', 'terms-and-conditions-popup-for-woocommerce')),
+                    ),
+                ),
                 'timer' => array(
                     "label"     => __('Timer', 'terms-and-conditions-popup-for-woocommerce'),
                     "type"      => "number",
@@ -352,7 +374,10 @@ class BeRocket_terms_cond_popup extends BeRocket_Framework {
                     $temp_popup_options = array_merge($popup_options, $popup_page['popup_options']);
                     $content = $popup_page['content'];
                     if( $popup_id === 'term_cond_page' ) {
-                        $content = $this->terms_navigation($popup_page['page']) . $content;
+                        if( ($options['document_view'] ?? '') === 'readable' ) {
+                            $content = '<div class="br_terms_readable">' . $content . '</div>';
+                        }
+                        $content = $this->terms_navigation($popup_page['page'], $options['reading_progress_style'] ?? '') . $content;
                     }
                     $popup_id_generated = BeRocket_popup_display::add_popup($temp_popup_options, $content, $popup_page['popup_open']);
                     if( in_array($popup_id, array('term_cond_page', 'policy_page'), true) && ! empty($popup_page['page']->ID) ) {
@@ -376,7 +401,7 @@ class BeRocket_terms_cond_popup extends BeRocket_Framework {
             ));
         }
     }
-    public function terms_navigation($page) {
+    public function terms_navigation($page, $progress_style = '') {
         $html = '<div class="br_terms_navigation">';
         // A permalink alone does not guarantee that a visitor can open the page.
         if( $page instanceof WP_Post && 'publish' === $page->post_status && is_post_type_viewable($page->post_type) && empty($page->post_password) ) {
@@ -385,8 +410,11 @@ class BeRocket_terms_cond_popup extends BeRocket_Framework {
                 $html .= '<a class="br_terms_full_page" href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr__('Open full terms page (opens in a new tab)', 'terms-and-conditions-popup-for-woocommerce') . '">' . esc_html__('Open full terms page', 'terms-and-conditions-popup-for-woocommerce') . '</a>';
             }
         }
-        $html .= '<div class="br_terms_scroll_progress" role="progressbar" aria-label="' . esc_attr__('Terms scroll progress', 'terms-and-conditions-popup-for-woocommerce') . '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="br_terms_scroll_progress_fill"></span></div></div>';
-        return $html;
+        $progress = '<div class="br_terms_scroll_progress" role="progressbar" aria-label="' . esc_attr__('Terms scroll progress', 'terms-and-conditions-popup-for-woocommerce') . '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="br_terms_scroll_progress_fill"></span></div>';
+        if( $progress_style === 'percentage' ) {
+            $progress = '<div class="br_terms_scroll_progress_row">' . $progress . '<span class="br_terms_scroll_percentage" aria-hidden="true">0%</span></div>';
+        }
+        return $html . $progress . '</div>';
     }
     public function get_terms_content_array($popup_pages) {
         $page_id = wc_get_page_id( "terms" );

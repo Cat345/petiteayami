@@ -121,7 +121,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 		 */
 		public static function need_license_message( $plugin_data, $r ) {
 			if ( empty( $r->package ) ) {
-				echo wp_kses_post( '<div class="woofunnels-updater-plugin-upgrade-notice">' . __( 'To enable this update please activate your FunnelKit license by visiting the Dashboard Page.', 'funnel-builder' ) . '</div>' );
+				echo wp_kses_post( '<div class="woofunnels-updater-plugin-upgrade-notice">' . __( 'To enable this update please activate your FunnelKit license by visiting the Dashboard Page.', 'funnelkit-woofunnels-textdomain-placeholder' ) . '</div>' );
 			}
 		}
 

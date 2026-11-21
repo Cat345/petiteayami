@@ -201,6 +201,10 @@ final class FKMCP_Connector_Bearer {
 
 		$response->header( 'WWW-Authenticate', self::challenge_header( self::$presented ) );
 
+		if ( class_exists( 'FKMCP_Connector_Mcp' ) && '' !== FKMCP_Connector_Mcp::version() ) {
+			$response->header( 'X-FKMCP-Version', FKMCP_Connector_Mcp::version() );
+		}
+
 		return $response;
 	}
 
@@ -216,16 +220,24 @@ final class FKMCP_Connector_Bearer {
 
 	/** The MCP route's own 401 when no user was signed in. */
 	public static function unauthorized() {
+		$body = array(
+			'error'             => self::$presented ? 'invalid_token' : 'unauthorized',
+			'error_description' => self::$presented ? __( 'The access token is invalid or has expired.', 'wp-marketing-automations' ) : __( 'A bearer token is required.', 'wp-marketing-automations' ),
+		);
+
+		// Nobody is signed in here: the module version only, never the plugin versions or the license.
+		$meta = class_exists( 'FKMCP_Connector_Mcp' ) ? FKMCP_Connector_Mcp::public_meta() : array();
+		if ( array() !== $meta ) {
+			$body['_meta'] = array( 'fkai_store' => $meta );
+		}
+
 		return array(
 			'status'  => 401,
 			'headers' => array(
 				'WWW-Authenticate' => self::challenge_header( self::$presented ),
 				'Cache-Control'    => 'no-store',
 			),
-			'json'    => array(
-				'error'             => self::$presented ? 'invalid_token' : 'unauthorized',
-				'error_description' => self::$presented ? __( 'The access token is invalid or has expired.', 'wp-marketing-automations' ) : __( 'A bearer token is required.', 'wp-marketing-automations' ),
-			),
+			'json'    => $body,
 		);
 	}
 }

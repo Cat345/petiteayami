@@ -1079,6 +1079,12 @@
             $('.fkwcs_smart_product_button').trigger('click');
 
             let shippingAddressRequired = 'yes' === (fkwcs_data && fkwcs_data.shipping_required);
+            // fkwcs_data is rendered with the page, so on a page that loaded with an empty cart it
+            // says "no shipping". The slide cart is filled afterwards: follow its latest cart details,
+            // or the sheet asks for no address or method on a cart that ships (#1547).
+            if ('fkcart' === context && this.cart_request_data && Object.prototype.hasOwnProperty.call(this.cart_request_data, 'shipping_required')) {
+                shippingAddressRequired = 'yes' === this.cart_request_data.shipping_required;
+            }
 
             // Honor the "Disable Shipping Info in Payment Wallet" setting for the wallet actually
             // being used. Keying off the clicked wallet (event.expressPaymentType) covers both the
@@ -1110,7 +1116,7 @@
             // element, which kills a just-opened Google Pay popup and destroys the live Amazon Pay
             // session ("can't continue"). GPay (native) already only adds on the product page.
             if ('yes' === fkwcs_data.is_product && 'product' === context) {
-                this.addToCartProduct(update_element);
+                this.pendingAddToCart = this.addToCartProduct(update_element);
             }
         }
 
@@ -1423,7 +1429,7 @@
                     if (response && response.fragments) {
                         this.refreshCheckoutNonceFromFragments(response.fragments);
                     }
-                    if (typeof update_element == "function") {
+                    if (typeof update_element == "function" && response && response.fragments && response.fragments.fkwcs_cart_details) {
                         update_element(response.fragments.fkwcs_cart_details.order_data);
                     }
                     if (typeof Storage !== 'undefined' && response && response.fragments) {
@@ -1598,6 +1604,57 @@
                 }
 
                 let formData = $('form[name=checkout]').serializeArray();
+                // The wallet payload, kept under its own name because `data` becomes the merged
+                // request below, and the checkout form as it stands, so either address can be
+                // restored from its own source in one piece.
+                let walletData = data;
+                let formFields = {};
+                $.each(formData, function (i, field) {
+                    formFields[field.name] = field.value;
+                });
+
+                /**
+                 * An address is atomic: street, city, state, postcode and country describe one place
+                 * and must all come from the SAME source. Merging them field by field is what saved
+                 * "432 North County Rd., Rollinsville, Tasmania, Australia" - the wallet's street and
+                 * city under the store's default country and state, because a default is not empty
+                 * and so won the field-by-field comparison (#1526).
+                 */
+                const addressParts = ['first_name', 'last_name', 'company', 'address_1', 'address_2', 'city', 'state', 'postcode', 'country'];
+                // A street, a country and a city or postcode: the least that makes an address somewhere
+                // real, rather than a section left on the store's defaults. City or postcode, because a
+                // few WooCommerce locales hide one of the two.
+                const isCompleteAddress = (source, prefix) => !!(source[prefix + 'address_1'] && source[prefix + 'country'] && (source[prefix + 'city'] || source[prefix + 'postcode']));
+                const applyAddress = (target, source, prefix) => {
+                    addressParts.forEach(function (part) {
+                        let key = prefix + part;
+                        target[key] = (undefined === source[key] || null === source[key]) ? '' : source[key];
+                    });
+                };
+                /**
+                 * An address the customer typed is deliberate, so the form wins whenever it holds a
+                 * whole one; the wallet's stands in when the form section was left on the store's
+                 * defaults. When neither source holds a complete address the block is left as merged:
+                 * there is no address to protect, and blanking it would drop values the checkout still
+                 * needs, such as a hidden billing_country on a template that shows no billing section.
+                 *
+                 * A section the customer switched off is not typed: WooCommerce ignores it on submit,
+                 * yet it can still hold a saved profile address or values restored after a failed
+                 * attempt, so it never wins over the wallet (#1545).
+                 *
+                 * @return {boolean|null} true when the form was used, false the wallet, null neither.
+                 */
+                const settleAddress = (target, prefix, formInUse = true) => {
+                    if (formInUse && isCompleteAddress(formFields, prefix)) {
+                        applyAddress(target, formFields, prefix);
+                        return true;
+                    }
+                    if (isCompleteAddress(walletData, prefix)) {
+                        applyAddress(target, walletData, prefix);
+                        return false;
+                    }
+                    return null;
+                };
 
                 /**
                  * If regular payment method is selected, prioritize form data over express checkout data
@@ -1648,6 +1705,30 @@
                         // Otherwise the customer-entered form value wins
                     });
                     data = formDataObj;
+                }
+
+                /**
+                 * Settle each address as a whole, after the field-by-field merge above has run. The
+                 * shipping flag goes with it: WooCommerce reads the shipping fields only when
+                 * ship_to_different_address is set, and treats a posted "0" as unset, so without it
+                 * the wallet address just applied is dropped and billing is copied over it.
+                 */
+                // FunnelKit Checkout's billing-first layouts post their own "Use a different shipping
+                // address" field (checkbox "1", or radio "option_2") and leave WooCommerce's box unticked.
+                const formShippingInUse = !!formFields.ship_to_different_address || (!!formFields.shipping_same_as_billing && 'option_1' !== formFields.shipping_same_as_billing);
+                let usedFormShipping = settleAddress(data, 'shipping_', formShippingInUse);
+                settleAddress(data, 'billing_');
+                if (false === usedFormShipping && walletData.ship_to_different_address) {
+                    data.ship_to_different_address = 1;
+                }
+                /**
+                 * The rate picked in the wallet sheet belongs to the wallet's address. The form has a
+                 * radio for it only when it already lists rates for that same address, so otherwise
+                 * the stale form rate would be posted and WooCommerce would fall back to the first
+                 * valid one (#1545).
+                 */
+                if (false === usedFormShipping && event.shippingRate && event.shippingRate.id) {
+                    data['shipping_method[0]'] = event.shippingRate.id;
                 }
 
                 data.page_from = 'checkout';
@@ -1761,7 +1842,6 @@
         confirmPaymentIntent(event, hash) {
             let hashpartials = hash.match(/^#?fkwcs-confirm-(pi|si)-([^:]+):(.+):(.+):(.+):(.+)$/);
             if (!hashpartials || 5 > hashpartials.length) {
-                window.location.href = hash;
                 return false;
             }
             let type = hashpartials[1];
@@ -1925,7 +2005,9 @@
                 data.post_data = formData;
             }
 
-            $.ajax({
+            // The wallet sends the address as soon as its sheet opens, which can be before the product-page
+            // add-to-cart finishes; shipping on an empty cart has no rates and the wallet rejects the address.
+            $.when(this.pendingAddToCart).always(() => $.ajax({
                 type: 'POST',
                 data: data,
                 url: this.ajaxEndpoint('fkwcs_update_shipping_address'),
@@ -1954,7 +2036,7 @@
                     // Transport failure: reject so the wallet sheet closes instead of hanging.
                     event.reject({status: 'fail'});
                 }
-            });
+            }));
         }
 
         shippingOptionChange(event, cb = '') {
@@ -2152,6 +2234,9 @@
                                 return;
                             }
                             this.cart_request_data = json.fkwcs_cart_details;
+                            // A block or FunnelKit Cart add to cart fires neither added_to_cart nor
+                            // fkcart_fragments_refreshed, so this is where its session-bound nonce lands (#1547).
+                            this.refreshCheckoutNonceFromFragments(json);
 
                             // The checkout page re-arms exclusively from the server-authoritative
                             // updated_checkout fragments (plus the localized cart_data at load).

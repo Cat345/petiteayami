@@ -812,6 +812,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 				'infusion-soft'   => __( 'InfusionSoft', 'funnel-builder' ),
 				'mailchimp'       => __( 'Mailchimp', 'funnel-builder' ),
 				'madmimi'         => __( 'Mad Mimi', 'funnel-builder' ),
+				'zoho-campaigns'  => __( 'Zoho Campaigns', 'funnel-builder' ),
 				'raw_html'        => __( 'Raw HTML', 'funnel-builder' ),
 			);
 

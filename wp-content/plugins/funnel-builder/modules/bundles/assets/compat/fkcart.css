@@ -1,0 +1,44 @@
+/* A bundle in the drawer's quick view owns the variation pickers and the quantity, as on its product page,
+   so the drawer's native ones stay hidden. The doubled :not() lifts the rule over the drawer's own display
+   rules without !important. */
+.fkcart-drawer-content form.cart:has(.wffn-bundles-fkcart-submit):not(#wffn-bundles-fkcart-pickers):not(#wffn-bundles-fkcart-pickers) .variations,
+.fkcart-drawer-content form.cart:has(.wffn-bundles-fkcart-submit):not(#wffn-bundles-fkcart-pickers):not(#wffn-bundles-fkcart-pickers) .reset_variations,
+.fkcart-drawer-content form.cart:has(.wffn-bundles-fkcart-submit):not(#wffn-bundles-fkcart-pickers):not(#wffn-bundles-fkcart-pickers) .woocommerce-variation,
+.fkcart-drawer-content form.cart:has(.wffn-bundles-fkcart-submit):not(#wffn-bundles-fkcart-pickers):not(#wffn-bundles-fkcart-pickers) .quantity,
+.fkcart-drawer-content form.cart:has(.wffn-bundles-fkcart-submit):not(#wffn-bundles-fkcart-pickers):not(#wffn-bundles-fkcart-pickers) .fkcart-input-label,
+.fkcart-drawer-content form.cart:has(.wffn-bundles-fkcart-submit):not(#wffn-bundles-fkcart-pickers):not(#wffn-bundles-fkcart-pickers) .fkcart-form-input-wrap:has(> .fkcart-quantity-selector) {
+	display: none;
+}
+
+/* For a variable product the drawer greys out and blocks "Add to cart" until a native variation is picked.
+   A bundle's widget picks the variation itself, so its quick view keeps the button live. */
+#fkcart-modal .fkcart-drawer-content:has(.wffn-bundles-fkcart-submit) .fkcart-add-variant-product.is-disabled {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* The drawer sets its own type on every price in the quick view; a bundle's prices keep the widget's. */
+#fkcart-modal .fkcart-quick-view-drawer .wffn-bundles .woocommerce-Price-amount {
+	font: inherit;
+	color: inherit;
+}
+
+/* The quick view prints the product name straight above the widget, which sat flush against the first option.
+   A bought-together widget already carries its own top margin. */
+#fkcart-modal .fkcart-drawer-content .fkcart-product-form-field > .wffn-bundles:not(:has(.wffn-bundles-fbt-item)) {
+	margin-block-start: 16px;
+}
+
+/* The quick view's Add button is sticky over the scrolling widget. A widget's own layers (the gift badges
+   sit at z-index 1) would otherwise draw over it. */
+#fkcart-modal .fkcart-drawer-content .fkcart-product-form-button {
+	z-index: 5;
+}
+
+/* The quick view stays transformed while shown (.fkcart-quick-view-drawer.fkcart-show { transform: translate(0) !important }),
+   which pins a bundle popup's position: fixed to the drawer. Dropping it, untransitioned, while a popup is open centres the popup at once. */
+.fkcart-quick-view-drawer.fkcart-show:has(.wffn-bundles-gift-modal--open, .wffn-bundles-gift-claim--open, .wffn-bundles-variant--open) {
+	/* !important: only way past FKCart's own !important on this transform. */
+	transform: none !important;
+	transition: none;
+}

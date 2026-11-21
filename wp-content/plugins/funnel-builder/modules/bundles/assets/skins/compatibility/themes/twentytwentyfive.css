@@ -1,0 +1,57 @@
+/**
+ * Twenty Twenty-Five — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install — the theme's eight theme.json slots:
+ *   --wp--preset--color--base      #FFFFFF  page background
+ *   --wp--preset--color--contrast  #111111  headings + body text
+ *   --wp--preset--color--accent-1  #FFEE58  bright yellow
+ *   --wp--preset--color--accent-2  #F6CFF4  pale pink
+ *   --wp--preset--color--accent-3  #503AA8  deep purple, its link colour
+ *   --wp--preset--color--accent-4  #686868  muted grey
+ *   --wp--preset--color--accent-5  #FBFAF3  light surface
+ *   --wp--preset--color--accent-6  color-mix(in srgb, currentColor 20%, transparent)
+ *
+ * The two usable accents are split by what each has to sit on, as in Twenty
+ * Twenty-Three. `accent-3` is the dark saturated one, so it takes the 2px
+ * selection ring and the radio; `accent-1` is a light fill that only works
+ * under dark text, so it takes the badge with `contrast` as the label.
+ *
+ * Deliberately not mapped
+ * `accent-6` is a `color-mix()` against `currentColor`, so its value depends on
+ * whatever text colour the element inherits. Bound to a token it would resolve
+ * differently on every surface the token is used on.
+ *
+ * `--wffn-bundles-border` / `--wffn-bundles-control-border` / `--wffn-bundles-radio`: this palette has no
+ * border slot, and `accent-4` (#686868) is a text grey. As a resting card
+ * border it would sit far darker than the plugin's #dedfea and crowd the
+ * selected ring, so the resting border keeps the plugin literal.
+ */
+body.wffn-bundles-theme-twentytwentyfive .wffn-bundles,
+body.wffn-bundles-theme-twentytwentyfive .wffn-bundles-portal,
+body.wffn-bundles-theme-twentytwentyfive .wffn-bundles-variant-modal {
+	--wffn-bundles-bg: var(--wp--preset--color--base, #fff);
+	--wffn-bundles-bg-active: var(--wp--preset--color--accent-5, #fafafa);
+	--wffn-bundles-step-bg: var(--wp--preset--color--accent-5, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--wp--preset--color--accent-5, #fafafa);
+
+	--wffn-bundles-border-active: var(--wp--preset--color--accent-3, #353030);
+	--wffn-bundles-radio-active: var(--wp--preset--color--accent-3, #353030);
+	--wffn-bundles-progress-fill: var(--wp--preset--color--accent-3, #353030);
+	--wffn-bundles-control-accent: var(--wp--preset--color--accent-3, #353030);
+	--wffn-bundles-connector: var(--wp--preset--color--accent-3, #353030);
+
+	--wffn-bundles-badge-bg: var(--wp--preset--color--accent-1, #353030);
+	--wffn-bundles-badge-fg: var(--wp--preset--color--contrast, #fff);
+
+	--wffn-bundles-heading-color: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-title-color: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-sale-price-color: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-desc-color: var(--wp--preset--color--accent-4, #82828e);
+	--wffn-bundles-regular-price-color: var(--wp--preset--color--accent-4, #82828e);
+	--wffn-bundles-price-desc-color: var(--wp--preset--color--accent-4, #82828e);
+	--wffn-bundles-control-fg: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-control-bg: var(--wp--preset--color--base, #fff);
+	--wffn-bundles-control-muted: var(--wp--preset--color--accent-4, #82828e);
+}

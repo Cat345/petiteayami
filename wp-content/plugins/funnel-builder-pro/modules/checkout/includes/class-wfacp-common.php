@@ -1933,7 +1933,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$price_data = apply_filters( 'wfacp_product_switcher_price_data', array(), $pro, $cart_item_key, $product_data );
 			if ( is_string( $cart_item_key ) && '' !== $cart_item_key && isset( WC()->cart->cart_contents[ $cart_item_key ] ) ) {
 				// calculate price data for cart item
-				$price_data = self::get_cart_product_price_data( $pro, $cart_item, $qty );
+				$price_data = self::filter_cart_price_data( self::get_cart_product_price_data( $pro, $cart_item, $qty ), $pro, $cart_item_key, $product_data, $cart_item );
 			} else {
 				if ( empty( $price_data ) ) {
 					$price_data['regular_org'] = $pro->get_regular_price( 'edit' );
@@ -2161,6 +2161,52 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				}
 
 				$price_data['quantity'] = $qty;
+			}
+
+			return $price_data;
+		}
+
+		/**
+		 * A carted line's price data, as its filter answers it.
+		 *
+		 * Called for a switcher row whose item is in the cart (get_product_switcher_row())
+		 * and for every visible cart line the global quantity-bump list draws (the default
+		 * and inline product_quantity_bump.php templates), switcher row or not.
+		 *
+		 * @param array      $price_data    { regular_org, price, quantity } from the cart line.
+		 * @param WC_Product $pro           Product the row sells.
+		 * @param string     $cart_item_key Cart item key.
+		 * @param array      $product_data  Stored row; the line's _wfacp_options, or empty for a line the checkout did not add.
+		 * @param array      $cart_item     Cart item.
+		 *
+		 * @return array
+		 */
+		public static function filter_cart_price_data( $price_data, $pro, $cart_item_key, $product_data, $cart_item ) {
+			/**
+			 * Filters a carted line's price data in the product switcher.
+			 *
+			 * Fires for a switcher row whose item is in the cart, and for every visible
+			 * cart line in the global quantity-bump list, including lines the checkout did
+			 * not add. On such a line $product_data is empty, so a listener that should
+			 * change switcher rows only checks $product_data or $cart_item['_wfacp_product'].
+			 *
+			 * The cart line replaces whatever wfacp_product_switcher_price_data returned,
+			 * so a row whose line does not state its own price (a bundle, an installment
+			 * plan's first payment) is corrected here. Feeds the row's price, its
+			 * "you save" text and its subscription string.
+			 *
+			 * @since 3.24.0
+			 *
+			 * @param array      $price_data    { regular_org, price, quantity }.
+			 * @param WC_Product $pro           Product the row sells.
+			 * @param string     $cart_item_key Cart item key.
+			 * @param array      $product_data  Stored row; the line's _wfacp_options, or empty.
+			 * @param array      $cart_item     Cart item.
+			 */
+			$filtered = apply_filters( 'wfacp_product_switcher_cart_price_data', $price_data, $pro, $cart_item_key, $product_data, $cart_item );
+			// Only a complete answer replaces the cart line's own; the row's templates read all three keys as numbers, and divide by the quantity.
+			if ( is_array( $filtered ) && isset( $filtered['regular_org'], $filtered['price'], $filtered['quantity'] ) && is_numeric( $filtered['regular_org'] ) && is_numeric( $filtered['price'] ) && is_numeric( $filtered['quantity'] ) && $filtered['quantity'] > 0 ) {
+				return $filtered;
 			}
 
 			return $price_data;

@@ -108,13 +108,13 @@ trait RestApiTrait {
 				}
 
 				$response[ (string) $key ] = array(
-					'label'      => $product->name,
+					'label'      => \WFOCU_Common::get_offer_product_label( $product ),
 					'isVariable' => true,
 					'attributes' => $attributes,
 				);
 			} else {
 				$response[ (string) $key ] = array(
-					'label'      => $product->name,
+					'label'      => \WFOCU_Common::get_offer_product_label( $product ),
 					'isVariable' => false,
 				);
 			}

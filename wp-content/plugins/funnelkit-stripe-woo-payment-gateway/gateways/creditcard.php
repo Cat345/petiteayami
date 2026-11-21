@@ -1162,13 +1162,25 @@ class CreditCard extends Abstract_Payment_Gateway {
 	}
 
 	public function localize_element_data( $data ) {
-		$data['inline_cc']            = $this->inline_cc;
-		$data['card_form_type']       = $this->credit_card_form_type;
-		$data['enable_saved_cards']   = $this->enable_saved_cards;
+		$data['inline_cc']          = $this->inline_cc;
+		$data['card_form_type']     = $this->credit_card_form_type;
+		$data['enable_saved_cards'] = $this->enable_saved_cards;
+
+		/*
+		 * Honour the Link settings for the legacy/split Card Element the same way payment_element_data()
+		 * does for the Payment Element. Stripe's card Element shows the inline Link autofill badge unless
+		 * disableLink is true, so Link must stay disabled on the card form unless the merchant has both
+		 * enabled the Link gateway and turned on "Enable Link On Card Payment".
+		 */
+		$link_settings     = get_option( 'woocommerce_fkwcs_stripe_link_settings', array() );
+		$link_enabled      = isset( $link_settings['enabled'] ) && 'yes' === $link_settings['enabled'];
+		$link_auth_trigger = isset( $link_settings['link_authentication_trigger'] ) ? $link_settings['link_authentication_trigger'] : 'none';
+		$link_on_card      = $link_enabled && 'none' !== $link_auth_trigger;
+
 		$data['card_element_options'] = apply_filters(
 			'fkwcs_card_element_options',
 			array(
-				'disableLink' => false,
+				'disableLink' => ! $link_on_card,
 				'showIcon'    => true,
 				'iconStyle'   => 'solid',
 			)
@@ -1274,7 +1286,8 @@ class CreditCard extends Abstract_Payment_Gateway {
 		if ( class_exists( '\WFOCU_Core' ) ) {
 			Helper::log( $order->get_id() . ' :: Saving meta data during webhook to later process this order' );
 
-			$order->update_meta_data( '_fkwcs_webhook_paid', 'yes' );
+			// The time is when the shopper's return was put on hold; one-click upsells waits from it before completing the order
+			$order->update_meta_data( '_fkwcs_webhook_paid', time() );
 			$order->save_meta_data();
 			$order->save();
 		} else {
@@ -1713,7 +1726,7 @@ class CreditCard extends Abstract_Payment_Gateway {
 					$order
 				)
 			) ) {
-				$redirect_url = $this->get_return_url( $order );
+				$redirect_url = $this->get_paid_order_redirect_url( $order );
 				remove_all_actions( 'wp_redirect' );
 				wp_safe_redirect( $redirect_url );
 				exit;

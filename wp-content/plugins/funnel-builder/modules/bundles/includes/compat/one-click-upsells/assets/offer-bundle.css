@@ -1,0 +1,17 @@
+/* An offer's Accept while its bundle pick is incomplete: the same held look as the product page's gated Add button. */
+body a.wfocu_upsell.wffn-bundles-ocu-accept-disabled,
+body .elementor-widget a.elementor-button.wfocu_upsell.wffn-bundles-ocu-accept-disabled {
+  opacity: 0.45;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+/* The offer reads a variable product's variation off its own form alone; the picker above fills it and shows the choice. */
+form.wffn-bundles-ocu-form ~ .wfocu-buy-block form.wfocu_variation_selector_form {
+  display: none;
+}
+
+/* Accept follows the bundle here, so every type keeps the block gap below it; the bought-together skin sets none. */
+form.wffn-bundles-ocu-form > .wffn-bundles {
+  margin-block-end: var(--wffn-bundles-block-gap);
+}

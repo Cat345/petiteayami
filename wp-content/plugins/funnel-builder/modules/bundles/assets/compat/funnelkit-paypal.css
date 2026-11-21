@@ -1,0 +1,8 @@
+/* WooCommerce's Add to Cart Form block lays a variable product's buttons out as
+   `min-content auto auto`, the first track holding the quantity the widget hides.
+   The gateway's express group spans every track, so that empty track takes a
+   share of its width and pushes Add to cart off the widget's edge. Collapsed here
+   while the quantity is hidden. */
+body.wffn-bundles-has-bundle.wffn-bundles-owns-pickers .wp-block-woocommerce-add-to-cart-form .variations_button:has(> .fkwcppcp-express-buttons-group--product) {
+	grid-template-columns: 0 auto auto;
+}

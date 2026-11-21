@@ -75,8 +75,21 @@ foreach ( $section_order as $item_section ) {
 								$is_visible        = $product && $product->is_visible();
 								$purchase_note     = $product ? $product->get_purchase_note() : '';
 								$product_permalink = apply_filters( 'woocommerce_order_item_permalink', $is_visible ? esc_url( $product->get_permalink( $item ) ) : '', $item, $order_obj );
+								/**
+								 * Filters the classes on a Thank You page order-item row.
+								 *
+								 * The Thank You counterpart of WooCommerce's woocommerce_order_item_class,
+								 * which this template does not reach because it draws its own rows.
+								 *
+								 * @since 3.18.0.1
+								 *
+								 * @param string        $classes   Space-separated row classes.
+								 * @param WC_Order_Item $item      The order line item.
+								 * @param WC_Order      $order_obj The order object.
+								 */
+								$wfty_item_classes = apply_filters( 'wfty_order_item_class', 'wfty_pro_list wfty_clearfix', $item, $order_obj );
 								?>
-								<div class="wfty_pro_list wfty_clearfix">
+								<div class="<?php echo esc_attr( is_scalar( $wfty_item_classes ) ? (string) $wfty_item_classes : 'wfty_pro_list wfty_clearfix' ); ?>">
 									<div class="wfty_leftDiv wfty_clearfix">
 										<?php if ( true === $order_show_images ) { ?>
 											<div class="wfty_p_img">

@@ -86,7 +86,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Product_Images' ) ) {
 			}
 
 			foreach ( $products as $key => $product ) {
-				$product_options[ $key ] = $product->name;
+				$product_options[ $key ] = \WFOCU_Common::get_offer_product_label( $product );
 			}
 
 			$this->controls['selectedProduct'] = array(

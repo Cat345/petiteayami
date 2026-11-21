@@ -1,0 +1,796 @@
+/* Funnel Builder (Aero Checkout) — restore the widget's own layout. No `!important`
+   here: Aero's rules can be read and out-specified, so each rule below raises its own weight. */
+
+/* A row is a `<fieldset>`, and the UA stylesheet gives every `<fieldset>` an
+   implicit `min-width: min-content` — it never shrinks below its content's
+   unwrapped intrinsic width. A long combined variant summary ("Black / XS /
+   Regular", `white-space: nowrap`) pushed that intrinsic width past a narrow
+   checkout's viewport, scrolling the whole page horizontally. Not an Aero
+   rule to out-specify — any author rule already beats a UA default. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row {
+	min-width: 0;
+}
+
+/* Aero's customizer reset gives these tags `margin: 0 auto` at (0,0,1), centring
+   every flex item. Undone at (0,0,2), so any class rule of ours still wins. */
+html :where(.wffn-bundles, .wffn-bundles-variant-modal) :is(span, img, label, a, p, del, ins, strong, small, em, b, s, u, i) {
+	margin-inline: 0;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-fb-single.wffn-bundles-fb-single {
+	display: flex;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-fb-card.wffn-bundles-fb-card {
+	display: block;
+}
+
+/* The same Aero rule is one branch of a 42-element reset, so those labels also
+   lose their padding and border: an offer's prices sit flush, the ring disappears. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-fb-single.wffn-bundles-fb-single,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-fb-card.wffn-bundles-fb-card {
+	margin: 0;
+	padding: var(--wffn-bundles-pad-t) var(--wffn-bundles-pad-r) var(--wffn-bundles-pad-b) var(--wffn-bundles-pad-l);
+	border: var(--wffn-bundles-border-width) var(--wffn-bundles-border-style) var(--wffn-bundles-border);
+	font-size: inherit;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-fb-single--selected.wffn-bundles-fb-single--selected {
+	border-color: var(--wffn-bundles-border-active);
+	border-width: var(--wffn-bundles-border-width-active, var(--wffn-bundles-border-width));
+}
+
+/* Aero styles every control in its form at (1,1,2), which beats
+   `.wffn-bundles.wffn-bundles .wffn-bundles-variant-axis` (0,3,0). Only the properties it sets are restated. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-variant-axis {
+	display: inline-block;
+	position: static;
+	vertical-align: middle;
+	width: auto;
+	max-width: min(150px, 100%);
+	height: 26px;
+	min-height: 0;
+	margin: 0;
+	padding: 2px 6px;
+	padding-inline-end: 22px;
+	font-size: 11px;
+	font-weight: 400;
+	line-height: 1;
+	color: var(--wffn-bundles-control-fg);
+	background-color: var(--wffn-bundles-control-bg);
+	border: 1px solid var(--wffn-bundles-control-border);
+	border-radius: 6px;
+	box-shadow: none;
+}
+
+/* A plan's billing line follows its picker; the pack's members move below it. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_product_switcher_description:has(> .wfacp_ps_div_row:not(:empty)):has(.wffn-bundles-aero-pack-members) {
+	display: flex;
+	flex-direction: column;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_product_switcher_description:has(> .wfacp_ps_div_row:not(:empty)) :is(.product-name, .wfacp_product_sec):has(.wffn-bundles-aero-pack-members) {
+	display: contents;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_product_switcher_description:has(> .wfacp_ps_div_row:not(:empty)) .wffn-bundles-aero-pack-members {
+	order: 1;
+}
+
+/* Aero's own mobile-stacked layout pins the title column to exactly
+   `flex:0 0 60%` (`wfacp_combined.min.css`, (1,4,1)) regardless of what's in
+   it. A pack member's picker only ever lives in that 60%, so after its own
+   26px/10px side padding, image and connector, there was rarely more than
+   ~70px left for even a single select — a bundle row's qty/price side needs
+   nowhere near the remaining 40%. Two IDs beat their one regardless of which
+   mobile-style class is active. Mobile-only: at desktop width the picker
+   already has room in the unmodified 60%, and stretching it there (below)
+   only turned a compact pill into a full-width bar for no reason. */
+@media (max-width: 767px) {
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_ps_title_wrap.wfacp_ps_title_wrap.wfacp_ps_title_wrap.wfacp_ps_title_wrap:has(.wffn-bundles-aero-pack-members) {
+		flex: 1 1 0%;
+		min-width: 0;
+		max-width: none;
+	}
+
+	/* Its `flex-shrink: 0` sibling (the qty/price side) already sizes to its
+	   own content at that weight; left at a fixed 40%, it would still cede
+	   nothing. `flex-basis: auto` — not a fixed percentage — so the money and
+	   qty stepper always keep the room their own content needs, and the rule
+	   above picks up only what's actually left over. */
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_ps_title_wrap:has(.wffn-bundles-aero-pack-members) + .wfacp_product_sec_start.wfacp_product_sec_start.wfacp_product_sec_start {
+		flex: 0 0 auto;
+		max-width: none;
+	}
+
+	/* On phones the members take the row's full width; qty and price follow them. */
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_row_wrap.wfacp_row_wrap:has(> .wfacp_ps_title_wrap .wffn-bundles-aero-pack-members) {
+		flex-wrap: wrap;
+	}
+
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_ps_title_wrap.wfacp_ps_title_wrap.wfacp_ps_title_wrap.wfacp_ps_title_wrap:has(.wffn-bundles-aero-pack-members) {
+		flex-basis: 100%;
+	}
+
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_ps_title_wrap:has(.wffn-bundles-aero-pack-members) + .wfacp_product_sec_start.wfacp_product_sec_start.wfacp_product_sec_start {
+		margin-inline-start: auto;
+		padding-block-start: 16px;
+		padding-inline-end: 8px;
+	}
+
+	/* Aero floats the qty and pads the price 70px to clear it; a flex gap spaces them instead. */
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_ps_title_wrap:has(.wffn-bundles-aero-pack-members) + .wfacp_product_sec_start .wfacp_product_switcher_col_3.wfacp_product_switcher_col_3 {
+		display: flex;
+		align-items: flex-start;
+		gap: 16px;
+	}
+
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_ps_title_wrap:has(.wffn-bundles-aero-pack-members) + .wfacp_product_sec_start .wfacp_product_quantity_container.wfacp_product_quantity_container {
+		float: none;
+	}
+
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field .wfacp_ps_title_wrap:has(.wffn-bundles-aero-pack-members) + .wfacp_product_sec_start .wfacp_product_price_container.wfacp_product_price_container.wfacp_product_price_container {
+		padding: 0;
+	}
+}
+
+/* A Fixed Bundle pack row's own members, listed under it — always expanded,
+   never an accordion, so a shopper sees what the pack actually contains
+   without an extra click. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles.wffn-bundles-aero-pack-members {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: 100%;
+	margin-top: 6px;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-inline-start: 24px;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member-img {
+	flex: 0 0 auto;
+	width: 26px;
+	height: 26px;
+	border-radius: calc(var(--wffn-bundles-corner) - 6px);
+	object-fit: cover;
+	background: var(--wffn-bundles-thumb-bg);
+}
+
+/* The name is never cut — it wraps onto a second line rather than
+   truncating, and takes the row's full width so the picker always starts
+   its own line below the name. A single-attribute picker used to sit beside
+   a short name instead, reading as a different pattern from a two-attribute
+   one right below it. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member-body {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: flex-start;
+	flex-wrap: wrap;
+	gap: 4px 8px;
+	min-width: 0;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member-name {
+	flex: 1 1 100%;
+	min-width: min-content;
+	font-size: var(--wffn-bundles-control-size);
+	color: var(--wffn-bundles-control-fg);
+}
+
+/* (1,4,1): Aero sizes every span in a switcher row at (1,3,1), loaded after us. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles span.wffn-bundles-variant-head.wffn-bundles-variant-head {
+	font-size: 11px;
+	line-height: 1.3;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles span.wffn-bundles-variant-modal-label.wffn-bundles-variant-modal-label {
+	font-size: 12px;
+	line-height: 1.3;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member-axes {
+	display: flex;
+	flex: 0 0 auto;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+/* `.wffn-bundles-pack-axis`/`.wffn-bundles-variant-axis` cap at ~130-150px for the single-line
+   picker beside a simple product's own title. Here the picker already sits
+   on its own full-width line below the member name (`.wffn-bundles-aero-pack-member-
+   axes` above), so on a narrow checkout that cap only starved it — a
+   combined 3-attribute summary ("Black / XS / Regular") or even a single
+   select's own option text ("Blue") was truncating well before the row ran
+   out of room. Mobile-only: at desktop width the ~130-150px pill is exactly
+   the compact control it was always meant to be — stretching it to the full
+   (now much wider) row turned it into an oversized bar instead. */
+@media (max-width: 767px) {
+	/* Stacked and as wide as the longest option, so every select matches and none is cut. */
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member-axes {
+		flex-direction: column;
+		align-items: stretch;
+		width: max-content;
+		max-width: 100%;
+	}
+
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member-axes .wffn-bundles-variant-open {
+		max-width: 100%;
+		width: 100%;
+	}
+
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member-axes .wffn-bundles-pack-axis,
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member-axes .wffn-bundles-variant-axis {
+		width: auto;
+		min-width: min(120px, 100%);
+		max-width: 100%;
+	}
+
+	/* A long combined summary wraps rather than widening the row past the screen. */
+	:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-aero-pack-member-axes .wffn-bundles-variant-open {
+		white-space: normal;
+	}
+}
+
+/* Same specificity note as `.wffn-bundles-variant-axis` above: Aero styles every native
+   control in its form at (1,1,2), which otherwise beats a plain (0,3,0) rule. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-pack-axis {
+	display: inline-block;
+	position: static;
+	vertical-align: middle;
+	width: auto;
+	max-width: min(130px, 100%);
+	height: 26px;
+	min-height: 0;
+	margin: 0;
+	padding: 2px 6px;
+	padding-inline-end: 22px;
+	font-size: 11px;
+	font-weight: 400;
+	line-height: 1;
+	color: var(--wffn-bundles-control-fg);
+	background-color: var(--wffn-bundles-control-bg);
+	border: 1px solid var(--wffn-bundles-control-border);
+	border-radius: 6px;
+	box-shadow: none;
+	appearance: none;
+	background-image: var(--wffn-bundles-select-caret);
+	background-repeat: no-repeat;
+	background-position: right 6px center;
+	background-size: 10px;
+}
+
+/* `background-position` has no logical form; mirror it as _shared.css does. */
+[dir="rtl"] :is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-pack-axis {
+	background-position: left 6px center;
+}
+
+/* The quick-view popup relocates the same <select> into its body without
+   stripping `.wffn-bundles-variant-axis`/`.wffn-bundles-pack-axis`, so the two rules above
+   (sized for the inline row) still win there by ID weight and leave the
+   popup's select stuck at row width instead of filling the popup. Restate
+   `_shared.css`'s modal-body sizing at matching ID weight. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-variant-modal-body .wffn-bundles-variant-axis,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-variant-modal-body .wffn-bundles-pack-axis {
+	width: 100%;
+	max-width: none;
+	height: auto;
+	padding: 9px 34px 9px 12px;
+	font-size: 13px;
+	line-height: 1.3;
+	background-position: right 12px center;
+	background-size: 12px;
+}
+
+[dir="rtl"] :is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-variant-modal-body .wffn-bundles-variant-axis,
+[dir="rtl"] :is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-variant-modal-body .wffn-bundles-pack-axis {
+	background-position: left 12px center;
+}
+
+/* Aero hides the product's price in its quick view, but that is where the widget
+   writes its live quote, so it is shown again — only in a modal the widget is in. */
+#wfacp_qr_model_wrap:has(.wffn-bundles) .wfacp_qr_wrap .wfacp_qv-summary p.price {
+	display: block;
+}
+
+/* The pack row already sells the bundle, so its quick view offers no choice. Hidden
+   rather than dropped: the live quote reads the selection off the card. (1,5,0). */
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles .wffn-bundles-fb-single.wffn-bundles-fb-single.wffn-bundles-fb-single {
+	display: none;
+}
+
+/* Aero fades a quick view in; a bundle's, taller than its loader, also settles up into place. */
+#wfacp_qr_model_wrap:has(.wffn-bundles) {
+	transition: transform 0.24s ease-out;
+}
+
+@starting-style {
+	#wfacp_qr_model_wrap:has(.wffn-bundles) {
+		transform: translateY(8px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#wfacp_qr_model_wrap:has(.wffn-bundles) {
+		transition: none;
+	}
+}
+
+/* Aero sizes every span in the price at (1,3,2) but not the <bdi> holding the digits,
+   so the currency sign outgrew the amount; all of it takes the price's own size. */
+#wfacp_qr_model_wrap .wfacp_qr_wrap .wfacp_qv-summary p.price .wffn-bundles-live-price :is(del, ins, bdi, span) {
+	font-size: inherit;
+}
+
+/* Elementor pins the close to the title's edge; the customizer layouts' inset, 24px each way. */
+#wfacp-e-form #wfacp_qr_model_wrap:has(.wffn-bundles) .wfacp_qv-close {
+	right: 15px;
+}
+
+/* Aero's phone rule centres the close on its header with top:50% and margin -12px, but
+   its own `.wfacp_qv-close.wfacp_qv{top:0}` wins, leaving it half above the screen. */
+@media (max-width: 767px) {
+	#wfacp_qr_model_wrap:has(.wffn-bundles) .wfacp_qv-close.wfacp_qv {
+		top: 50%;
+	}
+}
+
+/* A pack row's quick view offers no choice, so the card's radio controls nothing.
+   The input stays in the DOM: the live quote and the add both read it. */
+#wfacp_qr_model_wrap .wffn-bundles-fb-card .wffn-bundles-radio {
+	display: none;
+}
+
+/* The native control the skin replaces with `.wffn-bundles-radio`. Aero's (1,3,2) rule sets
+   `opacity: 1`, bringing the real radio back into view; repeating our class wins. */
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles .wffn-bundles-fb-input.wffn-bundles-fb-input,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-fb-input.wffn-bundles-fb-input {
+	position: absolute;
+	/* Both spellings: Aero sizes these controls with the physical `width`, and the
+	   logical property alone left the box at its 16px. */
+	inline-size: 1px;
+	block-size: 1px;
+	width: 1px;
+	height: 1px;
+	min-block-size: 0;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* Matches the prompt Aero prints on a variable row, which a pack row never gets
+   because it sells the simple container placeholder. */
+.wffn-bundles-row-choose {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+/* Row add-ons: the gift and upsell strips drawn inside a switcher row. */
+/* The wrapper inherits Aero's full-width `.wfacp_product_select_options` box, so
+   the link kept a hit area spanning the whole product-name column and swallowed
+   clicks aimed at the title beside it. Shrink the box to the words in it. */
+.wffn-bundles-row-choose-wrap {
+	display: inline-block;
+	inline-size: fit-content;
+	max-inline-size: 100%;
+}
+
+/**
+ * Stop switcher prices breaking mid-number.
+ *
+ * `wfacp-form.css:4859` puts `word-break: break-all` on the price cell at
+ * (1,4,1). At 392px that cell computes to 52px with ~42px of content box, so a
+ * ~60px price splits between its digits — measured as "₹138." / "55" and
+ * "₹43.2" / "0", which also drove rows from 85px to 167px tall.
+ *
+ * `overflow-wrap: anywhere` keeps the guard that rule was reaching for (a long
+ * unbreakable string bursting the column) without licensing a break inside a
+ * number. (1,5,1) clears their rule; the doubled class is the weight, not a typo.
+ */
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_main_form .woocommerce-cart-form__cart-item.cart_item .product-price.product-price {
+	word-break: normal;
+	overflow-wrap: anywhere;
+}
+
+/* A price is a single value: it moves as a whole or not at all. */
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_main_form .woocommerce-cart-form__cart-item.cart_item .product-price .amount {
+	white-space: nowrap;
+}
+
+/* The cell is a flex item at `0 1 auto` inside a column capped at 40% of the row,
+   which at phone widths leaves it narrower than the value it holds. Only the
+   squeeze is lifted; the column keeps its own share. */
+@media (max-width: 480px) {
+	body :is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_main_form .woocommerce-cart-form__cart-item.cart_item .product-price.product-price {
+		min-inline-size: max-content;
+	}
+}
+
+/**
+ * Put the variation picker's caret back.
+ *
+ * `#wfacp-e-form .wfacp_main_form select { background: 0 0 }` (wfacp-form.css)
+ * is (1,1,1) and reaches our pickers; the shorthand resets `background-image`,
+ * and one id outweighs the (0,3,0) the skin styles them at. The control kept the
+ * 22px it reserves for the caret and drew nothing in it, so on the checkout it
+ * read as a plain text box while the same widget on the product page did not.
+ *
+ * (1,4,0) to clear that rule, and inside `.wffn-bundles` so it only ever reaches our own
+ * pickers — every other select on the checkout keeps whatever Aero gives it. All
+ * four properties, because the shorthand reset the position and size too.
+ */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_main_form .wffn-bundles .wffn-bundles-variant-axis.wffn-bundles-variant-axis {
+	background-image: var(--wffn-bundles-select-caret);
+	background-repeat: no-repeat;
+	background-position: right 6px center;
+	background-size: 10px;
+}
+
+/* `background-position` has no logical form; mirror it as _shared.css does. */
+[dir="rtl"] :is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_main_form .wffn-bundles .wffn-bundles-variant-axis.wffn-bundles-variant-axis {
+	background-position: left 6px center;
+}
+
+/* Our own "Offer:" line on a cart line reads as one sentence that wraps to the
+   row's edge. The tripled class clears the summaries' (1,3,4) float rules. */
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer),
+body .wfacp_mini_cart_wrap dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer) {
+	display: block;
+	margin-block: 2px 0;
+}
+
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer) > dt,
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer) > dd,
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer) > dd p,
+body .wfacp_mini_cart_wrap dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer) > dt,
+body .wfacp_mini_cart_wrap dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer) > dd,
+body .wfacp_mini_cart_wrap dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer) > dd p {
+	display: inline;
+	float: none;
+	clear: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* The summary and its page builder size and colour every span, up to (1,5,5); the value matches its label. */
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer) .wffn-bundles-cart-offer.wffn-bundles-cart-offer,
+body .wfacp_mini_cart_wrap dl.variation:has(.wffn-bundles-cart-offer.wffn-bundles-cart-offer.wffn-bundles-cart-offer) .wffn-bundles-cart-offer.wffn-bundles-cart-offer {
+	font-size: inherit;
+	color: inherit;
+}
+
+/* The customizer layouts reset every span to `margin: 0 auto`, which centres a
+   flex item; member pickers read from the row title's own edge. */
+.wffn-bundles-aero-pack-member-body,
+.wffn-bundles-aero-pack-member-name,
+.wffn-bundles-aero-pack-member-axes {
+	margin: 0;
+}
+
+/**
+ * A row carrying add-ons is several times taller than a bare one, and Aero
+ * centres the radio, thumbnail and price against the whole of it — so on a pack
+ * row they floated halfway down, beside the gift/upsell strips or the summary
+ * ribbon rather than the title they belong to. Only rows we add to are touched.
+ *
+ * The trailing class repeats three times: Aero's own combined stylesheet sets
+ * this same property at (1 id, 4 classes, 1 type), which otherwise wins on
+ * class count alone regardless of source order.
+ */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wffn-bundles-aero-pack-members) .wfacp_ps_title_wrap.wfacp_ps_title_wrap.wfacp_ps_title_wrap,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wffn-bundles-aero-pack-members) .wfacp_product_sec_start.wfacp_product_sec_start.wfacp_product_sec_start,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wfacp_qv-button.var_product) .wfacp_ps_title_wrap.wfacp_ps_title_wrap.wfacp_ps_title_wrap,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wfacp_qv-button.var_product) .wfacp_product_sec_start.wfacp_product_sec_start.wfacp_product_sec_start,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wfacp_you_save_text) .wfacp_ps_title_wrap.wfacp_ps_title_wrap.wfacp_ps_title_wrap,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wfacp_you_save_text) .wfacp_product_sec_start.wfacp_product_sec_start.wfacp_product_sec_start,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wfacp_product_price_sec del) .wfacp_ps_title_wrap.wfacp_ps_title_wrap.wfacp_ps_title_wrap,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wfacp_product_price_sec del) .wfacp_product_sec_start.wfacp_product_sec_start.wfacp_product_sec_start {
+	align-items: flex-start;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wffn-bundles-aero-pack-members) .wfacp_product_switcher_col_1,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wfacp_qv-button.var_product) .wfacp_product_switcher_col_1,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wfacp_you_save_text) .wfacp_product_switcher_col_1,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row:has(.wfacp_product_price_sec del) .wfacp_product_switcher_col_1 {
+	align-self: flex-start;
+}
+
+/* The column above is flex-start now, so the native input drifts to the
+   column's own top edge instead of the row's — nudged back down to the
+   product name's baseline. Desktop only: a touch target needs its full
+   tap area, so the mobile stacked layout leaves the input untouched. */
+@media (min-width: 768px) {
+	body .wfacp_main_form #product_switching_field .wfacp_product_row:has(.wffn-bundles-aero-pack-members) .wfacp_product_switcher_col_1 input[type="checkbox"],
+	body .wfacp_main_form #product_switching_field .wfacp_product_row:has(.wffn-bundles-aero-pack-members) .wfacp_product_switcher_col_1 input[type="radio"],
+	body .wfacp_main_form #product_switching_field .wfacp_product_row:has(.wfacp_qv-button.var_product) .wfacp_product_switcher_col_1 input[type="checkbox"],
+	body .wfacp_main_form #product_switching_field .wfacp_product_row:has(.wfacp_qv-button.var_product) .wfacp_product_switcher_col_1 input[type="radio"],
+	body .wfacp_main_form #product_switching_field .wfacp_product_row:has(.wfacp_you_save_text) .wfacp_product_switcher_col_1 input[type="checkbox"],
+	body .wfacp_main_form #product_switching_field .wfacp_product_row:has(.wfacp_you_save_text) .wfacp_product_switcher_col_1 input[type="radio"],
+	body .wfacp_main_form #product_switching_field .wfacp_product_row:has(.wfacp_product_price_sec del) .wfacp_product_switcher_col_1 input[type="checkbox"],
+	body .wfacp_main_form #product_switching_field .wfacp_product_row:has(.wfacp_product_price_sec del) .wfacp_product_switcher_col_1 input[type="radio"] {
+		top: 3px;
+		margin-top: 0;
+	}
+}
+
+/* Aero skeletons the switcher while it refreshes, and our strips are not in its
+   list, so the same treatment is applied here under our own keyframes prefix. */
+@keyframes wffn-bundles-aero-shimmer {
+	0% {
+		background-position: -1000px 0;
+	}
+
+	to {
+		background-position: 1000px 0;
+	}
+}
+
+.wfacp_pro_switch.wfacp_animation_start .wffn-bundles-aero-pack-members,
+#product_switching_field.wfacp_pro_switch.wfacp_animation_start .product-name .wfacp_product_name_inner {
+	position: relative;
+}
+
+/* Aero skeletons a row title span by span, which half-covers a title that wraps; one bar covers the block. */
+#product_switching_field.wfacp_pro_switch.wfacp_animation_start .product-name .wfacp_product_name_inner > span::after,
+#product_switching_field.wfacp_pro_switch.wfacp_animation_start .product-name .wfacp_product_switcher_item::after,
+#product_switching_field.wfacp_pro_switch.wfacp_animation_start .product-name .wfacp_product_name_inner .wfacp_qv-button::after {
+	content: none;
+}
+
+/* Aero's skeleton sets every price span relative at (0,5,1), which unhides the price's screen-reader text and pushes the bars off the row. */
+#product_switching_field.wfacp_pro_switch .wfacp_product_price_container span.screen-reader-text {
+	position: absolute;
+}
+
+.wfacp_pro_switch.wfacp_animation_start .wffn-bundles-aero-pack-members::after,
+#product_switching_field.wfacp_pro_switch.wfacp_animation_start .product-name .wfacp_product_name_inner::after {
+	content: " ";
+	display: block;
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	z-index: 10000;
+	border-radius: inherit;
+	background: linear-gradient(to right, #eff1f3 4%, #e2e2e2 25%, #eff1f3 36%);
+	background-size: 1000px 100%;
+	animation: wffn-bundles-aero-shimmer 2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+			.wfacp_pro_switch.wfacp_animation_start .wffn-bundles-aero-pack-members::after,
+	#product_switching_field.wfacp_pro_switch.wfacp_animation_start .product-name .wfacp_product_name_inner::after {
+		animation: none;
+	}
+}
+
+/* A row switch reloads the panel; the controls keep their own look through it instead of
+   Aero's skeleton, which blanked the new choice. Values are pinned by the compat script. */
+/* (2,3,3): Aero's checkbox skeleton is (2,3,1). */
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field.wfacp_animation_start input.wfacp_switcher_checkbox.wfacp_switcher_checkbox::after {
+	content: none;
+}
+
+/* Snap like a native control: the fade between the two looks passed through a muddy mix. */
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field.wfacp_animation_start input.wfacp_switcher_checkbox {
+	border: var(--wffn-bundles-switch-off-border);
+	background-color: var(--wffn-bundles-switch-off-bg);
+	transition: none;
+}
+
+/* Class repeated to (2,4,2): Aero's `:checked` transition rule is (2,4,1). */
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) #product_switching_field.wfacp_animation_start input.wfacp_switcher_checkbox.wfacp_switcher_checkbox:checked {
+	border: var(--wffn-bundles-switch-on-border);
+	background-color: var(--wffn-bundles-switch-on-bg);
+	transition: none;
+}
+
+/* Our decorative empty spans, inside Aero's payment section, where Aero hides every
+   empty span at (1,3,1) — so every offer row lost its control. Re-declared at (1,4,2). */
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) .woocommerce-checkout-payment .wffn-bundles.wffn-bundles span.wffn-bundles-radio {
+	display: var(--wffn-bundles-radio-display, block);
+}
+
+/* The single option grows its border when picked, nudging the widget down 2px on
+   every switch. The ring is drawn inside instead, at the border's own width. */
+body :is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles .wffn-bundles-fb-single--selected.wffn-bundles-fb-single--selected {
+	border-width: 1px;
+	box-shadow: inset 0 0 0 2px var(--wffn-bundles-border-active);
+}
+
+/* Same Aero rule, same (1,4,2) weight, now painting the inline "Navy / Small"
+   variation chip solid orange with white text instead of the neutral outlined
+   pill `_shared.css` styles it as — it is a `<button type="button">` too.
+   Aero's own generic button rule also carries font-size and height at that
+   same weight, which `_shared.css`'s (0,3,0) pill styling cannot out-specify
+   here, so both are restated alongside the colour. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles-variant-open.wffn-bundles-variant-open.wffn-bundles-variant-open.wffn-bundles-variant-open.wffn-bundles-variant-open {
+	color: var(--wffn-bundles-control-fg);
+	background-color: var(--wffn-bundles-control-bg);
+	border-color: var(--wffn-bundles-control-border);
+	background-image: var(--wffn-bundles-open-caret);
+	padding-block: 2px;
+	padding-inline: 6px 22px;
+	height: auto;
+	min-height: 26px;
+	font-size: 11px;
+	font-weight: 400;
+	line-height: 1.3;
+}
+
+/* Aero's own checkout-wide button colour rides
+   `#wfacp-e-form button[type="button"]:not(.white):not(.black):not(.wfacp-upload-delete)`
+   at (1,4,2) — the id, the `[type]` attribute plus three `:not()` arguments, two
+   elements — which our icon-only close button (0,3,0) in _shared.css cannot
+   out-specify. Matched here at (1,5,1): the id ties theirs, five repeated
+   classes outweigh their four regardless of the element count either side carries. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles-variant-modal-x.wffn-bundles-variant-modal-x.wffn-bundles-variant-modal-x.wffn-bundles-variant-modal-x.wffn-bundles-variant-modal-x {
+	background-color: transparent;
+}
+
+/* Aero's `body #wfacp-e-form .checkout .product-name span` (1,3,2) zeroes the
+   right padding of every span under a row's product name — including the
+   popup's own box, itself a span — leaving its content flush against the
+   right edge while the left padding survives untouched. Four repeated
+   classes at (1,4,0) outweigh their (1,3,2) regardless of the element count
+   either side carries. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles-variant-modal-box.wffn-bundles-variant-modal-box.wffn-bundles-variant-modal-box.wffn-bundles-variant-modal-box {
+	padding-right: 20px;
+}
+
+/* Aero sets every form label inline-block at (1,2,1), stacking a set's tick over its name. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-item.wffn-bundles-fbt-item {
+	display: flex;
+	max-width: none;
+	margin-bottom: 0;
+}
+
+/* Aero zeroes every form label's padding, so a list layout's rows lose their box. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-fbt--list .wffn-bundles-fbt-item.wffn-bundles-fbt-item {
+	margin: 0;
+	padding: var(--wffn-bundles-pad-t) var(--wffn-bundles-pad-r) var(--wffn-bundles-pad-b) var(--wffn-bundles-pad-l);
+	border: var(--wffn-bundles-border-width) var(--wffn-bundles-border-style) var(--wffn-bundles-border);
+}
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-fbt--list .wffn-bundles-fbt-item.wffn-bundles-fbt-item:not(.is-off) {
+	border-color: var(--wffn-bundles-border-active);
+}
+
+/* Aero styles every form checkbox, two ids deep inside the payment box;
+   a set's ticks keep the skin's own, and Aero's checkmark pseudo-elements stay off. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-aero-set-members input.wffn-bundles-aero-set-check.wffn-bundles-aero-set-check {
+	position: static;
+	top: auto;
+	left: auto;
+	z-index: auto;
+	display: block;
+	width: var(--wffn-bundles-radio-size);
+	height: var(--wffn-bundles-radio-size);
+	min-width: var(--wffn-bundles-radio-size);
+	line-height: normal;
+	border: 2px solid var(--wffn-bundles-radio);
+	border-radius: 4px;
+	background: var(--wffn-bundles-control-bg);
+}
+
+/* A set's ticks take the checkout's own ticked-checkbox colour, pinned by the compat script. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check:checked,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-aero-set-members input.wffn-bundles-aero-set-check.wffn-bundles-aero-set-check:checked {
+	border-width: 2px;
+	border-color: var(--wffn-bundles-funnel-check, var(--wffn-bundles-radio-active));
+	background-color: var(--wffn-bundles-funnel-check, var(--wffn-bundles-radio-active));
+	background-image: var(--wffn-bundles-fbt-tick);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 72%;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check::before,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check::after,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-aero-set-members input.wffn-bundles-aero-set-check.wffn-bundles-aero-set-check::before,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-aero-set-members input.wffn-bundles-aero-set-check.wffn-bundles-aero-set-check::after {
+	content: none;
+	display: none;
+}
+
+/* A set row's own list ticks like the set widget, whose sheet may not be on the page. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-aero-set-members input.wffn-bundles-aero-set-check.wffn-bundles-aero-set-check {
+	flex: 0 0 auto;
+	box-sizing: border-box;
+	min-height: var(--wffn-bundles-radio-size);
+	margin: 0;
+	padding: 0;
+	-webkit-appearance: none;
+	appearance: none;
+	cursor: pointer;
+	--wffn-bundles-fbt-tick: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%2F%3E%3C%2Fsvg%3E");
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-aero-set-members input.wffn-bundles-aero-set-check.wffn-bundles-aero-set-check:focus-visible {
+	outline: 2px solid var(--wffn-bundles-radio-active);
+	outline-offset: 2px;
+}
+
+/* The tick sits on the name's line, not mid-way down a member with a picker. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-aero-set-members .wffn-bundles-aero-set-member.wffn-bundles-aero-set-member {
+	align-items: flex-start;
+}
+
+/* The host is always in the set: ticked and locked, in the same column as the rest. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-aero-set-members input.wffn-bundles-aero-set-check.wffn-bundles-aero-set-check:disabled {
+	cursor: default;
+}
+
+/* Aero's pre-built templates give every span `margin: 0 auto`, which centres a set's lines. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles :is(.wffn-bundles-fbt-strip-item, .wffn-bundles-fbt-head, .wffn-bundles-variant) {
+	margin: 0;
+}
+
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wffn-bundles.wffn-bundles-aero-set-members .wffn-bundles-aero-set-member.is-off :is(.wffn-bundles-aero-pack-member-img, .wffn-bundles-aero-pack-member-name) {
+	opacity: 0.5;
+}
+
+/* A popup's add button follows the set directly in its form. */
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt.wffn-bundles-fbt {
+	margin-block-end: var(--wffn-bundles-block-gap);
+}
+
+/* Aero sizes every element in its form at (1,0,1), flattening the set's text to one size. */
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt :is(.wffn-bundles-fbt-name, .wffn-bundles-fbt-prices, .wffn-bundles-fbt-sum-price, .wffn-bundles-fbt-save, .wffn-bundles-fbt-rule, .wffn-bundles-fbt-hint, .wffn-bundles-heading, .wffn-bundles-subheading) * {
+	font-size: inherit;
+}
+
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-name.wffn-bundles-fbt-name {
+	font-size: var(--wffn-bundles-title-size);
+}
+
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-sum-price.wffn-bundles-fbt-sum-price,
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-price-original.wffn-bundles-fbt-price-original,
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-price-final.wffn-bundles-fbt-price-final {
+	font-size: var(--wffn-bundles-price-size);
+}
+
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-total.wffn-bundles-fbt-total {
+	font-size: calc(var(--wffn-bundles-price-size) + 2px);
+}
+
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-save.wffn-bundles-fbt-save,
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-rule.wffn-bundles-fbt-rule,
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-hint.wffn-bundles-fbt-hint {
+	font-size: var(--wffn-bundles-price-desc-size);
+}
+
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-tag.wffn-bundles-fbt-tag {
+	font-size: var(--wffn-bundles-desc-size);
+	line-height: 1;
+}
+
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-heading.wffn-bundles-heading {
+	font-size: var(--wffn-bundles-heading-size);
+}
+
+#wfacp_qr_model_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-subheading.wffn-bundles-subheading {
+	font-size: calc(var(--wffn-bundles-heading-size) - 2px);
+}
+
+/* A set's host row carries the variation pick, so the product's own selects stay out of view. */
+#wfacp_qr_model_wrap:has(.wffn-bundles-fbt) .variations_form :is(table.variations, .woocommerce-variation.single_variation) {
+	display: none;
+}
+
+/* Aero pins the popup's add button, 58px tall, over the popup's foot on phones. */
+@media (max-width: 767px) {
+	#wfacp_qr_model_wrap:has(.wffn-bundles) .wfacp_qr_wrap form.cart {
+		padding-block-end: 58px;
+	}
+
+	#wfacp_qr_model_wrap:has(.wffn-bundles) .wfacp_qr_wrap .wfacp_single_add_to_cart_button {
+		margin-block-end: 0;
+	}
+}

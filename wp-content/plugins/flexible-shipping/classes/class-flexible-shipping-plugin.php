@@ -34,8 +34,6 @@ use FSVendor\WPDesk\PluginBuilder\Plugin\HookableCollection;
 use FSVendor\WPDesk\PluginBuilder\Plugin\HookableParent;
 use FSVendor\WPDesk\PluginBuilder\Plugin\TemplateLoad;
 use FSVendor\WPDesk\RepositoryRating\DisplayStrategy\ShippingMethodDisplayDecision;
-use WPDesk\FS\RatingPetition\Ajax as RatingPetitionAjax;
-use WPDesk\FS\RatingPetition\Popup as RatingPetitionPopup;
 use FSVendor\WPDesk\RepositoryRating\RepositoryRatingPetitionText;
 use FSVendor\WPDesk\RepositoryRating\TextPetitionDisplayer;
 use FSVendor\WPDesk\Session\SessionFactory;
@@ -364,9 +362,6 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 
 		$this->initialize_docs_chat();
 
-		$this->add_hookable( new \WPDesk\FS\RatingPetition\Tracker() );
-		$this->add_hookable( new \WPDesk\FS\RatingPetition\SaveCounter() );
-
 		// Rating petition
 		add_action( 'admin_init', [ $this, 'init_rating_petition' ] );
 	}
@@ -384,13 +379,6 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 					'center'
 				)
 			) )->hooks();
-
-			( new RatingPetitionPopup(
-				$shipping_method_display_decision,
-				$this->plugin_info->get_plugin_url(),
-				$this->plugin_info->get_version()
-			) )->hooks();
-			( new RatingPetitionAjax() )->hooks();
 		}
 	}
 

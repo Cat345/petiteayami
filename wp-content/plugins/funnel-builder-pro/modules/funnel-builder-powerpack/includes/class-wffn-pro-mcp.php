@@ -26,6 +26,26 @@ if ( ! class_exists( 'WFFN_Pro_MCP' ) ) {
 					);
 				}
 			);
+			add_filter( 'fkmcp_plugin_versions', array( __CLASS__, 'plugin_version' ) );
+		}
+
+		/**
+		 * This plugin's own entry in the MCP replies' fkai_store.plugins: the
+		 * module's fkmcp_plugin_versions filter, where every FunnelKit plugin adds
+		 * its slug and version.
+		 *
+		 * @param array $versions Plugin slug => version.
+		 *
+		 * @return array
+		 */
+		public static function plugin_version( $versions ) {
+			$versions = is_array( $versions ) ? $versions : array();
+
+			if ( defined( 'WFFN_PRO_VERSION' ) ) {
+				$versions['funnel-builder-pro'] = WFFN_PRO_VERSION;
+			}
+
+			return $versions;
 		}
 
 		/**
@@ -90,6 +110,7 @@ if ( ! class_exists( 'WFFN_Pro_MCP' ) ) {
 			add_filter( 'fkmcp_step_context', array( 'FKMCP_Pack_Funnels_Pro', 'step_context' ), 10, 2 );
 			add_filter( 'fkmcp_substep_reorder_handlers', array( 'FKMCP_Pack_Funnels_Pro', 'substep_reorder_handlers' ) );
 			add_filter( 'fkmcp_create_step_guidance', array( 'FKMCP_Pack_Funnels_Pro', 'create_step_guidance' ) );
+			add_filter( 'fkmcp_tool_guidance', array( 'FKMCP_Pack_Funnels_Pro', 'tool_guidance' ), 10, 2 );
 			add_filter( 'fkmcp_create_step_next', array( 'FKMCP_Pack_Funnels_Pro', 'create_step_next' ), 10, 4 );
 			add_filter( 'fkmcp_funnel_ready_offers', array( 'FKMCP_Pack_Funnels_Pro', 'store_checkout_offers' ), 5, 3 );
 			add_filter( 'fkmcp_import_status_guidance', array( 'FKMCP_Pack_Funnels_Pro', 'import_status_guidance' ) );

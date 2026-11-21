@@ -217,6 +217,23 @@ add_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set'
 							</span>
 								<?php echo $quick_preview; ?>
 							</div>
+							<?php
+							/**
+							 * Fires in a product switcher row before its attribute area, beside the product's title.
+							 *
+							 * Fires for every row, whether or not it shows attribute dropdowns or is in the cart;
+							 * a callback checks the row itself.
+							 *
+							 * @since 3.24.0
+							 *
+							 * @param array|null $cart_item         Cart item, null when the row is not in the cart.
+							 * @param string     $cart_item_key     Cart item key, '' when the row is not in the cart.
+							 * @param WC_Product $pro               Product the row sells.
+							 * @param array      $switcher_settings Product switcher settings.
+							 * @param array      $product_data      Stored row.
+							 */
+							do_action( 'wfacp_before_product_switcher_attributes', $cart_item, $cart_item_key, $pro, $switcher_settings, $product_data );
+							?>
 							<div class="wfacp_product_attributes">
 								<?php
 								$attribute_html = WFACP_Common::get_attribute_html( $cart_item, $cart_item_key, $pro, $switcher_settings, $product_data );
@@ -230,6 +247,23 @@ add_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set'
 									?>
 								</div>
 							</div>
+							<?php
+							/**
+							 * Fires in a product switcher row after its attribute area.
+							 *
+							 * Fires for every row, whether or not it shows attribute dropdowns or is in the cart;
+							 * a callback checks the row itself.
+							 *
+							 * @since 3.24.0
+							 *
+							 * @param array|null $cart_item         Cart item, null when the row is not in the cart.
+							 * @param string     $cart_item_key     Cart item key, '' when the row is not in the cart.
+							 * @param WC_Product $pro               Product the row sells.
+							 * @param array      $switcher_settings Product switcher settings.
+							 * @param array      $product_data      Stored row.
+							 */
+							do_action( 'wfacp_after_product_switcher_attributes', $cart_item, $cart_item_key, $pro, $switcher_settings, $product_data );
+							?>
 						</div>
 					</div>
 					<?php

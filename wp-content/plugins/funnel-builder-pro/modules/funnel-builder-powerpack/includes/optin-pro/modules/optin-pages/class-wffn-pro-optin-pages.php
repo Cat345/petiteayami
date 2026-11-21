@@ -533,6 +533,7 @@ if ( ! class_exists( 'WFFN_Pro_Optin_Pages' ) ) {
 				'infusion-soft'   => __( 'InfusionSoft', 'funnel-builder-powerpack' ),
 				'mailchimp'       => __( 'Mailchimp', 'funnel-builder-powerpack' ),
 				'madmimi'         => __( 'Mad Mimi', 'funnel-builder-powerpack' ),
+				'zoho-campaigns'  => __( 'Zoho Campaigns', 'funnel-builder-powerpack' ),
 				'raw_html'        => __( 'Raw HTML', 'funnel-builder-powerpack' ),
 			);
 			$formBuilder   = isset( $optin_form_options['formBuilder'] ) ? $optin_form_options['formBuilder'] : '';

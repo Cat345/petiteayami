@@ -159,6 +159,55 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 		}
 
+		/**
+		 * Whether the current visitor may see this product's details
+		 *
+		 * A single-post WP_Query hides drafts and private posts from guests, but not a
+		 * variation whose parent is unpublished (the variation itself stays 'publish'),
+		 * and never a password-protected post, so both posts are checked here.
+		 *
+		 * @param int $product_id Product or variation ID.
+		 *
+		 * @return bool
+		 */
+		private static function is_product_viewable( $product_id ) {
+			$product = wc_get_product( $product_id );
+			if ( ! $product instanceof WC_Product ) {
+				return false;
+			}
+
+			$post_ids = array_filter( array( $product->get_id(), $product->get_parent_id() ) );
+			foreach ( $post_ids as $post_id ) {
+				if ( 'publish' !== get_post_status( $post_id ) && ! current_user_can( 'read_product', $post_id ) ) {
+					return false;
+				}
+				if ( post_password_required( $post_id ) ) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/**
+		 * Whether the product is the bump item's product, or a variation of it
+		 *
+		 * Without this a valid item key could be used to preview any product.
+		 *
+		 * @param array $item       Bump item, as stored on the bump.
+		 * @param int   $product_id Product or variation ID.
+		 *
+		 * @return bool
+		 */
+		private static function is_bump_item_product( $item, $product_id ) {
+			$product = wc_get_product( $product_id );
+			if ( ! $product instanceof WC_Product || empty( $item['id'] ) ) {
+				return false;
+			}
+
+			return in_array( absint( $item['id'] ), array( $product->get_id(), $product->get_parent_id() ), true );
+		}
+
 		public static function send_resp( $data = array() ) {
 			if ( ! is_array( $data ) ) {
 				$data = array();
@@ -577,7 +626,8 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 				$cart_product_map = array();
 				foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
-					if ( ! empty( $cart_item['_wfob_product_key'] ) ) {
+					// A bump can hold several lines under one key; the first is its lead, whose removal takes the rest with it.
+					if ( ! empty( $cart_item['_wfob_product_key'] ) && ! isset( $cart_product_map[ $cart_item['_wfob_product_key'] ] ) ) {
 						$cart_product_map[ $cart_item['_wfob_product_key'] ] = $cart_item_key;
 					}
 				}
@@ -664,14 +714,19 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 			do_action( 'wfob_before_add_to_cart', $post );
 			if ( ! isset( $products[ $product_key ] ) || count( $products[ $product_key ] ) === 0 ) {
+				self::refuse_add( $post );
+
 				return $resp;
 			}
 
 			$remove_item_key = ( isset( $post['remove_item_key'] ) ? trim( $post['remove_item_key'] ) : '' );
+			$swap_snapshot   = null;
 			if ( '' !== $remove_item_key ) {
 				$item = WC()->cart->get_cart_item( $remove_item_key );
 				if ( is_array( $item ) && count( $item ) ) {
-					$item_key = $item['_wfob_product_key'];
+					// Removing the line can take other lines with it, so a failed swap puts back the whole cart.
+					$swap_snapshot = self::swap_snapshot();
+					$item_key      = $item['_wfob_product_key'];
 					if ( isset( $session_products[ $wfob_id ] ) && $session_products[ $wfob_id ] [ $item_key ] ) {
 						unset( $session_products[ $wfob_id ] [ $item_key ] );
 						WC()->session->set( 'wfob_added_bump_product', $session_products );
@@ -681,7 +736,11 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 
 			$product_variation_id = ( isset( $post['variation_id'] ) ? absint( $post['variation_id'] ) : 0 );
-			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : array();
+			// The row's discount is for its own product: a variation of any other product would carry it to that one.
+			if ( $product_variation_id > 0 && ! self::is_row_variation( $products[ $product_key ], $product_variation_id ) ) {
+				$product_variation_id = 0;
+			}
+			$attributes = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : array();
 
 			$product    = $products[ $product_key ];
 			$product_id = absint( $product['id'] );
@@ -702,11 +761,9 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 
 			$product_obj = WFOB_Common::wc_get_product( $product_id );
-			if ( ! $product_obj instanceof WC_Product ) {
-				return $resp;
-			}
+			if ( ! $product_obj instanceof WC_Product || ! $product_obj->is_purchasable() ) {
+				self::refuse_add( $post, $swap_snapshot );
 
-			if ( ! $product_obj->is_purchasable() ) {
 				return $resp;
 			}
 
@@ -725,12 +782,30 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				$product_obj                             = wc_get_product( $variation_id );
 			}
 
-			$stock_status = WFOB_Common::check_manage_stock( $product_obj, $quantity );
+			/**
+			 * Filters whether the bump product's stock allows its add.
+			 *
+			 * A compatibility that adds other products in its place (a bundle) checks their stock itself.
+			 *
+			 * @since 1.28.0
+			 *
+			 * @param bool       $stock_status Whether the bump product has the stock.
+			 * @param WC_Product $product_obj  Product the bump adds.
+			 * @param int        $quantity     Quantity added.
+			 * @param array      $post         The bump's posted data on a shopper's add; for an auto-added
+			 *                                 (pre-checked) bump, array( 'wfob_id' => int, 'product_key' => string ).
+			 *
+			 * @return bool True allows the add. Any falsy value (false, null, 0, '') refuses it, so a
+			 *              callback that returns nothing cannot let a sold-out bump through.
+			 */
+			$stock_status = apply_filters( 'wfob_bump_stock_ok', WFOB_Common::check_manage_stock( $product_obj, $quantity ), $product_obj, $quantity, $post );
 
-			if ( false === $stock_status ) {
+			// Anything but a truthy answer refuses the add, so a callback that returns nothing cannot let a sold-out bump through.
+			if ( ! $stock_status ) {
 
 				$resp['error']  = __( 'Sorry, we do not have enough stock to fulfill your order. Please change quantity and try again. We apologize for any inconvenience caused.', 'woofunnels-order-bump' );
 				$resp['status'] = false;
+				self::refuse_add( $post, $swap_snapshot );
 
 				return $resp;
 			}
@@ -759,13 +834,28 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			$custom_data['_wfob_options']['posted_data'] = $post;
 
 			add_filter( 'woocommerce_add_cart_item', array( 'WFOB_Common', 'handle_swap_product' ), 10, 2 );
-			$success = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $attributes, $custom_data );
+			// A failed add drops only the notices it raised, not the shopper's others.
+			$notices_before = wc_get_notices();
+			$success        = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $attributes, $custom_data );
 
 			if ( '' === $success || false === $success ) {
 
 				$resp['error']  = __( 'Sorry, we do not have enough stock to fulfill your order. Please change quantity and try again. We apologize for any inconvenience caused.', 'woofunnels-order-bump' );
 				$resp['status'] = false;
-				wc_clear_notices();
+				wc_set_notices( $notices_before );
+				self::refuse_add( $post, $swap_snapshot );
+
+				return $resp;
+			}
+			// A compatibility's add hook can take the line straight back out (a bundle with a sold-out member). The bump was then not added, so do not report it as accepted.
+			if ( ! WC()->cart->get_cart_item( $success ) ) {
+				$notices        = wc_get_notices( 'error' );
+				$first_notice   = is_array( $notices ) && count( $notices ) ? reset( $notices ) : '';
+				$first_notice   = is_array( $first_notice ) ? ( $first_notice['notice'] ?? '' ) : (string) $first_notice;
+				$resp['error']  = '' !== $first_notice ? wp_strip_all_tags( $first_notice ) : __( 'Sorry, we do not have enough stock to fulfill your order. Please change quantity and try again. We apologize for any inconvenience caused.', 'woofunnels-order-bump' );
+				$resp['status'] = false;
+				wc_set_notices( $notices_before );
+				self::refuse_add( $post, $swap_snapshot );
 
 				return $resp;
 			}
@@ -778,6 +868,13 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				$session_products[ $wfob_id ][ $product_key ]             = array();
 				$session_products[ $wfob_id ][ $product_key ]['cart_key'] = $success;
 				WC()->session->set( 'wfob_added_bump_product', $session_products );
+				/**
+				 * Fires after a shopper's bump is added to the cart. A refused add fires `wfob_add_to_cart_refused` instead.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param array $post The bump's posted data, with the new line's key as `cart_key`.
+				 */
 				do_action( 'wfob_after_add_to_cart', $post );
 				$cart_data                 = array();
 				$cart_data[ $product_key ] = WFOB_Common::analytics_item( $product_obj, WC()->cart->get_cart_item( $success ) );
@@ -790,6 +887,87 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 
 			return $resp;
+		}
+
+		/**
+		 * Undo a refused add's swap, then let what `wfob_before_add_to_cart` set up be cleared.
+		 *
+		 * @param array      $post     The bump's posted data.
+		 * @param array|null $snapshot What swap_snapshot() returned, or null when the add swapped nothing.
+		 * @return void
+		 */
+		private static function refuse_add( $post, $snapshot = null ) {
+			self::undo_swap( $snapshot );
+			/**
+			 * Fires when a shopper's bump add is refused, after a failed swap has put the previous bump back.
+			 *
+			 * `wfob_after_add_to_cart` fires only for an added bump, so a callback that undoes what it set up
+			 * on `wfob_before_add_to_cart` hooks both.
+			 *
+			 * @since 1.28.0
+			 *
+			 * @param array $post The bump's posted data.
+			 */
+			do_action( 'wfob_add_to_cart_refused', $post );
+		}
+
+		/**
+		 * The cart, its coupons, its notices and the bump session entries a swap changes, taken before its old line is removed.
+		 *
+		 * @return array
+		 */
+		private static function swap_snapshot() {
+			return array(
+				'contents' => WC()->cart->get_cart_contents(),
+				'removed'  => WC()->cart->get_removed_cart_contents(),
+				'coupons'  => WC()->cart->get_applied_coupons(),
+				'added'    => WC()->session->get( 'wfob_added_bump_product', array() ),
+				'selected' => WC()->session->get( '_wfob_selected_bump', array() ),
+				'notices'  => wc_get_notices(),
+			);
+		}
+
+		/**
+		 * Put back what swap_snapshot() took, so a swap whose new add fails keeps the shopper's previous bump.
+		 *
+		 * @param array|null $snapshot What swap_snapshot() returned, or null when the add swapped nothing.
+		 * @return void
+		 */
+		private static function undo_swap( $snapshot ) {
+			if ( ! is_array( $snapshot ) ) {
+				return;
+			}
+			WC()->cart->set_cart_contents( $snapshot['contents'] );
+			WC()->cart->set_removed_cart_contents( $snapshot['removed'] );
+			// A coupon that needed the removed line was dropped with it; the line is back, so is the coupon.
+			WC()->cart->set_applied_coupons( $snapshot['coupons'] );
+			WC()->session->set( 'wfob_added_bump_product', $snapshot['added'] );
+			WC()->session->set( '_wfob_selected_bump', $snapshot['selected'] );
+			// A notice the removal raised (a set no longer discounted) would describe a line that is back.
+			wc_set_notices( $snapshot['notices'] );
+			WC()->cart->calculate_totals();
+		}
+
+		/**
+		 * Whether a variation belongs to the product a bump row sells: the row's
+		 * variable product, or the parent of the variation the row sells.
+		 *
+		 * @param array $row          Bump row.
+		 * @param int   $variation_id Posted variation id.
+		 *
+		 * @return bool
+		 */
+		private static function is_row_variation( $row, $variation_id ) {
+			if ( ! is_array( $row ) ) {
+				return false;
+			}
+			$parent_id = ! empty( $row['parent_product_id'] ) ? absint( $row['parent_product_id'] ) : ( isset( $row['variable'] ) ? absint( $row['id'] ?? 0 ) : 0 );
+			if ( $parent_id < 1 ) {
+				return false;
+			}
+			$variation = wc_get_product( absint( $variation_id ) );
+
+			return $variation instanceof WC_Product_Variation && absint( $variation->get_parent_id() ) === $parent_id;
 		}
 
 		private static function remove_order_bump( $post ) {
@@ -843,10 +1021,23 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				/**
 				 * @var $product_obj WC_Product;
 				 */
-				$product_obj  = $cart_item['data'];
-				$stock_status = WFOB_Common::check_manage_stock( $product_obj, $new_quantity );
-				if ( false === $stock_status ) {
-					$resp['error']    = __( 'Sorry, we do not have enough stock to fulfill your order. Please change quantity and try again. We apologize for any inconvenience caused.', 'woofunnels-aero-checkout' );
+				$product_obj = $cart_item['data'];
+				/**
+				 * Filters whether the stock covers a bump line's new quantity.
+				 *
+				 * A line sold with others, such as a bundle's, can check that they have the stock too.
+				 *
+				 * @since 1.28.0
+				 *
+				 * @param bool       $ok           Whether the bump product has the stock.
+				 * @param string     $cart_key     Cart key of the bump's line.
+				 * @param int|float  $new_quantity The line's new quantity.
+				 * @param WC_Product $product_obj  The bump product.
+				 */
+				$stock_status = apply_filters( 'wfob_bump_quantity_stock_ok', WFOB_Common::check_manage_stock( $product_obj, $new_quantity ), $cart_key, $new_quantity, $product_obj );
+				// As on the add path: anything but a truthy answer refuses the increase.
+				if ( ! $stock_status ) {
+					$resp['error']    = __( 'Sorry, we do not have enough stock to fulfill your order. Please change quantity and try again. We apologize for any inconvenience caused.', 'woofunnels-order-bump' );
 					$resp['qty']      = $cart_item['quantity'];
 					$resp['status']   = false;
 					$resp['cart_key'] = $cart_key;
@@ -885,7 +1076,10 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				$save_product_list = WFOB_Common::get_bump_products( $wfob_id );
 				if ( isset( $save_product_list[ $item_key ] ) ) {
 					$product_id = absint( $_POST['product_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
-					$params     = array(
+					if ( ! self::is_product_viewable( $product_id ) || ! self::is_bump_item_product( $save_product_list[ $item_key ], $product_id ) ) {
+						self::send_resp( $resp );
+					}
+					$params = array(
 						'p'         => $product_id,
 						'post_type' => array( 'product', 'product_variation' ),
 					);

@@ -3094,15 +3094,15 @@ class Admin {
 					$this->account_data['statement_descriptor_prefix'] = $account->settings->card_payments->statement_descriptor_prefix;
 					$this->account_data['statement_descriptor_full']   = $account->settings->payments->statement_descriptor;
 
-					if ( $this->options_keys['fkwcs_stripe_statement_descriptor_full'] === '' && $this->account_data['statement_descriptor_full'] !== '' ) {
+					if ( ! empty( $this->account_data['statement_descriptor_full'] ) && $this->options_keys['fkwcs_stripe_statement_descriptor_full'] !== $this->account_data['statement_descriptor_full'] ) {
 
 						update_option( 'fkwcs_stripe_statement_descriptor_full', $this->account_data['statement_descriptor_full'] );
 						$this->options_keys['fkwcs_stripe_statement_descriptor_full'] = $this->account_data['statement_descriptor_full'];
 					}
 
-					if ( $this->options_keys['fkwcs_stripe_statement_descriptor_prefix'] === '' && $this->account_data['statement_descriptor_prefix'] !== '' ) {
-						update_option( 'fkwcs_stripe_statement_descriptor_prefix', $this->account_data['statement_descriptor_prefix'] );
-						$this->options_keys['fkwcs_stripe_statement_descriptor_prefix'] = $this->account_data['statement_descriptor_prefix'];
+					if ( $this->options_keys['fkwcs_stripe_statement_descriptor_prefix'] !== (string) $this->account_data['statement_descriptor_prefix'] ) {
+						update_option( 'fkwcs_stripe_statement_descriptor_prefix', (string) $this->account_data['statement_descriptor_prefix'] );
+						$this->options_keys['fkwcs_stripe_statement_descriptor_prefix'] = (string) $this->account_data['statement_descriptor_prefix'];
 					}
 
 					$stripe_account_settings = array(

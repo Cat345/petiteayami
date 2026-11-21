@@ -36,7 +36,7 @@ if ( empty( $cart_contents ) ) {
 						 */
 						$_product    = $cart_item['product'];
 						$p_type      = $_product->get_type();
-						$is_variable = ( fkcart_is_variable_product_type( $_product->get_type() ) );
+						$is_variable = ( fkcart_product_needs_options( $_product ) );
 						$price       = $is_variable ? $_product->get_price_html() : ( $_product->is_on_sale() || $_product->is_taxable() ? $_product->get_price_html() : $_product->get_price_html() );
 						$button      = $is_variable ? __( 'Select options', 'woocommerce' ) : $button;
 						$product_id  = $_product->get_id();

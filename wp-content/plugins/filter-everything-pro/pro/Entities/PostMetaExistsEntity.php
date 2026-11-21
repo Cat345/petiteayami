@@ -8,6 +8,7 @@ if ( ! defined('ABSPATH') ) {
 }
 
 use FilterEverything\Filter\PostMetaNumEntity;
+use FilterEverything\Filter\WooDiscountRules;
 
 class PostMetaExistsEntity extends PostMetaNumEntity
 {
@@ -79,14 +80,54 @@ class PostMetaExistsEntity extends PostMetaNumEntity
             $term_posts = $this->getTermPosts( $term->slug, $setId );
             $this->items[$slug]->posts = $term_posts['posts'];
             $this->items[$slug]->post_types = $term_posts['post_types'];
-            if ($this->entityName == '_sale_price' && $this->is_woo_discount_rules){
-                if(!empty($this->wdr_product_ids)){
-                    if ($slug === 'yes') {
-                        $this->items[$slug]->posts = array_unique(array_merge($this->items[$slug]->posts, $this->wdr_product_ids));
-                    } elseif ($slug === 'no') {
-                        $this->items[$slug]->posts = array_diff($this->items[$slug]->posts, $this->wdr_product_ids);
-                    }
+        }
+
+        if ( $this->entityName === '_sale_price' && $this->is_woo_discount_rules ) {
+            $this->moveWdrDiscountedToOnSale( $setId );
+        }
+    }
+
+    /**
+     * Woo Discount Rules: a product that a rule discounts is on sale even
+     * without a _sale_price, so it belongs to «yes» and not to «no» — the same
+     * products the applied filter selects in wdrAddProductsToFilterQuery().
+     *
+     * Runs after both terms are known. Before 1.9.8 the move happened inside
+     * the loop above, where «yes» was already final when the «no» products
+     * were looked at, so a discounted product left «no» but never reached
+     * «yes» and the two counters did not add up.
+     */
+    private function moveWdrDiscountedToOnSale( $setId )
+    {
+        // Only products without a _sale_price can move; the «no» term may be
+        // excluded from the filter, so fall back to its (cached) query
+        if ( isset( $this->items['no'] ) ) {
+            $without_sale = array( 'posts' => $this->items['no']->posts, 'post_types' => $this->items['no']->post_types );
+        } else {
+            $without_sale = $this->getTermPosts( 'no', $setId );
+        }
+
+        $discounted = WooDiscountRules::getDiscountedPrices( $without_sale['posts'] );
+        if ( empty( $discounted ) ) {
+            return;
+        }
+
+        $moved = array_keys( $discounted );
+        $this->wdr_product_ids = $moved;
+
+        if ( isset( $this->items['yes'] ) ) {
+            $this->items['yes']->posts = array_values( array_unique( array_merge( $this->items['yes']->posts, $moved ) ) );
+            foreach ( $moved as $id ) {
+                if ( isset( $without_sale['post_types'][ $id ] ) ) {
+                    $this->items['yes']->post_types[ $id ] = $without_sale['post_types'][ $id ];
                 }
+            }
+        }
+
+        if ( isset( $this->items['no'] ) ) {
+            $this->items['no']->posts = array_values( array_diff( $this->items['no']->posts, $moved ) );
+            foreach ( $moved as $id ) {
+                unset( $this->items['no']->post_types[ $id ] );
             }
         }
     }
@@ -173,26 +214,10 @@ class PostMetaExistsEntity extends PostMetaNumEntity
             flrt_set_transient( $transient_key, $result, FLRT_TRANSIENT_PERIOD_HOURS * HOUR_IN_SECONDS );
         }
 
-        if($this->is_woo_discount_rules && $this->entityName === '_sale_price'){
-            $wdr_woo_discount_rules = $this->getWooDiscountRulesClass();
-            $product_ids = array_map('intval', array_column($result, 'ID'));
-            $this->preloadProducts($product_ids);
-        }
         if( ! empty( $result ) ){
             foreach( $result as $post){
                 $postIds[] = $post['ID'];
                 $postTypes[$post['ID']] = $post['post_type'];
-                if ($this->is_woo_discount_rules) {
-                    if ($this->entityName === '_sale_price') {
-                        $product = $this->getProductCached($post['ID']);
-                        if ($product) {
-                            $wdr_product_has_sale = $wdr_woo_discount_rules->getProductPriceToDisplay($product);
-                            if ($wdr_product_has_sale) {
-                                $this->wdr_product_ids[] = $post['ID'];
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -262,7 +287,6 @@ class PostMetaExistsEntity extends PostMetaNumEntity
     {
         $post__in = [];
         $post__not_in = [];
-        $wdr_woo_discount_rules = $this->getWooDiscountRulesClass();
 
         $args = array(
             'status'    => 'publish',
@@ -283,11 +307,15 @@ class PostMetaExistsEntity extends PostMetaNumEntity
             );
         }
 
-        $products = wc_get_products($args);
+        $products   = wc_get_products($args);
+        $wdr_prices = WooDiscountRules::getDiscountedPrices( $products );
+
+        // One meta query for all products instead of one per product below
+        update_meta_cache( 'post', $products );
 
         foreach ($products as $post_id) {
             $woo_sale_price = get_post_meta($post_id, '_sale_price', true);
-            if ($wdr_woo_discount_rules->getProductPriceToDisplay($post_id) || !empty($woo_sale_price)) {
+            if ( isset( $wdr_prices[ (int) $post_id ] ) || !empty($woo_sale_price)) {
                 $post__in[] = $post_id;
             } else {
                 $post__not_in[] = $post_id;

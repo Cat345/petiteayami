@@ -272,6 +272,15 @@ if ( ! class_exists( '\FKCart\Includes\Front' ) ) {
 			}
 			$arr['cookie_names'] = Data::fkcart_frontend_cookie_names();
 
+			/**
+			 * Expose the cookie domain so JS setCookie() writes the SAME cookie that PHP
+			 * wc_setcookie() does. wc_setcookie() scopes cookies to COOKIE_DOMAIN; when that is a
+			 * leading-dot domain (multisite / subdomain hosting) the JS host-only cookie would be a
+			 * SECOND, separate cookie of the same name, leaving the count/total reading the stale one.
+			 * Empty string => host-only (matches the default WP/WC behaviour).
+			 */
+			$arr['cookie_domain'] = ( defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ) ? COOKIE_DOMAIN : '';
+
 			return $arr;
 		}
 

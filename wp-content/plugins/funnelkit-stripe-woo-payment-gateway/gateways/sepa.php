@@ -72,6 +72,13 @@ class Sepa extends Abstract_Payment_Gateway {
 		add_filter( 'woocommerce_payment_methods_list_item', array( $this, 'get_saved_payment_methods_list' ), 10, 2 );
 		add_action( 'fkwcs_change_subs_payment_method_success', array( $this, 'maybe_save_token_on_change_payment_method' ), 10, 2 );
 
+		/**
+		 * Both seams attach a SEPA payment method without taking one through a payment, so
+		 * neither leaves a mandate behind. See ensure_mandate_for_source().
+		 */
+		add_action( 'fkwcs_change_subs_payment_method_success', array( $this, 'ensure_mandate_for_source' ), 20, 2 );
+		add_action( 'fkwcs_add_payment_method_' . $this->id . '_success', array( $this, 'ensure_mandate_for_source' ), 10, 2 );
+
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_stripe_js' ) );
 	}
 
@@ -773,6 +780,102 @@ class Sepa extends Abstract_Payment_Gateway {
 			$this->create_payment_token_for_user( $user_id, $payment_method, $is_live );
 		} catch ( \Throwable $e ) {
 			Helper::log( sprintf( 'SEPA change-payment tokenization failed: %s', $e->getMessage() ), 'error' );
+		}
+	}
+
+	/**
+	 * Give a newly attached SEPA payment method a mandate.
+	 *
+	 * A direct debit cannot be taken without the customer's authorisation, and in Stripe that
+	 * authorisation is a Mandate bound to one PaymentMethod. Paying at checkout produces one as
+	 * a side effect of the PaymentIntent, but changing a subscription's payment method - or
+	 * adding one from My Account - only attaches the PaymentMethod. The new IBAN is then left
+	 * with no mandate of its own, and every off-session renewal fails with "This PaymentIntent
+	 * requires a mandate, but no existing mandate was found".
+	 *
+	 * The customer is on-session here and has just submitted the IBAN, so their acceptance is
+	 * recorded as an online mandate against their IP and user agent. The mandate is not stored:
+	 * Stripe resolves it from the PaymentMethod on later off-session charges, and a stored copy
+	 * is what goes stale the next time the IBAN changes.
+	 *
+	 * @param string $source_id Stripe PaymentMethod id.
+	 * @param object $context   Prepared source (change payment) or the PaymentMethod (add payment).
+	 *
+	 * @return void
+	 */
+	public function ensure_mandate_for_source( $source_id = '', $context = null ) {
+		try {
+			$payment_method = ( is_object( $context ) && ! empty( $context->source_object ) ) ? $context->source_object : $context;
+
+			/** The actions fire for every gateway's flow; only SEPA needs a mandate here. */
+			if ( ! is_object( $payment_method ) || ! isset( $payment_method->type ) || 'sepa_debit' !== $payment_method->type ) {
+				return;
+			}
+
+			/**
+			 * The add-payment-method flow hands over the PaymentMethod as it looked before it
+			 * was attached, so it carries no customer yet - fall back to the logged-in
+			 * customer, which is the one it was just attached to.
+			 */
+			$customer_id = '';
+			if ( ! empty( $payment_method->customer ) ) {
+				$customer_id = $payment_method->customer;
+			} elseif ( is_object( $context ) && ! empty( $context->customer ) ) {
+				$customer_id = $context->customer;
+			} else {
+				$customer_id = $this->get_customer_id();
+			}
+
+			if ( empty( $source_id ) || empty( $customer_id ) ) {
+				Helper::log( 'SEPA: cannot create a mandate without both a payment method and a customer.', 'warning' );
+
+				return;
+			}
+
+			$client = $this->get_client();
+			if ( is_null( $client ) ) {
+				return;
+			}
+
+			$ip_address = \WC_Geolocation::get_ip_address();
+			if ( empty( $ip_address ) ) {
+				$ip_address = \WC_Geolocation::get_external_ip_address();
+			}
+			$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+			if ( empty( $user_agent ) ) {
+				$user_agent = 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' );
+			}
+
+			$response = $client->setup_intents( 'create', array(
+				array(
+					'payment_method'       => $source_id,
+					'customer'             => $customer_id,
+					'payment_method_types' => array( 'sepa_debit' ),
+					'confirm'              => true,
+					'usage'                => 'off_session',
+					'mandate_data'         => array(
+						'customer_acceptance' => array(
+							'type'   => 'online',
+							'online' => array(
+								'ip_address' => $ip_address,
+								'user_agent' => $user_agent,
+							),
+						),
+					),
+				),
+			) );
+
+			if ( empty( $response['success'] ) ) {
+				/** Renewals stay broken until a mandate exists, so this is worth shouting about. */
+				Helper::log( 'SEPA: could not create a mandate for ' . $source_id . ': ' . ( isset( $response['message'] ) ? $response['message'] : 'unknown error' ), 'error' );
+
+				return;
+			}
+
+			$intent = $response['data'];
+			Helper::log( sprintf( 'SEPA: mandate %s created for %s via %s (status %s).', isset( $intent->mandate ) ? $intent->mandate : '(none)', $source_id, isset( $intent->id ) ? $intent->id : '?', isset( $intent->status ) ? $intent->status : '?' ) );
+		} catch ( \Throwable $e ) {
+			Helper::log( 'SEPA ensure_mandate_for_source failed: ' . $e->getMessage(), 'error' );
 		}
 	}
 

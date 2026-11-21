@@ -410,11 +410,13 @@ if (!class_exists('XmlPrepare')):
                     AND t_v.slug IN ($hidden_in)
                 )";
 
+            // LEFT JOIN users: posts created by imports and API connectors often have
+            // no author (post_author = 0), yet the frontend shows them like any other.
             $insertSql = "
                 INSERT INTO wpc_tmp_terms (ID, user_nicename, taxonomy, slug)
-                SELECT DISTINCT p.ID, u.user_nicename, tt.taxonomy, t.slug
+                SELECT DISTINCT p.ID, COALESCE(u.user_nicename, ''), tt.taxonomy, t.slug
                 FROM {$wpdb->posts} p
-                JOIN {$wpdb->users} u ON p.post_author = u.ID
+                LEFT JOIN {$wpdb->users} u ON p.post_author = u.ID
                 JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID
                 JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
                 JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
@@ -423,9 +425,9 @@ if (!class_exists('XmlPrepare')):
 
                 UNION
 
-                SELECT DISTINCT p.ID, u.user_nicename, tt_parent.taxonomy, t_parent.slug
+                SELECT DISTINCT p.ID, COALESCE(u.user_nicename, ''), tt_parent.taxonomy, t_parent.slug
                 FROM {$wpdb->posts} p
-                JOIN {$wpdb->users} u ON p.post_author = u.ID
+                LEFT JOIN {$wpdb->users} u ON p.post_author = u.ID
                 JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID
                 JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
                 JOIN {$wpdb->term_taxonomy} tt_parent ON tt.parent = tt_parent.term_id
@@ -436,6 +438,51 @@ if (!class_exists('XmlPrepare')):
             $wpdb->query($insertSql);
             if ($wpdb->last_error) {
                 $this->error->add('tmp_terms_create_failed', $this->errorNoticeTemplate(esc_html__('Failed to generate the XML sitemap. Please try again or contact support if the issue persists.', 'filter-everything')  . ' ' . $wpdb->last_error));
+                return;
+            }
+
+            $this->addDeeperAncestorsToTempTable($visibilityWhere);
+        }
+
+        /**
+         * The query above covers a term's direct parent only, but the page of any
+         * ancestor shows the posts of its whole branch: a post assigned to a leaf
+         * two or more levels deep must count for the upper terms as well.
+         */
+        private function addDeeperAncestorsToTempTable($visibilityWhere)
+        {
+            global $wpdb;
+
+            $chain    = "JOIN {$wpdb->term_taxonomy} tt_parent ON tt.parent = tt_parent.term_id";
+            $ancestor = 'tt_parent';
+
+            // The limit also protects against corrupted (looped) term parents
+            for ($level = 2; $level <= 20; $level++) {
+                $next   = 'tt_level' . $level;
+                $chain .= " JOIN {$wpdb->term_taxonomy} {$next} ON {$ancestor}.parent = {$next}.term_id";
+                $ancestor = $next;
+
+                if (null === $wpdb->get_var("SELECT 1 FROM {$wpdb->term_taxonomy} tt {$chain} LIMIT 1")) {
+                    return;
+                }
+
+                $wpdb->query("
+                    INSERT IGNORE INTO wpc_tmp_terms (ID, user_nicename, taxonomy, slug)
+                    SELECT DISTINCT p.ID, COALESCE(u.user_nicename, ''), {$ancestor}.taxonomy, t_ancestor.slug
+                    FROM {$wpdb->posts} p
+                    LEFT JOIN {$wpdb->users} u ON p.post_author = u.ID
+                    JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID
+                    JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
+                    {$chain}
+                    JOIN {$wpdb->terms} t_ancestor ON t_ancestor.term_id = {$ancestor}.term_id
+                    WHERE p.post_status = 'publish'
+                    {$visibilityWhere}
+                ");
+
+                if ($wpdb->last_error) {
+                    $this->error->add('tmp_terms_create_failed', $this->errorNoticeTemplate(esc_html__('Failed to generate the XML sitemap. Please try again or contact support if the issue persists.', 'filter-everything')  . ' ' . $wpdb->last_error));
+                    return;
+                }
             }
         }
 
@@ -469,7 +516,7 @@ if (!class_exists('XmlPrepare')):
 
             if (!empty($filter_sets)) {
                 foreach ($filter_sets as $set) {
-                    $set['post_content'] = maybe_unserialize($set['post_content']);
+                    $set['post_content'] = flrt_safe_unserialize($set['post_content']);
                     if((empty($set['post_content']['wp_filter_query']) || $set['post_content']['wp_filter_query'] === '-1')
                         &&
                         (!empty($set['post_content']['wp_page_type']) && $set['post_content']['wp_page_type'] === 'post_type___page')){
@@ -479,7 +526,7 @@ if (!class_exists('XmlPrepare')):
                     $filter_fields = $this->getFilterFields($set['ID']);
                     if (!empty($filter_fields)) {
                         foreach ($filter_fields as $field) {
-                            $field['post_content'] = maybe_unserialize($field['post_content']);
+                            $field['post_content'] = flrt_safe_unserialize($field['post_content']);
                             $this->filter_sets[$set['ID']]['filter_fields'][$field['ID']] = $field;
                         }
                     }
@@ -522,7 +569,7 @@ if (!class_exists('XmlPrepare')):
             $seo_rules = [];
             if (!empty($filter_seo_rules)) {
                 foreach ($filter_seo_rules as $rule) {
-                    $rule['post_excerpt'] = unserialize($rule['post_excerpt']);
+                    $rule['post_excerpt'] = flrt_safe_unserialize( $rule['post_excerpt'] );
                     $rule['post_excerpt_temp'] = $rule['post_excerpt'];
                     unset($rule['post_excerpt_temp']['rule_post_type']);
                     unset($rule['post_excerpt_temp']['rule_seo_title']);
@@ -906,7 +953,7 @@ if (!class_exists('XmlPrepare')):
         private function getPageSlugs($post, $wp_entity_name = '', $wp_entity_id = '')
         {
             $post = (array)$post;
-            $post['post_content'] = maybe_unserialize($post['post_content']);
+            $post['post_content'] = flrt_safe_unserialize($post['post_content']);
 
             if (!empty($post['post_content']['wp_page_type'])) {
                 $filter_page = explode("___", $post['post_name']);
@@ -927,9 +974,10 @@ if (!class_exists('XmlPrepare')):
                         } else {
                             $page_id = get_option($common_page);
                         }
-                        if (!empty($page_id) && (int) $page_id != 0) {
+                        if ((int) $page_id > 0) {
                             $post_info = get_post($page_id);
-                            if ($post_info->post_name == 'shop' || $post_info->post_name == 'products') {
+                            // The Shop page lists products whatever its slug is
+                            if ($common_page == 'shop_page' || $post_info->post_name == 'shop' || $post_info->post_name == 'products') {
                                 $post_type = 'product';
                             } else {
                                 $post_type = $this->getPostType($post_info->post_name);
@@ -945,7 +993,18 @@ if (!class_exists('XmlPrepare')):
                             }
                         }
                     }
-                    return $slug_parts;
+
+                    // «All archive pages for this Post Type» includes the post type's own
+                    // archive (e.g. /jobs/), which is none of the pages above for a custom
+                    // post type. False when the post type has no archive.
+                    if ($post['post_name'] === '1') {
+                        $archive_link = get_post_type_archive_link($post['post_excerpt']);
+                        if ($archive_link) {
+                            $slug_parts[] = $this->toRelativePath($archive_link);
+                        }
+                    }
+
+                    return array_values(array_unique($slug_parts));
                 }
 
                 if($post['post_content']['wp_page_type'] == 'common___common'
@@ -1339,7 +1398,7 @@ if (!class_exists('XmlPrepare')):
                         $key = $m[1];
 
                         $decoded = html_entity_decode($valueAttr, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                        $maybe   = @unserialize($decoded);
+                        $maybe   = flrt_safe_unserialize( $decoded );
                         if ($maybe !== false || $decoded === 'b:0;') {
                             $queriesByKey[$key] = $maybe;
                         }
@@ -1404,7 +1463,20 @@ if (!class_exists('XmlPrepare')):
                 return '';
             }
             $relative = wp_make_link_relative($url);
-            return is_string($relative) ? ltrim($relative, '/') : '';
+            if (!is_string($relative)) {
+                return '';
+            }
+            $relative = ltrim($relative, '/');
+
+            // The path is relative to the site, not to the domain: on a multisite
+            // sub-site or a sub-directory install the links are read and later
+            // appended to home_url() without repeating its path.
+            $home_path = trim((string) wp_parse_url(home_url(), PHP_URL_PATH), '/');
+            if ($home_path !== '' && ($relative === $home_path || strpos($relative, $home_path . '/') === 0)) {
+                $relative = ltrim(substr($relative, strlen($home_path)), '/');
+            }
+
+            return $relative;
         }
 
         protected function removeUncategorizedTerms()

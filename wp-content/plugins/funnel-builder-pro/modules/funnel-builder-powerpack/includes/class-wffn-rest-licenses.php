@@ -58,19 +58,22 @@ if ( ! class_exists( 'WFFN_REST_Licenses' ) ) {
 				array(
 					'args' => array(
 						'action' => array(
-							'description' => __( 'Unique tab for the resource.', 'funnel-builder-pro' ),
+							'description' => __( 'Whether to activate or deactivate the license.', 'funnel-builder-pro' ),
 							'type'        => 'string',
+							'enum'        => array( 'activate', 'deactivate' ),
 							'required'    => true,
 						),
 						'key'    => array(
-							'description' => __( 'Unique tab for the resource.', 'funnel-builder-pro' ),
-							'type'        => 'string',
-							'required'    => true,
+							'description'       => __( 'The license key.', 'funnel-builder-pro' ),
+							'type'              => 'string',
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_text_field',
 						),
 						'name'   => array(
-							'description' => __( 'Unique tab for the resource.', 'funnel-builder-pro' ),
-							'type'        => 'string',
-							'required'    => true,
+							'description'       => __( 'The plugin the license is for.', 'funnel-builder-pro' ),
+							'type'              => 'string',
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_text_field',
 						),
 					),
 					array(
@@ -83,8 +86,16 @@ if ( ! class_exists( 'WFFN_REST_Licenses' ) ) {
 			);
 		}
 
+		/**
+		 * Who may activate or deactivate a licence: a key belongs to the site, so an administrator
+		 * who also has FunnelKit's funnel-write access, not every user given that access.
+		 * A custom role granted funnel-write without manage_options gets a 403 here on purpose:
+		 * activating or deactivating a key changes updates and features for the whole site.
+		 *
+		 * @return bool
+		 */
 		public function get_write_api_permission_check() {
-			return wffn_rest_api_helpers()->get_api_permission_check( 'funnel', 'write' );
+			return current_user_can( 'manage_options' ) && wffn_rest_api_helpers()->get_api_permission_check( 'funnel', 'write' );
 		}
 
 		public function woofunnels_Licenses( $request ) {
@@ -121,6 +132,14 @@ if ( ! class_exists( 'WFFN_REST_Licenses' ) ) {
 				);
 			}
 
+			/** A plugin that registered no license entry has nothing to activate or deactivate. */
+			if ( empty( $this->get_license_config( $plugin_name ) ) ) {
+				return array(
+					'code'  => 400,
+					'error' => __( 'Invalid Request.', 'funnel-builder-pro' ),
+				);
+			}
+
 			/** Deactivate call */
 			if ( 'deactivate' === $action ) {
 				$result = $this->process_deactivation( $plugin_name );
@@ -134,11 +153,23 @@ if ( ! class_exists( 'WFFN_REST_Licenses' ) ) {
 
 					);
 				} else {
-					$msg = is_array( $result['error'] ) && isset( $result['error'] ) ? $result['error'] : __( 'Invalid Request.', 'funnel-builder-pro' );
+					$msg = '';
+					if ( array() === $result ) {
+						$msg = __( 'This license is not active on this site, so there is nothing to deactivate.', 'funnel-builder-pro' );
+					} elseif ( ! is_array( $result ) ) {
+						$msg = __( 'We could not reach the licensing server. Please try again in a few minutes or contact support.', 'funnel-builder-pro' );
+					} elseif ( isset( $result['error'] ) ) {
+						$msg = $this->remote_error_text( $result['error'] );
+					}
+					if ( '' === $msg ) {
+						$msg = __( 'We couldn\'t deactivate this license. Please try again or contact support.', 'funnel-builder-pro' );
+					}
 
+					// `error` is what the license screen shows on a failure, as for activation; `msg` is kept for older screens.
 					return array(
-						'code' => 400,
-						'msg'  => $msg,
+						'code'  => 400,
+						'error' => $msg,
+						'msg'   => $msg,
 					);
 				}
 			}
@@ -196,13 +227,18 @@ if ( ! class_exists( 'WFFN_REST_Licenses' ) ) {
 		protected function process_deactivation( $plugin ) {
 			$instance   = new WooFunnels_License_check( $plugin );
 			$get_config = $this->get_license_config( $plugin );
+			$key        = isset( $get_config['_data']['data_extra']['api_key'] ) ? (string) $get_config['_data']['data_extra']['api_key'] : '';
+			// Never activated: nothing to deactivate, and the license server is not asked with an empty key.
+			if ( '' === $key ) {
+				return array();
+			}
 
 			$data = array(
-				'plugin_slug' => $get_config['plugin'],
-				'plugin_name' => $get_config['plugin'],
-				'license_key' => $get_config['_data']['data_extra']['api_key'],
-				'product_id'  => $get_config['plugin'],
-				'version'     => $get_config['product_version'],
+				'plugin_slug' => $this->get_plugin_slug( $get_config ),
+				'plugin_name' => $get_config['plugin'] ?? '',
+				'license_key' => $key,
+				'product_id'  => $get_config['plugin'] ?? '',
+				'version'     => $get_config['product_version'] ?? '',
 			);
 
 			$instance->setup_data( $data );
@@ -210,21 +246,57 @@ if ( ! class_exists( 'WFFN_REST_Licenses' ) ) {
 			return $instance->deactivate_license();
 		}
 
+		/**
+		 * The license server's error as one line of safe HTML; the license screen renders it as HTML.
+		 *
+		 * @param mixed $error A message, or a list of messages, from the license server. Codes are left out.
+		 *
+		 * @return string '' when it holds no text.
+		 */
+		protected function remote_error_text( $error ) {
+			$parts = array();
+			if ( is_array( $error ) ) {
+				array_walk_recursive(
+					$error,
+					function ( $value ) use ( &$parts ) {
+						if ( is_string( $value ) && ! is_numeric( $value ) && '' !== trim( $value ) ) {
+							$parts[] = trim( $value );
+						}
+					}
+				);
+			} elseif ( is_string( $error ) ) {
+				$parts[] = trim( $error );
+			}
+
+			return trim( wp_kses_post( implode( ' ', $parts ) ) );
+		}
+
 		protected function process_activation( $plugin, $api_key ) {
 			$instance   = new WooFunnels_License_check( $plugin );
 			$get_config = $this->get_license_config( $plugin );
 
 			$data = array(
-				'plugin_slug' => $get_config['plugin'],
-				'plugin_name' => $get_config['plugin'],
+				'plugin_slug' => $this->get_plugin_slug( $get_config ),
+				'plugin_name' => $get_config['plugin'] ?? '',
 				'license_key' => $api_key,
-				'product_id'  => $get_config['plugin'],
-				'version'     => $get_config['product_version'],
+				'product_id'  => $get_config['plugin'] ?? '',
+				'version'     => $get_config['product_version'] ?? '',
 			);
 
 			$instance->setup_data( $data );
 
 			return $instance->activate_license();
+		}
+
+		/**
+		 * The slug the license server knows a plugin by: the one it registered, else its name.
+		 *
+		 * @param array $config License entry from woofunnels_plugins_license_needed.
+		 *
+		 * @return string
+		 */
+		protected function get_plugin_slug( $config ) {
+			return ! empty( $config['plugin_slug'] ) ? (string) $config['plugin_slug'] : (string) ( $config['plugin'] ?? '' );
 		}
 
 		protected function get_license_config( $key ) {

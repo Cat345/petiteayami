@@ -1,0 +1,47 @@
+/**
+ * GeneratePress — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install — GeneratePress's global colour slots:
+ *   --accent      #1e73be  accent
+ *   --contrast    #222222  headings / strongest text
+ *   --contrast-2  #575760  body text
+ *   --contrast-3  #b2b2be  muted text and hairlines
+ *   --base        #f0f0f0  light surface
+ *   --base-2      #f7f8f9  lighter surface
+ *   --base-3      #ffffff  page background
+ *
+ * `--contrast-3` rather than `--base` carries the borders: at #b2b2be it is the
+ * only slot in the ramp that reads as a rule against a white card, where
+ * #f0f0f0 disappears into it.
+ */
+body.wffn-bundles-theme-generatepress .wffn-bundles,
+body.wffn-bundles-theme-generatepress .wffn-bundles-portal,
+body.wffn-bundles-theme-generatepress .wffn-bundles-variant-modal {
+	--wffn-bundles-bg: var(--base-3, #fff);
+	--wffn-bundles-bg-active: var(--base-2, #fafafa);
+	--wffn-bundles-step-bg: var(--base, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--base-2, #fafafa);
+
+	--wffn-bundles-border: var(--contrast-3, #dedfea);
+	--wffn-bundles-control-border: var(--contrast-3, #dedfea);
+	--wffn-bundles-radio: var(--contrast-3, #c5c5cd);
+	--wffn-bundles-connector: var(--contrast-3, #353030);
+
+	--wffn-bundles-border-active: var(--accent, #353030);
+	--wffn-bundles-radio-active: var(--accent, #353030);
+	--wffn-bundles-badge-bg: var(--accent, #353030);
+	--wffn-bundles-progress-fill: var(--accent, #353030);
+	--wffn-bundles-control-accent: var(--accent, #353030);
+	--wffn-bundles-badge-fg: var(--base-3, #fff);
+
+	--wffn-bundles-heading-color: var(--contrast, #353030);
+	--wffn-bundles-title-color: var(--contrast, #353030);
+	--wffn-bundles-sale-price-color: var(--contrast, #353030);
+	--wffn-bundles-desc-color: var(--contrast-2, #82828e);
+	--wffn-bundles-regular-price-color: var(--contrast-2, #82828e);
+	--wffn-bundles-price-desc-color: var(--contrast-2, #82828e);
+	--wffn-bundles-control-fg: var(--contrast-2, #353030);
+	--wffn-bundles-control-muted: var(--contrast-2, #82828e);
+}

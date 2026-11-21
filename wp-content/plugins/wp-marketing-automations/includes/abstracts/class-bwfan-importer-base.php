@@ -385,8 +385,8 @@ abstract class Importer {
 	/**
 	 * Initializes the logger for the importer.
 	 *
-	 * This method creates a logger object and sets the file path and headers for the log file.
-	 * If the import directory does not exist, it creates the directory.
+	 * This method creates a logger object for the log file. The header row is written by add_log()
+	 * when the first row creates the file.
 	 *
 	 * @return void
 	 */
@@ -394,14 +394,6 @@ abstract class Importer {
 		if ( $this->get_import_id() === 0 || empty( $this->log_file_path ) ) {
 			return;
 		}
-
-		/** If a log file does not exist */
-		if ( ! file_exists( $this->log_file_path ) ) {
-			return;
-		}
-
-		$this->log_headers = $this->get_log_headers();
-		BWFAN_Importer::create_importer_log_file( $this->log_file_path, $this->log_headers );
 
 		$this->logger = new Logger( $this->log_file_path );
 	}
@@ -452,10 +444,8 @@ abstract class Importer {
 	 */
 	public function create_import( $fields = array() ) {
 
-		if ( ! file_exists( $this->import_folder ) ) {
-			wp_mkdir_p( $this->import_folder );
-		}
-		$this->log_file_path = $this->import_folder . $this->get_import_type() . '-import-log-' . time() . '-' . wp_generate_password( 5, false ) . '.csv';
+		BWFAN_Importer::protect_import_folder( $this->import_folder );
+		$this->log_file_path = $this->import_folder . $this->get_import_type() . '-import-log-' . time() . '-' . wp_generate_password( 32, false ) . '.csv';
 
 		$import_data = array(
 			'offset'        => $this->params['offset'],
@@ -581,14 +571,47 @@ abstract class Importer {
 	public function add_log( $data, $is_error = false ) {
 		$log_data = $this->prepare_log_data( $data['data'], $data['result'] );
 
-		if ( $is_error ) {
-			$log_data['Message'] = $data['message'];
-		}
+		$log_data['Message'] = $is_error ? $data['message'] : '';
 		if ( empty( $this->log_file_path ) ) {
 			return;
 		}
 
+		/**
+		 * A column that maps the raw item (e.g. a WC_Subscription) must not dump it into the CSV.
+		 * Values come from the uploaded file or a remote list, so a cell a spreadsheet would run
+		 * as a formula (=, +, -, @, tab, CR) is prefixed with a quote.
+		 */
+		$log_data = array_map( function ( $value ) {
+			if ( ! is_scalar( $value ) ) {
+				return '';
+			}
+			if ( is_string( $value ) && '' !== $value && false !== strpos( "=+-@\t\r", $value[0] ) ) {
+				return "'" . $value;
+			}
+
+			return $value;
+		}, $log_data );
+
+		/** Header goes in once, when this row creates the file, so batches run by separate requests never repeat it */
+		if ( ! file_exists( $this->log_file_path ) ) {
+			BWFAN_Importer::create_importer_log_file( $this->log_file_path, $this->get_log_file_headers() );
+		}
+
 		BWFAN_Importer::append_data_to_log_file( $this->log_file_path, $log_data );
+	}
+
+	/**
+	 * Importer's log headers plus the Message column add_log() writes on every row.
+	 *
+	 * @return array
+	 */
+	protected function get_log_file_headers() {
+		$headers = $this->get_log_headers();
+		if ( ! in_array( 'Message', $headers, true ) ) {
+			$headers[] = 'Message';
+		}
+
+		return $headers;
 	}
 
 	/**
@@ -659,7 +682,7 @@ abstract class Importer {
 
 						$result   = $this->process_item( $data );
 						$log_data = [
-							'data'   => is_numeric( $data ) ? $data : 0,
+							'data'   => $data,
 							'result' => $result
 						];
 						$is_error = false;
@@ -679,8 +702,9 @@ abstract class Importer {
 
 					} catch ( Error|Exception $e ) {
 						$this->handle_contact_loop_error();// Handle any errors that occur during the contact loop
+						/** A WP_Error so prepare_log_data() logs the row as Failed, not Success with an empty ID */
 						$log_data = [
-							'result'  => $result,
+							'result'  => new WP_Error( 'bwfan_import_exception', $e->getMessage() ),
 							'data'    => $data,
 							'message' => $e->getMessage()
 						];

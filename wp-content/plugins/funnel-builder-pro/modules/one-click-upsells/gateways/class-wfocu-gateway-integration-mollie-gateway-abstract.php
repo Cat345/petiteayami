@@ -455,6 +455,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 					$get_offer_id,
 					$order_id
 				);
+				$filtered_description = apply_filters( 'wfocu_mollie_upsell_payment_description', $description, $order, $get_offer_id, ( false === $is_batching_on ) ? $new_order : null );
+				if ( is_string( $filtered_description ) && '' !== trim( $filtered_description ) ) {
+					$description = $filtered_description;
+				}
 
 				$data = array(
 					'amount'      => array(
@@ -544,6 +548,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 				$item_key       = md5( wp_json_encode( $get_package ) );
 				$webhookurl     = $this->getBatchWebhookUrl( $order, $item_key );
 				$this->item_key = $item_key;
+			}
+			$filtered_description = apply_filters( 'wfocu_mollie_upsell_payment_description', $description, $order, $get_offer_id, $new_order instanceof WC_Order ? $new_order : null );
+			if ( is_string( $filtered_description ) && '' !== trim( $filtered_description ) ) {
+				$description = $filtered_description;
 			}
 
 			if ( is_user_logged_in() ) {

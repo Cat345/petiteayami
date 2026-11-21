@@ -1028,6 +1028,11 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 				return;
 			}
 
+			/** End the funnel only for the order held in the funnel session, reloads and crawlers have no session for it */
+			if ( absint( WFFN_Core()->data->get( 'wc_order' ) ) !== absint( $order_id ) ) {
+				return;
+			}
+
 			$order = wc_get_order( $order_id );
 			if ( $order instanceof WC_Order ) {
 				if ( ! empty( $order->get_meta( '_wfacp_post_id' ) ) ) {

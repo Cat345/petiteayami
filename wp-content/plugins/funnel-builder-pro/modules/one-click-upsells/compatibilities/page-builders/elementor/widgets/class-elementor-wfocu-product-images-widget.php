@@ -106,7 +106,7 @@ if ( ! class_exists( 'WFOCU_Product_Images_Widget' ) ) {
 			);
 
 			foreach ( $products as $key => $product ) {
-				$product_options[ $key ] = $product->name;
+				$product_options[ $key ] = \WFOCU_Common::get_offer_product_label( $product );
 			}
 			$this->add_control(
 				'selected_product',

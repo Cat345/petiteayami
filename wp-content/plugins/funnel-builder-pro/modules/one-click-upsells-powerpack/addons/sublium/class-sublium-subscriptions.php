@@ -345,7 +345,9 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 						$plan_data                      = array( $offer_data );
 						$plan_data['_sublium_wcs_plan'] = $plan_id;
 
-						$subscription_items           = $this->prepare_subscription_items( $plan_data, $subscription_order );
+						$subscription_items = $this->prepare_subscription_items( $plan_data, $subscription_order );
+
+						$subscription_items           = $this->filter_subscription_items( $subscription_items, $offer_data, $plan_id, $subscription_order );
 						$subscription_data            = $this->prepare_subscription_data( $subscription_order, $plan_data, $subscription_items );
 						$subscription_data['plan_id'] = $plan_id;
 
@@ -406,7 +408,9 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 						$plan_data                      = array( $offer_data );
 						$plan_data['_sublium_wcs_plan'] = $plan_id;
 
-						$subscription_items           = $this->prepare_subscription_items( $plan_data, $subscription_order );
+						$subscription_items = $this->prepare_subscription_items( $plan_data, $subscription_order );
+
+						$subscription_items           = $this->filter_subscription_items( $subscription_items, $offer_data, $plan_id, $subscription_order );
 						$subscription_data            = $this->prepare_subscription_data( $subscription_order, $plan_data, $subscription_items );
 						$subscription_data['plan_id'] = $plan_id;
 
@@ -644,6 +648,86 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 				'downpayment' => 0,
 				'total'       => $total,
 			);
+		}
+
+		/**
+		 * The accepted offer row's subscription items, as the `wfocu_sublium_subscription_items`
+		 * filter leaves them.
+		 *
+		 * The unfiltered items are used instead when a callback throws, or returns anything but an
+		 * array with a finite, non-negative numeric `total` and a non-empty `line_items` list in
+		 * which every line is a typed item with its data, every product line (`item_type` 1) names
+		 * a product, any `variation_id` it gives is a variation of that product, and at least one
+		 * product line exists. `item_ids` is rebuilt from the product lines, so it never
+		 * names a product the subscription does not hold.
+		 *
+		 * @param array     $subscription_items { line_items, item_ids, downpayment, total }.
+		 * @param array     $offer_data         The accepted package row.
+		 * @param int       $plan_id            The plan.
+		 * @param \WC_Order $subscription_order The order the subscription belongs to.
+		 *
+		 * @return array
+		 */
+		private function filter_subscription_items( $subscription_items, $offer_data, $plan_id, $subscription_order ) {
+			try {
+				/**
+				 * Filters the items of the subscription an accepted offer row creates.
+				 *
+				 * A row whose order lines another plugin wrote itself can describe them here.
+				 *
+				 * @since 1.11.1
+				 *
+				 * @param array     $subscription_items { line_items, item_ids, downpayment, total }.
+				 * @param array     $offer_data         The accepted package row.
+				 * @param int       $plan_id            The plan.
+				 * @param \WC_Order $subscription_order The order the subscription belongs to.
+				 */
+				$filtered = apply_filters( 'wfocu_sublium_subscription_items', $subscription_items, $offer_data, $plan_id, $subscription_order );
+			} catch ( Throwable $e ) {
+				// The buyer has paid for this row: a failing callback must not cost them the subscription.
+				WFOCU_Core()->log->log( 'Sublium: wfocu_sublium_subscription_items callback failed, unfiltered items used: ' . $e->getMessage() );
+
+				return $subscription_items;
+			}
+
+			if ( $filtered === $subscription_items ) {
+				return $subscription_items;
+			}
+			if ( ! is_array( $filtered ) || ! isset( $filtered['line_items'], $filtered['total'] ) || ! is_array( $filtered['line_items'] ) || empty( $filtered['line_items'] ) || ! is_numeric( $filtered['total'] ) ) {
+				return $subscription_items;
+			}
+			// The total becomes the subscription's base amount: "1e999" is numeric but infinite, and a negative one would bill nothing.
+			if ( ! is_finite( (float) $filtered['total'] ) || (float) $filtered['total'] < 0 ) {
+				return $subscription_items;
+			}
+			// Each line is added to the subscription as is, so every one must be a typed item with its data.
+			$has_product = false;
+			foreach ( $filtered['line_items'] as $line ) {
+				if ( ! is_array( $line ) || ! isset( $line['item_type'], $line['item_data'] ) || ! is_numeric( $line['item_type'] ) || ! is_array( $line['item_data'] ) ) {
+					return $subscription_items;
+				}
+				if ( 1 === (int) $line['item_type'] ) {
+					if ( empty( $line['item_data']['product_id'] ) || ! is_numeric( $line['item_data']['product_id'] ) || (int) $line['item_data']['product_id'] <= 0 ) {
+						return $subscription_items;
+					}
+					// The variation is stored on the subscription and listed in item_ids, so it must be a real variation of this line's product.
+					if ( ! empty( $line['item_data']['variation_id'] ) ) {
+						$variation = is_numeric( $line['item_data']['variation_id'] ) ? wc_get_product( (int) $line['item_data']['variation_id'] ) : false;
+						if ( ! $variation instanceof \WC_Product || ! $variation->is_type( 'variation' ) || $variation->get_parent_id() !== (int) $line['item_data']['product_id'] ) {
+							return $subscription_items;
+						}
+					}
+					$has_product = true;
+				}
+			}
+			if ( ! $has_product ) {
+				return $subscription_items;
+			}
+			$filtered['item_ids'] = $this->collect_item_ids_from_subscription_items( $filtered['line_items'] );
+			// A callback that leaves the downpayment out means none.
+			$filtered['downpayment'] = isset( $filtered['downpayment'] ) && is_numeric( $filtered['downpayment'] ) ? $filtered['downpayment'] : 0;
+
+			return $filtered;
 		}
 
 		/**

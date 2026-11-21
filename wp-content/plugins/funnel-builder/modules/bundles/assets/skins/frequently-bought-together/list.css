@@ -1,0 +1,78 @@
+/* Frequently Bought Together · List — one option card per product, summary below. */
+
+.wffn-bundles-fbt--list .wffn-bundles-fbt-items {
+	gap: 8px;
+}
+
+/* The same option card and selected state as every other skin, so a ticked item reads as picked. */
+.wffn-bundles-fbt--list .wffn-bundles-fbt-item {
+	align-items: center;
+	gap: 12px;
+	padding: var(--wffn-bundles-pad-t) var(--wffn-bundles-pad-r) var(--wffn-bundles-pad-b) var(--wffn-bundles-pad-l);
+	border: var(--wffn-bundles-border-width) var(--wffn-bundles-border-style) var(--wffn-bundles-border);
+	border-radius: var(--wffn-bundles-corner);
+	background: var(--wffn-bundles-bg);
+}
+
+.wffn-bundles-fbt--list .wffn-bundles-fbt-item:not(.is-off) {
+	border-color: var(--wffn-bundles-border-active);
+	box-shadow: inset 0 0 0 var(--wffn-bundles-ring-active) var(--wffn-bundles-border-active);
+	background: var(--wffn-bundles-bg-active);
+}
+
+.wffn-bundles-fbt--list .wffn-bundles-fbt-thumb--row {
+	width: var(--wffn-bundles-item-image-size, 56px);
+	/* A wide value still leaves the name and price room on a phone, and stays square. */
+	max-width: 40%;
+	height: auto;
+	aspect-ratio: 1;
+}
+
+.wffn-bundles-fbt--list .wffn-bundles-fbt-summary {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	grid-template-areas: "price button" "note button" "note hint";
+	align-items: center;
+	gap: 4px 16px;
+	margin-block-start: 12px;
+}
+
+/* With a saving, it sits beside the total and the button keeps the right-hand column. */
+.wffn-bundles-fbt--list .wffn-bundles-fbt-summary:has(.wffn-bundles-fbt-save) {
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	grid-template-areas: "price note button" ". . hint";
+	column-gap: 10px;
+}
+
+.wffn-bundles-fbt--list .wffn-bundles-fbt-sum-price {
+	grid-area: price;
+}
+
+.wffn-bundles-fbt--list .wffn-bundles-fbt-sum-note {
+	grid-area: note;
+}
+
+.wffn-bundles-fbt--list .wffn-bundles-fbt-hint {
+	grid-area: hint;
+}
+
+.wffn-bundles.wffn-bundles-fbt--list .wffn-bundles-fbt-add {
+	grid-area: button;
+	width: auto;
+	min-width: 170px;
+}
+
+@container (max-width: 560px) {
+	.wffn-bundles-fbt--list .wffn-bundles-fbt-summary,
+	.wffn-bundles-fbt--list .wffn-bundles-fbt-summary:has(.wffn-bundles-fbt-save) {
+		display: flex;
+		flex-wrap: wrap;
+		grid-template-columns: none;
+		grid-template-areas: none;
+		gap: 6px 10px;
+	}
+
+	.wffn-bundles.wffn-bundles-fbt--list .wffn-bundles-fbt-add {
+		width: 100%;
+	}
+}

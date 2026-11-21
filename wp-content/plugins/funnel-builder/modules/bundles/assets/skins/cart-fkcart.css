@@ -1,0 +1,103 @@
+/* Grouped-bundle look in the FunnelKit Cart slide-out. Every rule is scoped under
+   `#fkcart-modal` because FKCart's own row rules carry that id, which no class beats. */
+
+/* The marker carries data and nothing else, so keeping it out of layout means no
+   flex or grid row rule can give it a gap of its own. */
+#fkcart-modal .fkcart-item-wrap .wffn-bundles-fkcart-mark {
+	display: none;
+}
+
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]),
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child {
+	/* The member indent and thumbnail size. */
+	--wffn-bundles-lane: 30px;
+	--wffn-bundles-thumb: 40px;
+	position: relative;
+}
+
+/* The container row: close the gap so the pack reads as one block. */
+
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="container"]) > .fkcart--item,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-container > .fkcart--item {
+	margin-bottom: 12px;
+}
+
+/* FKCart's gap between items applies only after the pack's last row. */
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="container"]):has(+ .fkcart--item-parent > .wffn-bundles-fkcart-mark[data-role="child"]),
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-container:has(+ .wffn-bundles-fkcart-child),
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]),
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child {
+	margin-bottom: 0;
+}
+
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]):not(:has(+ .fkcart--item-parent > .wffn-bundles-fkcart-mark[data-role="child"])),
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child:not(:has(+ .wffn-bundles-fkcart-child)) {
+	margin-bottom: 12px;
+}
+
+/* The member rows. */
+
+/* FKCart separates rows with a bottom margin that collapses out of the wrapper;
+   padding keeps the members' spacing even. */
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]) > .fkcart--item,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child > .fkcart--item {
+	padding-inline-start: calc(var(--wffn-bundles-lane) + 16px);
+	margin-bottom: 0;
+	padding-bottom: 12px;
+}
+
+/* Member row contents. */
+
+/* Members sit below the container in the hierarchy, so their thumbnail does too.
+   Both axes are set: constraining one is a distortion waiting for a theme. */
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]) .fkcart-image-wrapper,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child .fkcart-image-wrapper {
+	width: var(--wffn-bundles-thumb);
+	height: var(--wffn-bundles-thumb);
+	flex: 0 0 var(--wffn-bundles-thumb);
+}
+
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]) .fkcart-image-wrapper img,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child .fkcart-image-wrapper img {
+	max-width: var(--wffn-bundles-thumb);
+	height: auto;
+	object-fit: contain;
+}
+
+/* Recede the member so the container reads as the headline. */
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]) .fkcart-item-title,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child .fkcart-item-title {
+	font-size: 13px;
+	font-weight: 400;
+}
+
+/* The container owns the quantity and the money, so both of the member's own
+   columns are empty boxes still claiming a share of the row. A nested pick that keeps its own quantity keeps its stepper. */
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]:not([data-qty="1"])) .fkcart-qty-wrap,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]) .fkcart-item-wrap-start .fkcart-item-misc,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child:not(.wffn-bundles-fkcart-qty) .fkcart-qty-wrap,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child .fkcart-item-wrap-start .fkcart-item-misc {
+	display: none;
+}
+
+/* A nested pick is priced on its own line, unlike a Fixed Bundle member, so its price column stays. */
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-nested="1"]) .fkcart-item-wrap-start .fkcart-item-misc,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-nested .fkcart-item-wrap-start .fkcart-item-misc {
+	display: block;
+}
+
+/* The member's name column is capped at 60% to leave room for a price column
+   that this row does not have. */
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent:has(> .wffn-bundles-fkcart-mark[data-role="child"]) .fkcart-item-wrap-start .fkcart-item-meta,
+#fkcart-modal .fkcart-item-wrap .fkcart--item-parent.wffn-bundles-fkcart-child .fkcart-item-wrap-start .fkcart-item-meta {
+	max-width: 100%;
+}
+
+/* The "Qty: n" that replaced the stepper, printed by Adapter::member_quantity(). */
+#fkcart-modal .fkcart-item-wrap .wffn-bundles-cart-childqty {
+	display: block;
+	margin-top: 0;
+	font-size: 12px;
+	line-height: 1.5;
+	color: var(--fkcart-secondary-text-color);
+}

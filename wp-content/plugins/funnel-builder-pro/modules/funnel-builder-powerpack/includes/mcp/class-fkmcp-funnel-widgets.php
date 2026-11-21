@@ -159,7 +159,7 @@ class FKMCP_Funnel_Widgets {
 			$name = (string) $name;
 
 			if ( ! isset( $controls[ $name ] ) || in_array( $name, self::REFUSED_SETTINGS, true ) ) {
-				$errors[] = sprintf( '%s is not a setting of %s', $name, $found['widgetType'] );
+				$errors[] = self::refused( $name, sprintf( '%s is not a setting of %s', $name, $found['widgetType'] ), sprintf( 'a setting of %s, as funnelkit/get-funnel-widgets lists them', $found['widgetType'] ) );
 				continue;
 			}
 
@@ -172,7 +172,8 @@ class FKMCP_Funnel_Widgets {
 			$clean = self::clean_setting( $controls[ $name ], $value );
 
 			if ( is_wp_error( $clean ) ) {
-				$errors[] = $name . ': ' . $clean->get_error_message();
+				$data     = $clean->get_error_data();
+				$errors[] = self::refused( $name, sprintf( '%1$s needs %2$s', $name, $clean->get_error_message() ), $clean->get_error_message(), isset( $data['allowed'] ) ? $data['allowed'] : array() );
 				continue;
 			}
 
@@ -192,7 +193,7 @@ class FKMCP_Funnel_Widgets {
 			$kind    = $control && 'color' === ( $control['type'] ?? '' ) ? 'colors' : ( $control && 'popover_toggle' === ( $control['type'] ?? '' ) ? 'typography' : '' );
 
 			if ( '' === $kind ) {
-				$errors[] = sprintf( '%s is not a colour or typography setting of %s', $name, $found['widgetType'] );
+				$errors[] = self::refused( $name, sprintf( '%s is not a colour or typography setting of %s', $name, $found['widgetType'] ), sprintf( 'a colour or typography setting of %s', $found['widgetType'] ) );
 				continue;
 			}
 
@@ -202,8 +203,11 @@ class FKMCP_Funnel_Widgets {
 				continue;
 			}
 
-			if ( ! in_array( (string) $id, self::kit_global_ids( $kind ), true ) ) {
-				$errors[] = sprintf( 'the site has no global %1$s %2$s (it has: %3$s)', 'colors' === $kind ? 'colour' : 'font', (string) $id, implode( ', ', array_slice( self::kit_global_ids( $kind ), 0, 12 ) ) );
+			$kit_ids = self::kit_global_ids( $kind );
+
+			if ( ! in_array( (string) $id, $kit_ids, true ) ) {
+				$noun     = 'colors' === $kind ? 'colour' : 'font';
+				$errors[] = self::refused( $name, sprintf( '%1$s names %2$s, which is not a global %3$s of this site. Use one of these: %4$s', $name, (string) $id, $noun, implode( ', ', array_slice( $kit_ids, 0, 12 ) ) ), sprintf( 'the id of a global %s of this site', $noun ), $kit_ids );
 				continue;
 			}
 
@@ -213,7 +217,7 @@ class FKMCP_Funnel_Widgets {
 		}
 
 		if ( $errors ) {
-			return new WP_Error( 'fkmcp_invalid_input', implode( '; ', array_slice( $errors, 0, 6 ) ) . '. Check the names and values with funnelkit/get-funnel-widgets (search). Nothing was changed.' );
+			return self::refusal( $errors );
 		}
 
 		FKMCP_Pack_Elementor_Design::save_revision( $step['id'], FKMCP_Pack_Elementor_Design::BEFORE_AI );
@@ -568,6 +572,57 @@ class FKMCP_Funnel_Widgets {
 	}
 
 	/**
+	 * An update's refusal from its refused settings (up to six): their texts
+	 * joined for the agent; in the data, the first one as the top-level field -
+	 * the FunnelKit AI gateway reads the data and the message up to its first
+	 * colon - and all of them under errors.
+	 *
+	 * @param array $errors Rows from refused().
+	 *
+	 * @return WP_Error
+	 */
+	private static function refusal( array $errors ) {
+		$errors = array_slice( $errors, 0, 6 );
+		$texts  = array_column( $errors, 'text' );
+		$rows   = array_map(
+			static function ( $error ) {
+				unset( $error['text'] );
+
+				return $error;
+			},
+			$errors
+		);
+
+		return new WP_Error( 'fkmcp_invalid_input', implode( '; ', $texts ) . '. Check the names and values with funnelkit/get-funnel-widgets (search). Nothing was changed.', $rows[0] + array( 'errors' => $rows ) );
+	}
+
+	/**
+	 * One refused setting of an update: the text for the agent, and the
+	 * field, the form it takes and the values it allows for the data the
+	 * FunnelKit AI gateway reads.
+	 *
+	 * @param string $field    Setting name.
+	 * @param string $text     Why, for the agent.
+	 * @param string $expected What the setting takes.
+	 * @param array  $allowed  The values it allows, when they can be listed.
+	 *
+	 * @return array
+	 */
+	private static function refused( $field, $text, $expected, array $allowed = array() ) {
+		$error = array(
+			'text'     => $text,
+			'field'    => (string) $field,
+			'expected' => (string) $expected,
+		);
+
+		if ( $allowed ) {
+			$error['allowed'] = array_values( array_map( 'strval', $allowed ) );
+		}
+
+		return $error;
+	}
+
+	/**
 	 * A value in the shape its control stores, or why not. Text is filtered as
 	 * post content; choices must be among the control's options (a choice
 	 * with no options listed must be a plain word: it may reach the CSS);
@@ -593,7 +648,7 @@ class FKMCP_Funnel_Widgets {
 				$list = is_array( $value ) ? $value : array( $value );
 				foreach ( $list as $one ) {
 					if ( ! is_scalar( $one ) || ( $options && '' !== (string) $one && ! in_array( (string) $one, $options, true ) ) ) {
-						return new WP_Error( 'invalid', 'one of ' . implode( ', ', array_slice( $options, 0, 20 ) ) );
+						return new WP_Error( 'invalid', 'one of ' . implode( ', ', array_slice( $options, 0, 20 ) ), array( 'allowed' => array_slice( $options, 0, 50 ) ) );
 					}
 					if ( ! $options && ! preg_match( '/^[\w\- ]*$/', (string) $one ) ) {
 						return new WP_Error( 'invalid', 'a value of letters, digits, hyphens, underscores and spaces' );
@@ -868,20 +923,21 @@ class FKMCP_Funnel_Widgets {
 
 	/**
 	 * Points the brand colour controls of the Step's funnel widgets at a global
-	 * colour. Elementor renders a colour control whose __globals__ entry names
-	 * a global as that global's CSS variable, so the widgets follow it.
+	 * colour, or sets them to a hex colour. Elementor renders a colour control
+	 * whose __globals__ entry names a global as that global's CSS variable, so
+	 * the widgets follow it; a hex colour is the control's own value, and
+	 * unlinks any global the control had.
 	 *
-	 * @param array  $elements  Element tree, changed in place.
-	 * @param array  $controls  Widget type => colour control keys.
-	 * @param string $global_id Global colour id.
+	 * @param array  $elements Element tree, changed in place.
+	 * @param array  $controls Widget type => colour control keys.
+	 * @param array  $brand    From brand_color(): global (a global colour id) or color (hex).
 	 *
 	 * @return array widget type:control pairs applied.
 	 */
-	public static function apply_brand( array &$elements, $controls, $global_id ) {
+	public static function apply_brand( array &$elements, $controls, array $brand ) {
 		$applied = array();
-		$value   = 'globals/colors?id=' . $global_id;
 
-		$walk = static function ( array &$tree ) use ( &$walk, &$applied, $controls, $value ) {
+		$walk = static function ( array &$tree ) use ( &$walk, &$applied, $controls, $brand ) {
 			foreach ( $tree as &$node ) {
 				if ( ! is_array( $node ) ) {
 					continue;
@@ -895,8 +951,14 @@ class FKMCP_Funnel_Widgets {
 					}
 
 					foreach ( (array) $controls[ $type ] as $control ) {
-						$node['settings']['__globals__'][ $control ] = $value;
-						$applied[ $type . ':' . $control ]           = true;
+						if ( isset( $brand['color'] ) ) {
+							$node['settings'][ $control ] = $brand['color'];
+							unset( $node['settings']['__globals__'][ $control ] );
+						} else {
+							$node['settings']['__globals__'][ $control ] = 'globals/colors?id=' . $brand['global'];
+						}
+
+						$applied[ $type . ':' . $control ] = true;
 					}
 				}
 
@@ -913,9 +975,30 @@ class FKMCP_Funnel_Widgets {
 	}
 
 	/**
+	 * What brand_color names: a hex colour, which the widgets take as their own
+	 * value, or the label of a colour variable synced to Global Colors.
+	 *
+	 * @param string $value brand_color input.
+	 *
+	 * @return array|WP_Error color (hex), or variable and global.
+	 */
+	public static function brand_color( $value ) {
+		$value = trim( (string) $value );
+		$hex   = sanitize_hex_color( $value );
+
+		if ( $hex ) {
+			return array( 'color' => $hex );
+		}
+
+		return self::brand_global( $value );
+	}
+
+	/**
 	 * The classic global colour an Elementor colour variable is published as.
 	 * Site-wide styles are used as the site has them, never changed: a variable
-	 * not synced to Global Colors yet is refused, for the user to turn it on.
+	 * not synced to Global Colors yet is refused. The refusals carry no label and
+	 * no list, because the MCP gateway cuts quoted values and everything after
+	 * the first colon from a message.
 	 *
 	 * @param string $label Variable label.
 	 *
@@ -926,11 +1009,12 @@ class FKMCP_Funnel_Widgets {
 		$repo_class    = '\Elementor\Modules\Variables\Storage\Variables_Repository';
 		$batch_class   = '\Elementor\Modules\Variables\Services\Batch_Operations\Batch_Processor';
 		$sync_class    = '\Elementor\Modules\DesignSystemSync\Module';
+		$instead       = 'Pass brand_color as a hex colour such as #C0392B, which the funnel widgets take as their colour.';
 
 		// Classic widgets read a variable through the global colour Elementor's
 		// design system sync publishes for it; without that module there is none.
 		if ( ! class_exists( $service_class ) || ! class_exists( $repo_class ) || ! class_exists( $batch_class ) || ! class_exists( $sync_class ) || ! \Elementor\Plugin::$instance->modules_manager->get_modules( 'design-system-sync' ) ) {
-			return new WP_Error( 'fkmcp_brand_unavailable', 'This Elementor version cannot share its colour variables with the funnel widgets. Set the widget colours with the checkout / optin tools instead. Nothing was changed.' );
+			return new WP_Error( 'fkmcp_brand_unavailable', 'This Elementor version cannot share its colour variables with the funnel widgets. ' . $instead . ' Nothing was changed.' );
 		}
 
 		try {
@@ -939,40 +1023,21 @@ class FKMCP_Funnel_Widgets {
 			$variable = $service->find_by_label_or_id( $label );
 
 			if ( ! is_array( $variable ) || 'global-color-variable' !== ( $variable['type'] ?? '' ) ) {
-				return new WP_Error( 'fkmcp_invalid_input', sprintf( 'No colour variable labelled "%1$s". Colour variables synced to Global Colors on this site: %2$s. Nothing was changed.', $label, self::synced_colours( $service ) ) );
+				return new WP_Error( 'fkmcp_invalid_input', 'brand_color is neither a hex colour nor the label of a colour variable on this site. Read the colour variables of the site with read-design (tool elementor/read-resource, the global variables resource) and use the label of one that is synced to Global Colors. ' . $instead . ' Nothing was changed.' );
+			}
+
+			if ( empty( $variable['sync_to_v3'] ) ) {
+				return new WP_Error( 'fkmcp_brand_not_synced', 'The funnel widgets read a colour variable through Elementor\'s Global Colors, and that variable is not synced to them. Site-wide styles are not changed from here, so use a variable that has Sync to Global Colors on (the global variables resource shows which), or ask the user to turn it on in Elementor\'s Variables. ' . $instead . ' Nothing was changed.' );
 			}
 
 			$label = (string) $variable['label'];
-
-			if ( empty( $variable['sync_to_v3'] ) ) {
-				return new WP_Error( 'fkmcp_brand_not_synced', sprintf( 'The funnel widgets read a colour variable through Elementor\'s Global Colors, and "%1$s" is not synced to them. Ask the user to turn on Sync to Global Colors for it in Elementor\'s Variables, or pick one that is: %2$s. Site-wide styles are not changed from here. Nothing was changed.', $label, self::synced_colours( $service ) ) );
-			}
 
 			return array(
 				'variable' => $label,
 				'global'   => method_exists( $sync_class, 'get_v3_sync_id' ) ? (string) $sync_class::get_v3_sync_id( $label ) : 'v4-' . strtolower( $label ),
 			);
 		} catch ( \Throwable $e ) {
-			return new WP_Error( 'fkmcp_brand_failed', 'Elementor\'s colour variables could not be read. Nothing was changed.' );
+			return new WP_Error( 'fkmcp_brand_failed', 'Elementor\'s colour variables could not be read. ' . $instead . ' Nothing was changed.' );
 		}
-	}
-
-	/**
-	 * Labels of the colour variables synced to Global Colors, for an error message.
-	 *
-	 * @param object $service Elementor variables service.
-	 *
-	 * @return string
-	 */
-	private static function synced_colours( $service ) {
-		$colours = array();
-
-		foreach ( (array) $service->get_variables_list() as $item ) {
-			if ( empty( $item['deleted'] ) && 'global-color-variable' === ( $item['type'] ?? '' ) && ! empty( $item['sync_to_v3'] ) ) {
-				$colours[] = (string) ( $item['label'] ?? '' );
-			}
-		}
-
-		return $colours ? implode( ', ', array_slice( $colours, 0, 20 ) ) : 'none';
 	}
 }

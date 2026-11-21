@@ -997,9 +997,27 @@ class FKMCP_Pack_Lite extends FKMCP_Pack_Lite_Abilities {
 
 		if ( $wants_filtered ) {
 			if ( 'recovered' === $status ) {
+				// A recovered cart became an Order and its cart row is gone, so none of these filters can
+				// reach it; get-cart-analytics counts recovered carts and revenue over any dates.
+				$dates = array();
+				foreach ( array( 'after', 'before' ) as $key ) {
+					if ( ! empty( $input[ $key ] ) && is_string( $input[ $key ] ) ) {
+						$dates[ $key ] = $input[ $key ];
+					}
+				}
+
 				return new WP_Error(
 					'fkmcp_invalid_input',
-					__( 'Date/country/phone filters only apply to recoverable and lost carts; recovered carts live on the WooCommerce order.', 'wp-marketing-automations' )
+					__( 'Date, country and phone filters do not apply to recovered carts: they became Orders. For recovered carts over a date range call get-cart-analytics with the same after/before; to list them, call list-abandoned-carts with status recovered and no filter.', 'wp-marketing-automations' ),
+					array(
+						'next' => array(
+							array(
+								'tool' => 'funnelkit-get-cart-analytics',
+								'why'  => __( 'Recovered carts and recovered revenue over these dates.', 'wp-marketing-automations' ),
+								'args' => (object) $dates, // a JSON object even with no dates, as the tool's input is
+							),
+						),
+					)
 				);
 			}
 
@@ -1056,10 +1074,14 @@ class FKMCP_Pack_Lite extends FKMCP_Pack_Lite_Abilities {
 		$before = ! empty( $input['before'] ) && is_string( $input['before'] ) ? $input['before'] : '';
 
 		foreach ( array( 'after' => $after, 'before' => $before ) as $name => $value ) {
-			if ( '' !== $value && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ) {
-				return new WP_Error( 'fkmcp_invalid_input', __( 'Dates must be Y-m-d.', 'wp-marketing-automations' ), array( 'field' => $name ) );
+			if ( '' !== $value && ! preg_match( '/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?$/', $value ) ) {
+				return new WP_Error( 'fkmcp_invalid_input', __( 'Dates must be Y-m-d or Y-m-d H:i:s.', 'wp-marketing-automations' ), array( 'field' => $name ) );
 			}
 		}
+
+		// ponytail: whole days - the window adds 00:00:00 / 23:59:59 below, so a time part is dropped.
+		$after  = substr( $after, 0, 10 );
+		$before = substr( $before, 0, 10 );
 
 		if ( '' !== $after && '' !== $before && strtotime( $after ) > strtotime( $before ) ) {
 			return new WP_Error( 'fkmcp_invalid_input', __( 'after must not be later than before.', 'wp-marketing-automations' ) );
@@ -1420,9 +1442,26 @@ class FKMCP_Pack_Lite extends FKMCP_Pack_Lite_Abilities {
 			return new WP_Error( 'fkmcp_invalid_input', __( 'after must not be later than before.', 'wp-marketing-automations' ) );
 		}
 
-		if ( ! empty( $input['interval'] ) ) {
-			$params['interval'] = sanitize_key( $input['interval'] );
+		// At most 92 buckets: a long window by day (or week) is answered by the
+		// first coarser bucket that fits, and interval_note says so.
+		$asked = ! empty( $input['interval'] ) ? sanitize_key( $input['interval'] ) : 'week';
+		$days  = array( 'day' => 1, 'week' => 7, 'month' => 30.44, 'quarter' => 91.31, 'year' => 365.25 );
+		$used  = $asked;
+
+		if ( isset( $days[ $asked ] ) ) {
+			$to   = ! empty( $params['before'] ) ? strtotime( $params['before'] ) : current_time( 'timestamp' );
+			$from = ! empty( $params['after'] ) ? strtotime( $params['after'] ) : $to - 7 * DAY_IN_SECONDS; // the controller's own default: the last week
+			$span = max( 0, $to - $from ) / DAY_IN_SECONDS;
+
+			foreach ( array_slice( $days, array_search( $asked, array_keys( $days ), true ), null, true ) as $name => $length ) {
+				$used = $name;
+				if ( $span / $length <= 92 ) {
+					break;
+				}
+			}
 		}
+
+		$params['interval'] = $used;
 
 		$response = BWFAN_MCP_Dispatch::call( 'get-cart-analytics', $params );
 
@@ -1451,8 +1490,11 @@ class FKMCP_Pack_Lite extends FKMCP_Pack_Lite_Abilities {
 		}
 
 		return array(
-			'totals'    => $totals,
-			'intervals' => $intervals,
+			'totals'        => $totals,
+			'intervals'     => $intervals,
+			'interval_used' => $used,
+			/* translators: 1: bucket asked for, 2: bucket used */
+			'interval_note' => $used === $asked ? null : sprintf( __( 'Buckets are by %2$s, not %1$s: the window is too long for %1$s buckets (at most 92).', 'wp-marketing-automations' ), $asked, $used ),
 		);
 	}
 

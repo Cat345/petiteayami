@@ -1,0 +1,36 @@
+/**
+ * OceanWP — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install:
+ *   --owp-primary-color       #007a99  accent
+ *   --owp-link-color          #333333  strongest text
+ *   --owp-input-text-color    #333333  control text
+ *   --owp-input-border-color  #767676  control border (a real border token)
+ *   --owp-button-text-color   #ffffff  text on accent
+ *
+ * Not mapped: OceanWP publishes no surface-background token, so `--wffn-bundles-bg` and
+ * the surface tokens keep the plugin literal. Nor `--wffn-bundles-border` and
+ * `--wffn-bundles-control-border`: the input border is a mid grey meant for form fields,
+ * and as card outlines, size boxes and the Mix & Match progress track it reads as a heavy
+ * frame. It stays on the radios and connectors.
+ */
+body.wffn-bundles-theme-oceanwp .wffn-bundles,
+body.wffn-bundles-theme-oceanwp .wffn-bundles-portal,
+body.wffn-bundles-theme-oceanwp .wffn-bundles-variant-modal {
+	--wffn-bundles-radio: var(--owp-input-border-color, #c5c5cd);
+	--wffn-bundles-connector: var(--owp-input-border-color, #353030);
+
+	--wffn-bundles-border-active: var(--owp-primary-color, #353030);
+	--wffn-bundles-radio-active: var(--owp-primary-color, #353030);
+	--wffn-bundles-badge-bg: var(--owp-primary-color, #353030);
+	--wffn-bundles-progress-fill: var(--owp-primary-color, #353030);
+	--wffn-bundles-control-accent: var(--owp-primary-color, #353030);
+	--wffn-bundles-badge-fg: var(--owp-button-text-color, #fff);
+
+	--wffn-bundles-heading-color: var(--owp-link-color, #353030);
+	--wffn-bundles-title-color: var(--owp-link-color, #353030);
+	--wffn-bundles-sale-price-color: var(--owp-link-color, #353030);
+	--wffn-bundles-control-fg: var(--owp-input-text-color, #353030);
+}

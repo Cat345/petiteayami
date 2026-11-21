@@ -1,0 +1,44 @@
+/**
+ * Woodmart — theme palette → widget tokens.
+ *
+ * Layer 3 of the cascade in includes/skins/global-design.php; the selector is
+ * (0,2,1), above the bundle's `.wffn-bundles-design-<hash>` (0,1,0) and below both the
+ * merchant's selected-state colours (0,2,2) and the store-wide Settings block
+ * (0,3,2). Read that class before changing weight.
+ *
+ * Measured on this install (theme-tester cookie, product page):
+ *   --wd-primary-color         #83b735  accent
+ *   --wd-title-color           #242424  headings
+ *   --wd-entities-title-color  #333333  product titles
+ *   --wd-text-color            #767676  body text
+ *
+ * Not mapped: Woodmart exposes no border-colour custom property, so
+ * `--wffn-bundles-border` and friends keep the plugin literal. Sizes and status colours
+ * are out of scope for every file in this directory.
+ */
+body.wffn-bundles-theme-woodmart .wffn-bundles,
+body.wffn-bundles-theme-woodmart .wffn-bundles-portal,
+body.wffn-bundles-theme-woodmart .wffn-bundles-variant-modal {
+	--wffn-bundles-border-active: var(--wd-primary-color, #353030);
+	--wffn-bundles-radio-active: var(--wd-primary-color, #353030);
+	--wffn-bundles-badge-bg: var(--wd-primary-color, #353030);
+	--wffn-bundles-progress-fill: var(--wd-primary-color, #353030);
+	--wffn-bundles-control-accent: var(--wd-primary-color, #353030);
+
+	--wffn-bundles-heading-color: var(--wd-title-color, #353030);
+	--wffn-bundles-title-color: var(--wd-entities-title-color, #353030);
+	--wffn-bundles-sale-price-color: var(--wd-title-color, #353030);
+
+	--wffn-bundles-desc-color: var(--wd-text-color, #82828e);
+	--wffn-bundles-regular-price-color: var(--wd-text-color, #82828e);
+	--wffn-bundles-price-desc-color: var(--wd-text-color, #82828e);
+	--wffn-bundles-control-muted: var(--wd-text-color, #82828e);
+	--wffn-bundles-control-fg: var(--wd-text-color, #353030);
+}
+
+/* Classic cart: the theme sets product names through their link, and a bundle's
+   own line has no link, so its name fell to the muted body grey. */
+body.wffn-bundles-theme-woodmart .woocommerce-cart-form tr.cart_item.wffn-bundles-cart-parent > td.product-name {
+	color: var(--wd-entities-title-color, #333);
+	font-weight: var(--wd-entities-title-font-weight, 500);
+}

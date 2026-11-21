@@ -184,7 +184,7 @@ class EPS extends LocalGateway {
 				/**
 				 * bail out if the status is not pending or failed
 				 */
-				$redirect_url = $this->get_return_url( $order );
+				$redirect_url = $this->get_paid_order_redirect_url( $order );
 				wp_safe_redirect( $redirect_url );
 				exit;
 			}

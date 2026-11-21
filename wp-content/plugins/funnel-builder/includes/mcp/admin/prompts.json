@@ -180,7 +180,7 @@
 			"category": "grow",
 			"title": "Copy a funnel to another FunnelKit site",
 			"does": "Exports a funnel with all its steps and settings so you can import the same funnel on another FunnelKit site.",
-			"prompt": "Copy my funnel \"[funnel-name]\" to another FunnelKit site.\n1. Find it with list-funnels and export it with export-funnel. Do not summarise the export: keep it and its checksum exactly as returned.\n2. If my other site is also connected to you, call import-funnel there with the export and checksum unchanged. Otherwise save the export as a .json file I can import in that site's Funnel Builder.\n3. Show me the new funnel and its steps on the other site (get-funnel there).\n\nConfirm with me before importing."
+			"prompt": "Copy my funnel \"[funnel-name]\" to another FunnelKit site.\n1. Find it with list-funnels and export it with export-funnel. If it comes in parts, read every part and join them in order. Do not summarise the export: keep it and its checksum exactly as returned.\n2. If my other site is also connected to you, call import-funnel there with the export and checksum unchanged. Otherwise save the export as a .json file I can import in that site's Funnel Builder.\n3. Show me the new funnel and its steps on the other site (get-funnel there).\n\nConfirm with me before importing."
 		},
 		{
 			"id": "v7",
@@ -280,7 +280,7 @@
 			"category": "create",
 			"title": "Redesign a funnel page with a new template",
 			"does": "Swaps a funnel page's design for a template you pick. Warns you first, as your edits to it are replaced.",
-			"prompt": "I want a new design for the [step-type] step of my funnel \"[funnel-name]\".\n\n1. Find the funnel with list-funnels and the step with get-funnel.\n2. Ask me what I want to change about the look, then call list-funnel-templates for that step type and suggest 3 templates for my page builder, with one sentence each. Wait for my pick.\n3. Warn me that a new template replaces the page content, so any edits I made to it are lost. Only after I confirm, apply it with update-step-template. (For an upsell, the design belongs to its offers: use update-offer-template instead.)\n4. Give me the live link so I can check it (get-funnel)."
+			"prompt": "I want a new design for the [step-type] step of my funnel \"[funnel-name]\".\n\n1. Find the funnel with list-funnels and the step with get-funnel.\n2. Ask me what I want to change about the look, then call list-funnel-templates for that step type and suggest 3 templates for my page builder, with one sentence each. Wait for my pick.\n3. Warn me that a new template replaces the page content, so any edits I made to it are lost. Only after I confirm, apply it with update-step-template.\n4. Give me the live link so I can check it (get-funnel)."
 		},
 		{
 			"id": "g2",

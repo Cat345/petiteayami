@@ -39,9 +39,9 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 			'writes'  => false,
 			'summary' => 'Every widget type the design tools can configure.',
 		),
-		'elementor/get-widget-schema'   => array(
+		'elementor/get-widget-schemas'  => array(
 			'writes'  => false,
-			'summary' => 'One widget type\'s settings schema, with defaults.',
+			'summary' => 'Widget types\' settings schemas, with defaults.',
 		),
 		'elementor/list-resources'      => array(
 			'writes'  => false,
@@ -49,7 +49,7 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 		),
 		'elementor/read-resource'       => array(
 			'writes'  => false,
-			'summary' => 'Reads one resource by URI, e.g. elementor://global-variables.',
+			'summary' => 'Reads one resource by the URI elementor/list-resources gives it (global variables, global classes ...).',
 		),
 		'elementor/list-assets'         => array(
 			'writes'  => false,
@@ -71,6 +71,14 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 			'writes'  => true,
 			'summary' => 'Publishes a Step\'s pending edits to the live page.',
 		),
+	);
+
+	/**
+	 * Elementor tools Elementor has renamed: earlier name => current name. Either
+	 * name runs the one the installed Elementor has (4.4.0 renamed get-widget-schema).
+	 */
+	const RENAMED_ELEMENTOR_TOOLS = array(
+		'elementor/get-widget-schema' => 'elementor/get-widget-schemas',
 	);
 
 	/** @var FKMCP_Pack_Elementor_Design|null */
@@ -138,7 +146,7 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 	 * description passes 2,000 characters, and a result has no such bound.
 	 */
 	public static function workflow() {
-		return 'Elementor\'s design tools (elementor/build-composition, elementor/manage-elements, elementor/publish-document, elementor/get-page-structure ...) and FunnelKit\'s funnel widget tools (funnelkit/get-funnel-widgets, funnelkit/update-funnel-widget, funnelkit/move-funnel-widget) are run through this server: read-design runs the ones that read and edit-design the ones that write (tool = its name, input = its input), and each lists its tools; before you first use a tool, call its runner with describe: true for its instructions and input schema. Design to the user\'s brief when they gave one - their inspiration, colours and fonts. Designing a Step: 1) prepare-step-design (once per Step) - with the Atomic Editor on, FunnelKit templates arrive as atomic elements the Elementor tools can edit, so to use a template the user names import that template itself (create-funnel mode template, update-step-template) and restyle or edit it; never rebuild it from scratch, and never stand another Funnel in for it 2) read elementor/get-widget-schema / elementor/read-resource for the widget props, global classes and variables 3) elementor/build-composition with post_id = the Step id (post_id from prepare-step-design) 4) elementor/manage-elements to change, move or delete what you built; put the funnel widgets (checkout form, optin form, order details, offer controls - classic widgets) where your layout needs them with funnelkit/move-funnel-widget (into a flexbox you built, e.g. the right column of a two-column checkout) 5) restyle every funnel widget to match your design - this is part of designing the Step, not optional: they keep FunnelKit\'s own look (its fonts, colours and button) until you change them, so a page styled only around them looks unfinished. funnelkit/get-funnel-widgets with search (e.g. button, color, typography, heading, border) lists the settings; set the fonts, heading and text colours, field borders and the button\'s colour, text and radius with funnelkit/update-funnel-widget, or brand the colours with prepare-step-design brand_color 6) work in rounds until the Step is right: read-design funnelkit/check-step-design scores the page (edit-design returns the same as quality after every change) - fix its findings, biggest cost first, and check again; the Step is done only when ready is true (90+ with no defect) 7) elementor/publish-document - edits to a published Step stay in a draft until then 8) open the Step\'s view link and look at it at desktop and phone width as a visitor would, if you can open pages - every Step, not only the first; if anything looks off (cramped, cluttered, hard to read, clashing with the funnel widgets), go back to 6. Tell the user a Step is finished only when it is ready and you have looked at it. The Elementor tools on this server work on Funnel Steps only. Site-wide styles: when the site has global classes or variables (elementor/read-resource elementor://global-classes and elementor://global-variables), use them on your elements instead of typing the same colours, fonts and sizes - attach a class with elementor/manage-elements (classes, by label) and, since an element\'s own style wins over a class for the same property, rewrite that element\'s own style without those properties (style_apply_mode replace); use them as they are - never create, edit or delete a global class or variable, since they restyle the whole site (if the user wants one, they set it up in Elementor first). Content rules: never type prices, product names or discounts into your own elements - the funnel widgets show them live from the products and offers, and typed values go stale; do not show the order bump or the upsell offer on another Step (the upsell is a one-time offer made after payment). Structure rules - build each thing as what it is: a button or link that moves the visitor on links to next_step_link (?wffn-next-link=yes), never a typed address of a Step or the checkout, which skips the funnel\'s bumps and upsells and breaks when the funnel changes; a link is a link - header and footer links (Privacy Policy, Terms, Contact) carry their link (the element\'s link setting, or <a href> in the text), never plain text that looks like one; a list of points is a list - a paragraph with <ul><li>, one item per line - never ticks, arrows or bullets typed as characters, nor a stack of icon-and-text rows; a star rating is e-svg star icons (fa-star) in a row, never ★ characters; a header or footer is an e-flexbox with tag header or footer (nav for its links); a look repeated on several elements uses the site\'s global class when it has one.';
+		return 'Elementor\'s design tools (elementor/build-composition, elementor/manage-elements, elementor/publish-document, elementor/get-page-structure ...) and FunnelKit\'s funnel widget tools (funnelkit/get-funnel-widgets, funnelkit/update-funnel-widget, funnelkit/move-funnel-widget) are run through this server: read-design runs the ones that read and edit-design the ones that write (tool = its name, input = its input), and each lists its tools; before you first use a tool, call its runner with describe: true for its instructions and input schema. Design to the user\'s brief when they gave one - their inspiration, colours and fonts. Designing a Step: 1) prepare-step-design (once per Step) - with the Atomic Editor on, FunnelKit templates arrive as atomic elements the Elementor tools can edit, so to use a template the user names import that template itself (create-funnel mode template, update-step-template) and restyle or edit it; never rebuild it from scratch, and never stand another Funnel in for it 2) read elementor/get-widget-schemas / elementor/read-resource for the widget props, global classes and variables 3) elementor/build-composition with post_id = the Step id (post_id from prepare-step-design) 4) elementor/manage-elements to change, move or delete what you built; put the funnel widgets (checkout form, optin form, order details, offer controls - classic widgets) where your layout needs them with funnelkit/move-funnel-widget (into a flexbox you built, e.g. the right column of a two-column checkout) 5) restyle every funnel widget to match your design - this is part of designing the Step, not optional: they keep FunnelKit\'s own look (its fonts, colours and button) until you change them, so a page styled only around them looks unfinished. funnelkit/get-funnel-widgets with search (e.g. button, color, typography, heading, border) lists the settings; set the fonts, heading and text colours, field borders and the button\'s colour, text and radius with funnelkit/update-funnel-widget, or brand the colours with prepare-step-design brand_color 6) work in rounds until the Step is right: read-design funnelkit/check-step-design scores the page (edit-design returns the same as quality after every change) - fix its findings, biggest cost first, and check again; the Step is done only when ready is true (90+ with no defect) 7) elementor/publish-document - edits to a published Step stay in a draft until then 8) open the Step\'s view link and look at it at desktop and phone width as a visitor would, if you can open pages - every Step, not only the first; if anything looks off (cramped, cluttered, hard to read, clashing with the funnel widgets), go back to 6. Tell the user a Step is finished only when it is ready and you have looked at it. The Elementor tools on this server work on Funnel Steps only. Site-wide styles: when the site has global classes or variables (elementor/read-resource elementor://global-classes and elementor://global-variables), use them on your elements instead of typing the same colours, fonts and sizes - attach a class with elementor/manage-elements (classes, by label) and, since an element\'s own style wins over a class for the same property, rewrite that element\'s own style without those properties (style_apply_mode replace); use them as they are - never create, edit or delete a global class or variable, since they restyle the whole site (if the user wants one, they set it up in Elementor first). Content rules: never type prices, product names or discounts into your own elements - the funnel widgets show them live from the products and offers, and typed values go stale; do not show the order bump or the upsell offer on another Step (the upsell is a one-time offer made after payment). Structure rules - build each thing as what it is: a button or link that moves the visitor on links to next_step_link (?wffn-next-link=yes), never a typed address of a Step or the checkout, which skips the funnel\'s bumps and upsells and breaks when the funnel changes; a link is a link - header and footer links (Privacy Policy, Terms, Contact) carry their link (the element\'s link setting, or <a href> in the text), never plain text that looks like one; a list of points is a list - a paragraph with <ul><li>, one item per line - never ticks, arrows or bullets typed as characters, nor a stack of icon-and-text rows; a star rating is e-svg star icons (fa-star) in a row, never ★ characters; a header or footer is an e-flexbox with tag header or footer (nav for its links); a look repeated on several elements uses the site\'s global class when it has one.';
 	}
 
 	public function definitions() {
@@ -164,15 +172,15 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 			'prepare-step-design' => array(
 				'capability'          => array( 'funnel', 'write' ),
 				'label'               => __( 'Prepare Step Design', 'funnel-builder-powerpack' ),
-				'description'         => 'Make a Step ready for Elementor\'s design tools; call it once per Step before edit-design. mode keep (default): the Step must already show an Elementor design (an Elementor template or build-from-scratch) and its content is kept. mode blank: the Step\'s design is replaced by a blank Elementor layout - its sections and text are lost, so confirm with the user first - but the funnel widgets it already has (checkout form and order summary, optin form, order and customer details, the upsell offer\'s price, product and accept / decline controls) are kept with their settings, moved into one container; use it to design a Step from scratch or to move a Step off another builder. A Step that is still empty (no template and no content, as each Step of a Funnel created from scratch starts) is switched to a blank Elementor layout in either mode, with nothing lost and nothing to confirm; the result says mode blank. Either way the Step is marked as built with Elementor (without it Elementor\'s edits never reach the live page), given FunnelKit Canvas when it uses the theme\'s page template (a template chosen for it is kept), and the funnel widgets it needs and lacks are added in their own container: the checkout form on a Checkout, the optin form on an Optin, the order and customer details on a Thank You page, the accept and decline controls on an Upsell Offer. Those are classic widgets the Elementor tools cannot place, move or edit: change their settings with funnelkit/update-funnel-widget and move them with funnelkit/move-funnel-widget (run through read-design / edit-design), never delete and rebuild them. brand_color brands their colours; never use custom CSS for that. Returns post_id for the Elementor tools, next_step_link (set it as a button\'s link to send the visitor to the next Step) and workflow, the steps to design the Step: follow it. Write.',
+				'description'         => 'Make a Step ready for Elementor\'s design tools; call it once per Step before edit-design. mode keep (default): the Step must already show an Elementor design (an Elementor template or build-from-scratch) and its content is kept. mode blank: the Step\'s design is replaced by a blank Elementor layout - its sections and text are lost, so confirm with the user first - but the funnel widgets it already has (checkout form and order summary, optin form, order and customer details, the upsell offer\'s price, product and accept / decline controls) are kept with their settings, moved into one container; use it to design a Step from scratch or to move a Step off another builder. A Step that is still empty (no template and no content, as each Step of a Funnel created from scratch starts) is switched to a blank Elementor layout in either mode, with nothing lost and nothing to confirm; the result says mode blank. Either way the Step is marked as built with Elementor (without it Elementor\'s edits never reach the live page), given FunnelKit Canvas when it uses the theme\'s page template (a template chosen for it is kept), and the funnel widgets it needs and lacks are added in their own container: the checkout form on a Checkout, the optin form on an Optin, the order and customer details on a Thank You page, the accept and decline controls on an Upsell Offer. Those are classic widgets the Elementor tools cannot place, move or edit: change their settings with funnelkit/update-funnel-widget and move them with funnelkit/move-funnel-widget (run through read-design / edit-design), never delete and rebuild them. brand_color brands their colours (a hex colour, or the label of an Elementor colour variable synced to Global Colors); never use custom CSS for that. Returns post_id for the Elementor tools, next_step_link (set it as a button\'s link to send the visitor to the next Step) and workflow, the steps to design the Step: follow it. Write.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
 						'step_id'     => WFFN_MCP_Schema::in_id( 'Step id (or Upsell Offer id).' ),
 						'mode'        => WFFN_MCP_Schema::in_enum( array( 'keep', 'blank' ), 'keep (default) or blank.' ),
 						'brand_color' => WFFN_MCP_Schema::in_str(
-							'Label of an Elementor colour variable synced to Global Colors (see elementor/read-resource elementor://global-variables), e.g. brand-accent. The Step\'s funnel widgets - checkout form buttons and checks, optin button, upsell accept button - take this colour and follow the variable when it changes. The variable is used as the site has it, never changed.',
+							'The brand colour for the Step\'s funnel widgets (checkout form buttons and checks, optin button, upsell accept button). Either a solid hex colour (#RGB or #RRGGBB, such as #C0392B), which the widgets take as their own colour and which changes nothing site-wide; or the label of an Elementor colour variable synced to Global Colors (list the site\'s variables with read-design: tool elementor/read-resource, uri elementor://global-variables), e.g. brand-accent, which the widgets follow when it changes. A colour name or slug you made up is refused: when the user gives a colour value, pass the hex.',
 							array(
-								'pattern'   => '^[A-Za-z0-9_-]+$',
+								'pattern'   => '^(#([0-9A-Fa-f]{3}){1,2}|[A-Za-z0-9_-]+)$',
 								'maxLength' => 64,
 							)
 						),
@@ -188,7 +196,8 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 						'kept'     => WFFN_MCP_Schema::arr( WFFN_MCP_Schema::str(), 'Funnel widgets a blank reset kept, with their settings.' ),
 						'brand'    => WFFN_MCP_Schema::obj(
 							array(
-								'variable' => WFFN_MCP_Schema::str( 'The colour variable applied.' ),
+								'color'    => WFFN_MCP_Schema::str( 'The hex colour set on the widgets, when brand_color was a hex colour.' ),
+								'variable' => WFFN_MCP_Schema::str( 'The colour variable applied, when brand_color named one.' ),
 								'global'   => WFFN_MCP_Schema::str( 'The classic global colour it is published as.' ),
 								'applied'  => WFFN_MCP_Schema::arr( WFFN_MCP_Schema::str(), 'widget type:colour control pairs now following it.' ),
 							),
@@ -735,7 +744,7 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 
 		if ( isset( $input['brand_color'] ) && '' !== (string) $input['brand_color'] ) {
 			self::funnel_widgets();
-			$brand = FKMCP_Funnel_Widgets::brand_global( (string) $input['brand_color'] );
+			$brand = FKMCP_Funnel_Widgets::brand_color( (string) $input['brand_color'] );
 
 			if ( is_wp_error( $brand ) ) {
 				return $brand;
@@ -800,7 +809,7 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 			$elements[] = self::widget_container( $step['entry'], $missing );
 		}
 
-		$applied = $brand ? FKMCP_Funnel_Widgets::apply_brand( $elements, (array) $step['entry']['brand'], $brand['global'] ) : array();
+		$applied = $brand ? FKMCP_Funnel_Widgets::apply_brand( $elements, (array) $step['entry']['brand'], $brand ) : array();
 
 		if ( 'blank' === $mode || ! empty( $missing ) || ! empty( $applied ) ) {
 			self::save_revision( $step['id'], self::BEFORE_AI );
@@ -830,11 +839,7 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 		);
 
 		if ( $brand ) {
-			$result['brand'] = array(
-				'variable' => $brand['variable'],
-				'global'   => $brand['global'],
-				'applied'  => $applied,
-			);
+			$result['brand'] = array_merge( $brand, array( 'applied' => $applied ) );
 		}
 
 		return $result;
@@ -2088,6 +2093,13 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 		$available = self::available_design_tools();
 		$name      = self::tool_name( isset( $input['tool'] ) ? $input['tool'] : '' );
 
+		foreach ( self::spellings( $name ) as $spelling ) {
+			if ( isset( $available[ $spelling ] ) ) {
+				$name = $spelling;
+				break;
+			}
+		}
+
 		if ( ! isset( $available[ $name ] ) ) {
 			return self::unknown_tool( isset( $input['tool'] ) ? $input['tool'] : '' );
 		}
@@ -2126,8 +2138,7 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 		}
 
 		if ( is_wp_error( $result ) ) {
-			// Elementor's own message tells the agent what to fix in its input.
-			$result = new WP_Error( 'fkmcp_design_tool_failed', sprintf( '%1$s: %2$s', $name, $result->get_error_message() ) );
+			$result = self::design_tool_error( $name, $result );
 		} elseif ( $before ) {
 			$lost = self::restore_lost_funnel_widgets( $step_id, $before );
 
@@ -2160,6 +2171,43 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 	}
 
 	/**
+	 * An Elementor design tool's refusal, as the agent and the FunnelKit AI
+	 * gateway need it. Elementor answers bad input (broken XML, an unknown
+	 * widget, settings its schema refuses) with a 4xx, and the Abilities API
+	 * with ability_invalid_input: that is the agent's to fix, so it is classed
+	 * as invalid input and keeps Elementor's code and status, where a bare
+	 * "tool failed" counted it as the store failing. Elementor's message
+	 * leads, because the gateway keeps a message only up to its first colon.
+	 *
+	 * @param string   $name  The design tool.
+	 * @param WP_Error $error Elementor's refusal.
+	 *
+	 * @return WP_Error
+	 */
+	private static function design_tool_error( $name, WP_Error $error ) {
+		$code    = (string) $error->get_error_code();
+		$data    = $error->get_error_data();
+		$status  = is_array( $data ) && isset( $data['status'] ) ? (int) $data['status'] : 0;
+		$refused = 'ability_invalid_input' === $code || ( $status >= 400 && $status < 500 );
+		$message = (string) $error->get_error_message();
+
+		// Core's schema refusal opens with 'Ability "..." has invalid input. Reason:'; keep the reason.
+		if ( 'ability_invalid_input' === $code ) {
+			$message = (string) preg_replace( '/^.*?\bReason:\s*/s', '', $message );
+		}
+
+		return new WP_Error(
+			$refused ? 'fkmcp_design_tool_refused' : 'fkmcp_design_tool_failed',
+			sprintf( '%1$s refused it (%2$s) - %3$s', $name, $code, $message ),
+			array(
+				'status'    => $refused ? ( $status >= 400 && $status < 500 ? $status : 400 ) : 500,
+				'tool'      => $name,
+				'tool_code' => $code,
+			)
+		);
+	}
+
+	/**
 	 * Runs one of FunnelKit's design tools: its input checked against its
 	 * schema, as the Abilities API checks an ability's.
 	 *
@@ -2173,7 +2221,8 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 		$valid = rest_validate_value_from_schema( $args, $spec['input_schema'], 'input' );
 
 		if ( is_wp_error( $valid ) ) {
-			return new WP_Error( 'fkmcp_invalid_input', sprintf( '%1$s: %2$s. Nothing was changed.', $name, rtrim( $valid->get_error_message(), '.' ) ) );
+			// The reason leads: the FunnelKit AI gateway keeps a refusal's message only up to its first colon.
+			return new WP_Error( 'fkmcp_invalid_input', sprintf( '%1$s, in the input of %2$s. Nothing was changed.', rtrim( $valid->get_error_message(), '.' ), $name ) );
 		}
 
 		if ( is_array( $spec['run'] ) ) {
@@ -2527,9 +2576,15 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 		}
 	}
 
-	/** Whether this server runs Elementor's design tools: the site's Elementor has them. */
+	/**
+	 * Whether this server runs Elementor's design tools: the runners list
+	 * Elementor's manage-elements, so the guidance that names Elementor's tools
+	 * names ones they list.
+	 *
+	 * @return bool
+	 */
 	public static function design_tools_on() {
-		return self::ships_design_tools();
+		return isset( self::design_tools()['elementor/manage-elements'] );
 	}
 
 	/**
@@ -2595,12 +2650,33 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 	}
 
 	/**
-	 * Every design tool this server can run: FunnelKit's, then Elementor's.
+	 * Every design tool this server can run: FunnelKit's, then the Elementor ones
+	 * the installed Elementor ships, under its names for them - what the runners'
+	 * descriptions list. Read from Elementor's own MCP registry, as descriptions
+	 * are built while abilities may still be registering.
 	 * Tool name => array( writes, summary ).
 	 *
 	 * @return array
 	 */
 	private static function design_tools() {
+		$ids = self::elementor_ability_ids();
+
+		if ( null === $ids ) {
+			$ships = self::ships_design_tools();
+			$has   = static function () use ( $ships ) {
+				return $ships;
+			};
+		} else {
+			$has = static function ( $name ) use ( $ids ) {
+				return in_array( $name, $ids, true );
+			};
+		}
+
+		return self::own_tools() + self::shipped_elementor_tools( $has );
+	}
+
+	/** FunnelKit's design tools: tool name => array( writes, summary ). */
+	private static function own_tools() {
 		$tools = array();
 
 		foreach ( self::funnelkit_tools() as $name => $tool ) {
@@ -2610,34 +2686,26 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 			);
 		}
 
-		return $tools + self::elementor_tools();
+		return $tools;
 	}
 
 	/**
-	 * The design tools a call can run now: FunnelKit's, and the Elementor ones
-	 * the installed Elementor registers.
+	 * Elementor's design tools that this Elementor has, keyed by the name it
+	 * gives each one.
+	 *
+	 * @param callable $has Whether Elementor has an ability by a given name.
 	 *
 	 * @return array tool name => array( writes, summary )
 	 */
-	private static function available_design_tools() {
-		$tools = self::design_tools();
+	private static function shipped_elementor_tools( $has ) {
+		$tools = array();
 
-		foreach ( array_keys( self::elementor_tools() ) as $name ) {
-			if ( ! isset( $tools[ $name ] ) ) {
-				continue;
-			}
-
-			if ( ! self::has_ability( $name ) ) {
-				unset( $tools[ $name ] );
-				continue;
-			}
-
-			// Elementor's own word decides too: a tool it does not mark read-only
-			// writes, whatever the list says, so read-design can never run it.
-			$annotations = (array) wp_get_ability( $name )->get_meta_item( 'annotations', array() );
-
-			if ( true !== ( $annotations['readonly'] ?? null ) ) {
-				$tools[ $name ]['writes'] = true;
+		foreach ( self::elementor_tools() as $name => $tool ) {
+			foreach ( self::spellings( $name ) as $spelling ) {
+				if ( $has( $spelling ) ) {
+					$tools[ $spelling ] = $tool;
+					break;
+				}
 			}
 		}
 
@@ -2645,8 +2713,90 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 	}
 
 	/**
+	 * A tool's names: its own, then the other name of a tool Elementor renamed.
+	 *
+	 * @param string $name Tool name.
+	 *
+	 * @return string[]
+	 */
+	private static function spellings( $name ) {
+		$names = array( $name );
+
+		foreach ( self::RENAMED_ELEMENTOR_TOOLS as $old => $new ) {
+			if ( $name === $old ) {
+				$names[] = $new;
+			} elseif ( $name === $new ) {
+				$names[] = $old;
+			}
+		}
+
+		return $names;
+	}
+
+	/**
+	 * The ids in Elementor's MCP registry: the abilities this Elementor
+	 * registers, known before it registers them. None when its MCP module is
+	 * inactive, as nothing registers then; null for an Elementor without the
+	 * registry.
+	 *
+	 * @return string[]|null
+	 */
+	private static function elementor_ability_ids() {
+		$module = 'Elementor\Modules\Mcp\Module';
+
+		if ( ! class_exists( $module ) || ! $module::is_active() ) {
+			return array();
+		}
+
+		try {
+			$mcp = \Elementor\Plugin::$instance->modules_manager->get_modules( 'mcp' );
+
+			if ( ! $mcp instanceof $module || ! method_exists( $mcp, 'registry' ) ) {
+				return null;
+			}
+
+			$ids = array();
+
+			foreach ( $mcp->registry()->all() as $ability ) {
+				$ids[] = (string) $ability->get_id();
+			}
+
+			return $ids;
+		} catch ( Throwable $e ) {
+			return null;
+		}
+	}
+
+	/**
+	 * The design tools a call can run now: FunnelKit's, and the Elementor ones
+	 * the installed Elementor registers, under its names for them.
+	 *
+	 * @return array tool name => array( writes, summary )
+	 */
+	private static function available_design_tools() {
+		$elementor = self::shipped_elementor_tools(
+			static function ( $name ) {
+				return self::has_ability( $name );
+			}
+		);
+
+		foreach ( array_keys( $elementor ) as $name ) {
+			// Elementor's own word decides too: a tool it does not mark read-only
+			// writes, whatever the list says, so read-design can never run it.
+			$annotations = (array) wp_get_ability( $name )->get_meta_item( 'annotations', array() );
+
+			if ( true !== ( $annotations['readonly'] ?? null ) ) {
+				$elementor[ $name ]['writes'] = true;
+			}
+		}
+
+		return self::own_tools() + $elementor;
+	}
+
+	/**
 	 * Names of the design tools that read, or that write, for the runners' input schemas -
-	 * FunnelKit's and Elementor's stock list, whatever fkmcp_elementor_design_tools says.
+	 * FunnelKit's and Elementor's stock list, whatever fkmcp_elementor_design_tools says,
+	 * with a renamed Elementor tool's earlier name too.
 	 *
 	 * @param bool $writes Which.
 	 *
@@ -2654,15 +2804,15 @@ class FKMCP_Pack_Elementor_Design extends FKMCP_Pack {
 	 */
 	private static function tool_names( $writes ) {
 		// ponytail: the constant, not the filtered list - a tool schema is the same on every site; the filter acts when a tool runs (available_design_tools).
-		$schema_tools = array();
+		$elementor = self::normalize_tools( self::ELEMENTOR_TOOLS );
 
-		foreach ( self::funnelkit_tools() as $name => $tool ) {
-			$schema_tools[ $name ] = array( 'writes' => $tool['writes'] );
+		foreach ( self::RENAMED_ELEMENTOR_TOOLS as $old => $new ) {
+			$elementor[ $old ] = $elementor[ $new ];
 		}
 
 		return array_keys(
 			array_filter(
-				$schema_tools + self::normalize_tools( self::ELEMENTOR_TOOLS ),
+				self::own_tools() + $elementor,
 				static function ( $tool ) use ( $writes ) {
 					return $tool['writes'] === $writes;
 				}

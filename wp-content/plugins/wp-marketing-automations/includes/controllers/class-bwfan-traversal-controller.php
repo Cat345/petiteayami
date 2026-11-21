@@ -492,10 +492,15 @@ class BWFAN_Traversal_Controller {
 
 		$valid_step_id = 0;
 		if ( ! empty( $result ) ) {
-			$query  = $wpdb->prepare( "SELECT t.`sid` FROM `{$wpdb->prefix}bwfan_automation_contact_trail` as t INNER JOIN `{$wpdb->prefix}bwfan_automation_step` as s ON s.`ID` = t.`sid` WHERE t.`tid` = %s AND t.`ID` < %d AND s.`status` IN (%d, %d) ORDER BY t.ID DESC LIMIT 0,1;", $ins->automation_contact['trail'], $result, 0, 1 );
-			$result = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
-			if ( ! empty( $result ) ) {
-				$valid_step_id = strval( $result );
+			$query  = $wpdb->prepare( "SELECT t.`sid` FROM `{$wpdb->prefix}bwfan_automation_contact_trail` as t INNER JOIN `{$wpdb->prefix}bwfan_automation_step` as s ON s.`ID` = t.`sid` WHERE t.`tid` = %s AND t.`ID` < %d AND s.`status` IN (%d, %d) ORDER BY t.ID DESC;", $ins->automation_contact['trail'], $result, 0, 1 );
+			$results = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above
+
+			/** Latest executed step that still has a node in the graph; an active row alone is not enough (orphan steps) */
+			foreach ( (array) $results as $sid ) {
+				if ( false !== $this->get_step_by_step_id( $sid ) ) {
+					$valid_step_id = strval( $sid );
+					break;
+				}
 			}
 		}
 		if ( empty( $valid_step_id ) ) {

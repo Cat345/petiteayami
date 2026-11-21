@@ -1,0 +1,37 @@
+/**
+ * Betheme — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install — Betheme's WooCommerce-scoped tokens are the only
+ * ones that resolve to literals on a product page:
+ *   --mfn-woo-border-themecolor  #0089F7  accent
+ *   --mfn-woo-heading-color      #626262  headings
+ *   --mfn-woo-body-color         #626262  body text
+ *
+ * Not mapped: no neutral border or surface token is published, so those keep
+ * the plugin literal.
+ */
+body.wffn-bundles-theme-betheme .wffn-bundles,
+body.wffn-bundles-theme-betheme .wffn-bundles-portal,
+body.wffn-bundles-theme-betheme .wffn-bundles-variant-modal {
+	--wffn-bundles-border-active: var(--mfn-woo-border-themecolor, #353030);
+	--wffn-bundles-radio-active: var(--mfn-woo-border-themecolor, #353030);
+	--wffn-bundles-badge-bg: var(--mfn-woo-border-themecolor, #353030);
+	--wffn-bundles-progress-fill: var(--mfn-woo-border-themecolor, #353030);
+	--wffn-bundles-control-accent: var(--mfn-woo-border-themecolor, #353030);
+
+	--wffn-bundles-heading-color: var(--mfn-woo-heading-color, #353030);
+	--wffn-bundles-title-color: var(--mfn-woo-heading-color, #353030);
+	--wffn-bundles-desc-color: var(--mfn-woo-body-color, #82828e);
+	--wffn-bundles-regular-price-color: var(--mfn-woo-body-color, #82828e);
+	--wffn-bundles-price-desc-color: var(--mfn-woo-body-color, #82828e);
+	--wffn-bundles-control-fg: var(--mfn-woo-body-color, #353030);
+	--wffn-bundles-control-muted: var(--mfn-woo-body-color, #82828e);
+}
+
+/* Classic cart: the theme sizes thumbnails only inside their link (100px); a bundle's own line has none. */
+body.wffn-bundles-theme-betheme .woocommerce table.shop_table tr.cart_item.wffn-bundles-cart-parent .product-thumbnail > img {
+	width: 100px;
+	height: auto;
+}

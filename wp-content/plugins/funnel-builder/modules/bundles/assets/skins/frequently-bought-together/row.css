@@ -1,0 +1,89 @@
+/* Frequently Bought Together · Row — image strip, item list, then the summary on one line. */
+
+/* One line at any width: the images shrink rather than wrap a "+" onto a line of its own. */
+.wffn-bundles-fbt--row .wffn-bundles-fbt-strip {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	gap: 6px;
+	margin-block-end: 16px;
+}
+
+.wffn-bundles-fbt--row .wffn-bundles-fbt-strip-item {
+	display: inline-flex;
+	align-items: center;
+	flex: 0 1 auto;
+	min-width: 0;
+	gap: 6px;
+	transition: opacity 0.15s, filter 0.15s;
+}
+
+.wffn-bundles-fbt--row .wffn-bundles-fbt-strip-item.is-off {
+	opacity: 0.35;
+	filter: grayscale(0.6);
+}
+
+.wffn-bundles-fbt--row .wffn-bundles-fbt-thumb.wffn-bundles-fbt-thumb--strip {
+	flex: 0 1 var(--wffn-bundles-item-image-size, 72px);
+	width: var(--wffn-bundles-item-image-size, 72px);
+	min-width: 28px;
+	height: auto;
+	aspect-ratio: 1;
+}
+
+/* Drawn rather than typed, so the glyph never depends on the theme's font. */
+.wffn-bundles-fbt--row .wffn-bundles-fbt-plus {
+	position: relative;
+	flex: 0 0 auto;
+	width: 12px;
+	height: 12px;
+	opacity: 0.7;
+}
+
+.wffn-bundles-fbt--row .wffn-bundles-fbt-plus::before,
+.wffn-bundles-fbt--row .wffn-bundles-fbt-plus::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	background: var(--wffn-bundles-connector);
+	border-radius: 1px;
+}
+
+.wffn-bundles-fbt--row .wffn-bundles-fbt-plus::before {
+	width: 12px;
+	height: 2px;
+}
+
+.wffn-bundles-fbt--row .wffn-bundles-fbt-plus::after {
+	width: 2px;
+	height: 12px;
+}
+
+.wffn-bundles-fbt--row .wffn-bundles-fbt-items {
+	gap: 10px;
+}
+
+.wffn-bundles-fbt--row .wffn-bundles-fbt-summary {
+	align-items: baseline;
+	gap: 8px 12px;
+}
+
+/* An unticked companion stays readable but steps back, as in the strip above it. */
+.wffn-bundles-fbt--row .wffn-bundles-fbt-item.is-off .wffn-bundles-fbt-name,
+.wffn-bundles-fbt--row .wffn-bundles-fbt-item.is-off .wffn-bundles-fbt-prices {
+	opacity: 0.5;
+}
+
+/* The widget's own width decides, so a sidebar or quick view gets it too. */
+@container (max-width: 479px) {
+	.wffn-bundles-fbt--row .wffn-bundles-fbt-strip,
+	.wffn-bundles-fbt--row .wffn-bundles-fbt-strip-item {
+		gap: 4px;
+	}
+
+	.wffn-bundles-fbt--row .wffn-bundles-fbt-thumb.wffn-bundles-fbt-thumb--strip {
+		flex-basis: var(--wffn-bundles-item-image-size, 60px);
+		width: var(--wffn-bundles-item-image-size, 60px);
+	}
+}

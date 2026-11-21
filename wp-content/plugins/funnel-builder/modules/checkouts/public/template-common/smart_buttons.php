@@ -96,6 +96,15 @@ if ( ! $show_smart_button_shimmer ) {
 			max-width: 100% !important;
 		}
 
+		/*
+		 * FunnelKit Stripe draws its wallet buttons 4px inside their iframe (the iframe is the
+		 * button height + 8px); FunnelKit PayPal draws edge to edge. The same 4px top/bottom margin
+		 * keeps PayPal level with the Stripe wallets in this row.
+		 */
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .fkwcppcp-express-button-container {
+			margin: 4px auto;
+		}
+
 		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="1"] #pay_with_amazon {
 			background-size: 20%;
 			margin: 0 auto;

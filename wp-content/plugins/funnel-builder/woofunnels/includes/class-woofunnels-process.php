@@ -50,11 +50,11 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 			// Handling Optin
 			if ( isset( $_GET['woofunnels-optin-choice'] ) && isset( $_GET['_woofunnels_optin_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_woofunnels_optin_nonce'] ) ), 'woofunnels_optin_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				if ( ! current_user_can( 'manage_options' ) ) {
-					wp_die( esc_html__( 'Cheating huh?', 'funnel-builder' ) );
+					wp_die( esc_html__( 'Cheating huh?', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				$optin_choice = sanitize_text_field( wp_unslash( $_GET['woofunnels-optin-choice'] ) );
@@ -102,13 +102,13 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 						?>
 						<div class="woofunnel-notice-message notice notice-warning">
 							<a class="woofunnel-message-close notice-dismiss" href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'woofunnel-update-notice', 'hide' ), 'woofunnel_update_notice_nonce', '_woofunnel_update_notice_nonce' ) ); ?>">
-								<?php esc_html_e( 'Dismiss', 'funnel-builder' ); ?>
+								<?php esc_html_e( 'Dismiss', 'funnelkit-woofunnels-textdomain-placeholder' ); ?>
 							</a>
 							<p>
 								<?php
 								printf(
 									wp_kses(
-										/* translators: 1: comma-separated list of plugin names, 2: URL of the WordPress updates screen. */ __( 'Attention: There is an update available of <strong>%1$s</strong> plugin. &nbsp;<a href="%2$s" class="">Go to updates</a>', 'funnel-builder' ),
+										/* translators: 1: comma-separated list of plugin names, 2: URL of the WordPress updates screen. */ __( 'Attention: There is an update available of <strong>%1$s</strong> plugin. &nbsp;<a href="%2$s" class="">Go to updates</a>', 'funnelkit-woofunnels-textdomain-placeholder' ),
 										array(
 											'strong' => array(),
 											'a'      => array(
@@ -158,7 +158,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 
 			if ( isset( $_GET['woofunnel-update-notice'] ) && isset( $_GET['_woofunnel_update_notice_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_woofunnel_update_notice_nonce'] ) ), 'woofunnel_update_notice_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 				update_option( 'woofunnel_hide_update_notice', 'yes' );
 				wp_safe_redirect( admin_url( 'index.php' ) );

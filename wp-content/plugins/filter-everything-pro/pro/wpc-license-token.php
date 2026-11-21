@@ -36,6 +36,11 @@ if ( ! defined( 'FLRT_LICENSE_TOKEN_OPTION' ) ) {
     define( 'FLRT_LICENSE_TOKEN_OPTION', 'wpc_filter_token' );
 }
 
+/** Option that stores the time of the last token request. */
+if ( ! defined( 'FLRT_LICENSE_TOKEN_ATTEMPT_OPTION' ) ) {
+    define( 'FLRT_LICENSE_TOKEN_ATTEMPT_OPTION', 'wpc_filter_token_attempt' );
+}
+
 /**
  * Public keys connect signs tokens with, keyed by `kid`. Two slots let the
  * signing key be rotated without an outage: ship k2 in a release BEFORE connect
@@ -141,7 +146,35 @@ function flrt_store_token( $token ) {
 }
 
 function flrt_clear_token() {
+    delete_option( FLRT_LICENSE_TOKEN_ATTEMPT_OPTION );
     return delete_option( FLRT_LICENSE_TOKEN_OPTION );
+}
+
+/**
+ * Should this install ask connect for a token ahead of the monthly check?
+ *
+ * Yes when the stored token is missing, invalid, bound to another address or has
+ * under two weeks left. A token lives 45 days and is renewed at 30, so two weeks
+ * left means the monthly check failed. At most once a day, so a site connect
+ * issues no token to stays quiet. Without openssl nothing can be verified, so
+ * there is nothing to ask for.
+ *
+ * @return bool
+ */
+function flrt_token_refresh_due() {
+    if ( ! function_exists( 'openssl_verify' ) ) {
+        return false;
+    }
+
+    $now = time();
+
+    if ( (int) get_option( FLRT_LICENSE_TOKEN_ATTEMPT_OPTION, 0 ) + DAY_IN_SECONDS > $now ) {
+        return false;
+    }
+
+    $payload = flrt_verify_license_token( flrt_get_stored_token(), flrt_clean_url( home_url() ) );
+
+    return ! is_array( $payload ) || ( (int) $payload['texp'] - $now ) < 14 * DAY_IN_SECONDS;
 }
 
 /* ---------------------------------------------------------------- predicate */
@@ -168,7 +201,7 @@ function flrt_main_site_has_shaped_key() {
     }
     $data = get_blog_option( get_main_site_id(), FLRT_LICENSE_KEY );
     if ( is_array( $data ) && isset( $data['license_key'] ) ) {
-        $decoded = maybe_unserialize( base64_decode( $data['license_key'] ) );
+        $decoded = flrt_safe_unserialize( base64_decode( $data['license_key'] ) );
         if ( is_array( $decoded ) && ! empty( $decoded['key'] ) ) {
             return count( explode( '|', base64_decode( $decoded['key'] ) ) ) === 3;
         }

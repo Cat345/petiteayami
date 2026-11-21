@@ -1,5 +1,24 @@
 *** FunnelKit Funnel Builder Pro ***
 
+= 3.19.0.1 (Nov 19, 2026) =
+* Fixed: Bundles: Admin UI links were pointing to the incorrect url. (#9908)
+
+= 3.19.0 (Nov 19, 2026) =
+* Added: Bundles: New Feature bundles with Quantity breaks, Mix and Match types with rich analytics.
+* Added: Upsells: Added the wfocu_mollie_upsell_payment_description filter to customise the payment description sent to Mollie. (#9768)
+* Improved: Order Bumps: Improved compatibility with Sublium Subscriptions. (#9815)
+* Improved: Upsells: The Gutenberg Variation Selector preview now shows the offer's real attributes, and Select Product lists each variation by name. (#9797)
+* Improved: FunnelKit AI: Improve description of analytics abilities for better results. (#9837)
+* Improved: Upsells: Compatibility with WooCommerce PayPal Payments updated. (#9861)
+* Fixed: FunnelKit AI: Rules ability for order bump now correctly save past purchase products. (#9814)
+* Fixed: FunnelKit AI: Only the Elementor design abilities the site can actually run are now offered. (#9827)
+* Fixed: FunnelKit AI: Order bump design ability now lists only the design keys it can write back. (#9846)
+* Fixed: FunnelKit AI: A/B test ids are now named the same way in reads and in writes. (#9850)
+* Fixed: Upsells: GA4 and Google Ads purchase events are now sent once per order, even when the browser restores the thank you page tab. (#9771)
+
+= 3.18.0.1 (Nov 10, 2026) =
+* Improved: Checkout: Hardened checkout and order bump product quick view so it only shows published, publicly visible products. (#9778)
+* Fixed: Order Bumps: FunnelKit AI order bump design updates now accept the input AI clients send and explain any value they decline. (#9782)
 
 = 3.18.0 (Nov 03, 2026) =
 * Added: Order Bumps: Added a Cart Single Product Price display rule that matches any single purchased product above a minimum price. (#9686)

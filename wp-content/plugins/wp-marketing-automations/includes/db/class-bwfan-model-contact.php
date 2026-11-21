@@ -261,16 +261,19 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			if ( ! empty( trim( $search ) ) ) {
 				$search = trim( $search );
 				/** Search Contact by f_name, l_name, contact_no (phone), email */
-				$like_search  = '%' . $wpdb->esc_like( $search ) . '%';
-				$search_query = $wpdb->prepare( "AND ( c.email LIKE %s OR c.f_name LIKE %s OR c.l_name LIKE %s OR c.contact_no LIKE %s )", $like_search, $like_search, $like_search, $like_search );
+				$like_search = '%' . $wpdb->esc_like( $search ) . '%';
+				$name_match  = '';
 
-				/** Get f_name and l_name from search string and append in a query */
+				/** Get f_name and l_name from search string and match them together */
 				if ( false !== strpos( $search, ' ' ) ) {
-					$search_arr   = explode( ' ', $search );
-					$first_name   = isset( $search_arr[0] ) ? $search_arr[0] : '';
-					$last_name    = ! empty( end( $search_arr ) ) ? end( $search_arr ) : '';
-					$search_query .= ! empty( $first_name ) && ! empty( $last_name ) ? $wpdb->prepare( " OR ( c.f_name LIKE %s AND c.l_name LIKE %s )", '%' . $wpdb->esc_like( $first_name ) . '%', '%' . $wpdb->esc_like( $last_name ) . '%' ) : '';
+					$search_arr = explode( ' ', $search );
+					$first_name = isset( $search_arr[0] ) ? $search_arr[0] : '';
+					$last_name  = ! empty( end( $search_arr ) ) ? end( $search_arr ) : '';
+					$name_match = ! empty( $first_name ) && ! empty( $last_name ) ? $wpdb->prepare( ' OR ( c.f_name LIKE %s AND c.l_name LIKE %s )', '%' . $wpdb->esc_like( $first_name ) . '%', '%' . $wpdb->esc_like( $last_name ) . '%' ) : '';
 				}
+
+				// Inside the brackets: an OR after them would skip every other WHERE condition (filters, id ranges, exclusions).
+				$search_query = $wpdb->prepare( 'AND ( c.email LIKE %s OR c.f_name LIKE %s OR c.l_name LIKE %s OR c.contact_no LIKE %s', $like_search, $like_search, $like_search, $like_search ) . $name_match . ' )';
 			}
 
 			/** Check if one of Email or Phone must not empty */

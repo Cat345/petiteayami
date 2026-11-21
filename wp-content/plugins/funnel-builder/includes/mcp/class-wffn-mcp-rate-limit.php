@@ -3,14 +3,21 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Two rolling windows per user: 60 ability calls/min, enforced from
- * WFFN_MCP_Log::wrap() (core's Abilities API fires wp_before_execute_ability as a
- * plain action, so there is no filter to short-circuit an execution from), and
- * a wider transport ceiling enforced from WFFN_MCP_Permissions::transport_gate().
+ * Three per-user counters, each over a fixed one-minute window: 240 ability
+ * calls/min for writes and 240 for reads, enforced from WFFN_MCP_Log::wrap()
+ * (core's Abilities API fires wp_before_execute_ability as a plain action, so
+ * there is no filter to short-circuit an execution from), and a wider
+ * transport ceiling enforced from WFFN_MCP_Permissions::transport_gate().
  *
  * The transport window is what covers everything that never reaches an ability:
  * initialize, tools/list, resources/*, and malformed JSON-RPC. Those are cheap
  * individually but unmetered without it.
+ *
+ * Read-only abilities (the `readonly` annotation) count in a bucket of their
+ * own, fkmcp_rlr_, beside the writes' fkmcp_rl_: a burst of edits must not
+ * stop an agent reading back what it changed. Every refusal carries
+ * `retry_after`, the seconds left in its window, which the connector relays
+ * to the client with the error's other data, and status 429.
  */
 class WFFN_MCP_Rate_Limit {
 	const WINDOW = 60;
@@ -25,7 +32,28 @@ class WFFN_MCP_Rate_Limit {
 			return null;
 		}
 
-		return self::consume( 'fkmcp_rl_', (int) apply_filters( 'fkmcp_rate_limit', 60, $ability_name ) );
+		$key_prefix = self::is_read( $ability_name ) ? 'fkmcp_rlr_' : 'fkmcp_rl_';
+
+		return self::consume( $key_prefix, (int) apply_filters( 'fkmcp_rate_limit', 240, $ability_name ) );
+	}
+
+	/**
+	 * An ability that cannot be looked up counts as a write.
+	 *
+	 * @param string $ability_name
+	 *
+	 * @return bool
+	 */
+	private static function is_read( $ability_name ) {
+		$ability = function_exists( 'wp_get_ability' ) ? wp_get_ability( $ability_name ) : null;
+
+		if ( ! is_object( $ability ) || ! method_exists( $ability, 'get_meta_item' ) ) {
+			return false;
+		}
+
+		$annotations = $ability->get_meta_item( 'annotations', array() );
+
+		return is_array( $annotations ) && ! empty( $annotations['readonly'] );
 	}
 
 	/**
@@ -36,13 +64,18 @@ class WFFN_MCP_Rate_Limit {
 	 * @return WP_Error|null WP_Error when the caller is over the limit.
 	 */
 	public static function check_transport() {
-		return self::consume( 'fkmcp_rlt_', (int) apply_filters( 'fkmcp_transport_rate_limit', 600 ) );
+		return self::consume( 'fkmcp_rlt_', (int) apply_filters( 'fkmcp_transport_rate_limit', 2400 ) );
 	}
 
 	/**
 	 * On a site with a real object cache the counter lives there: one atomic
 	 * increment per call and no option row written, where the transient path
 	 * costs a read and a write each time.
+	 *
+	 * The key is named after the clock-aligned window it counts, so the
+	 * seconds left need no stored start time, and a counter left without its
+	 * TTL - a drop-in whose incr() rewrites the key without one - is abandoned
+	 * when its window ends instead of refusing every call after it.
 	 *
 	 * @param string $key    Counter key.
 	 * @param int    $limit  Calls allowed per window.
@@ -52,6 +85,8 @@ class WFFN_MCP_Rate_Limit {
 	 */
 	private static function consume_cached( $key, $limit, $window ) {
 		$group = 'fkmcp';
+		$now   = time();
+		$key  .= '_' . (int) floor( $now / $window );
 		$count = wp_cache_get( $key, $group );
 
 		if ( false === $count ) {
@@ -60,7 +95,7 @@ class WFFN_MCP_Rate_Limit {
 		}
 
 		if ( (int) $count >= $limit ) {
-			return self::refusal( $limit );
+			return self::refusal( $limit, $window - ( $now % $window ) );
 		}
 
 		if ( false === wp_cache_incr( $key, 1, $group ) ) {
@@ -73,17 +108,30 @@ class WFFN_MCP_Rate_Limit {
 	/**
 	 * The refusal both counters answer with.
 	 *
-	 * @param int $limit Calls allowed per window.
+	 * @param int $limit       Calls allowed per window.
+	 * @param int $retry_after Seconds until the window resets.
 	 *
 	 * @return WP_Error
 	 */
-	private static function refusal( $limit ) {
+	private static function refusal( $limit, $retry_after ) {
+		$retry_after = max( 1, (int) $retry_after );
+
 		return new WP_Error(
 			'fkmcp_rate_limited',
 			sprintf(
-				/* translators: %d: number of calls allowed per minute. */
-				__( 'Rate limit reached: %d calls per minute. Wait before retrying.', 'funnel-builder' ),
-				$limit
+				/* translators: 1: number of calls allowed per minute, 2: seconds until calls are accepted again. */
+				_n(
+					'Rate limit reached: %1$d calls per minute. Retry in %2$d second.',
+					'Rate limit reached: %1$d calls per minute. Retry in %2$d seconds.',
+					$retry_after,
+					'funnel-builder'
+				),
+				$limit,
+				$retry_after
+			),
+			array(
+				'status'      => 429,
+				'retry_after' => $retry_after,
 			)
 		);
 	}
@@ -107,7 +155,7 @@ class WFFN_MCP_Rate_Limit {
 			return null;
 		}
 
-		$window = (int) apply_filters( 'fkmcp_rate_limit_window', self::WINDOW, $key_prefix );
+		$window = max( 1, (int) apply_filters( 'fkmcp_rate_limit_window', self::WINDOW, $key_prefix ) );
 		$key    = $key_prefix . get_current_user_id();
 
 		if ( wp_using_ext_object_cache() ) {
@@ -124,7 +172,7 @@ class WFFN_MCP_Rate_Limit {
 		}
 
 		if ( $state['count'] >= $limit ) {
-			return self::refusal( $limit );
+			return self::refusal( $limit, (int) $state['start'] + $window - $now );
 		}
 
 		++$state['count'];

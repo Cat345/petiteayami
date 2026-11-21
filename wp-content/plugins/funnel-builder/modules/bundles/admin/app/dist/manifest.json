@@ -1,0 +1,69 @@
+{
+  "admin/app/src/main.tsx": {
+    "file": "assets/main-70017cb8.js",
+    "name": "main",
+    "src": "admin/app/src/main.tsx",
+    "isEntry": true,
+    "css": [
+      "assets/main-ec6b4fd2.css"
+    ]
+  },
+  "admin/app/src/embed/fb-extensions.tsx": {
+    "file": "assets/fb-extensions-73a37a1b.js",
+    "name": "fb-extensions",
+    "src": "admin/app/src/embed/fb-extensions.tsx",
+    "isEntry": true,
+    "css": []
+  },
+  "_shared-b0a17870.js": {
+    "file": "assets/shared-b0a17870.js"
+  },
+  "_bundles-5d6e70b4.js": {
+    "file": "assets/bundles-5d6e70b4.js"
+  },
+  "_shared-9487b6e3.js": {
+    "file": "assets/shared-9487b6e3.js"
+  },
+  "_shared-6bd6f740.js": {
+    "file": "assets/shared-6bd6f740.js"
+  },
+  "_shared-032ae135.js": {
+    "file": "assets/shared-032ae135.js"
+  },
+  "_shared-b919cb04.js": {
+    "file": "assets/shared-b919cb04.js"
+  },
+  "_analytics-eed8afd8.js": {
+    "file": "assets/analytics-eed8afd8.js"
+  },
+  "_analytics-3390d89c.js": {
+    "file": "assets/analytics-3390d89c.js"
+  },
+  "_shared-868d8cee.js": {
+    "file": "assets/shared-868d8cee.js"
+  },
+  "_shared-b09f5801.js": {
+    "file": "assets/shared-b09f5801.js"
+  },
+  "_bundles-386657af.js": {
+    "file": "assets/bundles-386657af.js"
+  },
+  "_shared-0f73eb6c.js": {
+    "file": "assets/shared-0f73eb6c.js"
+  },
+  "_bundles-7af879fc.js": {
+    "file": "assets/bundles-7af879fc.js"
+  },
+  "_shared-b35d6c2e.js": {
+    "file": "assets/shared-b35d6c2e.js"
+  },
+  "_settings-d1593482.js": {
+    "file": "assets/settings-d1593482.js"
+  },
+  "_shared-4bdc031e.js": {
+    "file": "assets/shared-4bdc031e.js"
+  },
+  "_shared-33db9485.js": {
+    "file": "assets/shared-33db9485.js"
+  }
+}

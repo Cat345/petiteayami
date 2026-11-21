@@ -1,0 +1,51 @@
+/**
+ * Avada — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Filename is capitalised because Theme_Compat resolves it from get_template(),
+ * and Avada's directory is `Avada`. See that class before renaming.
+ *
+ * Measured on this install — Avada's eight palette slots, each confirmed
+ * against what the page actually renders:
+ *   --awb-color1  #ffffff  base background
+ *   --awb-color2  #f9f9fb  lighter surface
+ *   --awb-color3  #f2f3f5  light surface / borders (= --form_border_color)
+ *   --awb-color4  #65bd7d  success green
+ *   --awb-color5  #198fd9  accent      (matches the rendered add-to-cart button)
+ *   --awb-color6  #434549  muted text
+ *   --awb-color7  #212326  dark
+ *   --awb-color8  #141617  headings + body text (matches the rendered h1)
+ *
+ * Not mapped: `--wffn-bundles-radio`. Slot 3 is a surface tint; as the ring of an
+ * empty radio or checkbox on a white card it all but disappears, so the ring keeps
+ * the plugin's grey.
+ */
+body.wffn-bundles-theme-Avada .wffn-bundles,
+body.wffn-bundles-theme-Avada .wffn-bundles-portal,
+body.wffn-bundles-theme-Avada .wffn-bundles-variant-modal {
+	--wffn-bundles-bg: var(--awb-color1, #fff);
+	--wffn-bundles-bg-active: var(--awb-color2, #fafafa);
+	--wffn-bundles-step-bg: var(--awb-color3, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--awb-color2, #fafafa);
+
+	--wffn-bundles-border: var(--awb-color3, #dedfea);
+	--wffn-bundles-control-border: var(--awb-color3, #dedfea);
+	--wffn-bundles-connector: var(--awb-color3, #353030);
+
+	--wffn-bundles-border-active: var(--awb-color5, #353030);
+	--wffn-bundles-radio-active: var(--awb-color5, #353030);
+	--wffn-bundles-badge-bg: var(--awb-color5, #353030);
+	--wffn-bundles-progress-fill: var(--awb-color5, #353030);
+	--wffn-bundles-control-accent: var(--awb-color5, #353030);
+	--wffn-bundles-badge-fg: var(--awb-color1, #fff);
+
+	--wffn-bundles-heading-color: var(--awb-color8, #353030);
+	--wffn-bundles-title-color: var(--awb-color8, #353030);
+	--wffn-bundles-sale-price-color: var(--awb-color8, #353030);
+	--wffn-bundles-desc-color: var(--awb-color6, #82828e);
+	--wffn-bundles-regular-price-color: var(--awb-color6, #82828e);
+	--wffn-bundles-price-desc-color: var(--awb-color6, #82828e);
+	--wffn-bundles-control-fg: var(--awb-color8, #353030);
+	--wffn-bundles-control-muted: var(--awb-color6, #82828e);
+}

@@ -1,0 +1,28 @@
+/**
+ * Flatsome — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install:
+ *   --fs-color-primary  #446084  accent
+ *   --fs-color-base     #4a4a4a  body text
+ *
+ * Not mapped: Flatsome exposes no border, surface or heading token — its
+ * palette stops at primary/base — so everything else keeps the plugin literal.
+ * This is a deliberately small file, not an unfinished one.
+ */
+body.wffn-bundles-theme-flatsome .wffn-bundles,
+body.wffn-bundles-theme-flatsome .wffn-bundles-portal,
+body.wffn-bundles-theme-flatsome .wffn-bundles-variant-modal {
+	--wffn-bundles-border-active: var(--fs-color-primary, #353030);
+	--wffn-bundles-radio-active: var(--fs-color-primary, #353030);
+	--wffn-bundles-badge-bg: var(--fs-color-primary, #353030);
+	--wffn-bundles-progress-fill: var(--fs-color-primary, #353030);
+	--wffn-bundles-control-accent: var(--fs-color-primary, #353030);
+
+	--wffn-bundles-desc-color: var(--fs-color-base, #82828e);
+	--wffn-bundles-regular-price-color: var(--fs-color-base, #82828e);
+	--wffn-bundles-price-desc-color: var(--fs-color-base, #82828e);
+	--wffn-bundles-control-fg: var(--fs-color-base, #353030);
+	--wffn-bundles-control-muted: var(--fs-color-base, #82828e);
+}

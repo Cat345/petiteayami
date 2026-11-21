@@ -152,6 +152,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 				return true;
 			}
 
+			// No Accept header: treat as a page load. Asset requests (like the script call above) send an Accept header without text/html.
+			if ( empty( $_SERVER['HTTP_ACCEPT'] ) ) {
+				return true;
+			}
+
 			if ( isset( $_SERVER['HTTP_ACCEPT'] ) && false !== strpos( sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT'] ) ), 'text/html' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading HTTP header for content type detection, nonce verification not required
 				return true;
 			}
@@ -169,6 +174,10 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 		}
 
 		public function add_to_cart_action( $page_id ) {
+			// No cart outside the storefront (e.g. the checkout opened in the Block Editor): nothing to set up.
+			if ( is_null( WC()->cart ) ) {
+				return;
+			}
 			// Do Not Process Dedicated checkout page id order is awaiting against page
 			if ( ! is_null( WC()->cart ) && ! is_null( WC()->session ) ) {
 				$wc_await_order        = WC()->session->get( 'order_awaiting_payment', null );
@@ -1375,7 +1384,12 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 		}
 
 		/**
-		 * Display shipping placeholder message based on shipping address status
+		 * Whether the default shipping placeholder replaces the shipping methods
+		 *
+		 * The rule this implements (issue #7246) has three states:
+		 *  - "Hide shipping costs until an address is entered" is off -> leave the section alone;
+		 *  - the setting is on and there is nothing to show           -> show the placeholder;
+		 *  - there are shipping options to show                       -> show them.
 		 *
 		 * @param bool $status Current placeholder display status
 		 *
@@ -1383,7 +1397,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 		 */
 		public function display_shipping_placeholder_message( $status ) {
 			try {
-				// Early return if shipping address is not required
+				// The placeholder belongs to the "hide shipping costs until an address is entered" setting only.
 				$shipping_address_required = get_option( 'woocommerce_shipping_cost_requires_address', 'yes' );
 				if ( 'no' === $shipping_address_required ) {
 					return $status;
@@ -1394,45 +1408,39 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 					return $status;
 				}
 
-				// Get shipping packages
-				$packages = WC()->shipping()->get_packages();
-
-				// If no packages exist, return the original status
-				if ( empty( $packages ) ) {
+				// Nothing is being shipped, so the shipping section is not ours to fill.
+				if ( ! is_callable( array( WC()->cart, 'needs_shipping' ) ) || ! WC()->cart->needs_shipping() ) {
 					return $status;
 				}
 
-				$display_placeholder = false;
+				// On the cart page the shopper cannot enter an address while the shipping
+				// calculator is switched off, so the placeholder would be a dead end there.
+				if ( is_cart() && 'no' === get_option( 'woocommerce_enable_shipping_calc', 'yes' ) ) {
+					return $status;
+				}
 
-				foreach ( $packages as $i => $package ) {
-					// Check if package has a destination
-					if ( ! isset( $package['destination'] ) || empty( $package['destination'] ) ) {
-						continue;
-					}
+				// WooCommerce is withholding the methods until an address is entered.
+				// show_shipping() is WooCommerce's own gate for this setting, so it is the first thing we ask.
+				if ( is_callable( array( WC()->cart, 'show_shipping' ) ) && ! WC()->cart->show_shipping() ) {
+					return true;
+				}
 
-					// Get formatted destination and check if shipping has been calculated
-					$formatted_destination = '';
-					if ( is_callable( array( WC()->countries, 'get_formatted_address' ) ) ) {
-						$formatted_destination = WC()->countries->get_formatted_address( $package['destination'], ', ' );
-					}
-
-					$has_calculated_shipping = false;
-					if ( is_callable( array( WC()->customer, 'has_calculated_shipping' ) ) ) {
-						$has_calculated_shipping = ! empty( WC()->customer->has_calculated_shipping() );
-					}
-
-					if ( ! $has_calculated_shipping || ! $formatted_destination ) {
-						// Skip if we're in cart and shipping calculation is disabled
-						if ( 'no' === get_option( 'woocommerce_enable_shipping_calc', 'yes' ) ) {
-							continue;
-						} else {
-							$display_placeholder = true;
-							break; // We found one package that needs a placeholder, exit loop
-						}
+				// show_shipping() answering yes does not mean there is anything to render.
+				// Since WooCommerce 9.9 it returns true before any address is entered when local
+				// pickup is enabled, when the checkout form carries no state/postcode field, or
+				// when the country's locale does not require them. So ask the question that
+				// actually decides what the shopper sees: are there any rates?
+				foreach ( (array) WC()->shipping()->get_packages() as $package ) {
+					if ( ! empty( $package['rates'] ) ) {
+						return $status;
 					}
 				}
 
-				return $display_placeholder ? true : $status;
+				// No rates. Show the placeholder while the shopper still has an address to give,
+				// and let WooCommerce's own "no shipping options available" notice through once
+				// they have given it. WC()->customer->has_calculated_shipping() cannot answer
+				// this: it is session state that this checkout never sets, so it is stale either way.
+				return $this->wfacp_shopper_entered_shipping_address() ? $status : true;
 
 			} catch ( Exception $e ) {
 				// Log the error if a logging facility is available
@@ -1444,6 +1452,58 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 				// Return original status on error to prevent breaking the checkout
 				return $status;
 			}
+		}
+
+		/**
+		 * Whether the shopper has filled in the address this checkout asks them for
+		 *
+		 * Only the address fields the checkout actually renders as required are demanded, so a
+		 * template that drops the postcode or the state is not held to a field it never showed.
+		 * A store default or geolocated country arrives without the shopper typing anything, which
+		 * is why the country on its own is never treated as an address.
+		 *
+		 * @return bool
+		 */
+		private function wfacp_shopper_entered_shipping_address() {
+			$customer = WC()->customer;
+			if ( ! $customer instanceof WC_Customer ) {
+				return false;
+			}
+
+			$address_keys = array( 'country', 'address_1', 'city', 'state', 'postcode' );
+			$required     = array();
+
+			if ( is_callable( array( WC()->checkout(), 'get_checkout_fields' ) ) ) {
+				$fields = WC()->checkout()->get_checkout_fields();
+				foreach ( array( 'shipping', 'billing' ) as $section ) {
+					if ( empty( $fields[ $section ] ) || ! is_array( $fields[ $section ] ) ) {
+						continue;
+					}
+					foreach ( $address_keys as $key ) {
+						if ( ! empty( $fields[ $section ][ $section . '_' . $key ]['required'] ) ) {
+							$required[ $key ] = true;
+						}
+					}
+				}
+			}
+
+			// Without a readable field set, fall back to the fields WooCommerce itself needs.
+			if ( empty( $required ) ) {
+				$required = array(
+					'country'   => true,
+					'address_1' => true,
+				);
+			}
+
+			foreach ( array_keys( $required ) as $key ) {
+				$shipping = is_callable( array( $customer, 'get_shipping_' . $key ) ) ? (string) $customer->{'get_shipping_' . $key}() : '';
+				$billing  = is_callable( array( $customer, 'get_billing_' . $key ) ) ? (string) $customer->{'get_billing_' . $key}() : '';
+				if ( '' === trim( $shipping ) && '' === trim( $billing ) ) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 

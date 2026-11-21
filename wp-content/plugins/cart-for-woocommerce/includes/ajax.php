@@ -170,10 +170,13 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 
 				WC()->session->set( '_fkcart_spl_addon_product_id', $product_id );
 				WC()->session->set( '_fkcart_spl_addon_product_cart_key', $cart_item_key );
-			} else {
-				$error   = true;
+			} elseif ( $this->is_product_viewable( $product ) ) {
+				$error = true;
 				/* translators: %s: product name */
 				$message = sprintf( __( 'Unable to add "%s" to the cart', 'cart-for-woocommerce' ), $product->get_name() );
+			} else {
+				$error   = true;
+				$message = __( 'Unable to add this product to the cart', 'cart-for-woocommerce' );
 			}
 
 			if ( true === $error ) {
@@ -462,6 +465,17 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 				}
 				$product_id   = $item['product_id'];
 				$variation_id = $item['product_id'];
+
+				/**
+				 * Filters the product the quick view opens for a cart line.
+				 *
+				 * A line that stands for something other than its own product (a bundle's container) names the product to show.
+				 *
+				 * @param int    $product_id Product id of the cart line.
+				 * @param array  $item       The cart line.
+				 * @param string $cart_key   Cart key of the line.
+				 */
+				$product_id = apply_filters( 'fkcart_quick_view_product_id', $product_id, $item, $cart_key );
 			}
 			if ( is_null( $product_id ) || empty( $product_id ) ) {
 				$this->error_response();
@@ -474,6 +488,9 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 
 			global $product;
 			$product    = wc_get_product( $product_id );
+			if ( ! $this->is_product_viewable( $product ) ) {
+				$this->error_response();
+			}
 			$quick_view = Quickview::get_instance();
 			$quick_view->set_product_data( $product, $variation_id, $cart_key );
 			ob_start();
@@ -587,6 +604,34 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 				'msg'  => empty( $msg ) ? __( 'Required data missing', 'cart-for-woocommerce' ) : $msg,
 				'code' => 400
 			) );
+		}
+
+		/**
+		 * Whether the current visitor may see this product's details
+		 *
+		 * wc_get_product() ignores post status and post passwords, and a variation keeps
+		 * the 'publish' status while its parent is a draft, so the parent is checked too.
+		 *
+		 * @param \WC_Product|false|null $product Product.
+		 *
+		 * @return bool
+		 */
+		protected function is_product_viewable( $product ) {
+			if ( ! $product instanceof \WC_Product ) {
+				return false;
+			}
+
+			$post_ids = array_filter( array( $product->get_id(), $product->get_parent_id() ) );
+			foreach ( $post_ids as $post_id ) {
+				if ( 'publish' !== get_post_status( $post_id ) && ! current_user_can( 'read_product', $post_id ) ) {
+					return false;
+				}
+				if ( post_password_required( $post_id ) ) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		/**

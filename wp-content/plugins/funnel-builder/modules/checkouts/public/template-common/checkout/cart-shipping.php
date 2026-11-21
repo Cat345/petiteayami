@@ -66,7 +66,7 @@ if ( $available_methods ) {
 	echo "<td {$colspans_first}><span>" . wp_kses_post( $package_name ) . '</span></td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- colspan is a complete attribute from the cols-span filter.
 	echo "<td {$colspans_second} style=text-align:right;'><span>"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- colspan is a complete attribute from the cols-span filter.
 
-	if ( ! $has_calculated_shipping || ! $formatted_destination ) {
+	if ( apply_filters( 'wfacp_display_shipping_placeholder_message', false ) || ! $has_calculated_shipping || ! $formatted_destination ) {
 
 		echo esc_html( apply_filters( 'wfacp_default_shipping_placeholder_text', __( 'Enter your address to view shipping options.', 'funnel-builder' ) ) );
 	} elseif ( ! is_cart() ) {

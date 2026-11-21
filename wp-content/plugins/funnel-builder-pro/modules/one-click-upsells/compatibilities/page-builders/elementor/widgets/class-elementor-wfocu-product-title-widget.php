@@ -98,7 +98,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Product_Title_Widget' ) ) {
 			);
 
 			foreach ( $products as $key => $product ) {
-				$product_options[ $key ] = $product->name;
+				$product_options[ $key ] = \WFOCU_Common::get_offer_product_label( $product );
 			}
 
 			$this->add_control(

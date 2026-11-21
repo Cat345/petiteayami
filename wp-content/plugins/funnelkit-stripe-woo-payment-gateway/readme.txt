@@ -1,10 +1,10 @@
 === FunnelKit Payment Gateway for Stripe WooCommerce ===
-Contributors: amans2k, xlplugins, teamwoofunnels
+Contributors: amans2k, teamfunnelkit
 Tags: stripe, apple pay, google pay, WooCommerce Stripe
 Requires at least: 5.4.0
 Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 1.16.0
+Stable tag: 1.16.0.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -285,6 +285,20 @@ Yes, visit our complete documentation on [Stripe Payment Gateway for WooCommerce
 
 == Change log ==
 
+
+= 1.16.0.1 =
+* Improved: Klarna: WooCommerce Subscriptions support, covering trials, renewals and upsells. (#1505)
+* Improved: Klarna: Puerto Rico now offered on US-based Stripe accounts. (#1505)
+* Improved: Express Checkout: Compatibility with WooCommerce Fraud Protection. (#1518)
+* Improved: Checkout: Card auto-retry logic improved to handle idempotency_key errors. (#1487)
+* Improved: SEPA: Compatibility with WooCommerce subscription change payment method updated. (#1513)
+* Improved: Checkout: Better handling for delay webhook process in case of 3ds cards. (#1528)
+* Fixed: Refunds: Refunds over-reported when several partial refunds exist. (#1509)
+* Fixed: Express Checkout: Address rejected on product pages before add-to-cart finishes in some edge cases. (#1524)
+* Fixed: Express Checkout: Checkout hidden default shipping address picked up against wallet shipping address. (#1526)
+* Fixed: Checkout: Link badge showing up in separate/inline card mode even when settings are off. (#1531)
+
+
 = 1.16.0 =
 * Improved: Express wallets (Apple Pay, Google Pay, Amazon Pay) no longer appear as a regular payment method on checkout, order pay and change payment pages unless "Show as Regular Payment Gateway" is selected. (#1479)
 * Improved: Hardened code on order pay pages. (#1497)
@@ -296,10 +310,6 @@ Yes, visit our complete documentation on [Stripe Payment Gateway for WooCommerce
 * Improved: Express checkout buttons now refresh reliably after cart total changes, and optimized the cart calculations on page load. (#1493)
 * Fixed: One-click upsell Payment Element now shows the correct amount during wallet payments. (#1456)
 * Fixed: PHP error when express checkout scripts load on background requests without a WooCommerce cart. (#1481)
-
-
-
-
 
 
 = 1.15.0.1 =

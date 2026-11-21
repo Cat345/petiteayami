@@ -109,7 +109,7 @@ if ( false == $wfacp_instance->have_shipping_method() ) {
 					</li>
 				</ul>
 			</div>
-		<?php elseif ( WC()->customer->has_calculated_shipping() ) : ?>
+		<?php elseif ( ! apply_filters( 'wfacp_display_shipping_placeholder_message', false ) && WC()->customer->has_calculated_shipping() ) : ?>
 			<ul id="shipping_method">
 				<li>
 					<?php

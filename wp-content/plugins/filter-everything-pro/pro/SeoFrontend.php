@@ -133,7 +133,7 @@ class SeoFrontend
         }
 
         $actualRule = reset( $relatedRules );
-        $seoData    = isset( $actualRule['post_excerpt'] ) ? maybe_unserialize( $actualRule['post_excerpt'] ) : false;
+        $seoData    = isset( $actualRule['post_excerpt'] ) ? flrt_safe_unserialize( $actualRule['post_excerpt'] ) : false;
 
         if( isset( $actualRule['ID'] ) && $actualRule['ID'] ){
             $this->set( 'seoRulePostId', $actualRule['ID'] );

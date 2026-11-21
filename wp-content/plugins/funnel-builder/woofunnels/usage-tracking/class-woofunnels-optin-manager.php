@@ -203,6 +203,7 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 				'WooFunnels_version' => WooFunnel_Loader::$version,
 				'theme_info'         => $theme,
 				'users_count'        => self::get_user_counts(),
+				'mcp'                => self::collect_mcp_data(),
 			);
 
 			// Group all WooCommerce-specific data under 'woocommerce' key
@@ -222,6 +223,107 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 			$return['active_plugins'] = $active_plugins;
 
 			return $return;
+		}
+
+		/**
+		 * FunnelKit AI (MCP) state for the site: whether AI connections are switched
+		 * on, whether any connection is live, and each live connection's client with
+		 * the dates it was made and last used (UTC). No user, email or token.
+		 *
+		 * This sits in core rather than in one plugin's feature block because the
+		 * state is the site's, not a plugin's: the switch (fkai_enabled) and the
+		 * grants table ({prefix}fkai_grants) are shared by every FunnelKit plugin
+		 * that ships the MCP module. Reporting it here means one answer per site
+		 * instead of one per plugin, and it rides the core payload, so it is not
+		 * subject to any plugin's activation-date cutoff.
+		 *
+		 * @return array
+		 */
+		private static function collect_mcp_data() {
+			$connections = array();
+
+			try {
+				$now = time();
+
+				foreach ( self::get_mcp_grants() as $row ) {
+					$client = FKMCP_Connector_Clients::get( $row->client_id );
+
+					// Expired, or from a client no longer trusted: dead until the weekly purge, as the AI & MCP screen treats it.
+					if ( null === $client || (int) $row->refresh_expires_at <= $now ) {
+						continue;
+					}
+
+					$connections[] = array(
+						'client'       => (string) $client['name'],
+						'client_host'  => FKMCP_Connector_Clients::host( $row->client_id ),
+						'connected_at' => gmdate( 'Y-m-d H:i:s', (int) $row->created_at ),
+						'last_used_at' => empty( $row->last_used_at ) ? '' : gmdate( 'Y-m-d H:i:s', (int) $row->last_used_at ),
+					);
+				}
+			} catch ( Throwable $e ) {
+				$connections = array();
+			}
+
+			return array(
+				'enabled'           => 'yes' === get_option( 'fkai_enabled', 'no' ) ? 1 : 0,
+				'connected'         => empty( $connections ) ? 0 : 1,
+				'connections_total' => count( $connections ),
+				'connections'       => $connections,
+			);
+		}
+
+		/**
+		 * Every FunnelKit AI connection row, site-wide.
+		 *
+		 * The MCP module boots only on admin, REST and CLI requests and the tracker
+		 * runs from cron, so the grant classes are loaded here when they are absent,
+		 * as WFFN_FKAI_Hooks does. Core cannot name one plugin's directory, so it
+		 * takes the module from whichever FunnelKit plugin on the site ships it:
+		 * these two files are identical across them, and they read the same
+		 * site-level table either way.
+		 *
+		 * @return array
+		 */
+		private static function get_mcp_grants() {
+			if ( (int) get_option( 'fkai_db_version', 0 ) < 1 ) {
+				return array();
+			}
+
+			if ( ! class_exists( 'FKMCP_Connector_Clients' ) || ! class_exists( 'FKMCP_Connector_Grants' ) ) {
+				$roots = array();
+
+				if ( defined( 'WFFN_PLUGIN_DIR' ) ) {
+					$roots[] = WFFN_PLUGIN_DIR;
+				}
+
+				if ( defined( 'BWFAN_PLUGIN_DIR' ) ) {
+					$roots[] = BWFAN_PLUGIN_DIR;
+				}
+
+				foreach ( $roots as $root ) {
+					$dir = $root . '/includes/mcp/module/connector/';
+
+					if ( ! file_exists( $dir . 'class-fkmcp-connector-grants.php' ) ) {
+						continue;
+					}
+
+					if ( ! class_exists( 'FKMCP_Connector_Clients' ) ) {
+						require_once $dir . 'class-fkmcp-connector-clients.php';
+					}
+
+					if ( ! class_exists( 'FKMCP_Connector_Grants' ) ) {
+						require_once $dir . 'class-fkmcp-connector-grants.php';
+					}
+
+					break;
+				}
+			}
+
+			if ( ! class_exists( 'FKMCP_Connector_Grants' ) || ! class_exists( 'FKMCP_Connector_Clients' ) ) {
+				return array();
+			}
+
+			return FKMCP_Connector_Grants::all();
 		}
 
 		/**
@@ -698,7 +800,7 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 		public static function register_weekly_schedule( $schedules ) {
 			$schedules['weekly_bwf'] = array(
 				'interval' => WEEK_IN_SECONDS,
-				'display'  => __( 'Weekly BWF', 'funnel-builder' ),
+				'display'  => __( 'Weekly BWF', 'funnelkit-woofunnels-textdomain-placeholder' ),
 			);
 
 			return $schedules;

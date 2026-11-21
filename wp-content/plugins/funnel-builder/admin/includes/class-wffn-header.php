@@ -66,8 +66,17 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 					$header_menu[ $key ] = self::nav_item( $key, $item );
 				}
 			}
+			/** 3. Cart */
 			if ( ! $admin->is_cart_active() ) {
 				$header_menu['cart'] = self::nav_item( 'cart', $admin->get_cart_menu_item() );
+			} else {
+				$header_menu += (array) $admin->register_cart_menu( 'header' );
+			}
+
+			/** 4. Bundles. Cart and Bundles are only added: neither replaces a core entry of the same key. */
+			$bundles_menu = WFFN_Admin::bundles_menu_class();
+			if ( '' !== $bundles_menu ) {
+				$header_menu += (array) $bundles_menu::register_menu( 'header' );
 			}
 
 			$header_menu = apply_filters( 'wffn_header_menu', $header_menu );

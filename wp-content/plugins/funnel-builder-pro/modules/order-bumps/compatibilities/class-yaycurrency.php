@@ -88,7 +88,9 @@ if ( ! class_exists( 'WFOB_YayCurrency' ) ) {
 
 		public function product_addons_set_cart_contents( $cart_contents, $cart_item_key, $cart_item, $apply_currency ) {
 
-			if ( isset( $cart_item['_wfob_options']['discount_amount'], $cart_item['_wfob_options']['discount_type'] ) ) {
+			// A bump's bundle line is priced by Bundles, which applies Yay's fixed prices itself.
+			$bundle_line = class_exists( 'WFOB_FunnelKit_Bundles_Loader', false ) && ! empty( $cart_item[ WFOB_FunnelKit_Bundles_Loader::LINE_KEY ] );
+			if ( ! $bundle_line && isset( $cart_item['_wfob_options']['discount_amount'], $cart_item['_wfob_options']['discount_type'] ) ) {
 
 				$product = $cart_item['data'];
 

@@ -456,14 +456,39 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 							$per_product_meta = array( $pid, array( 'sublium_plan' => $plan_id ) );
 						}
 						$default['products_meta_data'] = $per_product_meta;
-						$default                       = apply_filters( 'wffn_rest_api_bump_add_product', $default, $product );
+						/**
+						 * Filters a product row as a product is added: the row is saved and returned as filtered.
+						 *
+						 * @since 1.28.0 Added the `$step_id` and `$key` arguments.
+						 *
+						 * @param array      $row     The row as it is saved and returned.
+						 * @param WC_Product $product The product added.
+						 * @param int        $step_id Bump id.
+						 * @param string     $key     The row's key in the bump.
+						 */
+						$filtered                    = apply_filters( 'wffn_rest_api_bump_add_product', $default, $product, absint( $step_id ), $unique_id );
+						$default                     = is_array( $filtered ) ? $filtered : $default;
 						$resp_products[ $unique_id ] = $default;
+
+						/**
+						 * Filters the row the add response shows, after it is saved; nothing set here is stored.
+						 *
+						 * For what is worked out afresh on every read, as wffn_rest_api_bump_get_product does on a reload.
+						 *
+						 * @since 1.28.0
+						 *
+						 * @param array      $row     The row as saved, with its prices.
+						 * @param WC_Product $product The product added.
+						 * @param int        $step_id Bump id.
+						 * @param string     $key     The row's key in the bump.
+						 */
+						$shown = apply_filters( 'wffn_rest_api_bump_add_product_response', $default, $product, absint( $step_id ), $unique_id );
 
 						// remove_product_keys() strips price/regular_price/sale_price before persisting
 						// to _wfob_selected_products (those are recomputed fresh on every GET, not stored).
 						// The API response must keep them — it's what the React table renders immediately
 						// after "Add", before any reload re-fetches via the GET path.
-						$response_product = $default;
+						$response_product = is_array( $shown ) ? $shown : $default;
 						$default          = WFOB_Common::remove_product_keys( $default );
 
 						$existing_product[ $unique_id ] = $default;
@@ -585,8 +610,18 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 							// Swap ID with key for Product Component
 							$_product['key'] = $_product['id'];
 							$_product['id']  = $key;
-							$_product        = apply_filters( 'wffn_rest_api_bump_get_product', $_product, $this_product );
-							$products[]      = $_product;
+							/**
+							 * Filters a product row the bump REST API returns when a bump is read.
+							 *
+							 * @since 1.28.0 Added the `$step_id` and `$key` arguments.
+							 *
+							 * @param array      $row     The row as the API returns it.
+							 * @param WC_Product $product The product the row sells.
+							 * @param int        $step_id Bump id.
+							 * @param string     $key     The row's key in the bump.
+							 */
+							$filtered   = apply_filters( 'wffn_rest_api_bump_get_product', $_product, $this_product, absint( $step_id ), $key );
+							$products[] = is_array( $filtered ) ? $filtered : $_product;
 
 						}
 					}

@@ -4,6 +4,18 @@
 
 For the latest changes, see the Changelog section in the [readme.txt file](https://plugins.svn.wordpress.org/flexible-shipping/trunk/readme.txt).
 
+= 6.13.8 - 2026-11-09 =
+* Fixed a PHP TypeError when displaying order item metadata containing null values.
+
+= 6.13.7 - 2026-10-29 =
+* Added information about Black Friday special offer.
+
+= 6.13.6 - 2026-10-27 =
+* Added support for WooCommerce 11.3
+
+= 6.13.5 - 2026-10-20 =
+* Fixed authorization and nonce validation for shipping manifest downloads and cancellations.
+
 = 6.13.4 - 2026-10-20 =
 * Fixed shipping integration and shipment status filters on the WooCommerce orders screen when HPOS is enabled.
 * Fixed the selected shipment status not being retained in the orders filter.

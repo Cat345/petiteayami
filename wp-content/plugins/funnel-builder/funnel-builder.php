@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Funnel Builder
  * Plugin URI: https://funnelkit.com/wordpress-funnel-builder/
  * Description: Create high-converting sales funnels on WordPress that look professional by following a well-guided step-by-step process.
- * Version: 3.18.0
+ * Version: 3.19.0.1
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -219,7 +219,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 
 			require_once __DIR__ . '/includes/mcp/module/fkmcp-bootstrap.php';
 			fkmcp_register_module(
-				'2.1.3',
+				'2.1.6',
 				__DIR__ . '/includes/mcp/module',
 				array(
 					'file'      => __DIR__ . '/includes/mcp/class-fkmcp-host-fb.php',
@@ -227,6 +227,25 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 					'namespace' => 'funnelkit-app/mcp',
 				)
 			);
+
+			add_filter( 'fkmcp_plugin_versions', array( $this, 'mcp_plugin_version' ) );
+		}
+
+		/**
+		 * This plugin's own entry in the MCP replies' fkai_store.plugins: the
+		 * module's fkmcp_plugin_versions filter, where every FunnelKit plugin adds
+		 * its slug and version.
+		 *
+		 * @param array $versions Plugin slug => version.
+		 *
+		 * @return array
+		 */
+		public function mcp_plugin_version( $versions ) {
+			$versions = is_array( $versions ) ? $versions : array();
+
+			$versions['funnel-builder'] = WFFN_VERSION;
+
+			return $versions;
 		}
 
 
@@ -235,7 +254,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		 */
 		public function define_plugin_properties() {
 
-			define( 'WFFN_VERSION', '3.18.0' );
+			define( 'WFFN_VERSION', '3.19.0.1' );
 			define( 'WFFN_BWF_VERSION', '1.10.12.84' );
 
 			define( 'WFFN_MIN_WC_VERSION', '3.5.0' );
@@ -280,6 +299,10 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			}
 			if ( ! class_exists( 'WFOPP_Core' ) ) {
 				require __DIR__ . '/modules/optins/woofunnels-optins.php';
+			}
+			// WFFN_DISABLE_BUNDLES in wp-config.php keeps the module out entirely.
+			if ( ! ( defined( 'WFFN_DISABLE_BUNDLES' ) && WFFN_DISABLE_BUNDLES ) && file_exists( __DIR__ . '/modules/bundles/bundles.php' ) ) {
+				require __DIR__ . '/modules/bundles/bundles.php';
 			}
 			add_action( 'plugins_loaded', array( $this, 'init_oxygen' ), 10 );
 			add_action( 'wp_loaded', array( $this, 'load_divi_importer' ), 150 );

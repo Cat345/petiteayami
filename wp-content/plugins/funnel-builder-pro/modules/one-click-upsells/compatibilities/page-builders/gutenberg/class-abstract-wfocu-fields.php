@@ -1117,6 +1117,78 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			);
 		}
 
+		/**
+		 * Variation dropdowns of an offer product as the frontend shows them: the variation form's
+		 * options, narrowed to the offer's variations and preselected the way wfocu-public.js does.
+		 *
+		 * @param object $product Offer product data.
+		 *
+		 * @return array
+		 */
+		private function get_variation_attributes( $product ) {
+			$attributes = array();
+			if ( empty( $product->variations_data['available_variations'] ) || empty( $product->variations_data['attributes'] ) ) {
+				return $attributes;
+			}
+
+			// The frontend reads the variations as a JSON object, so in variation id order.
+			$variations = $product->variations_data['available_variations'];
+			ksort( $variations );
+			$default      = (string) $product->variations_data['default'];
+			$show_default = '' !== $default && isset( $variations[ $default ] ) && true === apply_filters( 'wfocu_show_default_variation_on_load', true );
+			$placeholder  = __( 'Choose an option', 'woocommerce' );
+
+			foreach ( $product->variations_data['attributes'] as $attribute_name => $options ) {
+				$attribute_key = '@' . WFOCU_Common::clean_ascii_characters( 'attribute_' . sanitize_title( $attribute_name ) );
+				$used          = array();
+				foreach ( $variations as $variation ) {
+					if ( isset( $variation[ $attribute_key ] ) ) {
+						$used[] = (string) $variation[ $attribute_key ];
+					}
+				}
+				$is_any = empty( $used ) || '' === $used[0];
+
+				$choices = array();
+				if ( taxonomy_exists( $attribute_name ) ) {
+					$terms = wc_get_product_terms( $product->data->get_id(), $attribute_name, array( 'fields' => 'all' ) );
+					foreach ( $terms as $term ) {
+						if ( in_array( $term->slug, $options, true ) ) {
+							$choices[ WFOCU_Common::handle_single_quote_variation( $term->slug ) ] = apply_filters( 'woocommerce_variation_option_name', $term->name );
+						}
+					}
+				} else {
+					foreach ( $options as $option ) {
+						$choices[ WFOCU_Common::handle_single_quote_variation( $option ) ] = apply_filters( 'woocommerce_variation_option_name', $option );
+					}
+				}
+
+				$selected = '';
+				if ( ! $is_any ) {
+					$choices = array_intersect_key( $choices, array_flip( $used ) );
+					if ( in_array( '', $used, true ) ) {
+						$choices = array( '' => $placeholder ) + $choices;
+					}
+					if ( $show_default && isset( $variations[ $default ][ $attribute_key ] ) ) {
+						$selected = (string) $variations[ $default ][ $attribute_key ];
+					}
+				} elseif ( ! empty( $choices ) ) {
+					$selected = (string) key( $choices );
+				}
+				if ( ! $show_default ) {
+					$choices  = array( '' => $placeholder ) + $choices;
+					$selected = '';
+				}
+
+				$attributes[] = array(
+					'label'    => wc_attribute_label( $attribute_name ),
+					'options'  => array_values( $choices ),
+					'selected' => isset( $choices[ $selected ] ) ? $choices[ $selected ] : (string) reset( $choices ),
+				);
+			}
+
+			return $attributes;
+		}
+
 		private function setup_offer() {
 			if ( empty( self::$product_options ) ) {
 				self::$product_options = array( '0' => __( '--No Product--', 'woofunnels-upstroke-one-click-upsell' ) );
@@ -1151,7 +1223,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 
 						self::$product_options[ $key ] = array(
 							'value'               => $key,
-							'label'               => $product->name,
+							'label'               => \WFOCU_Common::get_offer_product_label( $product ),
 							'images'              => $this->get_gallery_images( $product ),
 							'product_id'          => $product->data->get_id(),
 							'product_description' => $product->data->get_short_description(),
@@ -1162,6 +1234,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 							'is_subscription'     => $is_subscription,
 							'signup_fee'          => $signup_fee,
 							'recurring_total'     => $recurring_total,
+							'attributes'          => $this->get_variation_attributes( $product ),
 						);
 					}
 				}

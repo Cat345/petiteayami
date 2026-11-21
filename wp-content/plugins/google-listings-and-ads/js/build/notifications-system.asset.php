@@ -1,1 +1,22 @@
-<?php return array('dependencies' => array('lodash', 'react', 'react-jsx-runtime', 'wc-components', 'wc-date', 'wc-navigation', 'wc-tracks', 'woocommerce-marketing-notifications-system-slot', 'wp-api-fetch', 'wp-components', 'wp-data', 'wp-data-controls', 'wp-date', 'wp-element', 'wp-hooks', 'wp-i18n', 'wp-primitives', 'wp-url'), 'version' => 'cd31a4fddd52f82f0be6');
+<?php return array(
+	'dependencies' => array(
+		'lodash',
+		'react-jsx-runtime',
+		'wc-components',
+		'wc-date',
+		'wc-navigation',
+		'wc-tracks',
+		'woocommerce-marketing-notifications-system-slot',
+		'wp-api-fetch',
+		'wp-components',
+		'wp-data',
+		'wp-data-controls',
+		'wp-date',
+		'wp-element',
+		'wp-hooks',
+		'wp-i18n',
+		'wp-primitives',
+		'wp-url'
+	),
+	'version' => 'd3a7f1de34a8cebfd263'
+);

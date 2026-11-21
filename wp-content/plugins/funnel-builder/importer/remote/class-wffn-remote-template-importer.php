@@ -105,8 +105,8 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 			BWF_Logger::get_instance()->log( 'Import $requestBody: ' . $loggable_body, 'wffn_template_import' );
 			if ( $response instanceof WP_Error ) {
 				if ( is_object( $response ) && $response->errors ) {
-					if ( is_array( $response->errors ) && $response->errors['http_request_failed'] ) {
-						return array( 'error' => isset( $response->errors['http_request_failed'][0] ) ? $response->errors['http_request_failed'] : __( 'HTTP Request Failed', 'funnel-builder' ) );
+					if ( is_array( $response->errors ) && ! empty( $response->errors['http_request_failed'] ) ) {
+						return array( 'error' => isset( $response->errors['http_request_failed'][0] ) ? $response->errors['http_request_failed'][0] : __( 'HTTP Request Failed', 'funnel-builder' ) );
 					}
 				}
 

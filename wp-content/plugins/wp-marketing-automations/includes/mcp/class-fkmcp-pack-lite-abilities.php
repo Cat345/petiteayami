@@ -177,16 +177,12 @@ class FKMCP_Pack_Lite_Abilities extends FKMCP_Pack {
 				'description' => 'One Contact\'s full profile: name, email, phone, subscription status (code and label), location (country, state, timezone), source, Tags, Lists, custom field values keyed by slug, WooCommerce and offer summaries, and when it was created, last active and last engaged. Pass exactly one of contact_id or email. Orders: get-contact-orders; Automations: get-contact-automations; messages: get-contact-engagements. Read-only.',
 				'input_schema' => BWFAN_MCP_Schema::input(
 					array(
-						'contact_id' => BWFAN_MCP_Schema::in_id(),
-						'email'      => BWFAN_MCP_Schema::in_str( '', array( 'format' => 'email', 'maxLength' => 200 ) ),
+						'contact_id' => BWFAN_MCP_Schema::in_id( 'The Contact. Give contact_id or email.' ),
+						'email'      => BWFAN_MCP_Schema::in_str( 'The Contact\'s email. Give contact_id or email.', array( 'format' => 'email', 'maxLength' => 200 ) ),
 					),
-					array(),
-					array(
-						'anyOf' => array(
-							array( 'required' => array( 'contact_id' ) ),
-							array( 'required' => array( 'email' ) ),
-						),
-					),
+					// No anyOf for "one of them": tools/list drops root composition, so the
+					// agent never saw it, and core's error for it named neither field. The
+					// handler's refusal does.
 				),
 				'output_schema' => BWFAN_MCP_Schema::obj(
 					array(
@@ -565,14 +561,14 @@ class FKMCP_Pack_Lite_Abilities extends FKMCP_Pack {
 
 			'list-abandoned-carts' => array(
 				'label'       => __( 'List Abandoned Carts', 'wp-marketing-automations' ),
-				'description' => 'Carts shoppers left at checkout, with cart total, the Contact and how long ago, in the bucket you ask for. status = recoverable (default; FunnelKit can still email these), recovered (became an Order) or lost (past the recovery window). `search` matches an email fragment; after/before (Y-m-d) filter by capture date; country (2-letter) and has_phone need a date window and do not apply to recovered. Read-only.',
+				'description' => 'Carts shoppers left at checkout, with cart total, the Contact and how long ago, in the bucket you ask for. status = recoverable (default; FunnelKit can still email these), recovered (became an Order) or lost (past the recovery window). `search` matches an email fragment; after/before (Y-m-d) filter by capture date; country (2-letter) and has_phone need a date window. after/before, country and has_phone do not apply to recovered (those carts became Orders): for recovered carts over a date range use get-cart-analytics. Read-only.',
 				'input_schema' => BWFAN_MCP_Schema::input(
 					array_merge(
 						array(
 							'status'    => BWFAN_MCP_Schema::in_enum( array( 'recoverable', 'recovered', 'lost' ), '', array( 'default' => 'recoverable' ) ),
 							'search'    => BWFAN_MCP_Schema::in_search( 'Matches the Cart email.' ),
-							'after'     => BWFAN_MCP_Schema::in_str( '', array( 'pattern' => '^\\d{4}-\\d{2}-\\d{2}$' ) ),
-							'before'    => BWFAN_MCP_Schema::in_str( '', array( 'pattern' => '^\\d{4}-\\d{2}-\\d{2}$' ) ),
+							'after'     => BWFAN_MCP_Schema::in_date( 'Carts created on or after this day. ' . BWFAN_MCP_Schema::DAY_FORMAT ),
+							'before'    => BWFAN_MCP_Schema::in_date( 'Carts created on or before this day. ' . BWFAN_MCP_Schema::DAY_FORMAT ),
 							'country'   => BWFAN_MCP_Schema::in_str( 'Billing country captured at checkout, e.g. IN, US.', array( 'pattern' => '^[A-Za-z]{2}$' ) ),
 							'has_phone' => BWFAN_MCP_Schema::in_bool(),
 						),
@@ -662,18 +658,18 @@ class FKMCP_Pack_Lite_Abilities extends FKMCP_Pack {
 
 			'get-cart-analytics' => array(
 				'label'       => __( 'Get Cart Analytics', 'wp-marketing-automations' ),
-				'description' => 'Abandoned Cart recovery performance: recoverable/recovered/lost counts, potential and recovered revenue, and the recovery rate, plus a per-interval breakdown. Defaults to the last week. Dates are Y-m-d or Y-m-d H:i:s in the site timezone. Read-only.',
+				'description' => 'Abandoned Cart recovery performance: recoverable/recovered/lost counts, potential and recovered revenue, and the recovery rate, plus a per-interval breakdown. Defaults to the last week. Dates are Y-m-d or Y-m-d H:i:s in the site timezone. At most 92 buckets: a window too long for the asked interval comes back by the next coarser one, named in interval_used and interval_note. Read-only.',
 				'input_schema' => BWFAN_MCP_Schema::input(
 					array(
 						'after'    => BWFAN_MCP_Schema::in_str(
-							'Start of the window.',
+							'Start of the window, Y-m-d or Y-m-d H:i:s, site timezone, e.g. 2026-10-01.',
 							array(
 								'maxLength' => 19,
 								'pattern'   => '^\\d{4}-\\d{2}-\\d{2}( \\d{2}:\\d{2}:\\d{2})?$',
 							),
 						),
 						'before'   => BWFAN_MCP_Schema::in_str(
-							'End of the window.',
+							'End of the window, Y-m-d or Y-m-d H:i:s, site timezone, e.g. 2026-10-31.',
 							array(
 								'maxLength' => 19,
 								'pattern'   => '^\\d{4}-\\d{2}-\\d{2}( \\d{2}:\\d{2}:\\d{2})?$',
@@ -713,6 +709,8 @@ class FKMCP_Pack_Lite_Abilities extends FKMCP_Pack {
 								)
 							)
 						),
+						'interval_used' => BWFAN_MCP_Schema::str( 'The bucket the intervals are by.' ),
+						'interval_note' => BWFAN_MCP_Schema::str( 'Set when a coarser bucket than asked was used, because the window is too long; null otherwise.', true ),
 					),
 					'Cart recovery performance.',
 					array( 'totals' )

@@ -459,7 +459,7 @@ if ( ! class_exists( 'WP_Background_Process' ) ) {
 			// Adds every 5 minutes to the existing schedules.
 			$schedules[ $this->identifier . '_cron_interval' ] = array(
 				'interval' => MINUTE_IN_SECONDS * $interval,
-				'display'  => sprintf( __( 'Every %d Minutes', 'funnel-builder' ), $interval ), // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+				'display'  => sprintf( __( 'Every %d Minutes', 'funnelkit-woofunnels-textdomain-placeholder' ), $interval ), // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
 			);
 
 			return $schedules;

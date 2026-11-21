@@ -1,10 +1,10 @@
 === FunnelKit Automations - Email Marketing Automation and CRM for WordPress & WooCommerce ===
-Contributors: xlplugins, amans2k
+Contributors: amans2k, teamfunnelkit
 Tags: cart abandonment, follow up emails, email marketing, newsletter, marketing automation
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.9.0
+Stable tag: 3.9.0.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -424,6 +424,15 @@ FunnelKit may connect to the following external services, only when the related 
 * **YouTube** may embed tutorial videos on FunnelKit screens. [Terms](https://www.youtube.com/t/terms) and [Privacy Policy](https://policies.google.com/privacy)
 
 == Change log ==
+
+= 3.9.0.1 (Nov 10, 2026) =
+* Improved: Added WebP image support for Global Styles logos, with compatibility guidance for email clients that may not support the format. (#4890)
+* Improved: Enhanced FunnelKit AI input handling to support numbers, lists, and boolean values provided as text, with clearer validation messages for incorrect inputs. (#4960)
+* Improved: Optimized new installations by automatically creating the engagement tracking table to support batched broadcast sending in Pro. (#4964)
+* Fixed: Offset issue in Mailchimp import that stopped it after the first 100 contacts. (#4962)
+* Fixed: Improved contact import logs to include email addresses and column headers, with automatic cleanup of uploaded CSV and log files when an import is deleted. (#4966)
+* Fixed: Improved FunnelKit AI connection testing to work reliably on hosts that restrict access to `/.well-known/` paths. (#4960)
+* Fixed: Contact searches using first and last names now correctly respect segment filters and other applied conditions. (#4960)
 
 = 3.9.0 (Nov 3, 2026) =
 * Added: FunnelKit AI. Connect Claude, ChatGPT, Cursor or VS Code to your store and use ready-made prompts for automations, contacts, emails and reports. Needs WordPress 6.9+. (#4954)

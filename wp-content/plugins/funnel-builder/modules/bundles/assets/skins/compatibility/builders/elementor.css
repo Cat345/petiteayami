@@ -1,0 +1,42 @@
+/**
+ * Elementor compatibility: the bundle grouping in Elementor's own Menu Cart
+ * dropdown, and the editor-only diagnoses the widget renders.
+ *
+ * Logical properties throughout, so RTL needs no sibling file. No rule may
+ * require `.elementor-widget-container` — the optimized-markup experiment
+ * removes it.
+ */
+
+/* The mini-cart row is Elementor's markup; we only add `wffn-bundles-cart-child`, so this
+   compounds its class. Degrades to no indent if Elementor renames the row. */
+.elementor-menu-cart__product.wffn-bundles-cart-child {
+	position: relative;
+	padding-inline-start: 22px;
+}
+
+.elementor-menu-cart__product.wffn-bundles-cart-parent {
+	border-block-end: 0;
+}
+
+/* FBT is an inline-size container with no intrinsic width, so an auto-width widget got its height
+   from a narrow pass; the container's own widget width (100% in a column) sizes it at the real width. */
+:where(.e-con, .e-con-inner) > :where(.elementor-widget-woocommerce-product-add-to-cart, .elementor-widget-wc-add-to-cart):where(:has(.wffn-bundles-fbt)) {
+	width: var(--container-widget-width, 100%);
+}
+
+/* The widget's 10px button margin spaces it from the quantity box, which a bundle hides. */
+body.wffn-bundles-has-bundle.wffn-bundles-owns-pickers :is(.elementor-widget-woocommerce-product-add-to-cart, .elementor-widget-wc-add-to-cart) form.cart .single_add_to_cart_button {
+	margin-inline-start: 0;
+}
+
+/* Editor-only diagnoses. Never reachable on the storefront — every emitter is
+   gated on the builder context — so this is safe to ship in the same file. */
+.wffn-bundles-editor-notice {
+	padding: 12px 14px;
+	border: 1px dashed #c3c4c7;
+	border-radius: 6px;
+	background: #f6f7f7;
+	color: #50575e;
+	font-size: 13px;
+	line-height: 1.5;
+}

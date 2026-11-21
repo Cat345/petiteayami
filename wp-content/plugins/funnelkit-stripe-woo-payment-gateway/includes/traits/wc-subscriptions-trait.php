@@ -1065,8 +1065,20 @@ trait WC_Subscriptions_Trait {
 			 * PaymentMethod and can go stale when the customer changes the card.
 			 */
 			if ( 'card' !== $this->payment_method_types ) {
+				/**
+				 * A Stripe mandate is bound to exactly one PaymentMethod. Once the customer
+				 * changes their IBAN the mandate stored against the earlier orders names the
+				 * previous one, and sending it is rejected with "The provided mandate has a
+				 * different payment method than the one provided on the PaymentIntent". Send a
+				 * stored mandate only when it belongs to the source actually being charged;
+				 * otherwise send none and let Stripe resolve the mandate from the PaymentMethod.
+				 * An indeterminate verdict (the lookup failed) or an unknown source keeps the
+				 * previous behaviour rather than dropping a mandate that may well be valid.
+				 */
+				$current_source = Helper::get_meta( $order, '_fkwcs_source_id' );
+
 				$mandate = $order->get_meta( '_stripe_mandate_id', true );
-				if ( ! empty( $mandate ) ) {
+				if ( ! empty( $mandate ) && $this->mandate_usable_for_renewal( $mandate, $current_source ) ) {
 					$data['mandate'] = $mandate;
 
 					return $data;
@@ -1079,7 +1091,7 @@ trait WC_Subscriptions_Trait {
 
 					if ( $parent_order ) {
 						$mandate = $parent_order->get_meta( '_stripe_mandate_id', true );
-						if ( ! empty( $mandate ) ) {
+						if ( ! empty( $mandate ) && $this->mandate_usable_for_renewal( $mandate, $current_source ) ) {
 							$data['mandate'] = $mandate;
 
 							return $data;
@@ -1579,6 +1591,64 @@ trait WC_Subscriptions_Trait {
 	 * @return bool|null True when the mandate's payment_method matches the source,
 	 *                   false on a confirmed mismatch, null when the lookup failed.
 	 */
+	/**
+	 * Whether a stored mandate can actually be used on a non-card renewal.
+	 *
+	 * Two things make a stored mandate unusable, and Stripe rejects the whole PaymentIntent
+	 * for either. It can belong to a different PaymentMethod, which happens as soon as the
+	 * customer changes their IBAN ("The provided mandate has a different payment method than
+	 * the one provided on the PaymentIntent"). Or it can be single-use - a mandate captured
+	 * from a one-off PaymentIntent is created `inactive` and only a mandate set up for
+	 * off-session use stays `active` ("Only active mandates can be used with PaymentIntents").
+	 *
+	 * Sending nothing is safe in both cases: Stripe resolves the active mandate from the
+	 * PaymentMethod itself. So this returns false only on a confirmed problem - an unknown
+	 * source or a failed lookup keeps the mandate, rather than dropping one that is probably
+	 * fine on the strength of a transient error.
+	 *
+	 * @param string $mandate_id The stored mandate id.
+	 * @param string $source_id  The PaymentMethod the renewal will charge.
+	 *
+	 * @return bool
+	 */
+	private function mandate_usable_for_renewal( $mandate_id, $source_id ) {
+		static $cache = array();
+
+		if ( empty( $mandate_id ) || empty( $source_id ) ) {
+			return true;
+		}
+
+		if ( isset( $cache[ $mandate_id . '|' . $source_id ] ) ) {
+			return $cache[ $mandate_id . '|' . $source_id ];
+		}
+
+		$usable = true;
+		try {
+			$client = $this->get_client();
+			if ( ! is_null( $client ) ) {
+				$response = $client->mandates( 'retrieve', array( $mandate_id ) );
+				if ( ! empty( $response['success'] ) ) {
+					$mandate = $response['data'];
+					$belongs = isset( $mandate->payment_method ) && $mandate->payment_method === $source_id;
+					$active  = ! isset( $mandate->status ) || 'active' === $mandate->status;
+
+					$usable = ( $belongs && $active );
+					if ( ! $usable ) {
+						Helper::log( sprintf( 'Renewal: not sending mandate %s (payment_method %s, status %s) for source %s - letting Stripe resolve it.', $mandate_id, isset( $mandate->payment_method ) ? $mandate->payment_method : '?', isset( $mandate->status ) ? $mandate->status : '?', $source_id ) );
+					}
+
+					$cache[ $mandate_id . '|' . $source_id ] = $usable;
+				} else {
+					Helper::log( 'mandate_usable_for_renewal: lookup of ' . $mandate_id . ' failed, keeping the stored mandate.', 'warning' );
+				}
+			}
+		} catch ( \Throwable $e ) {
+			Helper::log( 'mandate_usable_for_renewal failed: ' . $e->getMessage(), 'warning' );
+		}
+
+		return $usable;
+	}
+
 	private function mandate_belongs_to_source( $mandate_id, $source_id ) {
 		static $cache = array();
 

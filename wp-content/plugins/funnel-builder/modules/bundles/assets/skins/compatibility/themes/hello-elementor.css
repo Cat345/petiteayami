@@ -1,0 +1,44 @@
+/**
+ * Hello Elementor — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * The theme ships no palette of its own — it is a deliberately bare shell — so
+ * an Elementor page carries the colours on its kit instead, and the tokens
+ * below read Elementor's global slots rather than a theme variable.
+ *
+ * Measured on this install — Elementor kit globals:
+ *   --e-global-color-primary    #6EC1E4  accent
+ *   --e-global-color-secondary  #54595F  headings / strongest text
+ *   --e-global-color-text       #7A7A7A  body text
+ *   --e-global-color-accent     #61CE70  unused: a green that reads as a
+ *                                        success state, not an accent
+ *
+ * Control labels (mode tiles, size pills, + Add) take the headings slot: on the
+ * stock kit the body grey makes a selected tile read as disabled.
+ *
+ * Surfaces and hairlines stay on the defaults: the kit has no surface slot, and
+ * borrowing a text colour for a border reads as a rule drawn in body grey.
+ *
+ * The selection accents (`--wffn-bundles-border-active`, `--wffn-bundles-radio-active`,
+ * `--wffn-bundles-progress-fill`, `--wffn-bundles-control-accent`) are deliberately not mapped.
+ * A theme sheet outranks a bundle's unchanged Design-tab colours (layer 3
+ * over layer 4 — see includes/skins/global-design.php), and the kit's
+ * `--e-global-color-primary` is Elementor's stock #6EC1E4, a pale sky blue that
+ * reads as a stray outline around a selected tier rather than as a selection.
+ */
+body.wffn-bundles-theme-hello-elementor .wffn-bundles,
+body.wffn-bundles-theme-hello-elementor .wffn-bundles-portal,
+body.wffn-bundles-theme-hello-elementor .wffn-bundles-variant-modal {
+	--wffn-bundles-badge-bg: var(--e-global-color-secondary, #353030);
+	--wffn-bundles-badge-fg: #fff;
+
+	--wffn-bundles-heading-color: var(--e-global-color-secondary, #353030);
+	--wffn-bundles-title-color: var(--e-global-color-secondary, #353030);
+	--wffn-bundles-sale-price-color: var(--e-global-color-secondary, #353030);
+	--wffn-bundles-desc-color: var(--e-global-color-text, #82828e);
+	--wffn-bundles-regular-price-color: var(--e-global-color-text, #82828e);
+	--wffn-bundles-price-desc-color: var(--e-global-color-text, #82828e);
+	--wffn-bundles-control-fg: var(--e-global-color-secondary, #353030);
+	--wffn-bundles-control-muted: var(--e-global-color-text, #82828e);
+}

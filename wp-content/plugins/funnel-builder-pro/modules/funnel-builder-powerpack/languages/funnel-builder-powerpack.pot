@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-03T14:53:48+00:00\n"
+"POT-Creation-Date: 2026-11-19T14:19:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: funnel-builder-powerpack\n"
@@ -75,24 +75,24 @@ msgstr ""
 msgid "No Referrer Founds"
 msgstr ""
 
-#: includes/class-wffn-pro-mcp.php:178
+#: includes/class-wffn-pro-mcp.php:199
 msgid "FunnelKit Funnel Builder Pro"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/class-wffn-pro-mcp.php:183
+#: includes/class-wffn-pro-mcp.php:204
 #, php-format
 msgid "Your %s licence has expired, so this ability is unavailable. Renew the licence to restore it."
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/class-wffn-pro-mcp.php:188
+#: includes/class-wffn-pro-mcp.php:209
 #, php-format
 msgid "%s is installed but its licence is not activated, so this ability is unavailable. Activate the licence to restore it."
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/class-wffn-pro-mcp.php:193
+#: includes/class-wffn-pro-mcp.php:214
 #, php-format
 msgid "This ability needs an active %s licence."
 msgstr ""
@@ -523,46 +523,46 @@ msgstr ""
 msgid "Opt-ins"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:124
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:132
 #: includes/mcp/class-fkmcp-pack-funnels-pro.php:51
 msgid "Funnel Builder Pro"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:127
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:128
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:129
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:135
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:136
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:137
 msgid "Step Design"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:151
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:159
 msgid "Get Step Design"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:166
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:174
 msgid "Prepare Step Design"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:245
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:254
 msgid "Check Step Design"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:269
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:278
 msgid "Get Funnel Widgets"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:302
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:311
 msgid "Update Funnel Widget"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:336
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:345
 msgid "Move Funnel Widget"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:423
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:432
 msgid "Read Design"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-elementor-design.php:433
+#: includes/mcp/class-fkmcp-pack-elementor-design.php:442
 msgid "Edit Design"
 msgstr ""
 
@@ -661,125 +661,129 @@ msgstr ""
 msgid "List Funnel Orders"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:455
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:460
 msgid "List Funnel Leads"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:485
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:490
 msgid "List Payment Methods"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:496
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:501
 msgid "Get Top Funnels"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:520
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:525
 msgid "Get Upsell Offers"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:535
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:540
 msgid "Get Order Bump"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:550
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:555
 msgid "List Order Bump Skins"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:587
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:592
 msgid "Get Upsell Settings"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:602
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:607
 msgid "Get Checkout Conditional Fields"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:618
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:623
 msgid "Duplicate Funnel"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:645
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:650
 msgid "Create Order Bump"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:701
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:706
 msgid "Update Order Bump Products"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:732
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:737
 msgid "Update Upsell Offer Products"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:765
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:770
 msgid "Create Upsell Offer"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:828
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:833
 msgid "Update Offer Template"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:873
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:878
 msgid "Update Upsell Settings"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:904
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:909
 msgid "Update Offer Settings"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:936
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:941
 msgid "Update Order Bump Settings"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:968
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:973
 msgid "Update Order Bump Design"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:998
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1007
 msgid "Update Order Bump Skin"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1051
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1060
 msgid "List Step Rule Types"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1111
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1120
 msgid "Update Order Bump Rules"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1126
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1135
 msgid "Update Upsell Rules"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1141
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1150
 msgid "Update Thank You Rules"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1155
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1164
 msgid "Get Thank You Rules"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1171
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1180
 msgid "Get Offer Performance"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1204
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1213
 msgid "Get Funnel Graph"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1222
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1231
 msgid "Get Funnel Order"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1238
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1247
+msgid "Get Customer Order Journey"
+msgstr ""
+
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:1270
 msgid "Get Funnel Performance"
 msgstr ""
 
 #. translators: %s: title of the funnel being duplicated.
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:3352
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:3496
 #, php-format
 msgid "%s - Copy"
 msgstr ""
 
-#: includes/mcp/class-fkmcp-pack-funnels-pro.php:3940
+#: includes/mcp/class-fkmcp-pack-funnels-pro.php:4090
 msgctxt "default title of a newly created upsell offer"
 msgid "Offer"
 msgstr ""
@@ -1030,30 +1034,34 @@ msgid "Mad Mimi"
 msgstr ""
 
 #: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:536
+msgid "Zoho Campaigns"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:537
 msgid "Raw HTML"
 msgstr ""
 
-#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:547
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:548
 msgid "Send contacts to"
 msgstr ""
 
-#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:550
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:551
 msgid "Select Services"
 msgstr ""
 
-#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:566
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:567
 msgid "Paste form embed code."
 msgstr ""
 
-#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:570
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:571
 msgid "Continue"
 msgstr ""
 
-#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:571
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:572
 msgid "Form title must not be empty."
 msgstr ""
 
-#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:580
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:581
 msgid "Map Fields"
 msgstr ""
 

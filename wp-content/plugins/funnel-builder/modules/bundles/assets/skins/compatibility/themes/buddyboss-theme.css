@@ -1,0 +1,41 @@
+/**
+ * BuddyBoss — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install — BuddyBoss publishes the most semantic set of any
+ * theme in this directory, so every mapping below is a name-for-name match:
+ *   --bb-primary-color          #385DFF  accent
+ *   --bb-headings-color         #1E2132  headings
+ *   --bb-body-text-color        #5A5A5A  body text
+ *   --bb-alternate-text-color   #9B9C9F  muted text
+ *   --bb-content-border-color   #D6D9DD  borders
+ *   --bb-body-background-color  #FAFBFD  page background
+ */
+body.wffn-bundles-theme-buddyboss-theme .wffn-bundles,
+body.wffn-bundles-theme-buddyboss-theme .wffn-bundles-portal,
+body.wffn-bundles-theme-buddyboss-theme .wffn-bundles-variant-modal {
+	--wffn-bundles-bg-active: var(--bb-body-background-color, #fafafa);
+	--wffn-bundles-step-bg: var(--bb-body-background-color, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--bb-body-background-color, #fafafa);
+
+	--wffn-bundles-border: var(--bb-content-border-color, #dedfea);
+	--wffn-bundles-control-border: var(--bb-content-border-color, #dedfea);
+	--wffn-bundles-radio: var(--bb-content-border-color, #c5c5cd);
+	--wffn-bundles-connector: var(--bb-content-border-color, #353030);
+
+	--wffn-bundles-border-active: var(--bb-primary-color, #353030);
+	--wffn-bundles-radio-active: var(--bb-primary-color, #353030);
+	--wffn-bundles-badge-bg: var(--bb-primary-color, #353030);
+	--wffn-bundles-progress-fill: var(--bb-primary-color, #353030);
+	--wffn-bundles-control-accent: var(--bb-primary-color, #353030);
+
+	--wffn-bundles-heading-color: var(--bb-headings-color, #353030);
+	--wffn-bundles-title-color: var(--bb-headings-color, #353030);
+	--wffn-bundles-sale-price-color: var(--bb-headings-color, #353030);
+	--wffn-bundles-desc-color: var(--bb-alternate-text-color, #82828e);
+	--wffn-bundles-regular-price-color: var(--bb-alternate-text-color, #82828e);
+	--wffn-bundles-price-desc-color: var(--bb-alternate-text-color, #82828e);
+	--wffn-bundles-control-fg: var(--bb-body-text-color, #353030);
+	--wffn-bundles-control-muted: var(--bb-alternate-text-color, #82828e);
+}

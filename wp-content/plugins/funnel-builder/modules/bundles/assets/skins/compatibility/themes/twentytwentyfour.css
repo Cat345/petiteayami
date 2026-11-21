@@ -1,0 +1,65 @@
+/**
+ * Twenty Twenty-Four — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install — the theme's ten theme.json slots:
+ *   --wp--preset--color--base        #f9f9f9  page background (measured on body)
+ *   --wp--preset--color--base-2      #ffffff  the theme's white card surface
+ *   --wp--preset--color--contrast    #111111  headings + body text
+ *   --wp--preset--color--contrast-2  #636363  muted text
+ *   --wp--preset--color--contrast-3  #A4A4A4  light grey, its rule/border tone
+ *   --wp--preset--color--accent      #cfcabe  pale sand
+ *   --wp--preset--color--accent-2    #c2a990  tan
+ *   --wp--preset--color--accent-3    #d8613c  orange
+ *   --wp--preset--color--accent-4    #b1c5a4  pale green
+ *   --wp--preset--color--accent-5    #b5bdbc  pale grey-green
+ *
+ * `--wffn-bundles-bg` takes `base-2`, not `base`. This theme tints the page (#f9f9f9)
+ * and keeps #ffffff for the surfaces that sit on it, so `base` goes to the
+ * widget's secondary surfaces and the card keeps the white the theme intends.
+ *
+ * The selection family takes `contrast`, matching the theme's own add-to-cart
+ * button (measured: #111111 fill, #f9f9f9 label) — which is also the pairing
+ * the badge uses.
+ *
+ * Unlike Twenty Twenty-One, the resting border is mapped: `contrast-3`
+ * (#A4A4A4) is nowhere near `contrast` (#111111), so a selected card still
+ * reads against an unselected one.
+ *
+ * Deliberately not mapped
+ * All five accents. Four are pale tints and would vanish as a 2px ring on
+ * white; `accent-3` is the one saturated slot, but the theme spends it on
+ * decorative fills rather than on controls, so borrowing it for the selected
+ * state would signal something the rest of the page never does.
+ */
+body.wffn-bundles-theme-twentytwentyfour .wffn-bundles,
+body.wffn-bundles-theme-twentytwentyfour .wffn-bundles-portal,
+body.wffn-bundles-theme-twentytwentyfour .wffn-bundles-variant-modal {
+	--wffn-bundles-bg: var(--wp--preset--color--base-2, #fff);
+	--wffn-bundles-bg-active: var(--wp--preset--color--base, #fafafa);
+	--wffn-bundles-step-bg: var(--wp--preset--color--base, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--wp--preset--color--base, #fafafa);
+
+	--wffn-bundles-border: var(--wp--preset--color--contrast-3, #dedfea);
+	--wffn-bundles-control-border: var(--wp--preset--color--contrast-3, #dedfea);
+	--wffn-bundles-radio: var(--wp--preset--color--contrast-3, #c5c5cd);
+	--wffn-bundles-connector: var(--wp--preset--color--contrast-2, #353030);
+
+	--wffn-bundles-border-active: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-radio-active: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-progress-fill: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-control-accent: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-badge-bg: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-badge-fg: var(--wp--preset--color--base, #fff);
+
+	--wffn-bundles-heading-color: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-title-color: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-sale-price-color: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-desc-color: var(--wp--preset--color--contrast-2, #82828e);
+	--wffn-bundles-regular-price-color: var(--wp--preset--color--contrast-2, #82828e);
+	--wffn-bundles-price-desc-color: var(--wp--preset--color--contrast-2, #82828e);
+	--wffn-bundles-control-fg: var(--wp--preset--color--contrast, #353030);
+	--wffn-bundles-control-bg: var(--wp--preset--color--base-2, #fff);
+	--wffn-bundles-control-muted: var(--wp--preset--color--contrast-2, #82828e);
+}

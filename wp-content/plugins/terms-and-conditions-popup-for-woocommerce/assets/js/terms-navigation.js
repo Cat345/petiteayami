@@ -17,6 +17,7 @@
         panel.appendChild(inner);
         var progress = navigation.querySelector('.br_terms_scroll_progress');
         var fill = progress.querySelector('.br_terms_scroll_progress_fill');
+        var percentage = navigation.querySelector('.br_terms_scroll_percentage');
         var frame;
         var resizeObserver;
         var mutationObserver;
@@ -29,6 +30,9 @@
             fill.style.width = percent + '%';
             progress.setAttribute('aria-valuenow', rounded);
             progress.setAttribute('aria-valuetext', brTermsNavigationSettings.scrollProgressText.replace('%s', rounded));
+            if (percentage) {
+                percentage.textContent = rounded + '%';
+            }
         }
 
         function scheduleUpdate() {

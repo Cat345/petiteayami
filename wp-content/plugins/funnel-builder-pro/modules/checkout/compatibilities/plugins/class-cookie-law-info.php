@@ -16,10 +16,30 @@ if ( ! class_exists( 'WFACP_CookieYes_Cookie_Consent', false ) ) {
 
 		public function remove_actions() {
 			if ( class_exists( 'CookieYes\Lite\Frontend\Frontend' ) ) {
-				WFACP_Common::remove_actions( 'wp_enqueue_scripts', 'CookieYes\Lite\Frontend\Frontend', 'enqueue_scripts' );
-				WFACP_Common::remove_actions( 'wp_head', 'CookieYes\Lite\Frontend\Frontend', 'insert_script' );
-				WFACP_Common::remove_actions( 'wp_head', 'CookieYes\Lite\Frontend\Frontend', 'insert_styles' );
-				WFACP_Common::remove_actions( 'wp_footer', 'CookieYes\Lite\Frontend\Frontend', 'banner_html' );
+				/**
+				 * Filters the CookieYes frontend hooks that FunnelKit strips on the Aero checkout page.
+				 *
+				 * By default only the visually-conflicting CookieYes banner/style hooks are removed
+				 * while `insert_script` is preserved, so Google Consent Mode ( `_ckyGcm` + `gcm.js` )
+				 * and the core CookieYes runtime keep loading and can restore a shopper's prior consent
+				 * on the checkout page. Integrators can return an empty array to keep the full CookieYes
+				 * frontend, or add `'insert_script' => 'wp_head'` to also strip Google Consent Mode.
+				 *
+				 * @param array $hooks Map of CookieYes Frontend method => WordPress hook to remove.
+				 */
+				$hooks_to_remove = apply_filters( 'wfacp_cookieyes_remove_frontend_hooks', array(
+					'enqueue_scripts' => 'wp_enqueue_scripts',
+					'insert_styles'   => 'wp_head',
+					'banner_html'     => 'wp_footer',
+				) );
+
+				if ( ! is_array( $hooks_to_remove ) ) {
+					return;
+				}
+
+				foreach ( $hooks_to_remove as $method => $hook ) {
+					WFACP_Common::remove_actions( $hook, 'CookieYes\Lite\Frontend\Frontend', $method );
+				}
 			}
 		}
 	}

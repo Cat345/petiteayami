@@ -965,32 +965,40 @@ class PluginPro
         }
         // Below does not work without key
         $the_trident = get_option( 'wpc_trident' );
+        $now         = time();
 
-        if ( $the_trident ) {
-            if ( isset( $the_trident[ 'last_license_check' ] ) ) {
-                $now = time();
+        // Fires about once a month: prove key possession so connect re-issues a
+        // fresh signed token, and refresh the local copy.
+        $monthly_due = isset( $the_trident[ 'last_license_check' ] )
+            && ( $the_trident[ 'last_license_check' ] + MONTH_IN_SECONDS ) < $now;
 
-                if ( ( $the_trident[ 'last_license_check' ] + MONTH_IN_SECONDS ) < $now ) {
-                    // Fires about once a month: prove key possession so connect
-                    // re-issues a fresh signed token, and refresh the local copy.
-                    $apiRequest = new ApiRequests();
-                    $site_data  = array(
-                        'home_url' => home_url(),
-                        'license'  => $license_key,
-                    );
-                    $result     = $apiRequest->sendRequest('GET', 'license', $site_data );
+        // Sooner when the token is missing or about to lapse. Not on AJAX requests:
+        // admin-ajax.php fires admin_init for front-end visitors too, and they
+        // should not wait for connect.
+        if ( ! $monthly_due && ( wp_doing_ajax() || ! flrt_token_refresh_due() ) ) {
+            return false;
+        }
 
-                    if ( isset( $result[ 'data' ][ 'token' ] ) && $result[ 'data' ][ 'token' ] ) {
-                        flrt_store_token( $result[ 'data' ][ 'token' ] );
-                    }
+        update_option( FLRT_LICENSE_TOKEN_ATTEMPT_OPTION, $now );
 
-                    // Defer the next check by a month regardless of the answer: a
-                    // connect outage or a legacy 204 must never lock a paying
-                    // customer. Token expiry (texp) is what eventually enforces.
-                    $the_trident[ 'last_license_check' ] = $now;
-                    update_option( 'wpc_trident', $the_trident );
-                }
-            }
+        $apiRequest = new ApiRequests();
+        $site_data  = array(
+            'home_url' => home_url(),
+            'license'  => $license_key,
+        );
+        $result     = $apiRequest->sendRequest('GET', 'license', $site_data );
+        $got_token  = isset( $result[ 'data' ][ 'token' ] ) && $result[ 'data' ][ 'token' ];
+
+        if ( $got_token ) {
+            flrt_store_token( $result[ 'data' ][ 'token' ] );
+        }
+
+        // Defer the next monthly check regardless of the answer: a connect outage
+        // or a legacy 204 must never lock a paying customer. Token expiry (texp) is
+        // what eventually enforces, and flrt_token_refresh_due() retries before that.
+        if ( isset( $the_trident[ 'last_license_check' ] ) && ( $monthly_due || $got_token ) ) {
+            $the_trident[ 'last_license_check' ] = $now;
+            update_option( 'wpc_trident', $the_trident );
         }
     }
 

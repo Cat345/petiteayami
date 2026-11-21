@@ -27,13 +27,13 @@ class OrderMetaData implements Hookable {
 	}
 
 	/**
-	 * @param string        $display_key
-	 * @param \WC_Meta_Data $meta
-	 * @param array         $item
+	 * @param mixed               $display_key
+	 * @param \WC_Meta_Data|array $meta
+	 * @param \WC_Order_Item      $item
 	 *
-	 * @return string
+	 * @return mixed
 	 */
-	public function get_meta_key_display_label( $display_key, $meta, $item ): string {
+	public function get_meta_key_display_label( $display_key, $meta, $item ) {
 		if ( self::META_KEY === $display_key ) {
 			$display_key = __( 'Shipping Costs', 'flexible-shipping' );
 		}
@@ -42,14 +42,14 @@ class OrderMetaData implements Hookable {
 	}
 
 	/**
-	 * @param string        $display_value
-	 * @param \WC_Meta_Data $meta
-	 * @param array         $item
+	 * @param mixed               $display_value
+	 * @param \WC_Meta_Data|array $meta
+	 * @param \WC_Order_Item      $item
 	 *
-	 * @return string
+	 * @return mixed
 	 */
-	public function get_meta_key_display_value( $display_value, $meta, $item ): string {
-		if ( ! $meta instanceof \WC_Meta_Data ) {
+	public function get_meta_key_display_value( $display_value, $meta, $item ) {
+		if ( ! $meta instanceof \WC_Meta_Data || ! is_string( $display_value ) ) {
 			return $display_value;
 		}
 		$data = $meta->get_data();

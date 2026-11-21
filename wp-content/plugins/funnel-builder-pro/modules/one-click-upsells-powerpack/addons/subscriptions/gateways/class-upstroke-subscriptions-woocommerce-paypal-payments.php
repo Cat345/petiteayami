@@ -77,8 +77,15 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 				 * get a unique user ID for create vault payment method
 				 */
 				$user_id = get_current_user_id();
-				$new_obj = new CustomerRepository( 'WC-' );
-				$user_id = $new_obj->customer_id_for_user( $user_id );
+				try {
+					// PayPal Payments 4.2+ expects an InvoicePrefixGetter here, so use its own service instead of constructing it.
+					$new_obj = class_exists( '\WooCommerce\PayPalCommerce\PPCP' ) ? \WooCommerce\PayPalCommerce\PPCP::container()->get( 'api.repository.customer' ) : new CustomerRepository( 'WC-' );
+					$user_id = $new_obj->customer_id_for_user( $user_id );
+				} catch ( \Throwable $e ) {
+					WFOCU_Core()->log->log( 'PayPal Payments: unable to get the vault customer ID: ' . $e->getMessage() );
+
+					return $args;
+				}
 
 				/*
 				 * Modify API supports for support vault payment methods

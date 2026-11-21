@@ -124,7 +124,7 @@ trait RestApiTrait {
 				}
 
 				$response[ (string) $key ] = array(
-					'label'           => $product->name,
+					'label'           => \WFOCU_Common::get_offer_product_label( $product ),
 					'isSubscription'  => $is_subscription,
 					'regularPrice'    => $regular_price,
 					'offerPrice'      => $offer_price,

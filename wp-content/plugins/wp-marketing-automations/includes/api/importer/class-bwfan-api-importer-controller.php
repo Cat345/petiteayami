@@ -207,16 +207,28 @@ class BWFAN_API_Importer_Controller extends BWFAN_API_Controller {
 
 		if ( ! $delete_pending ) {
 			$id_placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-			// Perform the delete operation
-			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE ID IN ($id_placeholders)", $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- prefix table; %d placeholders generated in code; ids bound via prepare()
+			/** Import rows only: exports share this table and are deleted by their own route */
+			$where           = $wpdb->prepare( "ID IN ($id_placeholders) AND type = %d", array_merge( $ids, array( BWFAN_Importer::$IMPORT ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- %d placeholders generated in code; ids bound via prepare()
 		} else {
-			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE type = %d AND status = %d", 1, 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- prefix table; %d placeholders generated in code; ids bound via prepare()
+			$where = $wpdb->prepare( 'type = %d AND status = %d', BWFAN_Importer::$IMPORT, 0 );
 		}
 
-		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prefix table; %d placeholders generated in code; ids bound via prepare()
+		/** Import rows' CSV and log files, collected before the rows go */
+		$import_rows = $wpdb->get_col( "SELECT meta FROM $table_name WHERE $where" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prefix table; $where built with prepare() above
+
+		// Perform the delete operation
+		$result = $wpdb->query( "DELETE FROM $table_name WHERE $where" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prefix table; $where built with prepare() above
 
 		if ( $result === false ) {
 			return $this->error_response( __( 'Failed to delete imports', 'wp-marketing-automations' ) );
+		}
+
+		foreach ( $import_rows as $meta ) {
+			$meta = json_decode( (string) $meta, true );
+			/** Each import gets its own upload and log, so its files go with it; delete_import_file() only removes a .csv inside the import folder */
+			foreach ( array( $meta['file'] ?? '', $meta['log_file'] ?? '' ) as $file ) {
+				BWFAN_Importer::delete_import_file( $file );
+			}
 		}
 
 		$response = array(

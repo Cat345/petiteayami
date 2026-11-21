@@ -33,6 +33,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			add_action( WFFN_Features::APP_ENQUEUE_HOOK, array( $this, 'filter_available_menus' ), 10 );
 			if ( $this->is_wffn_flex_page( 'all' ) ) {
 				add_action( 'admin_enqueue_scripts', array( $this, 'js_variables' ), 0 );
+				add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_extensions' ), 20 );
 			}
 			if ( $this->is_wffn_flex_page() ) {
 				add_action( 'admin_enqueue_scripts', array( $this, 'maybe_register_breadcrumb_nodes' ), 5 );
@@ -801,13 +802,80 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		}
 
 		/**
+		 * Band 3 once the Cart plugin is active: its own page, in the slot this list gives it.
+		 *
+		 * In the WP submenu the entry has to be asked for. Left alone the plugin registers it on
+		 * admin_menu 902, long after this list runs, so it lands below every band that follows;
+		 * taking that one callback off the hook and calling it here puts it in place. Anything
+		 * unexpected on the other side and the callback stays on the hook, as it is today.
+		 *
+		 * In the app header there is no such ordering to undo: this returns the `cart` entry itself,
+		 * shown only to users Cart's own menu gate lets in, and a wffn_header_menu answer can still
+		 * replace that key.
+		 *
+		 * @param string $context 'menu' for the WP submenu, 'header' for the app header.
+		 *
+		 * @return array[] The header entry keyed by item key; empty in the submenu.
+		 */
+		public function register_cart_menu( $context = 'menu' ) {
+			if ( 'header' === $context ) {
+				// The gate Cart puts on its own menu, so the link never leads to a page the user cannot open.
+				$can = class_exists( 'FKCart_Role_Capability' ) && method_exists( 'FKCart_Role_Capability', 'get_instance' ) ? \FKCart_Role_Capability::get_instance()->user_access( 'menu', 'read' ) : current_user_can( 'manage_woocommerce' );
+				if ( ! $can ) {
+					return array();
+				}
+
+				return array(
+					'cart' => array(
+						'name' => __( 'Cart', 'funnel-builder' ),
+						'link' => admin_url( 'admin.php?page=fkcart' ),
+					),
+				);
+			}
+
+			if ( ! class_exists( '\FKCart\Admin\Admin_App' ) || ! method_exists( '\FKCart\Admin\Admin_App', 'get_instance' ) ) {
+				return array();
+			}
+
+			$cart = \FKCart\Admin\Admin_App::get_instance();
+			if ( ! method_exists( $cart, 'register_admin_menu' ) ) {
+				return array();
+			}
+
+			// Cart for WooCommerce hooks its menu at admin_menu 902 (FKCart\Admin\Admin_App, checked on 1.9.1.2 and 1.9.2). If that
+			// changes, remove_action() fails and Cart keeps its own place in the menu: lower, but still there.
+			if ( remove_action( 'admin_menu', array( $cart, 'register_admin_menu' ), 902 ) ) {
+				$cart->register_admin_menu();
+			}
+
+			return array();
+		}
+
+		/**
+		 * The Bundles module's menu class, or '' when the module is not loaded. Looked up once per request.
+		 *
+		 * @return string
+		 */
+		public static function bundles_menu_class() {
+			static $class = null;
+			if ( null === $class ) {
+				$name  = 'WFFN\Bundles\Includes\Admin\Host\Menu';
+				$class = class_exists( $name ) && method_exists( $name, 'register_menu' ) ? $name : '';
+			}
+
+			return $class;
+		}
+
+		/**
 		 * The FunnelKit submenu, registered from one place in display order:
 		 *
 		 *   1. core      get_core_menu_items()
 		 *   2. features  get_feature_menu_items()
 		 *   3. cart      get_cart_menu_item(), or the Cart plugin's own page
-		 *   4. sibling   the one other FunnelKit product promoted right now (WFFN_Sibling_Promo)
-		 *   5. settings  Settings
+		 *   4. bundles   nothing here: the Bundles module's call places its entry under
+		 *                WooCommerce > Marketing, after Coupons, not in this submenu
+		 *   5. sibling   the one other FunnelKit product promoted right now (WFFN_Sibling_Promo)
+		 *   6. settings  Settings
 		 *
 		 * Upgrade to Pro and the seasonal campaign link are not part of this list; they follow
 		 * from WFFN_WooFunnels_Support::register_menu_for_pro() at admin_menu 999.
@@ -840,14 +908,22 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			/** 3. Cart: the plugin's own page once active, Funnel Builder's Cart page until then */
 			if ( ! $this->is_cart_active() ) {
 				$this->add_menu_page( 'cart', $this->get_cart_menu_item(), $user );
+			} else {
+				$this->register_cart_menu();
 			}
 
-			/** 4. Sibling product promotion: at most one entry, chosen by the promo class */
+			/** 4. Bundles: the module's call, which places its entry under WooCommerce > Marketing */
+			$bundles_menu = self::bundles_menu_class();
+			if ( '' !== $bundles_menu ) {
+				$bundles_menu::register_menu();
+			}
+
+			/** 5. Sibling product promotion: at most one entry, chosen by the promo class */
 			if ( class_exists( 'WFFN_Sibling_Promo' ) ) {
 				WFFN_Sibling_Promo::get_instance()->register_menu( $user );
 			}
 
-			/** 5. Settings, unless a module already registered the legacy Settings page */
+			/** 6. Settings, unless a module already registered the legacy Settings page */
 			if ( ! $this->is_menu_registered( 'woofunnels_settings' ) ) {
 				$this->add_menu_page(
 					'settings',
@@ -931,7 +1007,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				wp_enqueue_style( 'wffn-flex-admin', $this->get_admin_url() . '/assets/css/admin.css', array(), WFFN_VERSION_DEV );
 
 				if ( WFFN_Core()->admin->is_wffn_flex_page() ) {
-					$this->load_react_app( 'main-20261103145155' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
+					$this->load_react_app( 'main-1795096968' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 					if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf' && method_exists( 'BWF_Admin_General_Settings', 'get_localized_bwf_data' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						wp_localize_script( 'wffn-contact-admin', 'bwfAdminGen', BWF_Admin_General_Settings::get_instance()->get_localized_bwf_data() );
 
@@ -1133,6 +1209,103 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			return false;
 		}
 
+		/**
+		 * The Analytics screen's sidebar entries.
+		 *
+		 * An entry carries `key` and `label`, and either `path`, a route in this
+		 * admin app, or `url`, another admin page an add-on draws itself.
+		 *
+		 * @return array[]
+		 */
+		public static function analytics_sidebar_items() {
+			$items = array(
+				array(
+					'key'   => 'funnels',
+					'label' => __( 'Funnels', 'funnel-builder' ),
+					'path'  => '/analytics/funnels',
+				),
+				array(
+					'key'   => 'orders',
+					'label' => __( 'Conversions', 'funnel-builder' ),
+					'path'  => '/analytics/orders',
+				),
+				array(
+					'key'   => 'referrers',
+					'label' => __( 'Referrers', 'funnel-builder' ),
+					'path'  => '/analytics/referrers',
+				),
+				array(
+					'key'   => 'cart-upsell',
+					'label' => __( 'Cart Upsells', 'funnel-builder' ),
+					'path'  => '/analytics/cart-upsell',
+				),
+				array(
+					'key'   => 'utm-campaigns',
+					'label' => __( 'UTM Campaigns', 'funnel-builder' ),
+					'path'  => '/analytics/utm-campaigns',
+				),
+			);
+
+			/**
+			 * Filters the Analytics screen's sidebar entries.
+			 *
+			 * @since 3.18.0.1
+			 *
+			 * @param array[] $items Entries: `key`, `label`, and `path` (an app route starting with `/`) or `url` (any http or https link).
+			 */
+			$filtered = apply_filters( 'wffn_analytics_sidebar_items', $items );
+			// A callback that returns nothing keeps the built-in entries rather than emptying the sidebar.
+			$items = is_array( $filtered ) ? $filtered : $items;
+
+			// Only well-formed entries reach the admin app: a key and a label, and an app route (`path`) or an absolute http(s) link (`url`).
+			// The first entry for a key wins, so an add-on cannot replace a core entry; the app opens `url` when an entry has both.
+			$clean = array();
+			foreach ( $items as $item ) {
+				if ( ! is_array( $item ) || empty( $item['key'] ) || empty( $item['label'] ) || ! is_scalar( $item['key'] ) || ! is_scalar( $item['label'] ) ) {
+					continue;
+				}
+				$entry = array(
+					'key'   => sanitize_key( (string) $item['key'] ),
+					'label' => sanitize_text_field( (string) $item['label'] ),
+				);
+				if ( ! empty( $item['path'] ) && is_string( $item['path'] ) && false === strpos( $item['path'], '\\' ) ) {
+					// sanitize_url() keeps a route's %xx octets, which sanitize_text_field() strips; the route checks run on what it returns.
+					$path = sanitize_url( $item['path'] );
+					if ( 0 === strpos( $path, '/' ) && 0 !== strpos( $path, '//' ) ) {
+						$entry['path'] = $path;
+					}
+				}
+				if ( ! empty( $item['url'] ) && is_string( $item['url'] ) && preg_match( '#^https?://#i', $item['url'] ) ) {
+					$entry['url'] = sanitize_url( $item['url'], array( 'http', 'https' ) );
+				}
+				if ( '' === $entry['key'] || '' === $entry['label'] || isset( $clean[ $entry['key'] ] ) || ( empty( $entry['path'] ) && empty( $entry['url'] ) ) ) {
+					continue;
+				}
+				$clean[ $entry['key'] ] = $entry;
+			}
+
+			return array_values( $clean );
+		}
+
+		/**
+		 * Lets other plugins load the scripts that register their extensions of
+		 * the admin app, on the app's own page and nowhere else. What each one
+		 * adds is declared in its script, through window.wffnExtensions.
+		 *
+		 * @return void
+		 */
+		public function enqueue_extensions() {
+			/**
+			 * Fires on the admin app's own page so an add-on can enqueue the script that registers its extensions.
+			 *
+			 * Not gated here: each listener checks WFFN_Features::is_available( 'admin_extensions' )
+			 * before it enqueues. By this priority whatever serves its own build of the app has
+			 * already answered WFFN_Features::HELD_FILTER and claimed the app's enqueue.
+			 *
+			 * @since 3.18.0.1
+			 */
+			do_action( 'wffn_admin_enqueue_extensions' );
+		}
 
 		public function js_variables() {
 			if ( $this->is_wffn_flex_page( 'all' ) ) {
@@ -1231,8 +1404,10 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				$data['disabled_features'] = WFFN_Features::disabled();
 				$data['fkcart_settings']   = $this->get_fkcart_settings();
 
+				$data['analytics_sidebar_items'] = self::analytics_sidebar_items();
+
 				?>
-				<script>window.wffn = <?php echo wp_json_encode( apply_filters( 'wffn_localize_admin', $data ) ); ?>;</script>
+				<script>window.wffn = <?php echo wp_json_encode( apply_filters( 'wffn_localize_admin', $data ), JSON_HEX_TAG | JSON_HEX_AMP ); ?>;</script>
 				<script>
 					<?php
 					echo '
@@ -3107,7 +3282,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				$get_aero_ids = $wpdb->get_col( $wpdb->prepare( $aero_query, 'shop_subscription', $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				if ( is_array( $get_aero_ids ) && count( $get_aero_ids ) > 0 ) {
 					$is_clear_schedule = false;
-					$wpdb->query( "DELETE FROM {$aero_table} WHERE order_id IN (" . implode( ',', $get_aero_ids ) . " )" );//phpcs:ignore
+					$wpdb->query( "DELETE FROM {$aero_table} WHERE order_id IN (" . implode( ',', wp_parse_id_list( $get_aero_ids ) ) . " )" );//phpcs:ignore
 					if ( ! empty( $wpdb->last_error ) ) {
 						$is_clear_schedule = true;
 						WFFN_Core()->logger->log( 'Conversion aero tracking cleanup last error: ' . $wpdb->last_error, 'wffn_ay', true );
@@ -3170,7 +3345,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					$get_bump_ids = $wpdb->get_col( $wpdb->prepare( $bump_query, 'shop_subscription', $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					if ( is_array( $get_bump_ids ) && count( $get_bump_ids ) > 0 ) {
 						$is_clear_schedule = false;
-						$wpdb->query( "DELETE FROM {$bump_table} WHERE oid IN (" . implode( ',', $get_bump_ids ) . " )" );//phpcs:ignore
+						$wpdb->query( "DELETE FROM {$bump_table} WHERE oid IN (" . implode( ',', wp_parse_id_list( $get_bump_ids ) ) . " )" );//phpcs:ignore
 						if ( ! empty( $wpdb->last_error ) ) {
 							$is_clear_schedule = true;
 							WFFN_Core()->logger->log( 'Conversion bump tracking cleanup last error: ' . $wpdb->last_error, 'wffn_ay', true );

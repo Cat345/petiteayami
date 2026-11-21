@@ -907,6 +907,16 @@ trait Funnelkit_Stripe_Smart_Buttons {
 	public function merge_cart_details( $fragments ) {
 		$fragments['fkwcs_cart_details'] = $this->ajax_get_cart_details();
 
+		/**
+		 * A guest's page-render checkout nonce predates the WC session that an add to cart (block,
+		 * WooCommerce or FunnelKit Cart) creates, so process_checkout() rejects it. Fragments are
+		 * built after that session exists, so a nonce minted here verifies; the express buttons
+		 * swap it in before creating the order (#1547).
+		 */
+		$fragments['fkwcs_nonces'] = array(
+			'checkout_nonce' => wp_create_nonce( 'woocommerce-process_checkout' ),
+		);
+
 		return $fragments;
 	}
 

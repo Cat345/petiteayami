@@ -101,6 +101,7 @@ if ( ! class_exists( 'BWFAN_DB_Table_Engagement_Tracking' ) && BWFAN_Common::is_
 			`c_status` tinyint(2) unsigned default 1 COMMENT '1 - Draft 2 - Send 3 - Error 4 - Bounced',
 			`day` tinyint(1) unsigned default NUll,
 			`hour` tinyint(2) unsigned default NUll,
+			`claim_id` bigint(20) unsigned NOT NULL default 0 COMMENT 'Claim ID',
 			PRIMARY KEY (`ID`),			
 			KEY `cid` (`cid`),
 			KEY `created_at` (`created_at`),
@@ -114,6 +115,7 @@ if ( ! class_exists( 'BWFAN_DB_Table_Engagement_Tracking' ) && BWFAN_Common::is_
 			KEY `day` (`day`),
 			KEY `hour` (`hour`),
 			KEY `c_status` (`c_status`),
+			KEY `bwfan_claim_lookup` (`oid`, `type`, `claim_id`, `c_status`),
 			UNIQUE KEY `hash_code` (`hash_code`)
 		) $collate;";
 		}

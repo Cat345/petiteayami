@@ -60,6 +60,32 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Klaviyo' ) ) {
 			add_action( 'woocommerce_after_checkout_billing_form', array( $this, 'remove_kl_billing_compliance' ), 9 );
 
 			add_action( 'wfacp_after_kl_sms_consent_checkbox_field', array( $this, 'kl_sms_consent' ) );
+
+			add_action( 'wp_enqueue_scripts', array( $this, 'restore_elementor_checkout_post' ), 11 );
+		}
+
+		/**
+		 * Klaviyo's started-checkout tracking calls wp_reset_query() on wp_enqueue_scripts priority 10, which resets the
+		 * current post from the Elementor checkout to the WooCommerce checkout page. Elementor loads the current post's
+		 * styles at priority 20, so set the checkout back first, or its Elementor 4 atomic styles are not loaded.
+		 */
+		public function restore_elementor_checkout_post() {
+			if ( ! did_action( 'wfacp_checkout_page_found' ) || ! class_exists( '\Elementor\Plugin' ) ) {
+				return;
+			}
+
+			$checkout_id = WFACP_Common::get_id();
+			if ( $checkout_id <= 0 || (int) get_the_ID() === (int) $checkout_id ) {
+				return;
+			}
+
+			$design = WFACP_Common::get_page_design( $checkout_id );
+			if ( empty( $design['selected_type'] ) || 'elementor' !== $design['selected_type'] ) {
+				return;
+			}
+
+			global $post;
+			$post = get_post( $checkout_id );
 		}
 
 		public function remove_kl_billing_compliance() {

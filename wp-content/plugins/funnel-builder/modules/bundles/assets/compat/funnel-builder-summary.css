@@ -1,0 +1,135 @@
+/* Aero Checkout order summaries: a bundle's member lines sit tight under the
+   bundle's own line, on smaller thumbnails, and fold away behind its toggle. */
+
+/* `:is()` takes its heaviest argument's weight, an ID, so these outrank Aero's
+   ID-scoped summary rules in every template on specificity alone. */
+
+/* No rule between a bundle's own lines, so the group reads as one item. */
+:is(body, #wfacp-e-form) table.shop_table tr.cart_item.wffn-bundles-cart-parent:has(> td.product-name-area):has(+ tr.wffn-bundles-cart-child:not(.wffn-bundles-cart-collapsed)),
+:is(body, #wfacp-e-form) table.shop_table tr.cart_item.wffn-bundles-cart-child:has(> td.product-name-area):has(+ tr.wffn-bundles-cart-child) {
+	border-bottom-color: transparent;
+}
+
+:is(body, #wfacp-e-form) table.shop_table tr.cart_item.wffn-bundles-cart-parent:has(> td.product-name-area):has(+ tr.wffn-bundles-cart-child:not(.wffn-bundles-cart-collapsed)) > td {
+	padding-bottom: 4px;
+	border-bottom-color: transparent;
+}
+
+:is(body, #wfacp-e-form) table.shop_table tr.cart_item.wffn-bundles-cart-child:has(> td.product-name-area) > td {
+	padding-top: 4px;
+	border-top-color: transparent;
+}
+
+/* A member's count badge rides above its thumbnail; keep it off the stepper above. */
+:is(body, #wfacp-e-form) table.shop_table tr.cart_item:not(.wffn-bundles-cart-nested):has(.wfacp_quantity_selector:not([style*="none"])) + tr.cart_item.wffn-bundles-cart-child:has(> td.product-name-area) > td {
+	padding-top: 18px;
+}
+
+:is(body, #wfacp-e-form) table.shop_table tr.cart_item.wffn-bundles-cart-child:has(> td.product-name-area):has(+ tr.wffn-bundles-cart-child) > td {
+	padding-bottom: 4px;
+	border-bottom-color: transparent;
+}
+
+:is(body, #wfacp-e-form) table.shop_table tr.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-collapsed {
+	display: none;
+}
+
+/* A nested member's quantity follows its set, so a stepper would only snap back. */
+:is(body, #wfacp-e-form) table.shop_table tr.cart_item.wffn-bundles-cart-nested .product-quantity:has(> .wfacp_quantity_selector) {
+	display: none;
+}
+
+/* A step down inside Aero's own thumbnail column, so member titles stay aligned
+   with the bundle's title and the thumbnail itself marks the indent. */
+:is(body, #wfacp-e-form) tr.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name-area .product-image {
+	text-align: end;
+}
+
+:is(body, #wfacp-e-form) tr.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name-area .wfacp-pro-thumb {
+	width: 72%;
+}
+
+:is(body, #wfacp-e-form) tr.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name-area .wfacp-pro-thumb img {
+	min-width: 0;
+	max-width: 100%;
+	height: auto;
+}
+
+:is(body, #wfacp-e-form) tr.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name-area .wfacp-qty-ball {
+	transform: scale(0.8);
+}
+
+:is(body, #wfacp-e-form) tr.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name-area {
+	font-size: 0.93em;
+}
+
+:is(body, #wfacp-e-form) tr.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name-area .product-quantity {
+	white-space: nowrap;
+}
+
+:is(body, #wfacp-e-form) tr.cart_item.wffn-bundles-cart-child > td.product-name-area .wffn-bundles-cart-childqty.wffn-bundles-cart-childqty {
+	display: block;
+	margin: 2px 0 0;
+	color: inherit;
+	font-size: 0.86em;
+	line-height: 1.5;
+	opacity: 0.8;
+}
+
+:is(body, #wfacp-e-form) .wffn-bundles-sum-toggle.wffn-bundles-sum-toggle {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: auto;
+	min-width: 0;
+	height: auto;
+	min-height: 0;
+	margin: 2px 0 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	color: inherit;
+	font: inherit;
+	font-size: 0.86em;
+	line-height: 1.5;
+	letter-spacing: normal;
+	text-align: start;
+	text-transform: none;
+	white-space: nowrap;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	opacity: 0.8;
+	cursor: pointer;
+}
+
+/* Aero paints every form button with the checkout's accent at (1,4,2); repeated to reach (1,5,0). */
+:is(body, #wfacp-e-form) .wffn-bundles-sum-toggle.wffn-bundles-sum-toggle.wffn-bundles-sum-toggle.wffn-bundles-sum-toggle.wffn-bundles-sum-toggle {
+	background: none;
+}
+
+:is(body, #wfacp-e-form) .wffn-bundles-sum-toggle.wffn-bundles-sum-toggle:hover,
+:is(body, #wfacp-e-form) .wffn-bundles-sum-toggle.wffn-bundles-sum-toggle:focus-visible {
+	opacity: 1;
+}
+
+/* A vertical chevron is symmetric, so physical sides draw it right in RTL too. */
+:is(body, #wfacp-e-form) .wffn-bundles-sum-toggle.wffn-bundles-sum-toggle::after {
+	content: "";
+	flex: 0 0 auto;
+	width: 5px;
+	height: 5px;
+	border-right: 1.5px solid currentColor;
+	border-bottom: 1.5px solid currentColor;
+	transform: translateY(-2px) rotate(45deg);
+}
+
+:is(body, #wfacp-e-form) .wffn-bundles-sum-toggle.wffn-bundles-sum-toggle[aria-expanded="true"]::after {
+	transform: translateY(1px) rotate(-135deg);
+}
+
+:is(body, #wfacp-e-form) .wffn-bundles-sum-toggle.wffn-bundles-sum-toggle[aria-expanded="true"] .wffn-bundles-sum-toggle-show,
+:is(body, #wfacp-e-form) .wffn-bundles-sum-toggle.wffn-bundles-sum-toggle[aria-expanded="false"] .wffn-bundles-sum-toggle-hide {
+	display: none;
+}

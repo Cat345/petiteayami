@@ -29,16 +29,21 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Convert_kit_WC' ) ) {
 		public function init_class() {
 
 
-			$instance = WFACP_Common::remove_actions( 'woocommerce_checkout_fields', 'CKWC_Integration', 'add_opt_in_checkbox' );
+			// ConvertKit for WooCommerce 1.4.2+ adds the opt in from CKWC_Checkout, older versions from CKWC_Integration
+			$instance = function_exists( 'WP_CKWC_Integration' ) ? WFACP_Common::remove_actions( 'woocommerce_checkout_fields', 'CKWC_Checkout', 'add_opt_in_checkbox' ) : null;
+			if ( ! $instance instanceof CKWC_Checkout ) {
+				$instance = WFACP_Common::remove_actions( 'woocommerce_checkout_fields', 'CKWC_Integration', 'add_opt_in_checkbox' );
+			}
+			$integration = $instance instanceof CKWC_Checkout ? WP_CKWC_Integration() : $instance;
 
-			if ( $instance instanceof CKWC_Integration && ! empty( $instance ) ) {
-				$this->enabled        = $instance->get_option( 'enabled' );
-				$this->display_opt_in = $instance->get_option( 'display_opt_in' );
-				$this->opt_in_label   = $instance->get_option( 'opt_in_label' );
-				$this->opt_in_status  = $instance->get_option( 'opt_in_status' );
+			if ( $integration instanceof CKWC_Integration ) {
+				$this->enabled        = $integration->get_option( 'enabled' );
+				$this->display_opt_in = $integration->get_option( 'display_opt_in' );
+				$this->opt_in_label   = $integration->get_option( 'opt_in_label' );
+				$this->opt_in_status  = $integration->get_option( 'opt_in_status' );
 
 				if ( 'yes' === $this->enabled && 'yes' === $this->display_opt_in ) {
-					$this->actives['CKWC_Integration'] = $instance;
+					$this->actives['CKWC_Integration'] = $integration;
 
 				}
 			}

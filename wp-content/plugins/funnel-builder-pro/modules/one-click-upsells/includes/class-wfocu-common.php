@@ -601,6 +601,36 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			return $hash;
 		}
 
+		/**
+		 * The name of an offer product in page-builder "Select Product" dropdowns. A variation gets its
+		 * attributes after the product title ("Hoodie - Blue, Yes"), so two variations of one product
+		 * can be told apart; anything a `wfocu_offer_product_display_name` callback appended (such as a
+		 * Sublium plan) stays after them.
+		 *
+		 * @param object $product An offer product from build_offer_product() (`name` and `data`).
+		 *
+		 * @return string
+		 */
+		public static function get_offer_product_label( $product ) {
+			$name = isset( $product->name ) ? (string) $product->name : '';
+			$data = isset( $product->data ) ? $product->data : null;
+			if ( ! $data instanceof WC_Product_Variation ) {
+				return $name;
+			}
+
+			$attributes = wc_get_formatted_variation( $data, true, false );
+			if ( '' === $attributes || false !== strpos( $name, $attributes ) ) {
+				return $name;
+			}
+
+			$title = $data->get_title();
+			if ( '' !== $title && 0 === strpos( $name, $title ) ) {
+				return $title . ' - ' . $attributes . substr( $name, strlen( $title ) );
+			}
+
+			return $name . ' - ' . $attributes;
+		}
+
 		public static function get_formatted_product_name( $product ) {
 			$formatted_variation_list = self::get_variation_attribute( $product );
 

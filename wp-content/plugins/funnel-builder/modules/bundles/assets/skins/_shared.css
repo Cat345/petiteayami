@@ -1,0 +1,713 @@
+/* Skins — shared base. Consumes --wffn-bundles-* custom properties. Token defaults live
+   at page level via :where() so the real :root / :host design override wins. */
+:where(:root, :host) {
+  --wffn-bundles-bg: #fff;
+  --wffn-bundles-bg-active: #fafafa;
+  --wffn-bundles-border: #dedfea;
+  --wffn-bundles-border-active: #353030;
+  --wffn-bundles-border-width: 1px;
+  --wffn-bundles-border-style: solid;
+  --wffn-bundles-corner: 12px;
+  --wffn-bundles-pad-t: 12px;
+  --wffn-bundles-pad-r: 16px;
+  --wffn-bundles-pad-b: 12px;
+  --wffn-bundles-pad-l: 16px;
+  --wffn-bundles-step-bg: #f1f2f9;
+  --wffn-bundles-radio: #c5c5cd;
+  --wffn-bundles-radio-active: #353030;
+  --wffn-bundles-radio-size: 20px;
+  --wffn-bundles-heading-size: 14px;
+  --wffn-bundles-heading-color: #353030;
+  --wffn-bundles-title-size: 14px;
+  --wffn-bundles-title-color: #353030;
+  --wffn-bundles-desc-size: 12px;
+  --wffn-bundles-desc-color: #82828e;
+  --wffn-bundles-price-size: 14px;
+  --wffn-bundles-regular-price-color: #82828e;
+  --wffn-bundles-sale-price-color: #353030;
+  --wffn-bundles-price-desc-size: 12px;
+  --wffn-bundles-price-desc-color: #82828e;
+  --wffn-bundles-badge-bg: #353030;
+  --wffn-bundles-badge-fg: #fff;
+  --wffn-bundles-badge-size: 12px;
+  --wffn-bundles-badge-radius: 999px;
+  --wffn-bundles-border-width-active: 2px;
+  /* Painted as an inset ring rather than added to `border-width`: growing the
+     border grows the border box, so every selectable surface jogs on selection. */
+  --wffn-bundles-ring-active: calc(var(--wffn-bundles-border-width-active) - var(--wffn-bundles-border-width));
+  --wffn-bundles-image-radius: 8px;
+  --wffn-bundles-success: #059669;
+  /* Status palette. Shared defaults, deliberately not mapped in Css_Vars, so no
+     Design-tab control writes them. */
+  --wffn-bundles-warning: #7a4f01;
+  --wffn-bundles-warning-bg: #fff4e5;
+  --wffn-bundles-warning-border: #f5d9a8;
+  --wffn-bundles-error: #b3261e;
+  --wffn-bundles-error-bg: #fdecea;
+  --wffn-bundles-error-border: #f4c7c3;
+  --wffn-bundles-progress-fill: #353030;
+  --wffn-bundles-progress-height: 8px;
+  --wffn-bundles-connector: #353030;
+  --wffn-bundles-block-gap: 20px;
+  /* Widget chrome. Not mapped in Css_Vars either; the values are the literals the
+     merchant tokens this chrome used to borrow already shipped. */
+  --wffn-bundles-control-fg: #353030;
+  --wffn-bundles-control-bg: #fff;
+  --wffn-bundles-control-border: #dedfea;
+  --wffn-bundles-control-accent: #353030;
+  --wffn-bundles-control-muted: #82828e;
+  --wffn-bundles-control-size: 12px;
+  /* The <select> caret, as a token so a host that resets our background can put
+     this exact one back. See assets/compat/funnel-builder.css. */
+  --wffn-bundles-select-caret: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20d%3D%22M2.5%204.5L6%208l3.5-3.5%22%20stroke%3D%22%23353030%22%20stroke-width%3D%221.5%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  --wffn-bundles-thumb-bg: #fafafa;
+  --wffn-bundles-icon-gift: url("data:image/svg+xml,%3Csvg%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M24.2857%203.33301C27.2444%203.33301%2029.6429%205.66486%2029.6429%208.54134C29.6429%209.71476%2029.2437%2010.7975%2028.5703%2011.6684L32.8571%2011.6663C34.0406%2011.6663%2035%2012.5991%2035%2013.7497V19.9997C35%2021.1503%2034.0406%2022.083%2032.8571%2022.083V31.458C32.8571%2034.3345%2030.4587%2036.6663%2027.5%2036.6663H12.5C9.54133%2036.6663%207.14286%2034.3345%207.14286%2031.458V22.083C5.95939%2022.083%205%2021.1503%205%2019.9997V13.7497C5%2012.5991%205.95939%2011.6663%207.14286%2011.6663L11.4297%2011.6684C10.7563%2010.7975%2010.3571%209.71476%2010.3571%208.54134C10.3571%205.66486%2012.7556%203.33301%2015.7143%203.33301C17.468%203.33301%2019.0248%204.15225%2020.0021%205.41855C20.9752%204.15225%2022.532%203.33301%2024.2857%203.33301ZM18.9286%2022.083H9.28571V31.458C9.28571%2033.1839%2010.7248%2034.583%2012.5%2034.583H18.9286V22.083ZM30.7143%2022.083H21.0714V34.583H27.5C29.2752%2034.583%2030.7143%2033.1839%2030.7143%2031.458V22.083ZM18.9286%2013.7497H7.14286V19.9997H18.9286V13.7497ZM32.8571%2013.7497H21.0714V19.9997H32.8571V13.7497ZM24.2857%205.41634C22.5105%205.41634%2021.0714%206.81545%2021.0714%208.54134V11.6663H24.2857C26.0609%2011.6663%2027.5%2010.2672%2027.5%208.54134C27.5%206.81545%2026.0609%205.41634%2024.2857%205.41634ZM15.7143%205.41634C13.9391%205.41634%2012.5%206.81545%2012.5%208.54134C12.5%2010.1657%2013.7748%2011.5006%2015.4047%2011.652L15.7143%2011.6663H18.9286V8.54134L18.9139%208.24038C18.7581%206.65569%2017.3851%205.41634%2015.7143%205.41634Z%22%20fill%3D%22%23353030%22%2F%3E%3C%2Fsvg%3E");
+}
+
+/* Recomputed per widget: a bundle's own border widths are declared on it, not at page level. */
+:where(.wffn-bundles, .wffn-bundles-portal) {
+  --wffn-bundles-ring-active: calc(var(--wffn-bundles-border-width-active) - var(--wffn-bundles-border-width));
+}
+
+.wffn-bundles.wffn-bundles {
+  box-sizing: border-box;
+  font-family: inherit;
+  /* Own the text direction: themes that centre the whole product summary (BeTheme)
+     otherwise centre everything inside the widget. `start` rather than `left` for RTL. */
+  text-align: start;
+}
+
+/* The side cart's quick view is excluded throughout: a plain product opened there keeps its own pickers.
+   On a bundle product page the widget is the picker, so hide WooCommerce's native
+   quantity + variation controls. The qty input stays in the DOM for the native submit.
+   Keyed on its own flag as well: a page holding several product forms, only some of
+   them the widget's, drops `wffn-bundles-owns-pickers` and keeps the rest of the bundle styling. */
+body.wffn-bundles-has-bundle.wffn-bundles-owns-pickers:not(#wffn-bundles-pickers):not(#wffn-bundles-pickers) form.cart:not(.fkcart-drawer-content *) .quantity,
+body.wffn-bundles-has-bundle.wffn-bundles-owns-pickers:not(#wffn-bundles-pickers):not(#wffn-bundles-pickers) form.cart:not(.fkcart-drawer-content *) .variations,
+body.wffn-bundles-has-bundle.wffn-bundles-owns-pickers:not(#wffn-bundles-pickers):not(#wffn-bundles-pickers) form.cart:not(.fkcart-drawer-content *) .reset_variations,
+body.wffn-bundles-has-bundle.wffn-bundles-owns-pickers:not(#wffn-bundles-pickers):not(#wffn-bundles-pickers) form.cart:not(.fkcart-drawer-content *) .woocommerce-variation-price,
+body.wffn-bundles-has-bundle.wffn-bundles-owns-pickers:not(#wffn-bundles-pickers):not(#wffn-bundles-pickers) form.cart:not(.fkcart-drawer-content *) .woocommerce-variation-availability {
+  /* (2,4,2): the `:not(#…)` ids out-rank theme form rules that carry an id of their own. */
+  display: none;
+}
+
+/* A variable product's script shows `.quantity` with an inline display once a variation
+   resolves; these properties are ones it never writes, so the box stays hidden. */
+body.wffn-bundles-has-bundle.wffn-bundles-owns-pickers:not(#wffn-bundles-pickers):not(#wffn-bundles-pickers) form.cart:not(.fkcart-drawer-content *) .quantity {
+  visibility: hidden;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* Hiding `.quantity` reflows a theme that lays form.cart out as a single flex row
+   (BeTheme); allowing it to wrap puts the Add button on its own line, as others do. */
+body.wffn-bundles-has-bundle.wffn-bundles-has-bundle form.cart:not(.fkcart-drawer-content *) {
+  flex-wrap: wrap;
+}
+
+/* The native Add button while our gate holds it. `.wffn-bundles-add-disabled` is ours, so
+   the look never depends on a theme sharing a word for "disabled"; (0,6,3) is measured to clear a theme's own `form.cart .button`. */
+html body.wffn-bundles-has-bundle form.cart .single_add_to_cart_button.wffn-bundles-add-disabled.disabled:disabled,
+html body.wffn-bundles-has-bundle form.cart button.wffn-bundles-add-disabled.disabled:disabled,
+html body.wffn-bundles-has-bundle form.cart input.wffn-bundles-add-disabled.disabled:disabled {
+  opacity: 0.45;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+/* Themes that replace WooCommerce's variation table with their own controls slip
+   past the rule above (BeTheme); matched by the `attribute_*` naming convention. */
+body.wffn-bundles-has-bundle.wffn-bundles-owns-pickers:not(#wffn-bundles-pickers):not(#wffn-bundles-pickers)
+  form.cart:not(.fkcart-drawer-content *)
+  > :has(select[class*="attribute_"], select[name^="attribute_"]):not(:has(.single_add_to_cart_button)) {
+  display: none;
+}
+
+/* Vertical rhythm between the widget's root blocks and the add-to-cart form: they
+   are bare siblings, so own the gap rather than inherit whatever the template gives. */
+body.wffn-bundles-has-bundle.wffn-bundles-has-bundle .wffn-bundles {
+  margin-bottom: var(--wffn-bundles-block-gap);
+  /* Claim a full line: some themes make form.cart a flex row (Neve), which turns
+     these roots into flex items laid out side by side. */
+  flex-basis: 100%;
+}
+
+/* Placed after the buy button: a grid variations form has no margin to collapse into. */
+body.wffn-bundles-has-bundle.wffn-bundles-has-bundle :is(form.cart, .single_variation_wrap) ~ .wffn-bundles:not(.wffn-bundles ~ .wffn-bundles) {
+  margin-block-start: var(--wffn-bundles-block-gap);
+}
+
+.wffn-bundles.wffn-bundles *,
+.wffn-bundles.wffn-bundles *::before,
+.wffn-bundles.wffn-bundles *::after {
+  box-sizing: border-box;
+}
+
+.wffn-bundles.wffn-bundles:focus:not(:focus-visible),
+.wffn-bundles.wffn-bundles *:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.wffn-bundles-heading.wffn-bundles-heading {
+  font-size: var(--wffn-bundles-heading-size);
+  color: var(--wffn-bundles-heading-color);
+  margin: 0 0 12px;
+}
+
+.wffn-bundles-subheading.wffn-bundles-subheading {
+  font-size: calc(var(--wffn-bundles-heading-size) - 2px);
+  color: var(--wffn-bundles-heading-color);
+  opacity: 0.7;
+  margin: -8px 0 12px;
+}
+
+/* Theme-bleed reset for every button the widget renders. Deliberately narrow:
+   only the properties measured as bleeding, so each control keeps its own paint. */
+.wffn-bundles.wffn-bundles button[class*="wffn-bundles-"],
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal button[class*="wffn-bundles-"] {
+  min-height: 0;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: inherit;
+  line-height: normal;
+  text-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* `border: 0` on one class only ties `[type="button"]`, and a later theme sheet
+   takes the tie; restated at (0,2,0) so these stay borderless. */
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal .wffn-bundles-variant-modal-x,
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal .wffn-bundles-variant-modal-done {
+  border: 0;
+}
+
+/* Icon-only: the glyph is the background SVG, so no text metrics are wanted.
+   Left undeclared, a theme's button font-size and radius land here unopposed. */
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal .wffn-bundles-variant-modal-x {
+  font-size: 0;
+  border-radius: 0;
+  /* The glyph rides the `background` shorthand at single-class weight, so a
+     theme's button fill ties it and wins — Woodmart boxed the × in #f3f3f3. */
+  background-color: transparent;
+}
+
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal .wffn-bundles-variant-modal-done {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--wffn-bundles-control-fg);
+  border-radius: 8px;
+}
+
+/* Variant picker — one dropdown per attribute (Color, Size, …), reused by every skin. */
+.wffn-bundles-variant.wffn-bundles-variant {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+/* Bound the wrapper to whatever box it sits in: it is inline-flex, so its width
+   comes from the picker, which makes the picker's own `max-width: 100%` inert. */
+.wffn-bundles.wffn-bundles .wffn-bundles-variant {
+  max-width: 100%;
+  min-width: 0;
+}
+.wffn-bundles-variant-axis.wffn-bundles-variant-axis {
+  height: 26px;
+  max-width: 150px;
+  padding: 2px 6px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--wffn-bundles-control-fg);
+  background: var(--wffn-bundles-control-bg);
+  border: 1px solid var(--wffn-bundles-control-border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.wffn-bundles-variant-axis.wffn-bundles-variant-axis:focus-visible {
+	outline: 2px solid var(--wffn-bundles-control-fg);
+	outline-offset: 1px;
+}
+
+/* The same theme-bleed neutralisation the block below applies to the popup
+   pickers, extended to the inline one. Scoped through `.wffn-bundles` so it does not tie. */
+.wffn-bundles.wffn-bundles .wffn-bundles-variant-axis {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-block;
+  vertical-align: middle;
+  float: none;
+  width: auto;
+  /* Two caps: 150px so a long option label cannot stretch the row, 100% so the
+     picker cannot push a narrow M&M pool card out of its grid track. */
+  max-width: min(150px, 100%);
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  box-shadow: none;
+  text-shadow: none;
+  font-family: inherit;
+  /* The box, re-declared at (0,2,0): the base rule states height, padding and
+     line-height at (0,1,0), which a theme's `body select` simply takes. */
+  height: 26px;
+  line-height: 1;
+  padding: 2px 6px;
+  /* The skin, re-declared at (0,2,0) for the same reason. `background-color`, not
+     the shorthand: the caret is a `background-image` set further down this block. */
+  color: var(--wffn-bundles-control-fg);
+  background-color: var(--wffn-bundles-control-bg);
+  border: 1px solid var(--wffn-bundles-control-border);
+  border-radius: 6px;
+  cursor: pointer;
+  /* Re-declared at (0,2,0) so the size agrees with the cap above: a <select> hard-
+     clips a label wider than its cap, and `text-overflow` is the safety net. */
+  font-size: 11px;
+  text-overflow: ellipsis;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  /* appearance:none drops the native caret, ours and the theme's alike, so own one.
+     Without it the picker reads as a text box with nothing to say it opens. */
+  padding-inline-end: 22px;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20d%3D%22M2.5%204.5L6%208l3.5-3.5%22%20stroke%3D%22%23353030%22%20stroke-width%3D%221.5%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 10px;
+}
+/* `background-position` has no logical form, so mirror it explicitly — matching
+   the `text-align: start` convention the `.wffn-bundles` root already uses for RTL. */
+[dir="rtl"] .wffn-bundles .wffn-bundles-variant-axis {
+  background-position: left 6px center;
+}
+/* Touch-size target on narrow screens. 12px sits with the card's text; below 16px iOS zooms the page on focus, accepted for the card's look. */
+@media (max-width: 600px) {
+  .wffn-bundles.wffn-bundles .wffn-bundles-variant-axis {
+    min-block-size: 36px;
+    font-size: 12px;
+    padding-inline: 8px 26px;
+    background-position: right 8px center;
+  }
+  [dir="rtl"] .wffn-bundles.wffn-bundles .wffn-bundles-variant-axis {
+    background-position: left 8px center;
+  }
+}
+
+/* Variant quick-view: an inline picker re-presented as a "Select options" button
+   and popup. The <select>s are relocated but stay inside .wffn-bundles-variant. */
+.wffn-bundles-variant--modal.wffn-bundles-variant--modal {
+  display: inline-flex;
+}
+/* Neutralize theme button/select bleed, then style. Scoped through .wffn-bundles because a
+   bare class is only (0,1,0) and themes reach these <button>s at the same weight. */
+.wffn-bundles.wffn-bundles .wffn-bundles-variant-open,
+.wffn-bundles.wffn-bundles .wffn-bundles-variant-modal-x,
+.wffn-bundles.wffn-bundles .wffn-bundles-variant-modal-done,
+.wffn-bundles.wffn-bundles .wffn-bundles-variant-modal-body .wffn-bundles-variant-axis {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  min-height: 0;
+  min-width: 0;
+  font-family: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+  text-decoration: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+/* `button.` matches the button reset above (0,3,1), which otherwise takes min-height and line-height. */
+.wffn-bundles.wffn-bundles button.wffn-bundles-variant-open {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  height: auto;
+  /* Sized as `.wffn-bundles-variant-axis`, so it sits in a row of dropdowns as one of them. */
+  min-height: 26px;
+  padding: 2px 6px;
+  padding-inline-end: 22px;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--wffn-bundles-control-fg);
+  background-color: var(--wffn-bundles-control-bg);
+  /* Same caret as `.wffn-bundles-variant-axis`, so the button reads as a picker too. */
+  --wffn-bundles-open-caret: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20d%3D%22M2.5%204.5L6%208l3.5-3.5%22%20stroke%3D%22%23353030%22%20stroke-width%3D%221.5%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  background-image: var(--wffn-bundles-open-caret);
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 10px;
+  border: 1px solid var(--wffn-bundles-control-border);
+  border-radius: 6px;
+  cursor: pointer;
+  /* Wraps rather than clips: a flex box never draws the ellipsis. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+/* Themes ship hover background and colour as a pair; taking only one leaves the
+   label unreadable. See bin/tests/theme-matrix/hover.cjs. */
+.wffn-bundles.wffn-bundles .wffn-bundles-variant-open:hover,
+.wffn-bundles.wffn-bundles .wffn-bundles-variant-open:focus {
+  border-color: var(--wffn-bundles-control-fg);
+  background-color: var(--wffn-bundles-control-bg);
+  background-image: var(--wffn-bundles-open-caret);
+  color: var(--wffn-bundles-control-fg);
+}
+[dir="rtl"] .wffn-bundles.wffn-bundles .wffn-bundles-variant-open,
+[dir="rtl"] .wffn-bundles.wffn-bundles .wffn-bundles-variant-open:hover,
+[dir="rtl"] .wffn-bundles.wffn-bundles .wffn-bundles-variant-open:focus {
+  background-position: left 6px center;
+}
+/* Phone size, as `.wffn-bundles-variant-axis` above: one line, cut with an ellipsis. */
+@media (max-width: 600px) {
+  .wffn-bundles.wffn-bundles .wffn-bundles-variant--modal {
+    display: flex;
+    width: 100%;
+  }
+  .wffn-bundles.wffn-bundles button.wffn-bundles-variant-open {
+    display: block;
+    width: 100%;
+    /* Without it the unwrapped label sets the widget's min width and pushes it off screen. */
+    contain: inline-size;
+    min-height: 36px;
+    font-size: 12px;
+    line-height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* The label's own direction picks the cut end, so "Blue / S / C..." holds on an RTL page too. */
+    unicode-bidi: plaintext;
+    padding-inline: 8px 26px;
+    background-position: right 8px center;
+  }
+  [dir="rtl"] .wffn-bundles.wffn-bundles button.wffn-bundles-variant-open {
+    background-position: left 8px center;
+  }
+}
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  /* allow-discrete keeps it painted while it fades out; older browsers just snap. */
+  transition: opacity 0.18s ease, display 0.18s allow-discrete;
+}
+.wffn-bundles-variant--open.wffn-bundles-variant--open .wffn-bundles-variant-modal {
+  display: flex;
+  opacity: 1;
+}
+@starting-style {
+  .wffn-bundles-variant--open.wffn-bundles-variant--open .wffn-bundles-variant-modal {
+    opacity: 0;
+  }
+}
+.wffn-bundles-variant-modal-backdrop.wffn-bundles-variant-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+.wffn-bundles-variant-modal-box.wffn-bundles-variant-modal-box {
+  position: relative;
+  z-index: 1;
+  width: min(380px, calc(100vw - 32px));
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  text-align: left;
+  font-family: inherit;
+  line-height: 1.4;
+  color: var(--wffn-bundles-control-fg);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  transform: translateY(8px) scale(0.98);
+  transition: transform 0.18s ease;
+}
+.wffn-bundles-variant--open.wffn-bundles-variant--open .wffn-bundles-variant-modal-box {
+  transform: none;
+}
+@starting-style {
+  .wffn-bundles-variant--open.wffn-bundles-variant--open .wffn-bundles-variant-modal-box {
+    transform: translateY(8px) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wffn-bundles-variant-modal.wffn-bundles-variant-modal,
+  .wffn-bundles-variant-modal-box.wffn-bundles-variant-modal-box {
+    transition: none;
+  }
+}
+.wffn-bundles-variant-modal-head.wffn-bundles-variant-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.wffn-bundles-variant-modal-title.wffn-bundles-variant-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--wffn-bundles-control-fg);
+}
+.wffn-bundles-variant-modal-x.wffn-bundles-variant-modal-x {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  opacity: 0.7;
+  background: url("data:image/svg+xml,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M2.76917%202.87605L2.81914%202.81816C3.00238%202.63493%203.28911%202.61827%203.49117%202.76819L3.54906%202.81816L8.0013%207.27017L12.4535%202.81816C12.6551%202.6166%2012.9819%202.6166%2013.1835%202.81816C13.385%203.01972%2013.385%203.34652%2013.1835%203.54808L8.73145%208.00033L13.1835%2012.4526C13.3667%2012.6358%2013.3834%2012.9225%2013.2334%2013.1246L13.1835%2013.1825C13.0002%2013.3657%2012.7135%2013.3824%2012.5114%2013.2325L12.4535%2013.1825L8.0013%208.73048L3.54906%2013.1825C3.3475%2013.384%203.0207%2013.384%202.81914%2013.1825C2.61758%2012.9809%202.61758%2012.6541%202.81914%2012.4526L7.27115%208.00033L2.81914%203.54808C2.6359%203.36484%202.61924%203.07811%202.76917%202.87605L2.81914%202.81816L2.76917%202.87605Z%22%20fill%3D%22%23353030%22%2F%3E%3C%2Fsvg%3E")
+    no-repeat center;
+}
+/* The glyph is the background image, so a theme's hover fill would paint over it. */
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal .wffn-bundles-variant-modal-x:hover,
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal .wffn-bundles-variant-modal-x:focus {
+  opacity: 1;
+  background-color: transparent;
+}
+.wffn-bundles-variant-modal-media.wffn-bundles-variant-modal-media {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.wffn-bundles-variant-modal-thumb.wffn-bundles-variant-modal-thumb {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 10px;
+  /* White, unlike the other thumbs' --wffn-bundles-thumb-bg — this one sits on the modal's
+     own white sheet, not on an option card. */
+  background: var(--wffn-bundles-control-bg);
+}
+.wffn-bundles-variant-modal-name.wffn-bundles-variant-modal-name {
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--wffn-bundles-title-color);
+}
+.wffn-bundles-variant-modal-body.wffn-bundles-variant-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  /* Room for the pickers' 2px focus outline and its 1px offset, which the scroll box would clip. */
+  padding: 3px;
+  margin: -3px;
+}
+.wffn-bundles-variant-modal-body.wffn-bundles-variant-modal-body .wffn-bundles-variant-axis {
+  height: auto;
+  max-width: none;
+  width: 100%;
+  padding: 9px 34px 9px 12px;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--wffn-bundles-control-fg);
+  background-color: var(--wffn-bundles-control-bg);
+  /* own caret (appearance:none dropped the native one) */
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20d%3D%22M2.5%204.5L6%208l3.5-3.5%22%20stroke%3D%22%23353030%22%20stroke-width%3D%221.5%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+}
+.wffn-bundles-variant-modal-done.wffn-bundles-variant-modal-done {
+  /* Sized to its label, right-aligned, like every other modal-footer action in the
+     widget. Not `stretch`: that spans the full ~380px box, reading as an
+     oversized CTA for one word. */
+  align-self: flex-end;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #fff;
+  background: var(--wffn-bundles-control-fg);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal .wffn-bundles-variant-modal-done:hover,
+.wffn-bundles-variant-modal.wffn-bundles-variant-modal .wffn-bundles-variant-modal-done:focus {
+  color: #fff;
+  background: var(--wffn-bundles-control-fg);
+}
+
+/* "Show all N options": a long offer list collapsed by behavior/collapse.js.
+   `display: none` so a hidden offer leaves the flow; scoped through `.wffn-bundles` to beat each card's own display. */
+.wffn-bundles.wffn-bundles .wffn-bundles-offer--hidden {
+  display: none;
+}
+
+/* Scoped through `.wffn-bundles` at (0,2,0): a bare class ties a theme's button reset and
+   loses on source order. Sized and coloured from the offer cards' own tokens. */
+.wffn-bundles.wffn-bundles .wffn-bundles-offers-more {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: var(--wffn-bundles-control-size);
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--wffn-bundles-control-fg);
+  background: var(--wffn-bundles-control-bg);
+  border: var(--wffn-bundles-border-width) dashed var(--wffn-bundles-control-border);
+  border-radius: var(--wffn-bundles-corner);
+  box-shadow: none;
+  cursor: pointer;
+}
+.wffn-bundles.wffn-bundles .wffn-bundles-offers-more:hover,
+.wffn-bundles.wffn-bundles .wffn-bundles-offers-more:focus {
+  border-color: var(--wffn-bundles-control-accent);
+  background: var(--wffn-bundles-control-bg);
+  color: var(--wffn-bundles-control-fg);
+}
+
+/* The button reset above is (0,2,1) and zeroes every plugin button's margin, so
+   the (0,2,0) margin-top never applied. Matched to the offer list's row gap. */
+.wffn-bundles.wffn-bundles button.wffn-bundles-offers-more {
+  margin-top: 10px;
+}
+
+.wffn-bundles-radio.wffn-bundles-radio {
+  display: var(--wffn-bundles-radio-display, block);
+  width: var(--wffn-bundles-radio-size);
+  height: var(--wffn-bundles-radio-size);
+  border: 2px solid var(--wffn-bundles-radio);
+  border-radius: 50%;
+}
+
+/* The same names over any other inline picker, on a line of their own. */
+.wffn-bundles.wffn-bundles .wffn-bundles-variant-head {
+  display: block;
+  flex: 0 0 100%;
+  margin-block-end: -2px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--wffn-bundles-desc-color);
+}
+.wffn-bundles.wffn-bundles .wffn-bundles-variant-modal-label {
+  margin-block-end: -6px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--wffn-bundles-desc-color);
+}
+
+/* Live product price — strike the original, emphasise the live total; range shows
+   both ends. Inherits the theme's `.amount` currency styling. */
+.wffn-bundles-live-price.wffn-bundles-live-price del {
+  opacity: 0.55;
+  margin-right: 0.4em;
+}
+.wffn-bundles-live-price.wffn-bundles-live-price ins {
+  text-decoration: none;
+}
+
+/* The currency symbol sits on the amount's baseline, at the amount's size: a theme
+   is free to superscript it as a house style (Flatsome does). (0,3,0) so it never ties. */
+.wffn-bundles.wffn-bundles .woocommerce-Price-amount .woocommerce-Price-currencySymbol,
+.wffn-bundles-live-price.wffn-bundles-live-price .woocommerce-Price-amount .woocommerce-Price-currencySymbol {
+  font-size: inherit;
+  vertical-align: baseline;
+}
+
+/* …and the same family's other property: colour. Once the live quote re-stamps a
+   member price as wc_price markup, a theme's `.amount` rule beats the inherited value. */
+.wffn-bundles.wffn-bundles .wffn-bundles-fb-price-final .woocommerce-Price-amount,
+.wffn-bundles.wffn-bundles .wffn-bundles-fb-price-final .woocommerce-Price-amount bdi,
+.wffn-bundles.wffn-bundles .wffn-bundles-fb-price-original .woocommerce-Price-amount,
+.wffn-bundles.wffn-bundles .wffn-bundles-fb-price-original .woocommerce-Price-amount bdi {
+  color: inherit;
+}
+/* Hint shown in place of the price until the box has products. It lives inside the
+   theme's price element, so own every inherited property; an absolute size, not an em. */
+.wffn-bundles-live-price.wffn-bundles-live-price.wffn-bundles-live-price--hint {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.45;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--wffn-bundles-control-muted);
+  opacity: 1;
+}
+/* While a new quote is in flight: dim + soften so the still-showing value reads as
+   "recalculating" rather than a stale result. */
+.wffn-bundles-price-pending.wffn-bundles-price-pending {
+  opacity: 0.4;
+  transition: opacity 0.12s ease;
+}
+
+/* Inline add-to-cart error notice, injected by core.js when the server rejects a
+   selection. Carries the machine code in data-wffn-bundles-error; copy from wffnBundlesCart.errors. */
+.wffn-bundles-error.wffn-bundles-error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  font-size: var(--wffn-bundles-control-size);
+  line-height: 1.45;
+  color: var(--wffn-bundles-error);
+  background: var(--wffn-bundles-error-bg);
+  border: 1px solid var(--wffn-bundles-error-border);
+  border-radius: 8px;
+  /* Stock rejections name the product, so an unbroken title must wrap rather
+     than push the notice past a side-cart or mobile-width container. */
+  overflow-wrap: anywhere;
+}
+
+/* Informational notice (not an error): e.g. an independent upsell was added while
+   the bundle was left unfinished. Softer than .wffn-bundles-error. */
+.wffn-bundles-notice.wffn-bundles-notice {
+  margin-top: 12px;
+  padding: 10px 12px;
+  font-size: var(--wffn-bundles-control-size);
+  line-height: 1.45;
+  color: var(--wffn-bundles-warning);
+  background: var(--wffn-bundles-warning-bg);
+  border: 1px solid var(--wffn-bundles-warning-border);
+  border-radius: 8px;
+}
+
+/* In-page success confirmation, injected by core.js after an AJAX bundle add (the
+   native WooCommerce "added to cart" notice is suppressed on this path). */
+.wffn-bundles-success.wffn-bundles-success {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  font-size: var(--wffn-bundles-control-size);
+  line-height: 1.45;
+  color: #0a6b3b;
+  background: #e7f6ec;
+  border: 1px solid #b6e2c6;
+  border-radius: 8px;
+}
+.wffn-bundles-success-link.wffn-bundles-success-link {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  padding: 0;
+  line-height: inherit;
+}
+.wffn-bundles-success-link.wffn-bundles-success-link:hover,
+.wffn-bundles-success-link.wffn-bundles-success-link:focus {
+  text-decoration: none;
+}

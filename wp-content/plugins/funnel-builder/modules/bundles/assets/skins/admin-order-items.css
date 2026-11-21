@@ -1,0 +1,13 @@
+/* Same grouping intent as assets/skins/cart-blocks.css, for wp-admin's own
+   order-items table: members sit indented under the line that heads them. */
+
+tr.item.item.wffn-bundles-cart-parent > td {
+	border-bottom: 0;
+}
+tr.item.item.wffn-bundles-cart-child > td {
+	border-top: 0;
+}
+
+tr.item.item.wffn-bundles-cart-child > td.thumb .wc-order-item-thumbnail {
+	margin-inline-start: 16px;
+}

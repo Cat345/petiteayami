@@ -11910,6 +11910,11 @@ class BWFAN_Common {
 
 		$expire_time = strtotime( "-30 days" );
 
+		/** Folders created before the guard files existed get them here, without waiting for a new import */
+		if ( defined( 'BWFAN_IMPORT_DIR' ) && is_dir( BWFAN_IMPORT_DIR ) ) {
+			BWFAN_Importer::protect_import_folder( BWFAN_IMPORT_DIR );
+		}
+
 		// Process each log directory
 		foreach ( $log_directories as $log_dir ) {
 			$log_path = $base_dir . $log_dir;

@@ -99,7 +99,9 @@ if ( ! class_exists( '\FKCart\Compatibilities\Compatibility' ) ) {
 				'weglot.php'                       => defined( 'WEGLOT_SLUG' ),
 				'yithminmaxqty.php'                => defined( 'YWMMQ_VERSION' ),
 				'pricebyquantity.php'              => defined( 'WP_PBQ_DIR' ),
-				'wpfactoryminmaxamount.php'        => class_exists( '\Alg_WC_OMA' )
+				'wpfactoryminmaxamount.php'        => class_exists( '\Alg_WC_OMA' ),
+				'flatsome.php'                     => ( get_template() === 'flatsome' || get_stylesheet() === 'flatsome' ),
+				'themes/woodmart.php'              => function_exists( 'woodmart_get_opt' ),
 			];
 			self::add_files( $files );
 		}

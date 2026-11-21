@@ -1,0 +1,35 @@
+/**
+ * Neve — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install:
+ *   --nv-primary-accent     #2f5aae  accent
+ *   --nv-secondary-accent   #2f5aae  secondary accent
+ *   --nv-text-color         #272626  body text
+ *   --nv-text-dark-bg       #ffffff  text on a dark/accent ground
+ *   --formfieldbordercolor  #dddddd  control border (a real border token)
+ *
+ * `--formfieldbordercolor` is unprefixed in Neve's own output; it is quoted here
+ * verbatim rather than normalised, because the name is the contract.
+ */
+body.wffn-bundles-theme-neve .wffn-bundles,
+body.wffn-bundles-theme-neve .wffn-bundles-portal,
+body.wffn-bundles-theme-neve .wffn-bundles-variant-modal {
+	--wffn-bundles-border: var(--formfieldbordercolor, #dedfea);
+	--wffn-bundles-control-border: var(--formfieldbordercolor, #dedfea);
+	--wffn-bundles-radio: var(--formfieldbordercolor, #c5c5cd);
+	--wffn-bundles-connector: var(--formfieldbordercolor, #353030);
+
+	--wffn-bundles-border-active: var(--nv-primary-accent, #353030);
+	--wffn-bundles-radio-active: var(--nv-primary-accent, #353030);
+	--wffn-bundles-badge-bg: var(--nv-primary-accent, #353030);
+	--wffn-bundles-progress-fill: var(--nv-primary-accent, #353030);
+	--wffn-bundles-control-accent: var(--nv-primary-accent, #353030);
+	--wffn-bundles-badge-fg: var(--nv-text-dark-bg, #fff);
+
+	--wffn-bundles-heading-color: var(--nv-text-color, #353030);
+	--wffn-bundles-title-color: var(--nv-text-color, #353030);
+	--wffn-bundles-sale-price-color: var(--nv-text-color, #353030);
+	--wffn-bundles-control-fg: var(--nv-text-color, #353030);
+}

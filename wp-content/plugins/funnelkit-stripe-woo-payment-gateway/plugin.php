@@ -333,6 +333,12 @@ class Stripe {
 			if ( defined( 'CFW_VERSION' ) ) {
 				include plugin_dir_path( FKWCS_FILE ) . 'compatibilities/plugins/class-fkwcs-checkoutwc-compat.php';
 			}
+
+			// WooCommerce Fraud Protection may load after us: the class checks for it when scripts are enqueued
+			include plugin_dir_path( FKWCS_FILE ) . 'compatibilities/plugins/class-fkwcs-woocommerce-fraud-protection-compat.php';
+
+			// Germanized may load after us; the class only registers a filter Germanized runs itself
+			include plugin_dir_path( FKWCS_FILE ) . 'compatibilities/plugins/class-fkwcs-germanized-compat.php';
 		} catch ( \Exception | \Error $e ) {
 		}
 
@@ -703,44 +709,92 @@ class Stripe {
 	}
 
 	/**
+	 * Gateway ids of other Stripe plugins we take orders and subscriptions over from.
 	 *
-	 * @param string $payment_method Like stripe,stripe_cc
+	 * The official WooCommerce Stripe gateway renamed its methods when it moved to the Payment
+	 * Methods API, and its own
+	 * `includes/compat/class-wc-stripe-subscriptions-legacy-sepa-token-update.php` exists purely
+	 * to move its subscriptions off the legacy ids onto the current ones. Both spellings are
+	 * listed here: a store can hold subscriptions from either era.
+	 *
+	 * @return array<string,string> Their gateway id => ours.
+	 */
+	public function get_foreign_gateway_map() {
+		/**
+		 * Filters the map of third-party Stripe gateway ids onto FunnelKit Stripe gateways.
+		 *
+		 * @param array<string,string> $map Their gateway id => ours.
+		 */
+		return apply_filters(
+			'fkwcs_foreign_gateway_map',
+			array(
+				/* Official WooCommerce Stripe gateway - card and wallets. */
+				'stripe'                 => 'fkwcs_stripe',
+				'stripe_cc'              => 'fkwcs_stripe',
+				'stripe_applepay'        => 'fkwcs_stripe',
+				'stripe_googlepay'       => 'fkwcs_stripe',
+
+				/* SEPA: `stripe_sepa` is their legacy id, `stripe_sepa_debit` the current one. */
+				'stripe_sepa'            => 'fkwcs_stripe_sepa',
+				'stripe_sepa_debit'      => 'fkwcs_stripe_sepa',
+
+				/* ACH: they register `stripe_us_bank_account`. */
+				'stripe_ach'             => 'fkwcs_stripe_ach',
+				'stripe_us_bank_account' => 'fkwcs_stripe_ach',
+
+				/* Cash App: they register `stripe_cashapp`. */
+				'cashapp'                => 'fkwcs_stripe_cashapp',
+				'stripe_cashapp'         => 'fkwcs_stripe_cashapp',
+			)
+		);
+	}
+
+	/**
+	 * Route another Stripe plugin's orders and subscriptions through our gateway.
+	 *
+	 * Filters `woocommerce_order_get_payment_method` and
+	 * `woocommerce_subscription_get_payment_method`, so a subscription bought through the other
+	 * plugin keeps renewing automatically once that plugin is switched off - instead of falling
+	 * back to a manual renewal invoice, which is what WooCommerce Subscriptions does when it
+	 * cannot resolve the stored gateway id.
+	 *
+	 * @param string $payment_method The stored gateway id, e.g. stripe_sepa_debit.
+	 *
+	 * @return string
 	 */
 	public function change_payment_method( $payment_method ) {
 
 		if ( true === $this->maybe_prevent_change_method() ) {
 			return $payment_method;
 		}
-		switch ( $payment_method ) {
-			case 'stripe':
-			case 'stripe_cc':
-			case 'stripe_applepay':
-			case 'stripe_googlepay':
-				if ( did_action( 'woocommerce_checkout_order_processed' ) ) {
-					return $payment_method;
-				}
-				$payment_method = 'fkwcs_stripe';
-				break;
-			case 'stripe_sepa':
-				if ( did_action( 'woocommerce_checkout_order_processed' ) ) {
-					return $payment_method;
-				}
-				$payment_method = 'fkwcs_stripe_sepa';
-			case 'cashapp':
-				if ( did_action( 'woocommerce_checkout_order_processed' ) ) {
-					return $payment_method;
-				}
-				$payment_method = 'fkwcs_stripe_cashapp';
-				break;
-			case 'stripe_ach':
-				if ( did_action( 'woocommerce_checkout_order_processed' ) ) {
-					return $payment_method;
-				}
-				$payment_method = 'fkwcs_stripe_ach';
-				break;
+
+		$map = $this->get_foreign_gateway_map();
+
+		if ( ! is_string( $payment_method ) || ! isset( $map[ $payment_method ] ) ) {
+			return $payment_method;
 		}
 
-		return $payment_method;
+		/**
+		 * An order that has just been placed belongs to whichever gateway processed it;
+		 * rewriting it here would take it over mid-flight.
+		 */
+		if ( did_action( 'woocommerce_checkout_order_processed' ) ) {
+			return $payment_method;
+		}
+
+		$target = $map[ $payment_method ];
+
+		/**
+		 * Only take the order over when the gateway we would hand it to is actually registered.
+		 * Pointing it at a gateway that is not there would replace one broken renewal with
+		 * another, and leaves no way back to the original id.
+		 */
+		$gateways = WC()->payment_gateways()->payment_gateways();
+		if ( ! isset( $gateways[ $target ] ) ) {
+			return $payment_method;
+		}
+
+		return $target;
 	}
 
 

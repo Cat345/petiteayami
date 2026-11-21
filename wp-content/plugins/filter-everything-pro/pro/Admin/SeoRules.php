@@ -656,7 +656,7 @@ class SeoRules
     {
         $ruleData = [];
         $data = $this->queryRule( $post_id );
-        $dataUnserialized = maybe_unserialize( $data->post_excerpt );
+        $dataUnserialized = flrt_safe_unserialize( $data->post_excerpt );
 
         /**
          * @feature remove this bullshit with setting up default fields and setPostType

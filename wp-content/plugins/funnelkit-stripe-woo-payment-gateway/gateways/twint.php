@@ -160,7 +160,7 @@ class Twint extends LocalGateway {
 			}
 
 			if ( ! $order->has_status( apply_filters( 'fkwcs_stripe_allowed_payment_processing_statuses', array( 'pending', 'failed' ), $order ) ) ) {
-				$redirect_url = $this->get_return_url( $order );
+				$redirect_url = $this->get_paid_order_redirect_url( $order );
 				wp_safe_redirect( $redirect_url );
 				exit;
 			}

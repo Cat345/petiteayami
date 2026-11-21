@@ -148,12 +148,53 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$product_design   = WFOB_Common::get_design_data_meta( $this->wfob_id );
 			add_filter( 'woocommerce_add_cart_item', array( 'WFOB_Common', 'handle_swap_product' ), 10, 2 );
 			foreach ( $products as $key => $value ) {
-				if ( isset( $session_products[ $key ] ) || isset( WFOB_Common::$removed_bump_products[ $key ] ) ) {
+				if ( isset( $session_products[ $key ] ) || isset( WFOB_Common::$removed_bump_products[ $key ] ) || self::refused_on_this_cart( $key ) ) {
 					continue;
 				}
 
 				$this->add_to_cart( $product_design, $value, $key );
 			}
+		}
+
+		/**
+		 * Session key: auto-adds the store refused, by product key, with the cart they were refused on.
+		 */
+		const REFUSED_SESSION_KEY = 'wfob_pre_checked_refused';
+
+		/**
+		 * Remember a refused auto-add, so a checkout refresh on the same cart does not repeat it.
+		 *
+		 * @param string $product_key The product's key in the bump.
+		 * @return void
+		 */
+		private static function remember_refusal( $product_key ) {
+			if ( ! WC()->session || ! WC()->cart ) {
+				return;
+			}
+			$refused                   = (array) WC()->session->get( self::REFUSED_SESSION_KEY, array() );
+			$refused[ $product_key ] = array(
+				'cart' => WC()->cart->get_cart_hash(),
+				'at'   => time(),
+			);
+			WC()->session->set( self::REFUSED_SESSION_KEY, $refused );
+		}
+
+		/**
+		 * Whether this auto-add was refused on the cart as it is now, within the last five minutes.
+		 *
+		 * A changed cart, or time for stock to come back, lets it be tried once more.
+		 *
+		 * @param string $product_key The product's key in the bump.
+		 * @return bool
+		 */
+		private static function refused_on_this_cart( $product_key ) {
+			if ( ! WC()->session || ! WC()->cart ) {
+				return false;
+			}
+			$refused = (array) WC()->session->get( self::REFUSED_SESSION_KEY, array() );
+			$entry   = isset( $refused[ $product_key ] ) && is_array( $refused[ $product_key ] ) ? $refused[ $product_key ] : null;
+
+			return null !== $entry && (string) ( $entry['cart'] ?? '' ) === WC()->cart->get_cart_hash() && time() - (int) ( $entry['at'] ?? 0 ) < 5 * MINUTE_IN_SECONDS;
 		}
 
 		public function add_to_cart( $product_design, $product, $product_key ) {
@@ -162,7 +203,42 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$quantity   = absint( $product['quantity'] );
 
 			$product_obj = WFOB_Common::wc_get_product( $product_id );
-			if ( ! $product_obj instanceof WC_Product || ! $product_obj->is_purchasable() || false === WFOB_Common::check_manage_stock( $product_obj, $quantity ) ) {
+			if ( ! $product_obj instanceof WC_Product || ! $product_obj->is_purchasable() ) {
+				return false;
+			}
+
+			/**
+			 * Fires before an auto-added (pre-checked) bump product is added to the cart.
+			 *
+			 * The add skips wfob_before_add_to_cart, which carries a shopper's posted choices; a
+			 * compatibility that builds the line from those choices sets up the default ones here.
+			 *
+			 * @since 1.28.0
+			 *
+			 * @param int    $wfob_id     Bump id.
+			 * @param string $product_key The product's key in the bump.
+			 * @param array  $product     The bump product's settings.
+			 */
+			do_action( 'wfob_before_pre_checked_add', $this->wfob_id, $product_key, $product );
+
+			/** This filter is documented in includes/class-wfob-ajax-controller.php */
+			$stock_ok = apply_filters(
+				'wfob_bump_stock_ok',
+				WFOB_Common::check_manage_stock( $product_obj, $quantity ),
+				$product_obj,
+				$quantity,
+				array(
+					'wfob_id'     => $this->wfob_id,
+					'product_key' => $product_key,
+				)
+			);
+			if ( ! $stock_ok ) {
+				// Stock does not come back within the request, so the bump is not tried again on this page.
+				WFOB_Common::$removed_bump_products[ $product_key ] = '';
+				self::remember_refusal( $product_key );
+				/** This action is documented below. */
+				do_action( 'wfob_after_pre_checked_add', $this->wfob_id, $product_key, false );
+
 				return false;
 			}
 
@@ -209,7 +285,28 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$custom_data['_wfob_options']['_wfob_id']     = $this->wfob_id;
 			$custom_data['_wfob_options']['custom_image'] = $custom_image_url;
 
-			return WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $attributes, $custom_data );
+			$notices_before = wc_get_notices();
+			$added          = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $attributes, $custom_data );
+			// A refused add, or one a compatibility's add hook took straight back out (a bundle with a sold-out item): the
+			// shopper never asked for an auto-added bump, so it fails quietly, and it is not tried again on this page.
+			if ( ! $added || ! WC()->cart->get_cart_item( $added ) ) {
+				wc_set_notices( $notices_before );
+				WFOB_Common::$removed_bump_products[ $product_key ] = (string) $added;
+				self::remember_refusal( $product_key );
+				$added = false;
+			}
+			/**
+			 * Fires after an auto-added (pre-checked) bump product's add, whether or not it was added.
+			 *
+			 * @since 1.28.0
+			 *
+			 * @param int          $wfob_id     Bump id.
+			 * @param string       $product_key The product's key in the bump.
+			 * @param string|false $added       Cart item key, or false when the add failed.
+			 */
+			do_action( 'wfob_after_pre_checked_add', $this->wfob_id, $product_key, $added );
+
+			return $added;
 		}
 
 		protected function admin_product_image_field( $product, $product_key ) {
@@ -431,6 +528,18 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$schema['values'] = array_merge( $merge_design_data, $this->wfob_bump_products );
 
 			}
+
+			/**
+			 * Filters the bump editor's Style accordion groups and their values.
+			 *
+			 * @since 1.28.0
+			 *
+			 * @param array $schema   Admin schema; `design` holds the groups, `values` their values.
+			 * @param array $products The bump's saved product rows, keyed by product key.
+			 * @param int   $wfob_id  Bump id.
+			 */
+			$filtered = apply_filters( 'wfob_admin_design_schema', $schema, $products, $this->get_id() );
+			$schema   = is_array( $filtered ) ? $filtered : $schema;
 
 			$schema['html'] = $this->bumps_html;
 
@@ -1305,7 +1414,17 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			return $product_attributes;
 		}
 
-		public function get_price_html( $wc_product, $cart_item_key, $price_data, $qty = 1 ) {
+		/**
+		 * The price markup a bump row shows.
+		 *
+		 * @param WC_Product $wc_product    Product the row offers.
+		 * @param string     $cart_item_key The row's cart line, '' when it is not in the cart.
+		 * @param array      $price_data    The row's price data.
+		 * @param int        $qty           Quantity shown.
+		 * @param string     $product_key   The row's key in the bump, passed to the price filters.
+		 * @return string
+		 */
+		public function get_price_html( $wc_product, $cart_item_key, $price_data, $qty = 1, $product_key = '' ) {
 
 			$cart_item = $this->get_bump_cart_item();
 			if ( '' !== $cart_item_key ) {
@@ -1316,10 +1435,40 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			}
 
 			$printed_price = '';
-			if ( apply_filters( 'wfob_show_product_price', true, $wc_product, $cart_item_key, $price_data ) ) {
+			/**
+			 * Filters whether the bump prints its product's own price.
+			 *
+			 * A compatibility that sells the product at a price of its own, such as a bundle,
+			 * returns false and prints that price through wfob_show_product_price_placeholder.
+			 *
+			 * @since 1.28.0 Added the `$product_key` and `$wfob_id` arguments.
+			 *
+			 * @param bool       $show          Whether to print the price.
+			 * @param WC_Product $wc_product    The product the bump sells.
+			 * @param string     $cart_item_key Cart item key, empty until the bump is accepted.
+			 * @param array      $price_data    The bump's price data.
+			 * @param string     $product_key   The row's key in the bump.
+			 * @param int        $wfob_id       Bump id.
+			 */
+			if ( apply_filters( 'wfob_show_product_price', true, $wc_product, $cart_item_key, $price_data, $product_key, $this->get_id() ) ) {
 				$printed_price = WFOB_Common::decode_merge_tags( '{{price}}', $price_data, $wc_product, array(), $cart_item, $cart_item_key, '', array() );
 			} else {
-				$printed_price = apply_filters( 'wfob_show_product_price_placeholder', $printed_price, $wc_product, $cart_item_key, $price_data );
+				/**
+				 * Filters the price markup printed instead of the product's own price.
+				 *
+				 * Only used when wfob_show_product_price returned false.
+				 *
+				 * @since 1.28.0 Added the `$product_key` and `$wfob_id` arguments.
+				 *
+				 * @param string     $html          Markup printed so far, empty by default.
+				 * @param WC_Product $wc_product    The product the bump sells.
+				 * @param string     $cart_item_key Cart item key, empty until the bump is accepted.
+				 * @param array      $price_data    The bump's price data.
+				 * @param string     $product_key   The row's key in the bump.
+				 * @param int        $wfob_id       Bump id.
+				 */
+				$filtered      = apply_filters( 'wfob_show_product_price_placeholder', $printed_price, $wc_product, $cart_item_key, $price_data, $product_key, $this->get_id() );
+				$printed_price = is_scalar( $filtered ) ? (string) $filtered : '';
 			}
 
 			return $printed_price;
@@ -1434,11 +1583,14 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 			$printed_price = '';
 
-			if ( apply_filters( 'wfob_show_product_price', true, $wc_product, $cart_item_key, $price_data ) ) {
+			/** This filter is documented in includes/skins-classes/bump.php */
+			if ( apply_filters( 'wfob_show_product_price', true, $wc_product, $cart_item_key, $price_data, $product_key, $this->get_id() ) ) {
 				$printed_price = WFOB_Common::decode_merge_tags( '{{price}}', $price_data, $wc_product, $data, $cart_item, $cart_item_key, $product_key, $design_data );
 
 			} else {
-				$printed_price = apply_filters( 'wfob_show_product_price_placeholder', $printed_price, $wc_product, $cart_item_key, $price_data );
+				/** This filter is documented in includes/skins-classes/bump.php */
+				$filtered      = apply_filters( 'wfob_show_product_price_placeholder', $printed_price, $wc_product, $cart_item_key, $price_data, $product_key, $this->get_id() );
+				$printed_price = is_scalar( $filtered ) ? (string) $filtered : '';
 			}
 
 			return $printed_price;
@@ -1688,7 +1840,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$final_data[ $product_key ]['enable_pointer'] = $enable_pointer;
 				}
 				/*---------------------------------------Print Price------------------------------ */
-				$printed_price = $this->get_price_html( $wc_product, $cart_item_key, $price_data, $qty );
+				$printed_price = $this->get_price_html( $wc_product, $cart_item_key, $price_data, $qty, $product_key );
 
 				/* ----------------------------------------Tax label with price------------------------- */
 
@@ -1734,7 +1886,18 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				/*---------------------------------------Other Classes ----------------------------------------- */
 
 				$checkbox_class       = 'wfob_bump_product';
-				$allow_choose_options = apply_filters( 'wfob_allow_choose_options', isset( $data['variable'] ), $wc_product, $cart_item_key );
+				/**
+				 * Filters whether the row asks the shopper to choose options before the bump is added.
+				 *
+				 * @since 1.28.0 Added the `$product_key` and `$wfob_id` arguments.
+				 *
+				 * @param bool       $allow         True for a variable product, by default.
+				 * @param WC_Product $wc_product    The product the bump sells.
+				 * @param string     $cart_item_key Cart item key, empty until the bump is accepted.
+				 * @param string     $product_key   The row's key in the bump.
+				 * @param int        $wfob_id       Bump id.
+				 */
+				$allow_choose_options = apply_filters( 'wfob_allow_choose_options', isset( $data['variable'] ), $wc_product, $cart_item_key, $product_key, $this->get_id() );
 
 				if ( ( true == $allow_choose_options || ( isset( $data['variable'] ) && $cart_variation_id == 0 ) ) && empty( $cart_item_key ) ) {
 					$checkbox_class = 'wfob_choose_variation';

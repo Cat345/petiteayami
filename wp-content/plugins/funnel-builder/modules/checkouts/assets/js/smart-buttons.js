@@ -115,10 +115,6 @@ if (typeof wfacp_frontend === 'undefined') {
                 }
             });
 
-            window.addEventListener('unload', (e) => {
-                this.showShimmer()
-            });
-
             if (document.readyState !== 'loading') {
                 this.DOMLoaded();
             } else {

@@ -203,11 +203,11 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 		public function woofunnels_handle_db_upgrade_actions() {
 			if ( isset( $_GET['_bwf_remove_updated_db_notice'] ) && isset( $_GET['_bwf_updated_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_bwf_updated_nonce'] ) ), '_bwf_hide_updated_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				if ( ! current_user_can( 'manage_woocommerce' ) ) {
-					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				$hide_notice = sanitize_text_field( wp_unslash( $_GET['_bwf_remove_updated_db_notice'] ) );
@@ -219,11 +219,11 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 
 			if ( isset( $_GET['bwf_update_db'] ) && isset( $_GET['_bwf_update_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_bwf_update_nonce'] ) ), '_bwf_start_update_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				if ( ! current_user_can( 'manage_woocommerce' ) ) {
-					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				$update_db = sanitize_text_field( wp_unslash( $_GET['bwf_update_db'] ) );
@@ -235,11 +235,11 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 
 			if ( isset( $_GET['_bwf_remove_declined_notice'] ) && isset( $_GET['_bwf_declined_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_bwf_declined_nonce'] ) ), '_bwf_hide_declined_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				if ( ! current_user_can( 'manage_woocommerce' ) ) {
-					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				$hide_notice = sanitize_text_field( wp_unslash( $_GET['_bwf_remove_declined_notice'] ) );
@@ -282,8 +282,8 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
                     </div>
 
                     <div class="bwf-message-content">
-                        <strong><?php esc_html_e( 'Indexing of orders has started', 'funnel-builder' ); ?></strong>
-                        <p><?php esc_html_e( 'It may take sometime to finish the process. We will update this notice once the process completes.', 'funnel-builder' ); ?>
+                        <strong><?php esc_html_e( 'Indexing of orders has started', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></strong>
+                        <p><?php esc_html_e( 'It may take sometime to finish the process. We will update this notice once the process completes.', 'funnelkit-woofunnels-textdomain-placeholder' ); ?>
                     </div>
                 </div>
 				<?php
@@ -295,12 +295,12 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
                     </div>
 
                     <div class="bwf-message-content">
-                        <strong><?php esc_html_e( 'Success', 'funnel-builder' ); ?></strong>
-                        <p><?php esc_html_e( 'Order indexing completed successfully.', 'funnel-builder' ); ?></p>
+                        <strong><?php esc_html_e( 'Success', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></strong>
+                        <p><?php esc_html_e( 'Order indexing completed successfully.', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></p>
                     </div>
 
                     <div class="bwf-message-action">
-                        <a class="button-secondary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( '_bwf_remove_updated_db_notice', 'yes' ), '_bwf_hide_updated_nonce', '_bwf_updated_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'funnel-builder' ); ?></a>
+                        <a class="button-secondary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( '_bwf_remove_updated_db_notice', 'yes' ), '_bwf_hide_updated_nonce', '_bwf_updated_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></a>
                     </div>
                 </div>
 				<?php
@@ -313,13 +313,13 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
                     </div>
 
                     <div class="bwf-message-content">
-                        <strong><?php esc_html_e( 'FunnelKit Notice', 'funnel-builder' ); ?></strong>
-                        <p><?php echo sprintf( wp_kses_post( __( 'Unable to complete indexing of orders. Please <a target="_blank" href="%s">contact support</a> to get the issue resolved.', 'funnel-builder' ) ), esc_url( 'https://funnelkit.com/support/' ) ); // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment ?></p>
+                        <strong><?php esc_html_e( 'FunnelKit Notice', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></strong>
+                        <p><?php echo sprintf( wp_kses_post( __( 'Unable to complete indexing of orders. Please <a target="_blank" href="%s">contact support</a> to get the issue resolved.', 'funnelkit-woofunnels-textdomain-placeholder' ) ), esc_url( 'https://funnelkit.com/support/' ) ); // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment ?></p>
                     </div>
 
                     <div class="bwf-message-action">
-                        <a class="button-secondary" target="_blank" href="<?php echo esc_url( 'https://funnelkit.com/support/' ); ?>"><?php esc_html_e( 'Contact Support', 'funnel-builder' ); ?></a>
-                        <a class="button-secondary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( '_bwf_remove_declined_notice', 'yes' ), '_bwf_hide_declined_nonce', '_bwf_declined_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'funnel-builder' ); ?></a>
+                        <a class="button-secondary" target="_blank" href="<?php echo esc_url( 'https://funnelkit.com/support/' ); ?>"><?php esc_html_e( 'Contact Support', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></a>
+                        <a class="button-secondary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( '_bwf_remove_declined_notice', 'yes' ), '_bwf_hide_declined_nonce', '_bwf_declined_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></a>
                     </div>
                 </div>
 				<?php
@@ -864,36 +864,36 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 				$bwf_db_upgrade = '5';
 			}
 			if ( '5' !== $bwf_db_upgrade && '4' !== $bwf_db_upgrade && $get_threshold_order > 0 ) {
-				$remaining_text = sprintf( __( 'This store has <strong>%s orders</strong> to index.', 'funnel-builder' ), $get_threshold_order ); // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+				$remaining_text = sprintf( __( 'This store has <strong>%s orders</strong> to index.', 'funnelkit-woofunnels-textdomain-placeholder' ), $get_threshold_order ); // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
 			}
 
 			if ( true === apply_filters( 'bwf_needs_order_indexing', false ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				?>
                 <tr>
                     <th>
-                        <strong class="name"><?php esc_html_e( 'Index Past Orders', 'funnel-builder' ); ?></strong>
-                        <p class="description"><?php echo wp_kses_post( sprintf( /* translators: %s: remaining order count */ __( 'This tool will scan all the previous orders and create an optimized index to run efficient queries. %s', 'funnel-builder' ), $remaining_text ) ); ?></p>
+                        <strong class="name"><?php esc_html_e( 'Index Past Orders', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></strong>
+                        <p class="description"><?php echo wp_kses_post( sprintf( /* translators: %s: remaining order count */ __( 'This tool will scan all the previous orders and create an optimized index to run efficient queries. %s', 'funnelkit-woofunnels-textdomain-placeholder' ), $remaining_text ) ); ?></p>
 						<?php if ( '1' === $bwf_db_upgrade || '6' === $bwf_db_upgrade ) { ?>
-                            <span style="width:100%; color: red;"><?php esc_html_e( 'Unable to complete indexing of orders.', 'funnel-builder' ); ?></span><br/>
-							<?php esc_html_e( 'Please', 'funnel-builder' ); ?>
-                            <a target="_blank" href="<?php echo esc_url( 'https://funnelkit.com/support/' ); ?>"><?php esc_html_e( 'contact support', 'funnel-builder' ); ?></a><?php esc_html_e( ' to get the issue resolved.', 'funnel-builder' ); ?>
+                            <span style="width:100%; color: red;"><?php esc_html_e( 'Unable to complete indexing of orders.', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></span><br/>
+							<?php esc_html_e( 'Please', 'funnelkit-woofunnels-textdomain-placeholder' ); ?>
+                            <a target="_blank" href="<?php echo esc_url( 'https://funnelkit.com/support/' ); ?>"><?php esc_html_e( 'contact support', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></a><?php esc_html_e( ' to get the issue resolved.', 'funnelkit-woofunnels-textdomain-placeholder' ); ?>
                             <br/><br/>
 						<?php } ?>
-                        <a href="https://funnelkit.com/docs/upstroke/miscellaneous/index-past-order/"><?php esc_html_e( 'Learn more about this process', 'funnel-builder' ); ?></a>
+                        <a href="https://funnelkit.com/docs/upstroke/miscellaneous/index-past-order/"><?php esc_html_e( 'Learn more about this process', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></a>
                     </th>
                     <td class="run-tool">
 						<?php if ( '3' === $bwf_db_upgrade ) { ?>
-                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Running', 'funnel-builder' ); ?></a>
+                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Running', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></a>
 						<?php } elseif ( '4' === $bwf_db_upgrade || '5' === $bwf_db_upgrade ) { ?>
-                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Completed', 'funnel-builder' ); ?></a>
+                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Completed', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></a>
 
 						<?php } elseif ( '1' === $bwf_db_upgrade || '6' === $bwf_db_upgrade ) { ?>
-                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Start', 'funnel-builder' ); ?></a>
+                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Start', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></a>
 							<?php
 						} else {
 							$start_url = esc_url( wp_nonce_url( add_query_arg( 'bwf_update_db', 'yes' ), '_bwf_start_update_nonce', '_bwf_update_nonce' ) );
 							?>
-                            <a class="button button-large <?php echo esc_attr(( $get_threshold_order > 0 ) ? '' : 'disabled'); ?>" href="<?php echo ( $get_threshold_order > 0 ) ? esc_url($start_url) : 'javascript:void(0);'; ?>"><?php esc_html_e( 'Start', 'funnel-builder' ); ?></a>
+                            <a class="button button-large <?php echo esc_attr(( $get_threshold_order > 0 ) ? '' : 'disabled'); ?>" href="<?php echo ( $get_threshold_order > 0 ) ? esc_url($start_url) : 'javascript:void(0);'; ?>"><?php esc_html_e( 'Start', 'funnelkit-woofunnels-textdomain-placeholder' ); ?></a>
 						<?php } ?>
                     </td>
                 </tr>
@@ -1204,11 +1204,11 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 
 			if ( isset( $_GET['bwf_update_db'] ) && isset( $_GET['_bwf_update_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_bwf_update_nonce'] ) ), '_bwf_start_update_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				if ( ! current_user_can( 'manage_woocommerce' ) ) {
-					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnel-builder' ) );
+					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnelkit-woofunnels-textdomain-placeholder' ) );
 				}
 
 				$bwf_update_db = sanitize_text_field( wp_unslash( $_GET['bwf_update_db'] ) );

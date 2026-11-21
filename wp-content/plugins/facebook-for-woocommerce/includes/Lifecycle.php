@@ -60,7 +60,6 @@ class Lifecycle extends Framework\Lifecycle {
 			'2.5.0',
 			'3.2.0',
 			'3.4.9',
-			'3.5.3',
 			'3.5.4',
 			'3.5.6',
 			'3.7.5',
@@ -152,14 +151,7 @@ class Lifecycle extends Framework\Lifecycle {
 			}
 		}
 
-		$is_woo_all_products_sync_enbaled = facebook_for_woocommerce()->get_integration()->is_woo_all_products_enabled();
-
 		// migrate settings from standalone options
-		if ( ! $is_woo_all_products_sync_enbaled && ! isset( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ] ) ) {
-			$product_sync_enabled = empty( get_option( 'fb_disable_sync_on_dev_environment', 0 ) );
-			$new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ] = $product_sync_enabled ? 'yes' : 'no';
-		}
-
 		if ( ! isset( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] ) ) {
 			$autosync_time = get_option( 'woocommerce_fb_autosync_time' );
 			$parsed_time   = ! empty( $autosync_time ) ? strtotime( $autosync_time ) : false;
@@ -362,16 +354,6 @@ class Lifecycle extends Framework\Lifecycle {
 	 */
 	protected function upgrade_to_3_4_9() {
 		facebook_for_woocommerce()->get_product_sets_sync_handler()->schedule_sync_all_product_sets();
-	}
-
-	/**
-	 * Trigger flush of rewrite rules to update with checkout URL
-	 *
-	 * @since 3.5.3
-	 */
-	protected function upgrade_to_3_5_3() {
-		add_rewrite_rule( '^fb-checkout/?$', 'index.php?fb_checkout=1', 'top' );
-		flush_rewrite_rules();
 	}
 
 	/**

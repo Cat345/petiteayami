@@ -70,7 +70,7 @@ if ( $available_methods ) {
 	echo "<td colspan={$colspans_first}><span>" . wp_kses_post( $package_name ) . '</span></td>';
 	echo "<td colspan={$colspans_second}><span>";
 
-	if ( ! $has_calculated_shipping || ! $formatted_destination ) {
+	if ( apply_filters( 'wfacp_display_shipping_placeholder_message', false ) || ! $has_calculated_shipping || ! $formatted_destination ) {
 
 		esc_html_e( apply_filters( 'wfacp_default_shipping_placeholder_text', __( 'Enter your address to view shipping options.', 'woocommerce' ) ) );
 	} elseif ( ! is_cart() ) {

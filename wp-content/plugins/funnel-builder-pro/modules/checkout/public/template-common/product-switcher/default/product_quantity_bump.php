@@ -159,12 +159,12 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 					if ( $_product && $_product->exists() && $qty > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
 						$price_data = array();
 						$pro        = $cart_item['data'];
-						if ( $pro instanceof WC_Product ) {
-							$price_data = WFACP_Common::get_cart_product_price_data( $pro, $cart_item, $qty );
-						}
 						$product_data = array();
 						if ( isset( $cart_item['_wfacp_options'] ) ) {
 							$product_data = $cart_item['_wfacp_options'];
+						}
+						if ( $pro instanceof WC_Product ) {
+							$price_data = WFACP_Common::filter_cart_price_data( WFACP_Common::get_cart_product_price_data( $pro, $cart_item, $qty ), $pro, $cart_item_key, $product_data, $cart_item );
 						}
 
 

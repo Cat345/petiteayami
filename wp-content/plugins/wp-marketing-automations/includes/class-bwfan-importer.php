@@ -254,6 +254,59 @@ class BWFAN_Importer {
 	}
 
 	/**
+	 * Create the import folder and stop the web server from serving it.
+	 *
+	 * It holds uploaded contact CSVs and import logs with contact emails; logs are only meant
+	 * to be read through the importer-log/download REST route.
+	 *
+	 * @param string $dir Import folder path.
+	 *
+	 * @return void
+	 */
+	public static function protect_import_folder( $dir ) {
+		$dir = untrailingslashit( $dir );
+		if ( ! file_exists( $dir ) ) {
+			wp_mkdir_p( $dir );
+		}
+
+		$files = array(
+			'index.php' => "<?php\n// Silence is golden.\n",
+			'.htaccess' => "<IfModule mod_authz_core.c>\n\tRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n\tDeny from all\n</IfModule>\n",
+		);
+		foreach ( $files as $name => $content ) {
+			if ( ! file_exists( $dir . '/' . $name ) ) {
+				file_put_contents( $dir . '/' . $name, $content ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- small static guard file written next to the plugin's own files; WP_Filesystem may need credentials here
+			}
+		}
+	}
+
+	/**
+	 * Delete an import's CSV or log file when its import is deleted.
+	 *
+	 * The path comes from the import's stored meta, which the client sets, so only a .csv
+	 * directly inside the import folder is ever deleted.
+	 *
+	 * @param string $file File path from the import meta.
+	 *
+	 * @return bool True when a file was deleted.
+	 */
+	public static function delete_import_file( $file ) {
+		if ( empty( $file ) || ! is_string( $file ) || ! defined( 'BWFAN_IMPORT_DIR' ) ) {
+			return false;
+		}
+
+		$real_path    = realpath( $file );
+		$real_allowed = realpath( BWFAN_IMPORT_DIR );
+		if ( false === $real_path || false === $real_allowed || dirname( $real_path ) !== $real_allowed || ! is_file( $real_path ) || 'csv' !== strtolower( pathinfo( $real_path, PATHINFO_EXTENSION ) ) ) {
+			return false;
+		}
+
+		wp_delete_file( $real_path );
+
+		return ! file_exists( $real_path );
+	}
+
+	/**
 	 * Create new log file
 	 *
 	 * @param $file

@@ -307,6 +307,9 @@ final class BWFAN_MCP_Schema {
 		return self::in_str( $description, array( 'maxLength' => $max_length ) );
 	}
 
+	/** How a whole-day window argument reads to the agent; pair with in_date(). */
+	const DAY_FORMAT = 'Y-m-d or Y-m-d H:i:s, site timezone, e.g. 2026-10-01; whole days, a time part is ignored.';
+
 	/** Y-m-d or Y-m-d H:i:s argument. */
 	public static function in_date( $description = '' ) {
 		return self::in_str( $description, array( 'pattern' => '^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2}:[0-9]{2})?$' ) );

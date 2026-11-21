@@ -1,0 +1,45 @@
+/**
+ * Kadence — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install — Kadence's nine numbered palette slots:
+ *   --global-palette1  #2B6CB0  primary accent
+ *   --global-palette2  #215387  accent hover
+ *   --global-palette3  #1A202C  headings (darkest)
+ *   --global-palette4  #2D3748  body text
+ *   --global-palette5  #4A5568  muted text
+ *   --global-palette6  #718096  lightest text
+ *   --global-palette7  #EDF2F7  light surface / borders
+ *   --global-palette8  #F7FAFC  lighter surface
+ *   --global-palette9  #ffffff  base background
+ */
+body.wffn-bundles-theme-kadence .wffn-bundles,
+body.wffn-bundles-theme-kadence .wffn-bundles-portal,
+body.wffn-bundles-theme-kadence .wffn-bundles-variant-modal {
+	--wffn-bundles-bg: var(--global-palette9, #fff);
+	--wffn-bundles-bg-active: var(--global-palette8, #fafafa);
+	--wffn-bundles-step-bg: var(--global-palette8, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--global-palette8, #fafafa);
+
+	--wffn-bundles-border: var(--global-palette7, #dedfea);
+	--wffn-bundles-control-border: var(--global-palette7, #dedfea);
+	--wffn-bundles-radio: var(--global-palette7, #c5c5cd);
+	--wffn-bundles-connector: var(--global-palette7, #353030);
+
+	--wffn-bundles-border-active: var(--global-palette1, #353030);
+	--wffn-bundles-radio-active: var(--global-palette1, #353030);
+	--wffn-bundles-badge-bg: var(--global-palette1, #353030);
+	--wffn-bundles-progress-fill: var(--global-palette1, #353030);
+	--wffn-bundles-control-accent: var(--global-palette1, #353030);
+	--wffn-bundles-badge-fg: var(--global-palette9, #fff);
+
+	--wffn-bundles-heading-color: var(--global-palette3, #353030);
+	--wffn-bundles-title-color: var(--global-palette3, #353030);
+	--wffn-bundles-sale-price-color: var(--global-palette3, #353030);
+	--wffn-bundles-desc-color: var(--global-palette5, #82828e);
+	--wffn-bundles-regular-price-color: var(--global-palette5, #82828e);
+	--wffn-bundles-price-desc-color: var(--global-palette5, #82828e);
+	--wffn-bundles-control-fg: var(--global-palette4, #353030);
+	--wffn-bundles-control-muted: var(--global-palette5, #82828e);
+}

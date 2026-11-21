@@ -72,7 +72,7 @@ function flrt_variations_listed_as_products() {
         }
 
         // Fallback — the query vars saved with the set in the admin.
-        $saved = maybe_unserialize( get_post_meta( $set['ID'], 'wpc_filter_set_query_vars', true ) );
+        $saved = flrt_safe_unserialize( get_post_meta( $set['ID'], 'wpc_filter_set_query_vars', true ) );
         if ( is_array( $saved ) ) {
             $saved_post_types = isset( $saved['post_type'] ) ? (array) $saved['post_type'] : [];
             if ( ( isset( $saved['single_variations_filter'] ) && $saved['single_variations_filter'] === 'yes' )

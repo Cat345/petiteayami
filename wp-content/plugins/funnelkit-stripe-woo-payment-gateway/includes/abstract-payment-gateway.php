@@ -504,6 +504,9 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 
 				$refund_time = gmdate( 'Y-m-d H:i:s', time() );
 				$order->update_meta_data( '_fkwcs_refund_id', $refund_response->id );
+				$refund_ids   = (array) Helper::get_meta( $order, '_fkwcs_refund_ids' );
+				$refund_ids[] = $refund_response->id;
+				$order->update_meta_data( '_fkwcs_refund_ids', array_values( array_unique( array_filter( $refund_ids ) ) ) );
 				$order->update_meta_data( '_fkwcs_refund_status', $refund_response->status );
 				$order->delete_meta_data( '_fkwcs_webhook_lock' );
 				$order->save_meta_data();
@@ -2813,6 +2816,26 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * Redirect URL for an order that is already paid when the shopper comes back to the verify URL. While its one-click
+	 * upsell offer is still open in this shopper's session, the shopper goes back to that offer, for example when the
+	 * verification is requested again after the offer was shown.
+	 *
+	 * @param \WC_Order $order Order.
+	 *
+	 * @return string
+	 */
+	public function get_paid_order_redirect_url( $order ) {
+		if ( $order->has_status( 'wfocu-pri-order' ) && did_action( 'wfocu_loaded' ) ) {
+			$current_offer = WFOCU_Core()->data->get_current_offer();
+			if ( ! empty( $current_offer ) && absint( WFOCU_Core()->data->get( 'porder', 0, 'orders' ) ) === $order->get_id() && ! empty( WFOCU_Core()->offers->get_the_link( $current_offer ) ) ) {
+				return WFOCU_Core()->public->get_the_upsell_url( $current_offer );
+			}
+		}
+
+		return $this->get_return_url( $order );
+	}
+
+	/**
 	 * Verify intent secret and redirect to the thankyou page
 	 *
 	 * @return void
@@ -2852,7 +2875,7 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 					$order
 				)
 			) ) {
-				$redirect_url = $this->get_return_url( $order );
+				$redirect_url = $this->get_paid_order_redirect_url( $order );
 				remove_all_actions( 'wp_redirect' );
 				wp_safe_redirect( $redirect_url );
 				exit;

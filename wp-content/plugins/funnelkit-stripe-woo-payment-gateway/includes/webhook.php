@@ -228,6 +228,9 @@ class Webhook {
 				case 'charge.failed':
 					$this->charge_failed( $object );
 					break;
+				case 'payment_intent.payment_failed':
+					$this->payment_intent_failed( $object );
+					break;
 				case 'review.opened':
 					$this->review_opened( $object );
 					break;
@@ -554,7 +557,10 @@ class Webhook {
 					return;
 				}
 
-				if ( $charge->refunds->data[0]->id === $refund_id ) {
+				// Every Stripe refund this order already recorded, not only the last one: a second refund
+				// made before the first one's webhook arrives must not turn that webhook into a new refund.
+				$refund_ids = (array) Helper::get_meta( $order, '_fkwcs_refund_ids' );
+				if ( $charge->refunds->data[0]->id === $refund_id || in_array( $charge->refunds->data[0]->id, $refund_ids, true ) ) {
 					return;
 				}
 
@@ -577,6 +583,8 @@ class Webhook {
 					$refund_id = $charge->refunds->data[0]->id;
 					set_transient( '_fkwcs_refund_id_cache_' . $order_id, $refund_id, 60 );
 					$order->update_meta_data( '_fkwcs_refund_id', $refund_id );
+					$refund_ids[] = $refund_id;
+					$order->update_meta_data( '_fkwcs_refund_ids', array_values( array_unique( array_filter( $refund_ids ) ) ) );
 					$order->save_meta_data();
 					if ( isset( $charge->refunds->data[0]->balance_transaction ) ) {
 						Helper::update_balance( $order, $charge->refunds->data[0]->balance_transaction, true );
@@ -824,6 +832,54 @@ class Webhook {
 	 *
 	 * @return void
 	 */
+	/**
+	 * A card payment that fails 3D Secure, where the shopper never comes back to the store, only sends
+	 * payment_intent.payment_failed (no charge is created, so no charge.failed). Mark the unpaid order
+	 * failed, the same way verify_intent() does when the shopper comes back.
+	 *
+	 * @param \Stripe\PaymentIntent $intent Payment intent.
+	 *
+	 * @return void
+	 */
+	public function payment_intent_failed( $intent ) {
+		if ( ! $this->validate_site_url( $intent ) ) {
+			Helper::log( 'Website url check failed ' . $intent->id );
+
+			return;
+		}
+		if ( 'requires_payment_method' !== $intent->status || isset( $intent->metadata->fk_upsell ) ) {
+			return;
+		}
+		$order_id = $this->maybe_get_order_id_from_intent( $intent );
+		if ( ! $order_id ) {
+			Helper::log( 'Could not find order via payment intent: ' . $intent->id );
+
+			return;
+		}
+		Helper::clear_order_cache( $order_id );
+		$order = wc_get_order( $order_id );
+		if ( ! $order instanceof \WC_Order || ! $order->has_status( 'pending' ) || ! in_array( $order->get_payment_method(), array( 'fkwcs_stripe', 'fkwcs_stripe_apple_pay', 'fkwcs_stripe_google_pay' ), true ) ) {
+			return;
+		}
+		if ( $order->is_paid() || ( function_exists( 'wcs_order_contains_renewal' ) && wcs_order_contains_renewal( $order ) ) ) {
+			return;
+		}
+
+		// A retried payment has a newer intent on the order; a late failure of the old one must not fail it.
+		$stored_intent = Helper::get_meta( $order, '_fkwcs_intent_id' );
+		$stored_intent = is_array( $stored_intent ) ? ( isset( $stored_intent['id'] ) ? $stored_intent['id'] : '' ) : (string) $stored_intent;
+		if ( '' !== $stored_intent && $stored_intent !== $intent->id ) {
+			return;
+		}
+
+		$message  = __( 'Intent ID', 'funnelkit-stripe-woo-payment-gateway' ) . ':' . $intent->id;
+		$message .= "\n\n" . Helper::get_localized_error_message( $intent->last_payment_error );
+		$message .= ' [via Stripe Webhook]';
+		$order->update_status( 'failed', $message );
+
+		do_action( 'fkwcs_webhook_payment_failed', $order );
+	}
+
 	public function charge_failed( $charge ) {
 		Helper::log( 'Charge Failed Webhook Event' );
 

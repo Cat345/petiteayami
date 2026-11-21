@@ -1,0 +1,22 @@
+/*
+ * Bricks theme — restore what its global reset takes from the bundle.
+ *
+ * Bricks dequeues WooCommerce's stylesheets and ships its own reset; the skin
+ * sheets already re-declare everything that reset reaches but the rule below.
+ * With cascade layers on (2.0+) its resets lose to our unlayered CSS outright,
+ * so this file exists for the `disableBricksCascadeLayer` state.
+ *
+ * No `.brxe-*` selector may appear here: Bricks switches an element's own
+ * selector from `#brxe-{id}` to `.brxe-{id}` inside query loops and components.
+ */
+
+/* Bricks resets every label at (0,0,1), and our offer rows are labels, so they
+   took its grey, weight and a 5px gap. Kept at (0,1,1): enough to beat a bare
+   `label`, low enough that every skin rule still wins in its own context. */
+.wffn-bundles label,
+.wffn-bundles-portal label,
+.wffn-bundles-variant-modal label {
+	color: inherit;
+	font-weight: inherit;
+	margin-block-end: 0;
+}

@@ -407,33 +407,22 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 			$plan_id = ! empty( $product_data['plan_id'] ) ? absint( $product_data['plan_id'] ) : 0;
 			if ( $plan_id <= 0 ) {
 				// No plan selected — Sublium's bump plan selector defaults to "One Time payment"
-				// (no plan), not to a default paid plan, so no Sublium price adjustment applies.
-				// Still apply the bump's OWN discount (independent of any plan) against the true
-				// regular price, since callers (e.g. get_bump_product_price_data()) treat an
-				// empty return here as "no price data at all" and fall back to the fully
-				// undiscounted $pro->get_price(), losing the bump's own discount entirely.
-				// A currency or discount compat hooked earlier (e.g. Order Bumps' CURCY compat at 21)
-				// has already priced the bump in the shopper's currency, so leave its data alone.
-				if ( isset( $price_data['price'] ) ) {
-					return $price_data;
-				}
-				$true_regular_price = $this->get_true_regular_price( $pro );
-				$price              = $true_regular_price;
-				if ( ! empty( $product_data['discount_type'] ) && ! empty( $product_data['discount_amount'] ) ) {
-					$discounted = WFOB_Common::calculate_discount(
-						array(
-							'wfob_product_rp'      => $true_regular_price,
-							'wfob_product_p'       => $true_regular_price,
-							'wfob_discount_amount' => $this->convert_fixed_discount_amount( $product_data['discount_type'], $product_data['discount_amount'], $pro ),
-							'wfob_discount_type'   => $product_data['discount_type'],
-						)
-					);
-					$price      = is_null( $discounted ) ? $true_regular_price : $discounted;
-				}
-				// regular_org is the undiscounted regular (shown struck through), price is the discounted
-				// offer — mirrors the Order Bumps currency compat's output for the non-Sublium case.
-				$price_data['regular_org'] = $true_regular_price;
-				$price_data['price']       = $price;
+				// (no plan), not to a default paid plan, so no Sublium price adjustment applies
+				// and this filter must leave the bump's price alone.
+				//
+				// Do NOT re-derive the bump's own discount here. Every caller of this filter
+				// (the layout-* skins, WFOB_Bump::get_bump_data() and the design previewer) runs
+				// WFOB_Common::set_product_price() on $pro first, which has already written the
+				// discounted price onto the product object using the correct basis — the sale
+				// price for the "on Sale Price" discount types, the regular price for the
+				// "on Regular Price" ones. Returning $price_data untouched makes
+				// get_bump_product_price_data() fall back to that object, which is right.
+				// Recomputing it from the regular price alone showed a $50 regular / $25 sale
+				// product with a $10 "fixed on sale price" bump discount as $40 instead of $15.
+				//
+				// In a secondary currency the Order Bumps CURCY compat (priority 21, i.e. before
+				// this one) has already put a converted, discounted price in $price_data; leaving
+				// it alone is equally correct there.
 				return $price_data;
 			}
 			$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $pro );

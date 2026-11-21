@@ -525,7 +525,7 @@ class Mailchimp_Importer extends Importer implements Autoresponder_Importer_Inte
 	 * @return WP_Error An array of contacts retrieved from the API.
 	 */
 	public function get_contacts( $args = array() ) {
-		$args = array_merge( $this->get_api_credentials() );
+		$args = array_merge( $args, $this->get_api_credentials() );
 
 		$contacts_call = new Get_Members();
 		$contacts_call->set_data( $args );

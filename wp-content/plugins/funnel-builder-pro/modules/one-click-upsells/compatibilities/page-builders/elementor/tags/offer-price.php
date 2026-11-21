@@ -80,7 +80,7 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Price' ) ) {
 			// if ( is_object( $products ) && count( (array) $products ) > 1 ) {
 			$product_options = array();
 			foreach ( $products as $key => $product ) {
-				$product_options[ $key ] = $product->name;
+				$product_options[ $key ] = \WFOCU_Common::get_offer_product_label( $product );
 			}
 
 			$this->add_control(

@@ -386,7 +386,7 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 			);
 
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
-				$results['msg'] = __( 'You do not have permission to perform this action.', 'funnel-builder' );
+				$results['msg'] = __( 'You do not have permission to perform this action.', 'funnelkit-woofunnels-textdomain-placeholder' );
 				wp_send_json( $results, 403 );
 			}
 

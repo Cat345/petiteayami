@@ -1852,7 +1852,19 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						}
 
 						$default['description']        = $description;
-						$default['stock']              = $product->is_in_stock();
+						/**
+						 * Filters whether a bump product counts as in stock, so its bump is shown.
+						 *
+						 * A compatibility that sells other products in its place (a bundle) answers from their stock.
+						 *
+						 * @since 1.28.0
+						 *
+						 * @param bool       $in_stock  Whether the product is in stock.
+						 * @param WC_Product $product   The bump product.
+						 * @param int        $wfob_id   Bump id.
+						 * @param string     $unique_id The product's key in the bump.
+						 */
+						$default['stock']              = (bool) apply_filters( 'wfob_bump_product_in_stock', $product->is_in_stock(), $product, $wfob_id, $unique_id );
 						$resp['product'][ $unique_id ] = $default;
 						$output[ $unique_id ]          = $default;
 					}

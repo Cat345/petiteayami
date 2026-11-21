@@ -263,6 +263,73 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			}
 		}
 
+		/**
+		 * Whether the current visitor may see this product's details
+		 *
+		 * A single-post WP_Query hides drafts and private posts from guests, but not a
+		 * variation whose parent is unpublished (the variation itself stays 'publish'),
+		 * and never a password-protected post, so both posts are checked here.
+		 *
+		 * @param int $product_id Product or variation ID.
+		 *
+		 * @return bool
+		 */
+		private static function is_product_viewable( $product_id ) {
+			$product = wc_get_product( $product_id );
+			if ( ! $product instanceof WC_Product ) {
+				return false;
+			}
+
+			$post_ids = array_filter( array( $product->get_id(), $product->get_parent_id() ) );
+			foreach ( $post_ids as $post_id ) {
+				if ( 'publish' !== get_post_status( $post_id ) && ! current_user_can( 'read_product', $post_id ) ) {
+					return false;
+				}
+				if ( post_password_required( $post_id ) ) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/**
+		 * Whether the product belongs to what the quick view was opened from
+		 *
+		 * The product switcher sends the item key of a product configured on this checkout,
+		 * and the order summary sends a product already in the cart. Anything else is
+		 * refused, so a valid item key cannot be used to preview an arbitrary product.
+		 *
+		 * @param int    $wfacp_id   Checkout ID.
+		 * @param string $item_key   Checkout product item key, empty from the order summary.
+		 * @param int    $product_id Product or variation ID.
+		 *
+		 * @return bool
+		 */
+		private static function is_quick_view_product_allowed( $wfacp_id, $item_key, $product_id ) {
+			$product = wc_get_product( $product_id );
+			if ( ! $product instanceof WC_Product ) {
+				return false;
+			}
+			$ids = array_filter( array( $product->get_id(), $product->get_parent_id() ) );
+
+			$items = WFACP_Common::get_page_product( $wfacp_id );
+			if ( '' !== $item_key && isset( $items[ $item_key ]['id'] ) && in_array( absint( $items[ $item_key ]['id'] ), $ids, true ) ) {
+				return true;
+			}
+
+			if ( is_null( WC()->cart ) ) {
+				return false;
+			}
+			foreach ( WC()->cart->get_cart() as $cart_item ) {
+				if ( isset( $cart_item['product_id'] ) && in_array( absint( $cart_item['product_id'] ), $ids, true ) ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		public static function send_resp( $data = array() ) {
 			if ( ! is_array( $data ) ) {
 				$data = array();
@@ -1524,7 +1591,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				WFACP_Common::set_id( $wfacp_id );
 
 				$product_id = absint( $post['product_id'] );
-				$params     = array(
+				if ( ! self::is_product_viewable( $product_id ) || ! self::is_quick_view_product_allowed( $wfacp_id, $item_key, $product_id ) ) {
+					self::send_resp( $resp );
+				}
+				$params = array(
 					'p'         => $product_id,
 					'post_type' => array( 'product', 'product_variation' ),
 				);

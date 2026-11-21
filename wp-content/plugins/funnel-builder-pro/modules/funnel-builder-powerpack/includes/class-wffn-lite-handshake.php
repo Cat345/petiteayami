@@ -23,8 +23,9 @@ if ( ! class_exists( 'WFFN_Lite_Handshake' ) ) {
 		 */
 		public static function features() {
 			return array(
-				'announcements' => array(),
-				'funnelkit_ai'  => array(),
+				'announcements'    => array(),
+				'funnelkit_ai'     => array(),
+				'admin_extensions' => array(),
 			);
 		}
 

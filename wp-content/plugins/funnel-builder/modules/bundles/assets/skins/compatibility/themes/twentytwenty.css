@@ -1,0 +1,45 @@
+/**
+ * Twenty Twenty — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install — the theme's five theme.json slots, each confirmed
+ * against what the page renders:
+ *   --wp--preset--color--accent             #cd2653  accent (links)
+ *   --wp--preset--color--primary            #000000  headings + body text
+ *   --wp--preset--color--secondary          #6d6d6d  muted text
+ *   --wp--preset--color--subtle-background  #dcd7ca  borders / secondary surface
+ *   --wp--preset--color--background         #f5efe0  page background
+ *
+ * `--wffn-bundles-bg` stays the plugin white rather than taking `background`: this theme
+ * tints the page (#f5efe0), and an offer card painted the same colour as the
+ * page it sits on stops reading as a card. The tint is carried on the secondary
+ * surfaces below instead, which is where it belongs.
+ */
+body.wffn-bundles-theme-twentytwenty .wffn-bundles,
+body.wffn-bundles-theme-twentytwenty .wffn-bundles-portal,
+body.wffn-bundles-theme-twentytwenty .wffn-bundles-variant-modal {
+	--wffn-bundles-bg-active: var(--wp--preset--color--background, #fafafa);
+	--wffn-bundles-step-bg: var(--wp--preset--color--background, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--wp--preset--color--background, #fafafa);
+
+	--wffn-bundles-border: var(--wp--preset--color--subtle-background, #dedfea);
+	--wffn-bundles-control-border: var(--wp--preset--color--subtle-background, #dedfea);
+	--wffn-bundles-radio: var(--wp--preset--color--subtle-background, #c5c5cd);
+	--wffn-bundles-connector: var(--wp--preset--color--subtle-background, #353030);
+
+	--wffn-bundles-border-active: var(--wp--preset--color--accent, #353030);
+	--wffn-bundles-radio-active: var(--wp--preset--color--accent, #353030);
+	--wffn-bundles-badge-bg: var(--wp--preset--color--accent, #353030);
+	--wffn-bundles-progress-fill: var(--wp--preset--color--accent, #353030);
+	--wffn-bundles-control-accent: var(--wp--preset--color--accent, #353030);
+
+	--wffn-bundles-heading-color: var(--wp--preset--color--primary, #353030);
+	--wffn-bundles-title-color: var(--wp--preset--color--primary, #353030);
+	--wffn-bundles-sale-price-color: var(--wp--preset--color--primary, #353030);
+	--wffn-bundles-desc-color: var(--wp--preset--color--secondary, #82828e);
+	--wffn-bundles-regular-price-color: var(--wp--preset--color--secondary, #82828e);
+	--wffn-bundles-price-desc-color: var(--wp--preset--color--secondary, #82828e);
+	--wffn-bundles-control-fg: var(--wp--preset--color--primary, #353030);
+	--wffn-bundles-control-muted: var(--wp--preset--color--secondary, #82828e);
+}

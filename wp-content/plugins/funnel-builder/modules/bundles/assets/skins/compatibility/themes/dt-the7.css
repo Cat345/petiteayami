@@ -1,0 +1,16 @@
+/**
+ * DT The7 12.10.0.1 — one declaration.
+ *
+ * The theme's `select:not(.elementor-field):not(.elementor-field-textual)…`
+ * (css/main.min.css) scores (0,4,1) and adds 10px under every variation axis.
+ * `_shared.css`'s generic reset is (0,2,0) and loses, and reaching (0,5,0) with
+ * our own classes would need a different chain per skin. `html
+ * body.wffn-bundles-theme-dt-the7 …` is (0,4,2), so it out-specifies rather than ties —
+ * a theme sheet can enqueue after ours. This is specificity, not importance.
+ *
+ * Not overridden: the theme also wins `background-image` and `padding-right` at
+ * (0,2,1), painting its own caret at the inset our generic rule reserves.
+ */
+html body.wffn-bundles-theme-dt-the7 .wffn-bundles .wffn-bundles-variant .wffn-bundles-variant-axis {
+	margin: 0;
+}

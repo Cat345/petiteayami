@@ -37,6 +37,13 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		private $post_id = 0;
 
 		/**
+		 * Checkout whose controls Bricks currently holds for our checkout elements.
+		 *
+		 * @var int
+		 */
+		private $css_controls_id = 0;
+
+		/**
 		 * Private constructor to prevent direct instantiation.
 		 */
 		private function __construct() {
@@ -147,15 +154,10 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 
 			add_action( 'wp', array( $this, 'wp_register_elements' ), 8 );
 
-			// These three hook names are Bricks' own, not ours: the Bricks theme registers
-			// wp_ajax_bricks_save_post (includes/ajax.php) and wp_ajax_bricks_regenerate_css_file
-			// (includes/assets/files.php) and fires bricks_regenerate_css_files itself. We listen at
-			// priority -1 so our elements exist before Bricks handles the request. They cannot be
-			// prefixed - renaming them would simply stop us receiving Bricks' request.
-			add_action( 'wp_ajax_bricks_save_post', array( $this, 'wp_register_elements' ), - 1 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
-			add_action( 'wp_ajax_bricks_regenerate_css_file', array( $this, 'register_elements_for_css_regeneration' ), - 1 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
-			add_action( 'bricks_regenerate_css_files', array( $this, 'register_all_elements' ), - 1 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
-			add_action( 'save_post', array( $this, 'register_elements_on_save_post' ), 9, 2 );
+			// Bricks' own hook name, not ours: it runs inside Bricks' CSS generator for every element, right
+			// before the element's controls are read - whatever request writes the CSS (builder save, save_post,
+			// REST, its cron, WP-CLI, third-party tools). It cannot be prefixed.
+			add_filter( 'bricks/assets/generate_css_from_element', array( $this, 'register_elements_for_css' ), 10, 2 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
 			add_action( 'rest_api_init', array( $this, 'rest_register_elements' ), 9 );
 			add_action( 'wffn_before_import_checkout_template', array( $this, 'rest_register_elements_on_import' ), 10, 2 );
 			add_action( 'wffn_import_template_background', array( $this, 'rest_register_elements' ), 9 );
@@ -321,93 +323,76 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		}
 
 		/**
-		 * Register elements during Bricks CSS file regeneration (AJAX).
+		 * Register our element right before Bricks generates its CSS.
 		 *
-		 * When "Regenerate CSS files" is clicked in Bricks settings, it processes each post via
-		 * wp_ajax_bricks_regenerate_css_file. The 'wp' hook doesn't fire during AJAX, so our
-		 * elements aren't registered and their control CSS is not generated.
-		 * This method checks the post type being regenerated and registers the appropriate elements.
+		 * Bricks writes post-{ID}.min.css in whatever request saves or regenerates the post. Our elements
+		 * are otherwise registered only on our own pages, and the checkout form gets its style controls only
+		 * once the checkout is set up - without both, Bricks writes the file without their CSS.
 		 *
-		 * @return void
+		 * @param array $loop_elements Additional loop elements (returned unchanged).
+		 * @param array $element Element being processed.
+		 *
+		 * @return array
 		 */
-		public function register_elements_for_css_regeneration() {
-			$post_id = isset( $_POST['data'] ) ? absint( wp_unslash( $_POST['data'] ) ) : 0; //phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+		public function register_elements_for_css( $loop_elements, $element ) {
+			$name = isset( $element['name'] ) ? (string) $element['name'] : '';
 
-			if ( empty( $post_id ) ) {
-				return;
-			}
+			if ( 0 === strpos( $name, 'wfacp-' ) && class_exists( 'WFACP_Common' ) ) {
+				$post_id     = absint( \Bricks\Assets::$post_id );
+				$is_checkout = $post_id > 0 && ! is_null( WFACP_Core()->template_loader ) && WFACP_Common::get_post_type_slug() === get_post_type( $post_id );
 
-			$post_type = get_post_type( $post_id );
-
-			if ( class_exists( 'WFACP_Common' ) && WFACP_Common::get_post_type_slug() === $post_type ) {
-				if ( 0 === did_action( 'wfacp_template_class_found' ) && ! is_null( WFACP_Core()->template_loader ) ) {
+				// Set the checkout up when nothing has yet (builder save, save_post, REST, cron, WP-CLI) - never while
+				// a front-end page renders, where it would hook the checkout into that page.
+				if ( $is_checkout && 0 === did_action( 'wfacp_template_class_found' ) && 0 === did_action( 'template_redirect' ) ) {
 					WFACP_Core()->template_loader::$is_checkout = true;
 					WFACP_Common::set_id( $post_id );
 					WFACP_Core()->template_loader->maybe_setup_page();
 				}
-				$this->register_elements( 'checkout' );
-			}
-
-			if ( ! is_null( WFFN_Core()->thank_you_pages ) && WFFN_Core()->thank_you_pages->get_post_type_slug() === $post_type ) {
-				$this->register_elements( 'thankyou-pages' );
-			}
-
-			if ( WFOPP_Core()->optin_pages->get_post_type_slug() === $post_type ) {
-				$this->register_elements( 'optin-pages' );
-			}
-		}
-
-		/**
-		 * Register elements before Bricks regenerates the post CSS file on save_post.
-		 *
-		 * Bricks\Assets_Files::save_post() (save_post, priority 10) rewrites post-{ID}.min.css on every
-		 * save made outside the builder (FunnelKit admin, wp_update_post(), REST). Without our elements
-		 * registered, their control CSS is dropped from the file.
-		 *
-		 * @param int     $post_id Post ID.
-		 * @param WP_Post $post Post object.
-		 *
-		 * @return void
-		 */
-		public function register_elements_on_save_post( $post_id, $post ) {
-			if ( wp_is_post_revision( $post ) || ! class_exists( 'Bricks\Database' ) || 'file' !== \Bricks\Database::get_setting( 'cssLoading' ) || empty( \Bricks\Database::get_data( $post_id, 'content' ) ) ) {
-				return;
-			}
-
-			if ( class_exists( 'WFACP_Common' ) && WFACP_Common::get_post_type_slug() === $post->post_type ) {
-				if ( 0 === did_action( 'wfacp_template_class_found' ) && ! is_null( WFACP_Core()->template_loader ) ) {
-					WFACP_Core()->template_loader::$is_checkout = true;
-					WFACP_Common::set_id( $post_id );
-					WFACP_Core()->template_loader->maybe_setup_page();
+				if ( ! isset( \Bricks\Elements::$elements[ $name ] ) ) {
+					$this->register_elements( 'checkout' );
 				}
-				$this->register_elements( 'checkout' );
-			}
 
-			if ( ! is_null( WFFN_Core()->thank_you_pages ) && WFFN_Core()->thank_you_pages->get_post_type_slug() === $post->post_type ) {
+				// The controls depend on the checkout's steps and fields, and Bricks keeps them once read. When it
+				// writes another checkout in the same request (bulk regeneration, template refresh), read them again
+				// with that checkout's data, then put the current checkout back.
+				$template = wfacp_template();
+				if ( $is_checkout && $template instanceof \WFACP_template_Bricks ) {
+					$current_id = absint( WFACP_Common::get_id() );
+					if ( 0 === $this->css_controls_id ) {
+						$this->css_controls_id = $current_id;
+					}
+					if ( $post_id !== $this->css_controls_id ) {
+						$this->load_checkout_data( $template, $post_id );
+						foreach ( array( 'wfacp-form', 'wfacp-order-summary' ) as $element_name ) {
+							if ( isset( \Bricks\Elements::$elements[ $element_name ] ) ) {
+								\Bricks\Elements::load_element( $element_name );
+							}
+						}
+						$this->load_checkout_data( $template, $current_id );
+						$this->css_controls_id = $post_id;
+					}
+				}
+			} elseif ( 0 === strpos( $name, 'wffn-optin-' ) && ! isset( \Bricks\Elements::$elements[ $name ] ) ) {
+				$this->register_elements( 'optin-pages' );
+			} elseif ( 0 === strpos( $name, 'wfty-' ) && ! isset( \Bricks\Elements::$elements[ $name ] ) && wffn_is_wc_active() ) {
 				$this->register_elements( 'thankyou-pages' );
 			}
 
-			if ( WFOPP_Core()->optin_pages->get_post_type_slug() === $post->post_type ) {
-				$this->register_elements( 'optin-pages' );
-			}
+			return $loop_elements;
 		}
 
 		/**
-		 * Register all elements for bulk CSS regeneration (cron/CLI).
+		 * Point the checkout template at a checkout's saved data.
 		 *
-		 * When CSS files are regenerated in bulk (theme update cron, WP-CLI), all element types
-		 * need to be registered upfront since multiple post types are processed.
+		 * @param \WFACP_template_Bricks $template Checkout template.
+		 * @param int                    $checkout_id Checkout ID.
 		 *
 		 * @return void
 		 */
-		public function register_all_elements() {
-			if ( class_exists( 'WFACP_Common' ) ) {
-				$this->register_elements( 'checkout' );
-			}
-			if ( wffn_is_wc_active() ) {
-				$this->register_elements( 'thankyou-pages' );
-			}
-			$this->register_elements( 'optin-pages' );
+		private function load_checkout_data( $template, $checkout_id ) {
+			WFACP_Common::set_id( $checkout_id );
+			$template->set_wfacp_id( $checkout_id );
+			$template->set_data();
 		}
 
 		/**

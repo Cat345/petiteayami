@@ -2271,7 +2271,10 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			$id       = uniqid();
 			$settings = $this->settings;
 
-			\Bricks\Woocommerce_Helpers::maybe_init_cart_context();
+			// Builder preview only: it defines WOOCOMMERCE_CART, which makes is_cart() true on the live checkout.
+			if ( bricks_is_builder() || bricks_is_builder_call() ) {
+				\Bricks\Woocommerce_Helpers::maybe_init_cart_context();
+			}
 
 			\FunnelKit\Bricks_Integration::set_locals( 'wfacp_form', $id );
 			WFACP_Common::set_session( $id, $settings );

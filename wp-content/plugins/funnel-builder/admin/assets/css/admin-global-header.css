@@ -1288,6 +1288,13 @@ body .bwf-modal-zindex {
     z-index: 100000;
 }
 
+/* Keeps the logo and every top-menu item on one row between 1171px and 1440px */
+@media screen and (min-width: 1171px) and (max-width: 1440px){
+	.bwfan_header_l1 .bwfan_navigation:not(.bwf-header-right-wrap) > span {
+		margin: 0 12px;
+	}
+}
+
 @media screen and (max-width: 1170px){
 	.bwfan_header .bwf-breadcrumb-svg-icon {
 		margin-right: 0;

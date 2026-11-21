@@ -77,7 +77,7 @@ if ( ! class_exists( 'BWF_WC_Compatibility' ) ) :
 		 */
 		public static function woocommerce_get_formatted_product_name( $product ) {
 			if ( ! $product instanceof WC_Product ) {
-				return __( 'No title', 'funnel-builder' );
+				return __( 'No title', 'funnelkit-woofunnels-textdomain-placeholder' );
 			}
 
 			return $product->get_formatted_name();

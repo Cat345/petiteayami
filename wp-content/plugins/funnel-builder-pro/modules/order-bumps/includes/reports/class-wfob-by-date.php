@@ -66,7 +66,7 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 			$time           = strtotime( '23 hours 59 minutes', $this->end_date );
 			$this->end_date = $time;
 			$end_date       = date( 'Y-m-d H:i:s', $this->end_date );
-			$results        = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->wfob_stats} WHERE \`date\` >= %s AND \`date\` <= %s", $start_date, $end_date ), ARRAY_A );
+			$results        = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->wfob_stats} WHERE `date` >= %s AND `date` <= %s", $start_date, $end_date ), ARRAY_A );
 
 			$this->report_data                  = new stdClass();
 			$this->report_data->bump_views      = 0;

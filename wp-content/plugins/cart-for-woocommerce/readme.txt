@@ -2,9 +2,9 @@
 Contributors: xlplugins, amans2k
 Tags: WooCommerce Cart, Side Cart, Modern Cart, Floating Cart, WooCommerce Checkout
 Requires at least: 5.0
-Tested up to: 7.0.0
+Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 1.9.1.2
+Stable tag: 1.9.1.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -217,6 +217,15 @@ You can display coupon codes on the FunnelKit side cart or even auto-apply the c
 
 
 == Change log ==
+
+
+= 1.9.1.3 =
+* Added: Filters `fkcart_product_needs_options` and `fkcart_quick_view_product_id`, letting another plugin mark a non-variable product as needing options so the side cart offers "Select options" and opens the quick view for it. (#1312)
+* Improved: Removed a redundant side cart request that fired on the first page view of every session, including on each bot and crawler visit. (#1285)
+* Fixed: Quick view request to skip any non-purchasable products. (props to respect, #1324)
+* Fixed: Duplicate `fkcart_qty` and `fkcart_total` cookies were set when `COOKIE_DOMAIN` is defined, leaving the cart count and total stale. (#1203)
+* Fixed: Side cart kept showing a removed product after the cart was emptied through the cart page. (#1275)
+
 = 1.9.1.2 =
 * Fixed: Issue with add to cart failing for variations with encoded attributes value. (#1158)
 * Fixed: Undefined wc_cart_fragments object javascript errors in case of third party plugin/themes using it. (#1155)

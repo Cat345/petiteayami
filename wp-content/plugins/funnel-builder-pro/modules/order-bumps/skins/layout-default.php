@@ -205,6 +205,20 @@ $inner_wrapper_class = implode( ' ', $css_class );
 					require WFOB_SKIN_DIR . '/template-parts/wfob-special-offer.php';
 
 					require WFOB_SKIN_DIR . '/' . $selected_layout . '/layout-body.php';
+
+					if ( isset( $wc_product ) ) {
+						/**
+						 * Fires after a bump's content, inside its box.
+						 *
+						 * @since 1.28.0
+						 *
+						 * @param int        $wfob_id       Bump id.
+						 * @param WC_Product $wc_product    The product the bump sells.
+						 * @param string     $product_key   The row's key in the bump.
+						 * @param string     $cart_item_key Cart item key, empty until the bump is accepted.
+						 */
+						do_action( 'wfob_after_bump_content', $this->get_id(), $wc_product, $product_key, $cart_item_key );
+					}
 					?>
 
 				</div>

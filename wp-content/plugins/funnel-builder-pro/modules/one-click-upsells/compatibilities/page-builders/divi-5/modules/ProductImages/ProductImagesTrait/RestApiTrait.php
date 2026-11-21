@@ -145,7 +145,7 @@ trait RestApiTrait {
 				}
 
 				$response[ (string) $key ] = array(
-					'label'         => $product->name,
+					'label'         => \WFOCU_Common::get_offer_product_label( $product ),
 					'featuredImage' => $featured_image_url,
 					'galleryImages' => $gallery_images,
 				);

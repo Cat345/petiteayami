@@ -133,16 +133,16 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			'get-step-stats'                  => array(
 				'capability'          => array( 'analytics', 'read' ),
 				'label'               => __( 'Get Step Stats', 'funnel-builder-powerpack' ),
-				'description'         => 'Views, conversions and revenue for ONE Step of a Funnel - finer than get-funnel-analytics when only one Step matters. Add after/before for an exact date window (views then come back null - they are all-time-only). Find Step ids with get-funnel. Read-only.',
+				'description'         => 'Views, conversions and revenue for ONE Step of a Funnel - finer than get-funnel-analytics when only one Step matters. Add after/before for an exact date window (views then come back null - they are all-time-only). Find Step ids with get-funnel. funnel_id is optional: the Step\'s own Funnel is used when it is left out. Read-only.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array_merge(
 						array(
-							'funnel_id' => WFFN_MCP_Schema::in_id(),
+							'funnel_id' => WFFN_MCP_Schema::in_id( 'Funnel the Step is in. Omit to read the Step\'s own Funnel.' ),
 							'step_id'   => WFFN_MCP_Schema::in_id(),
 						),
 						WFFN_MCP_Schema::in_window( 'Window start, Y-m-d, site timezone. Default: 7 days ago.', 'Window end. Default: now.', 'true reports all-time through the windowed engine.' ),
 					),
-					array( 'funnel_id', 'step_id' )
+					array( 'step_id' )
 				),
 				'output_schema'       => self::schema_get_step_stats(),
 				'permission_callback' => array( 'WFFN_MCP_Permissions', 'can_read' ),
@@ -162,12 +162,12 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 
 			'get-ab-test'                     => array(
 				'label'               => __( 'Get A/B Test', 'funnel-builder-powerpack' ),
-				'description'         => 'One A/B Test in full: title, status, step type and every variant with its traffic share, control and winner flags and live URL. Numbers per variant: get-ab-test-results. Read-only.',
+				'description'         => 'One A/B Test in full: title, status, step type and every variant with its traffic share, control and winner flags and live URL. Name the test with experiment_id, or with step_id (the control or any variant Step of it, e.g. an id from get-funnel) to find the test that Step is in. The answer carries experiment_id and, per variant, variant_id: pass them as they are to update-ab-test, declare-ab-test-winner and the other A/B writes. Numbers per variant: get-ab-test-results. Read-only.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
-						'experiment_id' => WFFN_MCP_Schema::in_id(),
-					),
-					array( 'experiment_id' )
+						'experiment_id' => WFFN_MCP_Schema::in_id( self::EXPERIMENT_ID_DOC . ' Send this or step_id.' ),
+						'step_id'       => WFFN_MCP_Schema::in_id( 'Instead of experiment_id: the control Step or a variant Step of the test (a Step id from get-funnel or get-upsell-offers). A Step that has had several tests answers with the newest one still open, else the newest finished one. Ignored when experiment_id is sent.' ),
+					)
 				),
 				'output_schema'       => self::schema_ab_test_get(),
 				'permission_callback' => array( 'WFFN_MCP_Permissions', 'can_read' ),
@@ -182,7 +182,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array_merge(
 						array(
-							'experiment_id' => WFFN_MCP_Schema::in_id(),
+							'experiment_id' => WFFN_MCP_Schema::in_id( self::EXPERIMENT_ID_DOC ),
 						),
 						WFFN_MCP_Schema::in_window( 'Window start, Y-m-d or Y-m-d H:i:s, site timezone. Default: 7 days ago.', 'Window end. Default: now.', 'true ignores the window and reports all-time.' ),
 						array(
@@ -222,10 +222,10 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			'create-ab-test-variant'          => array(
 				'capability'          => array( 'funnel', 'write' ),
 				'label'               => __( 'Create A/B Test Variant', 'funnel-builder-powerpack' ),
-				'description'         => 'Add a variant to an A/B Test by copying a Step: the control by default, or any other Step of the same type (source_step_id). The copy is a real Step - its id (in variants) is a step_id for update-step-template, update-checkout-settings and the other step tools, so change its design after this call. It starts at 0% traffic: set the split with update-ab-test. Each call adds another variant; refused on a Completed test. Write.',
+				'description'         => 'Add a variant to an A/B Test by copying a Step: the control by default, or any other Step of the same type (source_step_id). The copy is a real Step - its variant_id (in variants) is a step_id for update-step-template, update-checkout-settings and the other step tools, so change its design after this call. It starts at 0% traffic: set the split with update-ab-test. Each call adds another variant; refused on a Completed test. Write.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
-						'experiment_id'  => WFFN_MCP_Schema::in_id(),
+						'experiment_id'  => WFFN_MCP_Schema::in_id( self::EXPERIMENT_ID_DOC ),
 						'source_step_id' => WFFN_MCP_Schema::in_id( 'Step to copy: a variant id from get-ab-test or another Step of the same type. Default: the control.' ),
 						'title'          => WFFN_MCP_Schema::in_str( 'Variant name. Omit to auto-name.', array( 'maxLength' => self::AB_TITLE_MAX ) ),
 					),
@@ -244,10 +244,10 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			'update-ab-test'                  => array(
 				'capability'          => array( 'funnel', 'write' ),
 				'label'               => __( 'Update A/B Test', 'funnel-builder-powerpack' ),
-				'description'         => 'Rename an A/B Test, change its note, or set the traffic split. traffics replaces the whole split: one entry per active variant (ids from get-ab-test), shares in percent summing to 100. A description cannot be cleared, only replaced. Send at least one of title, description, traffics. Write.',
+				'description'         => 'Rename an A/B Test, change its note, or set the traffic split. traffics replaces the whole split: one entry per active variant ({variant_id, traffic}, with variant_id as get-ab-test returns it), shares in percent summing to 100. A description cannot be cleared, only replaced. Send at least one of title, description, traffics. Write.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
-						'experiment_id' => WFFN_MCP_Schema::in_id(),
+						'experiment_id' => WFFN_MCP_Schema::in_id( self::EXPERIMENT_ID_DOC ),
 						'title'         => WFFN_MCP_Schema::in_str( '', array( 'maxLength' => self::AB_TITLE_MAX ) ),
 						'description'   => WFFN_MCP_Schema::in_str( '', array( 'maxLength' => self::AB_DESC_MAX ) ),
 						'traffics'      => self::schema_ab_traffics_input(),
@@ -270,7 +270,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				'description'         => 'Start (or resume) an A/B Test so visitors are split between its variants. Needs at least two active variants with a design and (checkout/offer/bump) a product each, and traffic summing to 100 - the error names what is missing. Already Started: no change. Refused on a Completed test. Write.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
-						'experiment_id' => WFFN_MCP_Schema::in_id(),
+						'experiment_id' => WFFN_MCP_Schema::in_id( self::EXPERIMENT_ID_DOC ),
 					),
 					array( 'experiment_id' )
 				),
@@ -290,7 +290,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				'description'         => 'Pause a Started A/B Test: every visitor sees the control again and the results stay. start-ab-test resumes it. Already Paused: no change. Refused on a Draft or Completed test. Write.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
-						'experiment_id' => WFFN_MCP_Schema::in_id(),
+						'experiment_id' => WFFN_MCP_Schema::in_id( self::EXPERIMENT_ID_DOC ),
 					),
 					array( 'experiment_id' )
 				),
@@ -310,7 +310,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				'description'         => 'End an A/B Test by declaring one variant the winner. Irreversible: the winner\'s design and settings are copied over the control Step (the live URL), the other variants are taken out of traffic and their results are folded into the control, and the test becomes Completed, so a repeated call is refused. Read get-ab-test-results and confirm with the user first. Write.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
-						'experiment_id' => WFFN_MCP_Schema::in_id(),
+						'experiment_id' => WFFN_MCP_Schema::in_id( self::EXPERIMENT_ID_DOC ),
 						'variant_id'    => WFFN_MCP_Schema::in_id( 'Winning variant id from get-ab-test; the control id keeps the control as it is.' ),
 					),
 					array( 'experiment_id', 'variant_id' )
@@ -331,7 +331,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				'description'         => 'Take one variant out of an A/B Test: it is unpublished, gets 0% traffic and stops receiving visitors; its Step and results are kept and restore-ab-test-variant brings it back. The control cannot be archived, and a Started test must keep two active variants (pause it instead). Give the remaining variants their new split with traffics in the same call (always on a Started test, so the live split never dips below 100) or with update-ab-test after. Write.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
-						'experiment_id' => WFFN_MCP_Schema::in_id(),
+						'experiment_id' => WFFN_MCP_Schema::in_id( self::EXPERIMENT_ID_DOC ),
 						'variant_id'    => WFFN_MCP_Schema::in_id( 'Variant id from get-ab-test.' ),
 						'traffics'      => self::schema_ab_traffics_input(),
 					),
@@ -353,7 +353,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				'description'         => 'Bring an archived variant back into an A/B Test: it is published again at 0% traffic - give it a share with traffics in the same call (the full new split, this variant included) or with update-ab-test after. Refused on a Completed test. Write.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
-						'experiment_id' => WFFN_MCP_Schema::in_id(),
+						'experiment_id' => WFFN_MCP_Schema::in_id( self::EXPERIMENT_ID_DOC ),
 						'variant_id'    => WFFN_MCP_Schema::in_id( 'Variant id from get-ab-test.' ),
 						'traffics'      => self::schema_ab_traffics_input(),
 					),
@@ -377,7 +377,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 						'funnel_id' => WFFN_MCP_Schema::in_id( 'Limit to one Funnel; omit for all Funnels.' ),
 						'search'    => WFFN_MCP_Schema::in_search(),
 						'limit'     => WFFN_MCP_Schema::in_int(
-							'',
+							'Rows per call, 1-100. Default 20. Ask for the next page rather than a larger limit.',
 							array(
 								'minimum' => 1,
 								'maximum' => self::LIST_MAX,
@@ -418,7 +418,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			'list-funnel-orders'              => array(
 				'capability'          => array( 'analytics', 'read' ),
 				'label'               => __( 'List Funnel Orders', 'funnel-builder-powerpack' ),
-				'description'         => 'WooCommerce Orders attributed to Funnels, newest first: order id and link, buyer, totals, UTM attribution and device. The same orders get-dashboard-overview, get-funnel-performance and get-top-funnels count - pass their after/before (and funnel_id) to list the orders behind a count; total then matches it. No after/before: every Funnel order. `search` matches buyer name, email or order number. Read-only.',
+				'description'         => 'WooCommerce Orders attributed to Funnels, newest first: order id and link, buyer, totals, UTM attribution and device. The same orders get-dashboard-overview, get-funnel-performance and get-top-funnels count - pass their after/before (and funnel_id) to list the orders behind a count; total then matches it. No after/before: every Funnel order. `search` matches buyer name, email or order number. 20 orders per call; limit is 1-50 at most, so page with next_page, the page to ask for next, absent on the last page. fields keeps only the named row keys (order_id is always kept), which makes each page smaller. For the pages buyers visited before ordering, call get-customer-order-journey with up to 50 of these order ids at once. Read-only.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array_merge(
 						array(
@@ -428,19 +428,24 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 						WFFN_MCP_Schema::in_window( 'Orders placed from, Y-m-d (whole day) or Y-m-d H:i:s, site timezone. Omit with before for all orders.', 'Orders placed up to, Y-m-d (whole day) or Y-m-d H:i:s. Default with after: now.' ),
 						array(
 							'limit' => WFFN_MCP_Schema::in_int(
-								'',
+								'Orders per call, 1-50 (a larger value is refused). Default 20. For more orders ask for the next page.',
 								array(
 									'minimum' => 1,
-									'maximum' => self::LIST_MAX,
+									'maximum' => self::ORDERS_LIST_MAX,
 									'default' => self::LIST_DEFAULT,
 								)
 							),
-							'page'  => WFFN_MCP_Schema::in_int(
-								'',
+							'page'   => WFFN_MCP_Schema::in_int(
+								'Page of limit orders, from 1; next_page in the reply names the next one.',
 								array(
 									'minimum' => 1,
 									'default' => 1,
 								)
+							),
+							'fields' => WFFN_MCP_Schema::in_arr(
+								WFFN_MCP_Schema::in_enum( self::ORDER_ROW_FIELDS ),
+								'Row keys to return; omit for every key. order_id is always returned.',
+								array( 'minItems' => 1 )
 							),
 						)
 					)
@@ -459,7 +464,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 						'funnel_id' => WFFN_MCP_Schema::in_id( 'Limit to one Funnel; omit for all Funnels.' ),
 						'search'    => WFFN_MCP_Schema::in_search(),
 						'limit'     => WFFN_MCP_Schema::in_int(
-							'',
+							'Rows per call, 1-100. Default 20. Ask for the next page rather than a larger limit.',
 							array(
 								'minimum' => 1,
 								'maximum' => self::LIST_MAX,
@@ -875,7 +880,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
 						'step_id'  => WFFN_MCP_Schema::in_id(),
-						'settings' => WFFN_MCP_Schema::in_map( array( 'type' => array( 'string', 'boolean', 'integer', 'number', 'array' ) ), 'Setting key => new value.', array( 'minProperties' => 1 ) ),
+						'settings' => self::settings_patch_schema(),
 					),
 					array( 'step_id', 'settings' )
 				),
@@ -906,7 +911,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
 						'offer_id' => WFFN_MCP_Schema::in_id(),
-						'settings' => WFFN_MCP_Schema::in_map( array( 'type' => array( 'string', 'boolean', 'integer', 'number', 'array' ) ), 'Setting key => new value.', array( 'minProperties' => 1 ) ),
+						'settings' => self::settings_patch_schema(),
 					),
 					array( 'offer_id', 'settings' )
 				),
@@ -966,11 +971,15 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			'update-bump-design'              => array(
 				'capability'          => array( 'funnel', 'write' ),
 				'label'               => __( 'Update Order Bump Design', 'funnel-builder-powerpack' ),
-				'description'         => 'Change one Order Bump\'s design values (PATCH): the texts shoppers read - checkbox line, description, badge, button labels, per product as product_[product key]_[field] - plus toggles and style tokens. Keys, types and current values come from get-order-bump\'s design.groups. Product image: product_[key]_featured_image shows/hides it; product_[key]_featured_image_options is an object patch {type: product|custom, custom_url: http(s) image URL, width: px, position: left|right|top}. Texts may use the merge tags get-order-bump lists; an unknown or malformed tag is refused because it would print literally at checkout. The skin itself changes with update-bump-skin. Write.',
+				'description'         => 'Change one Order Bump\'s design values (PATCH): the texts shoppers read - checkbox line, description, badge, button labels, per product as product_[product key]_[field] - plus toggles and style tokens. Keys, types and current values come from get-order-bump\'s design.groups. Product image: product_[key]_featured_image shows/hides it; product_[key]_featured_image_options is an object patch {type: product|custom, custom_url: http(s) image URL, width: px, position: left|right|top}; its read-only image_url may come back unchanged. null resets a key to the skin\'s default (refused for a key the skin has none for - pass "" to clear). Texts may use the merge tags get-order-bump lists; an unknown or malformed tag is refused because it would print literally at checkout. The skin itself changes with update-bump-skin. Write.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
 						'bump_id' => WFFN_MCP_Schema::in_id(),
-						'design'  => WFFN_MCP_Schema::in_map( array( 'type' => array( 'string', 'boolean', 'integer', 'number', 'object' ) ), 'Design key => new value. Booleans for true/false toggles; an object only for *_featured_image_options; the rest is stored as text.', array( 'minProperties' => 1 ) ),
+						// The handler checks every key and value and names the one it refuses; a schema refusal reaches the gateway without one.
+						'design'  => array_merge(
+							WFFN_MCP_Schema::in_map( array( 'type' => array( 'string', 'boolean', 'integer', 'number', 'object', 'null' ) ), 'Design key => new value (an object; the same object as a JSON string is accepted). Booleans for true/false toggles; an object only for *_featured_image_options; null resets a key to the skin\'s default; the rest is stored as text.', array( 'minProperties' => 1 ) ),
+							array( 'type' => array( 'object', 'string' ) )
+						),
 					),
 					array( 'bump_id', 'design' )
 				),
@@ -1220,7 +1229,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			'get-funnel-order'                => array(
 				'capability'          => array( 'analytics', 'read' ),
 				'label'               => __( 'Get Funnel Order', 'funnel-builder-powerpack' ),
-				'description'         => 'One WooCommerce Order as the Funnel sold it: line items grouped by what sold them (checkout, order bump or upsell) with subtotals, and the order total. Find order ids with list-funnel-orders. Read-only.',
+				'description'         => 'One WooCommerce Order as the Funnel sold it: line items grouped by what sold them (checkout, order bump or upsell) with subtotals and the order total. Find order ids with list-funnel-orders; the pages the buyer visited before ordering are get-customer-order-journey. Read-only.',
 				'input_schema'        => WFFN_MCP_Schema::input(
 					array(
 						'order_id' => WFFN_MCP_Schema::in_id(),
@@ -1230,6 +1239,29 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				'output_schema'       => self::schema_get_funnel_order(),
 				'permission_callback' => array( 'WFFN_MCP_Permissions', 'can_read' ),
 				'execute_callback'    => WFFN_Pro_MCP::gate( array( $this, 'get_funnel_order' ) ),
+				'annotations'         => array( 'readonly' => true ),
+			),
+
+			'get-customer-order-journey'      => array(
+				'capability'          => array( 'analytics', 'read' ),
+				'label'               => __( 'Get Customer Order Journey', 'funnel-builder-powerpack' ),
+				'description'         => 'The pages buyers visited before placing WooCommerce Orders, oldest first: when, page title, url, page id, and whether the page was on another site that sent them. order_id for one Order (steps), or order_ids for up to 50 at once (journeys, one entry per Order) - for many Orders pass their ids together rather than calling once per Order; ids from list-funnel-orders (fields order_id keeps that list small). A bulk reply that would grow too large returns the rest as pending: call again with those ids. Needs Funnel Builder journey tracking: tracking=false means it is off on this store, and every journey is empty. Read-only.',
+				'input_schema'        => WFFN_MCP_Schema::input(
+					array(
+						'order_id'  => WFFN_MCP_Schema::in_id( 'One Order.' ),
+						'order_ids' => WFFN_MCP_Schema::in_arr(
+							WFFN_MCP_Schema::in_id(),
+							'Up to 50 Orders in one call, instead of order_id.',
+							array(
+								'minItems' => 1,
+								'maxItems' => self::JOURNEY_BULK_MAX,
+							)
+						),
+					)
+				),
+				'output_schema'       => self::schema_get_customer_order_journey(),
+				'permission_callback' => array( 'WFFN_MCP_Permissions', 'can_read' ),
+				'execute_callback'    => WFFN_Pro_MCP::gate( array( $this, 'get_customer_order_journey' ) ),
 				'annotations'         => array( 'readonly' => true ),
 			),
 
@@ -1375,11 +1407,13 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 	 * @return array|WP_Error
 	 */
 	public function get_step_stats( $input ) {
-		$input  = (array) $input;
-		$funnel = new WFFN_Funnel( absint( $input['funnel_id'] ) );
+		$input   = (array) $input;
+		$step_id = absint( $input['step_id'] );
+		$named   = isset( $input['funnel_id'] );
+		$funnel  = new WFFN_Funnel( $named ? absint( $input['funnel_id'] ) : absint( get_post_meta( $step_id, '_bwf_in_funnel', true ) ) );
 
 		if ( ! $funnel->get_id() ) {
-			return new WP_Error( 'fkmcp_funnel_not_found', 'No funnel with that id.' );
+			return $named ? new WP_Error( 'fkmcp_funnel_not_found', 'No funnel with that id.' ) : new WP_Error( 'fkmcp_step_not_found', 'No step with that id.' );
 		}
 
 		$canvas = FKMCP_Pack_Funnels::controller( 'class-wffn-rest-funnel-canvas.php', 'WFFN_REST_Funnel_Canvas' );
@@ -1387,8 +1421,6 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		if ( ! $canvas && ! self::wants_window( $input ) ) {
 			return new WP_Error( 'fkmcp_analytics_unavailable', 'The analytics provider is not loaded on this request.' );
 		}
-
-		$step_id = absint( $input['step_id'] );
 
 		foreach ( (array) $funnel->get_steps() as $step ) {
 			$step = (array) $step;
@@ -1667,6 +1699,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 
 			$items[] = array(
 				'id'              => $id,
+				'experiment_id'   => $id,
 				'title'           => isset( $row['title'] ) ? $row['title'] : '',
 				'desc'            => isset( $row['desc'] ) ? $row['desc'] : '',
 				'type'            => isset( $row['type'] ) ? $row['type'] : '',
@@ -1705,15 +1738,28 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			return new WP_Error( 'fkmcp_ab_tests_unavailable', 'The A/B Tests API is not loaded on this request.' );
 		}
 
-		$input = (array) $input;
+		$input         = (array) $input;
+		$experiment_id = isset( $input['experiment_id'] ) ? absint( $input['experiment_id'] ) : 0;
+
+		if ( ! $experiment_id && ! empty( $input['step_id'] ) ) {
+			$experiment_id = self::experiment_for_step( absint( $input['step_id'] ) );
+
+			if ( ! $experiment_id ) {
+				return new WP_Error( 'fkmcp_experiment_not_found', 'That Step is not the control or a variant of an A/B test; list-ab-tests shows the tests.' );
+			}
+		}
+
+		if ( ! $experiment_id ) {
+			return new WP_Error( 'fkmcp_invalid_input', 'Send experiment_id (from list-ab-tests) or step_id.' );
+		}
 
 		// Checked here because the module's own loader wp_die()s on an unknown
 		// id - an agent must get an error result, never a dead request.
-		if ( ! self::experiment_exists( absint( $input['experiment_id'] ) ) ) {
+		if ( ! self::experiment_exists( $experiment_id ) ) {
 			return new WP_Error( 'fkmcp_experiment_not_found', 'No A/B test with that id.' );
 		}
 
-		$experiment = $rest->get_experiment( absint( $input['experiment_id'] ) );
+		$experiment = $rest->get_experiment( $experiment_id );
 
 		if ( ! is_array( $experiment ) || empty( $experiment['id'] ) ) {
 			return new WP_Error( 'fkmcp_experiment_not_found', 'No A/B test with that id.' );
@@ -1727,8 +1773,9 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			unset( $variant['edit'], $variant['desc'] );
 
 			// The editor link the admin UI opens for a variant, breadcrumb back to the test.
-			$variant['edit_link'] = '' !== $edit ? add_query_arg( 'bwf_exp_ref', (int) $experiment['id'], $edit ) : '';
-			$variants[]           = $variant;
+			$variant['edit_link']  = '' !== $edit ? add_query_arg( 'bwf_exp_ref', (int) $experiment['id'], $edit ) : '';
+			$variant['variant_id'] = isset( $variant['id'] ) ? (int) $variant['id'] : 0;
+			$variants[]            = $variant;
 		}
 
 		$controls = self::control_steps( array( array( 'id' => (int) $experiment['id'] ) ) );
@@ -1736,6 +1783,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 
 		return array(
 			'id'              => (int) $experiment['id'],
+			'experiment_id'   => (int) $experiment['id'],
 			'title'           => isset( $experiment['title'] ) ? $experiment['title'] : '',
 			'desc'            => isset( $experiment['desc'] ) ? $experiment['desc'] : '',
 			'type'            => isset( $experiment['type'] ) ? $experiment['type'] : '',
@@ -1801,9 +1849,41 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 	A/B Test writes                                                     */
 	/* ------------------------------------------------------------------ */
 
+	/**
+	 * The `settings` of the upsell settings writes. A Funnel Builder whose step
+	 * settings writes unfold the per-tab shape the reads return also takes it
+	 * here; an older one keeps the flat map it can validate.
+	 */
+	private static function settings_patch_schema() {
+		if ( method_exists( 'FKMCP_Pack_Funnels', 'settings_patch_schema' ) ) {
+			return FKMCP_Pack_Funnels::settings_patch_schema( 'Setting key => new value.' );
+		}
+
+		return WFFN_MCP_Schema::in_map( array( 'type' => array( 'string', 'boolean', 'integer', 'number', 'array' ) ), 'Setting key => new value.', array( 'minProperties' => 1 ) );
+	}
+
+	/** What every A/B Test ability's experiment_id is, so an agent holding list-ab-tests' rows passes the right key. */
+	const EXPERIMENT_ID_DOC = 'The A/B Test: the id list-ab-tests returns for it.';
+
 	/** Rows a list ability answers with, and the most it will answer with. */
 	const LIST_DEFAULT = 20;
 	const LIST_MAX     = 100;
+
+	/**
+	 * list-funnel-orders' most: a fully filled order row is about 1 KB, sent
+	 * twice (text and structuredContent), so 100 rows reached the FunnelKit
+	 * AI gateway's 200 KB reply limit; 50 stays near half of it.
+	 */
+	const ORDERS_LIST_MAX = 50;
+
+	/** The keys of a list-funnel-orders row, what its fields input may name. */
+	const ORDER_ROW_FIELDS = array( 'order_id', 'order_number', 'order_url', 'email', 'name', 'phone', 'date', 'referrers', 'device', 'utm_campaign', 'utm_source', 'utm_medium', 'utm_term', 'utm_content', 'total_spent', 'customer_id', 'funnel_title', 'fid', 'convert_time', 'step_id', 'checkout_total', 'bump_total', 'bump_accepted', 'bump_rejected', 'offer_total', 'offer_accepted', 'offer_rejected' );
+
+	/** Order ids one get-customer-order-journey call takes. */
+	const JOURNEY_BULK_MAX = 50;
+
+	/** JSON bytes of journeys one call answers with; the gateway reads 200 KB per reply and every result is sent twice. */
+	const JOURNEY_BULK_BYTES = 80000;
 
 	/** Top funnels: a ranking, so a short list by default. */
 	const TOP_FUNNELS_DEFAULT = 5;
@@ -2617,7 +2697,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		}
 
 		$input  = (array) $input;
-		$args   = self::list_args( $input );
+		$args   = self::list_args( $input, self::ORDERS_LIST_MAX );
 		$window = array();
 
 		// The controller is a singleton that keeps the last call's filters
@@ -2645,11 +2725,41 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			);
 		}
 
+		global $wpdb;
+
+		$db     = $wpdb instanceof wpdb ? $wpdb : null;
+		$failed = '';
+		// The provider runs several queries and each one clears last_error, so each error is caught before the next query runs.
+		$watch = static function ( $query ) use ( $db, &$failed ) {
+			if ( '' === $failed && '' !== (string) $db->last_error ) {
+				$failed = (string) $db->last_error;
+			}
+
+			return $query;
+		};
+
+		if ( $db ) {
+			$db->last_error = '';
+			add_filter( 'query', $watch );
+		}
+
 		$data = FKMCP_Pack_Funnels::response_data( $orders->get_orders( $args, true ) );
-		$rows = array();
+
+		if ( $db ) {
+			remove_filter( 'query', $watch );
+			$failed = '' !== $failed ? $failed : (string) $db->last_error;
+		}
+
+		if ( '' !== $failed ) {
+			return self::query_failed( 'the order list', $failed );
+		}
+
+		$fields = ! empty( $input['fields'] ) && is_array( $input['fields'] ) ? array_flip( array_merge( array( 'order_id' ), array_map( 'strval', $input['fields'] ) ) ) : array();
+		$rows   = array();
 
 		foreach ( (array) ( isset( $data['records'] ) && is_array( $data['records'] ) ? $data['records'] : array() ) as $row ) {
-			$rows[] = self::untrust( (array) $row );
+			$row    = self::compact_order_row( self::untrust( (array) $row ) );
+			$rows[] = $fields ? array_intersect_key( $row, $fields ) : $row;
 		}
 
 		$out = array(
@@ -2657,12 +2767,46 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			'total' => self::list_total( $data, $rows ),
 		);
 
+		if ( $args['page_no'] * $args['limit'] < $out['total'] ) {
+			$out['next_page'] = $args['page_no'] + 1;
+		}
+
 		if ( $window ) {
 			$out['window'] = $window;
 		}
 
 		return $out;
 	}
+
+	/**
+	 * A read whose database query failed: say which, so the agent can tell the
+	 * user it is the store and not the question. The query's own error goes to
+	 * the store's log, never to the agent - it can carry site data.
+	 */
+	private static function query_failed( $what, $error = null ) {
+		global $wpdb;
+
+		WFFN_MCP_Log::event( sprintf( 'QUERY_FAILED %s: %s', $what, null === $error ? (string) $wpdb->last_error : (string) $error ) );
+
+		return new WP_Error( 'fkmcp_query_failed', sprintf( 'The store\'s database refused the query for %s, so it could not be read; the details are in the store\'s FunnelKit AI log. Retrying will not help; tell the user.', $what ) );
+	}
+
+	/**
+	 * An order row without empty fields or the buyer's journey, which the
+	 * export row carries twice (a list of eight-key steps and journey_text)
+	 * and which ran to kilobytes per order; get-customer-order-journey returns it for a single order.
+	 */
+	private static function compact_order_row( array $row ) {
+		unset( $row['journey'], $row['journey_text'] );
+
+		return array_filter(
+			$row,
+			function ( $value ) {
+				return ! ( '' === $value || null === $value || array() === $value );
+			}
+		);
+	}
+
 
 	/**
 	 * @param mixed $input
@@ -3767,6 +3911,12 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			return new WP_Error( 'fkmcp_invalid_input', sprintf( 'Offer #%d does not belong to an upsell step.', $offer->ID ) );
 		}
 
+		$detached = self::offer_detached( $offer->ID, $step_id );
+
+		if ( '' !== $detached ) {
+			return new WP_Error( 'fkmcp_update_failed', $detached );
+		}
+
 		$endpoint = WFFN_REST_UPSELL_API_EndPoint::get_instance();
 		$details  = FKMCP_Pack_Funnels::response_data( $endpoint->get_wfocu_offer_details( FKMCP_Pack_Funnels::rest_request( array( 'step_id' => $offer->ID ) ) ) );
 		$details  = isset( $details['data'] ) ? (array) json_decode( (string) wp_json_encode( $details['data'] ), true ) : array();
@@ -3867,7 +4017,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		);
 
 		if ( is_wp_error( $saved ) || empty( $saved['success'] ) ) {
-			return new WP_Error( 'fkmcp_update_failed', is_wp_error( $saved ) ? $saved->get_error_message() : ( isset( $saved['msg'] ) && '' !== $saved['msg'] ? (string) $saved['msg'] : 'The products could not be saved.' ) );
+			return new WP_Error( 'fkmcp_update_failed', is_wp_error( $saved ) ? $saved->get_error_message() : ( isset( $saved['msg'] ) && '' !== $saved['msg'] ? (string) $saved['msg'] : sprintf( 'The Upsells module refused the products of Offer %d without giving a reason, so nothing was saved. Read it again with get-upsell-offers before retrying.', $offer->ID ) ) );
 		}
 
 		$offers   = $this->get_upsell_offers( array( 'step_id' => $step_id ) );
@@ -4273,6 +4423,50 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		}
 
 		return array( $funnel_id, $links );
+	}
+
+	/** Funnel Builder tool => the sentences that point its description at Pro's tools. */
+	const TOOL_GUIDANCE = array(
+		'get-funnel'            => ' For views/conversions/revenue call get-funnel-analytics.',
+		'get-step'              => ' An Upsell Step\'s settings: get-upsell-settings.',
+		'get-checkout-fields'   => ' Show/hide conditions: get-checkout-conditional-fields.',
+		'get-checkout-settings' => ' Conditional fields: get-checkout-conditional-fields.',
+		'get-step-settings'     => ' Upsell Steps: get-upsell-settings; Order Bumps: get-order-bump; Thank You order rules: get-thankyou-rules.',
+		'create-funnel'         => ' To copy one of the site\'s existing Funnels, duplicate-funnel does that instead (list-funnels shows them).',
+		'update-step'           => ' A/B test variant ids: get-ab-test.',
+		'update-step-template'  => ' Change an Offer\'s template with update-offer-template.',
+	);
+
+	/**
+	 * Funnel Builder tool => the capability of the Pro tool its pointer names,
+	 * where that differs from the Funnel Builder tool's own: the pointer is
+	 * left out for a user the Pro tool is hidden from.
+	 */
+	const TOOL_GUIDANCE_CAPABILITY = array(
+		'get-funnel' => array( 'analytics', 'read' ),
+	);
+
+	/**
+	 * fkmcp_tool_guidance: Funnel Builder names only its own tools, so the
+	 * pointers from its descriptions to Pro's tools come from here.
+	 * Checks the capability directly, not through FKMCP_Registry::user_may():
+	 * that reads the descriptions this filter is helping to build.
+	 *
+	 * @param string $guidance Guidance so far.
+	 * @param string $slug     The Funnel Builder tool.
+	 *
+	 * @return string
+	 */
+	public static function tool_guidance( $guidance, $slug ) {
+		if ( ! isset( self::TOOL_GUIDANCE[ $slug ] ) ) {
+			return (string) $guidance;
+		}
+
+		if ( isset( self::TOOL_GUIDANCE_CAPABILITY[ $slug ] ) && ! WFFN_MCP_Permissions::can_access( self::TOOL_GUIDANCE_CAPABILITY[ $slug ][0], self::TOOL_GUIDANCE_CAPABILITY[ $slug ][1] ) ) {
+			return (string) $guidance;
+		}
+
+		return (string) $guidance . self::TOOL_GUIDANCE[ $slug ];
 	}
 
 	/**
@@ -4771,6 +4965,26 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 	/** Skin identity keys - update-bump-skin changes them, update-bump-design must not. */
 	const BUMP_DESIGN_LOCKED = array( 'layout', 'layout_name', 'class_name' );
 
+	/**
+	 * Skin-level product defaults. They seed products added later and never change a product already on the bump,
+	 * so get-order-bump does not list them and update-bump-design refuses them. Value: the per-product suffixes to use instead.
+	 */
+	const BUMP_SKIN_PRODUCT_DEFAULTS = array(
+		'product_title'                => array( 'title' ),
+		'product_small_title'          => array( 'sub_title' ),
+		'product_description'          => array( 'description' ),
+		'product_small_description'    => array( 'small_description' ),
+		'product_add_button_text'      => array( 'add_btn_text' ),
+		'product_added_button_text'    => array( 'added_btn_text' ),
+		'product_remove_button_text'   => array( 'remove_btn_text' ),
+		'product_read_more'            => array( 'read_more' ),
+		'product_featured_image'       => array( 'featured_image', 'featured_image_options' ),
+		'product_image_url'            => array( 'featured_image_options' ),
+		'product_image_position'       => array( 'featured_image_options' ),
+		'product_image_position_class' => array( 'featured_image_options' ),
+		'product_image_position_width' => array( 'featured_image_options' ),
+	);
+
 	/** Per-product design fields: stored as product_<product key>_<suffix>. */
 	const BUMP_PRODUCT_KEY_SUFFIXES = array( 'title', 'sub_title', 'description', 'small_description', 'add_btn_text', 'added_btn_text', 'remove_btn_text', 'featured_image', 'featured_image_options', 'read_more', 'exclusive_content_enable', 'exclusive_content', 'social_proof_enable', 'social_proof_heading', 'social_proof_content' );
 
@@ -4791,12 +5005,18 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		return $map;
 	}
 
-	/** The design map as read tools return it: scalar values minus empties and the skin identity keys. */
+	/** Keys the design tools neither list nor accept: the skin identity and the skin-level product defaults. */
+	private static function bump_design_unlisted_keys() {
+		return array_merge( self::BUMP_DESIGN_LOCKED, array_keys( self::BUMP_SKIN_PRODUCT_DEFAULTS ) );
+	}
+
+	/** The design map as read tools return it: scalar values minus empties, the skin identity keys and the skin-level product defaults. */
 	private static function bump_design_values( array $map ) {
-		$values = array();
+		$values   = array();
+		$unlisted = self::bump_design_unlisted_keys();
 
 		foreach ( $map as $key => $value ) {
-			if ( in_array( $key, self::BUMP_DESIGN_LOCKED, true ) ) {
+			if ( in_array( $key, $unlisted, true ) ) {
 				continue;
 			}
 
@@ -4952,6 +5172,28 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 						}
 					}
 				}
+
+				// A group a compatibility adds on wfob_admin_design_schema (Bundles' "Sell this product's bundle") is
+				// only in the admin schema, so a bump that never saved its values would have no such keys to set.
+				foreach ( (array) ( isset( $admin['design'] ) ? $admin['design'] : array() ) as $group ) {
+					$group = (array) $group;
+					$gkey  = isset( $group['key'] ) ? (string) $group['key'] : '';
+
+					if ( '' === $gkey || isset( $out['groups'][ $gkey ] ) ) {
+						continue;
+					}
+
+					$out['groups'][ $gkey ] = isset( $group['label'] ) ? wp_strip_all_tags( (string) $group['label'] ) : $gkey;
+
+					foreach ( (array) ( isset( $group['fields'] ) ? $group['fields'] : array() ) as $def ) {
+						$def = (array) $def;
+
+						if ( ! empty( $def['key'] ) && isset( $def['type'] ) && 'bwf-label' !== $def['type'] ) {
+							$out['defs'][ (string) $def['key'] ]   = $def;
+							$out['assign'][ (string) $def['key'] ] = $gkey;
+						}
+					}
+				}
 			}
 		} catch ( Throwable $e ) {
 			self::log_exception( 'bump product field schema', $e );
@@ -4969,7 +5211,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		$grouped = array_fill_keys( array_keys( $schema['groups'] ), array() );
 		$other   = array();
 
-		foreach ( array_diff( array_unique( array_merge( array_keys( $defs ), array_keys( $defaults ), array_keys( $stored ) ) ), self::BUMP_DESIGN_LOCKED ) as $key ) {
+		foreach ( array_diff( array_unique( array_merge( array_keys( $defs ), array_keys( $defaults ), array_keys( $stored ) ) ), self::bump_design_unlisted_keys() ) as $key ) {
 			$def    = isset( $defs[ $key ] ) ? (array) $defs[ $key ] : array();
 			$value  = array_key_exists( $key, $stored ) && is_scalar( $stored[ $key ] ) ? $stored[ $key ] : ( isset( $defaults[ $key ] ) && is_scalar( $defaults[ $key ] ) ? $defaults[ $key ] : '' );
 			$sample = isset( $defaults[ $key ] ) && is_scalar( $defaults[ $key ] ) && '' !== (string) $defaults[ $key ] ? $defaults[ $key ] : $value;
@@ -5210,10 +5452,14 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			return $bump;
 		}
 
-		$design = isset( $input['design'] ) && is_array( $input['design'] ) ? $input['design'] : array();
+		$design = isset( $input['design'] ) ? $input['design'] : array();
 
-		if ( empty( $design ) ) {
-			return new WP_Error( 'fkmcp_invalid_input', 'design must map at least one design key to a value.' );
+		if ( is_string( $design ) ) {
+			$design = json_decode( $design, true );
+		}
+
+		if ( ! is_array( $design ) || empty( $design ) ) {
+			return new WP_Error( 'fkmcp_invalid_input', 'design must map at least one design key to a value - an object, or that object as a JSON string.' );
 		}
 
 		if ( count( $design ) > self::DESIGN_KEYS_MAX ) {
@@ -5227,8 +5473,11 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		$defaults = isset( $models[ $layout ] ) ? (array) $models[ $layout ] : array();
 		$schema   = self::bump_field_schema( $bump->ID, $layout );
 		$defs_map = $schema['defs'];
+		// Every key get-order-bump lists may be set, a compatibility's group (Bundles) included, even before it was first saved.
+		$allowed  = array_values( array_unique( array_merge( $allowed, array_diff( array_keys( $defs_map ), self::bump_design_unlisted_keys() ) ) ) );
 		$tags     = self::bump_merge_tag_names();
 		$patch    = array();
+		$seed     = null;
 
 		foreach ( $design as $key => $value ) {
 			$key = (string) $key;
@@ -5237,20 +5486,37 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				return new WP_Error( 'fkmcp_invalid_input', sprintf( '%s is the skin identity - change skins with update-bump-skin.', $key ) );
 			}
 
-			if ( in_array( $key, array( 'product_featured_image', 'product_image_url', 'product_image_position', 'product_image_position_class', 'product_image_position_width' ), true ) ) {
-				return new WP_Error( 'fkmcp_invalid_input', sprintf( '%s is the skin\'s default for products added later and does not change this bump\'s image: use product_<product key>_featured_image and product_<product key>_featured_image_options.', $key ) );
+			if ( isset( self::BUMP_SKIN_PRODUCT_DEFAULTS[ $key ] ) ) {
+				return new WP_Error( 'fkmcp_invalid_input', sprintf( '%1$s is the skin\'s default for products added later and does not change this bump\'s products: use product_<product key>_%2$s.', $key, implode( ' and product_<product key>_', self::BUMP_SKIN_PRODUCT_DEFAULTS[ $key ] ) ) );
 			}
 
 			if ( ! preg_match( '/^[a-z0-9_]{1,100}$/', $key ) || ! in_array( $key, $allowed, true ) ) {
 				return new WP_Error( 'fkmcp_invalid_input', sprintf( 'Unknown design key %s. Valid keys are the ones get-order-bump lists under design.groups, plus product_<product key>_<field> for the bump\'s products (fields: %s).', $key, implode( ', ', self::BUMP_PRODUCT_KEY_SUFFIXES ) ) );
 			}
 
-			if ( self::bump_is_image_key( $key ) ) {
-				// Patch over the stored options, or over the module's own seed when they are not an array yet.
-				$base = isset( $stored[ $key ] ) && is_array( $stored[ $key ] ) ? $stored[ $key ] : array();
+			$image_key = self::bump_is_image_key( $key );
+			$base      = $image_key && isset( $stored[ $key ] ) && is_array( $stored[ $key ] ) ? $stored[ $key ] : array();
 
+			if ( null === $seed && ( null === $value || ( $image_key && empty( $base ) ) ) ) {
+				$seed = (array) WFOB_Common::add_product_details_default_layout( WFOB_Common::get_prepared_products( $bump->ID ), $defaults );
+			}
+
+			if ( null === $value ) {
+				if ( $image_key ) {
+					$patch[ $key ] = isset( $seed[ $key ] ) ? (array) $seed[ $key ] : array();
+
+					continue;
+				}
+
+				if ( ! isset( $seed[ $key ] ) || ! is_scalar( $seed[ $key ] ) ) {
+					return new WP_Error( 'fkmcp_invalid_input', sprintf( '%s has no skin default to reset to - pass "" to clear it.', $key ) );
+				}
+
+				$value = (string) $seed[ $key ];
+			}
+
+			if ( $image_key ) {
 				if ( empty( $base ) ) {
-					$seed = (array) WFOB_Common::add_product_details_default_layout( WFOB_Common::get_prepared_products( $bump->ID ), $defaults );
 					$base = isset( $seed[ $key ] ) ? (array) $seed[ $key ] : array();
 				}
 
@@ -5269,8 +5535,8 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			$def    = isset( $defs_map[ $key ] ) ? (array) $defs_map[ $key ] : array();
 			$type   = isset( $def['type'] ) && 'bwf-label' !== $def['type'] ? self::bump_schema_type( (string) $def['type'] ) : self::bump_field_type( $key, $sample );
 
-			if ( 'toggle' === $type && ! is_bool( $value ) && ! in_array( $value, array( 'true', 'false' ), true ) ) {
-				return new WP_Error( 'fkmcp_invalid_input', sprintf( '%s is a toggle: pass true or false.', $key ) );
+			if ( 'toggle' === $type && ! is_bool( $value ) && ! in_array( $value, array( 'true', 'false', '1', '0', 1, 0 ), true ) ) {
+				return new WP_Error( 'fkmcp_invalid_input', sprintf( '%s is a toggle: pass true or false (1 or 0 as get-order-bump shows it for some skins).', $key ) );
 			}
 
 			if ( 'number' === $type && ! is_bool( $value ) && '' !== $value && ! is_numeric( $value ) ) {
@@ -5383,6 +5649,15 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		$value     = is_string( $value ) ? json_decode( $value, true ) : $value;
 		$positions = isset( $def['alignmentClassList'] ) ? array_keys( (array) $def['alignmentClassList'] ) : array();
 
+		// get-order-bump reads image_url back (the product's own image): the object may come back with it, unchanged.
+		if ( is_array( $value ) && array_key_exists( 'image_url', $value ) ) {
+			if ( (string) $value['image_url'] !== ( isset( $base['image_url'] ) ? (string) $base['image_url'] : '' ) ) {
+				return new WP_Error( 'fkmcp_invalid_input', sprintf( '%s image_url is read-only (the product\'s own image) - for another image pass type custom with custom_url.', $key ) );
+			}
+
+			unset( $value['image_url'] );
+		}
+
 		if ( ! is_array( $value ) || empty( $value ) || array_diff( array_keys( $value ), array( 'type', 'custom_url', 'width', 'position' ) )
 			|| ( isset( $value['type'] ) && ! in_array( $value['type'], array( 'product', 'custom' ), true ) )
 			|| ( isset( $value['width'] ) && ! is_numeric( $value['width'] ) )
@@ -5425,7 +5700,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 			}
 		}
 
-		return array_values( array_unique( array_diff( $allowed, self::BUMP_DESIGN_LOCKED ) ) );
+		return array_values( array_unique( array_diff( $allowed, self::bump_design_unlisted_keys() ) ) );
 	}
 
 	/**
@@ -5583,7 +5858,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 									)
 								),
 								'operator'  => WFFN_MCP_Schema::in_str( 'One of the type\'s operators; omit for types without.', array( 'maxLength' => 20 ) ),
-								'condition' => array( 'description' => 'Shape per the type\'s condition kind: a number/text/date/time, a list of option values, product ids, {qty, products}, or {meta_key, meta_value}.' ),
+								'condition' => array( 'description' => 'Shape per the type\'s condition kind in list-step-rule-types: a number/text/date/time, a list of option values, a list of product ids, {qty, products}, or {meta_key, meta_value}. A list comes back from the read tool (get-order-bump, get-upsell-settings, get-thankyou-rules) as {categories: [...]}; that shape is accepted as sent back.' ),
 							),
 						),
 						'One group: rules ANDed.',
@@ -5653,13 +5928,15 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		$types = array();
 		$group = '';
 
+		$flat = self::flat_rule_types( $module );
+
 		foreach ( $read['catalog'] as $entry ) {
 			// The list carries a group label on its first entry only.
 			if ( ! empty( $entry['nameKey'] ) ) {
 				$group = (string) $entry['nameKey'];
 			}
 
-			$kind = self::rule_kind( $entry );
+			$kind = self::rule_kind( $entry, in_array( (string) $entry['key'], $flat, true ) );
 			$row  = array(
 				'rule_type' => (string) $entry['key'],
 				'label'     => isset( $entry['label'] ) ? (string) $entry['label'] : (string) $entry['key'],
@@ -5855,10 +6132,31 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 	}
 
 	/**
+	 * Rule types the module's rules controller keeps as a flat value list: it
+	 * reads the posted condition's categories key and returns it wrapped there.
+	 *
+	 * @param array $module
+	 *
+	 * @return string[]
+	 */
+	private static function flat_rule_types( array $module ) {
+		if ( ! class_exists( $module['endpoint'] ) ) {
+			return array();
+		}
+
+		$endpoint = call_user_func( array( $module['endpoint'], 'get_instance' ) );
+
+		return method_exists( $endpoint, 'get_category_based_rules' ) ? array_map( 'strval', (array) $endpoint->get_category_based_rules() ) : array();
+	}
+
+	/**
 	 * What a rule type's condition takes, from the widget the admin screen draws
 	 * for it: kind + fixed options where the screen has them.
+	 *
+	 * @param array $entry
+	 * @param bool  $flat  The controller keeps this type as a flat list under categories.
 	 */
-	private static function rule_kind( array $entry ) {
+	private static function rule_kind( array $entry, $flat = false ) {
 		$key    = isset( $entry['key'] ) ? (string) $entry['key'] : '';
 		$fields = isset( $entry['fields'] ) ? array_values( (array) $entry['fields'] ) : array();
 		$first  = ! empty( $fields ) ? (array) $fields[0] : array();
@@ -5903,7 +6201,7 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				$kind = array(
 					'kind'    => 'products',
 					'options' => array(),
-					'hint'    => 'Product ids (from search-products).',
+					'hint'    => $flat ? 'A list of product ids (from search-products); read back as {categories: [ids]}, which is accepted as sent back.' : 'Product ids (from search-products), as a list or {products: [ids]}.',
 				);
 				break;
 			case 'chosen_select':
@@ -6021,7 +6319,8 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		}
 
 		$entry     = $catalog[ $type ];
-		$kind      = self::rule_kind( $entry );
+		$flat      = in_array( $type, self::flat_rule_types( self::RULE_MODULES[ $for ] ), true );
+		$kind      = self::rule_kind( $entry, $flat );
 		$operators = array_values( array_map( 'strval', array_column( isset( $entry['operators'] ) ? (array) $entry['operators'] : array(), 'value' ) ) );
 		$operator  = isset( $rule['operator'] ) ? trim( (string) $rule['operator'] ) : '';
 
@@ -6108,14 +6407,15 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 				break;
 
 			case 'products':
-				$ids = is_array( $condition ) && isset( $condition['products'] ) ? $condition['products'] : $condition;
+				$ids = is_array( $condition ) && isset( $condition['products'] ) ? $condition['products'] : ( is_array( $condition ) && isset( $condition['categories'] ) ? $condition['categories'] : $condition );
 				$ids = self::product_ids( $ids, $where, $type );
 
 				if ( is_wp_error( $ids ) ) {
 					return $ids;
 				}
 
-				$condition = array( 'products' => $ids );
+				// A flat type (customer_purchased_products) is unwrapped from categories by the controller; products there would be dropped.
+				$condition = $flat ? array( 'categories' => $ids ) : array( 'products' => $ids );
 				break;
 
 			case 'product_qty':
@@ -6399,6 +6699,29 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 	}
 
 	/**
+	 * Why an Offer's products cannot be saved, checked before the save: the
+	 * Upsells save route answers nothing when the Offer's Upsell Step is gone,
+	 * and when the Step lists no Offers it rewrites the Offer without its
+	 * products. '' when the Offer can be saved.
+	 *
+	 * @param int $offer_id
+	 * @param int $step_id
+	 *
+	 * @return string
+	 */
+	private static function offer_detached( $offer_id, $step_id ) {
+		if ( ! get_post( $step_id ) ) {
+			return sprintf( 'Offer %d belongs to Upsell Step %d, which no longer exists, so the products were not saved. Create the Offer again on an existing Upsell Step (create-offer).', $offer_id, $step_id );
+		}
+
+		if ( empty( WFOCU_Core()->funnels->get_funnel_steps( $step_id ) ) ) {
+			return sprintf( 'Upsell Step %d lists no Offers, so Offer %d is not attached to it and its products were not saved. Open the Step in the admin, or create the Offer again (create-offer).', $step_id, $offer_id );
+		}
+
+		return '';
+	}
+
+	/**
 	 * @param mixed $input
 	 *
 	 * @return array|WP_Error
@@ -6440,6 +6763,212 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		}
 
 		return self::untrust( array_merge( array( 'order_id' => $order_id ), $data ) );
+	}
+
+	/**
+	 * @param mixed $input
+	 *
+	 * @return array|WP_Error
+	 */
+	public function get_customer_order_journey( $input ) {
+		$input    = (array) $input;
+		$order_id = absint( isset( $input['order_id'] ) ? $input['order_id'] : 0 );
+		$bulk     = isset( $input['order_ids'] ) && is_array( $input['order_ids'] ) ? array_values( array_unique( array_filter( array_map( 'absint', $input['order_ids'] ) ) ) ) : array();
+
+		if ( $order_id && $bulk ) {
+			return new WP_Error( 'fkmcp_invalid_input', 'order_id and order_ids cannot both be sent; send one.' );
+		}
+
+		if ( ! $order_id && ! $bulk ) {
+			return new WP_Error( 'fkmcp_invalid_input', 'Pass order_id for one Order, or order_ids for up to 50 (ids from list-funnel-orders).' );
+		}
+
+		if ( ! function_exists( 'wc_get_order' ) ) {
+			return new WP_Error( 'fkmcp_wc_unavailable', 'WooCommerce is not active.' );
+		}
+
+		$tracking = class_exists( 'WFFN_Journey' ) && WFFN_Journey::is_enabled();
+
+		if ( $order_id ) {
+			if ( false === wc_get_order( $order_id ) ) {
+				return new WP_Error( 'fkmcp_order_not_found', 'No order with that id.' );
+			}
+
+			$journeys = $tracking ? self::order_journeys( array( $order_id ) ) : array();
+
+			if ( false === $journeys ) {
+				return self::query_failed( 'the journey' );
+			}
+
+			return self::untrust(
+				array(
+					'order_id' => $order_id,
+					'tracking' => $tracking,
+					'steps'    => isset( $journeys[ $order_id ] ) ? $journeys[ $order_id ] : array(),
+				)
+			);
+		}
+
+		$found     = array();
+		$not_found = array();
+
+		foreach ( array_slice( $bulk, 0, self::JOURNEY_BULK_MAX ) as $id ) {
+			if ( false === wc_get_order( $id ) ) {
+				$not_found[] = $id;
+			} else {
+				$found[] = $id;
+			}
+		}
+
+		$journeys = $tracking ? self::order_journeys( $found ) : array();
+
+		if ( false === $journeys ) {
+			return self::query_failed( 'the journeys' );
+		}
+
+		$out     = array();
+		$pending = array();
+		$bytes   = 0;
+
+		foreach ( $found as $id ) {
+			$entry = self::untrust(
+				array(
+					'order_id' => $id,
+					'steps'    => isset( $journeys[ $id ] ) ? $journeys[ $id ] : array(),
+				)
+			);
+			$size  = strlen( (string) wp_json_encode( $entry ) );
+
+			if ( ! empty( $out ) && $bytes + $size > self::JOURNEY_BULK_BYTES ) {
+				$pending[] = $id;
+
+				continue;
+			}
+
+			$bytes += $size;
+			$out[]  = $entry;
+		}
+
+		return array_filter(
+			array(
+				'tracking'  => $tracking,
+				'journeys'  => $out,
+				'not_found' => $not_found,
+				'pending'   => array_merge( $pending, array_slice( $bulk, self::JOURNEY_BULK_MAX ) ),
+			),
+			static function ( $value ) {
+				return array() !== $value;
+			}
+		) + array( 'journeys' => array() );
+	}
+
+	/**
+	 * The pages each buyer visited before ordering, in order, keyed by order
+	 * id: one query for every order's journey row and one for the pages they
+	 * name. An order with nothing recorded, or a tracking table that predates
+	 * its journey column (wffn_conversion_tracking_db_updater 1.1, the guard
+	 * the Conversions screen uses), has no entry. A step keeps what an agent
+	 * reads - when, which page, where - and drops the path and site the url
+	 * repeats.
+	 *
+	 * @param int[] $order_ids
+	 *
+	 * @return array|false order id => steps; false when the query failed.
+	 */
+	private static function order_journeys( array $order_ids ) {
+		$order_ids = array_values( array_filter( array_map( 'absint', $order_ids ) ) );
+
+		if ( empty( $order_ids ) || version_compare( get_option( 'wffn_conversion_tracking_db_updater', '1.0' ), '1.1', '<' ) ) {
+			return array();
+		}
+
+		global $wpdb;
+
+		$wpdb->last_error = '';
+		$placeholders     = implode( ',', array_fill( 0, count( $order_ids ), '%d' ) );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- the plugin's own conversion table; type 2 rows are orders, keyed by source; $placeholders is a list of %d.
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT source, journey FROM {$wpdb->prefix}bwf_conversion_tracking WHERE type = 2 AND source IN ($placeholders) ORDER BY id DESC", $order_ids ), ARRAY_A );
+
+		if ( '' !== (string) $wpdb->last_error ) {
+			return false;
+		}
+
+		$raw = array();
+
+		// Newest row first, as the single-order read took it.
+		foreach ( (array) $rows as $row ) {
+			$id = absint( $row['source'] );
+
+			if ( ! isset( $raw[ $id ] ) && ! empty( $row['journey'] ) ) {
+				$raw[ $id ] = $row['journey'];
+			}
+		}
+
+		$stores   = array();
+		$page_ids = array();
+
+		foreach ( $raw as $id => $journey ) {
+			$stores[ $id ] = WFFN_Journey::decode( $journey );
+
+			foreach ( isset( $stores[ $id ]['j'] ) && is_array( $stores[ $id ]['j'] ) ? $stores[ $id ]['j'] : array() as $entry ) {
+				if ( is_array( $entry ) && ! empty( $entry['i'] ) && is_numeric( $entry['i'] ) ) {
+					$page_ids[] = absint( $entry['i'] );
+				}
+			}
+		}
+
+		// Page titles as the Conversions screen resolves them (add_journey_to_row); without them a step is titled by its path.
+		$page_ids = array_values( array_unique( $page_ids ) );
+
+		// One query loads every page the journeys name into the post cache, so each title and status below reads from it.
+		if ( ! empty( $page_ids ) ) {
+			get_posts(
+				array(
+					'post__in'               => $page_ids,
+					'post_type'              => array_values( get_post_types() ),
+					'post_status'            => 'any',
+					'posts_per_page'         => count( $page_ids ),
+					'no_found_rows'          => true,
+					'update_post_meta_cache' => false,
+					'update_post_term_cache' => false,
+				)
+			);
+		}
+
+		$titles = array();
+
+		foreach ( $page_ids as $page_id ) {
+			if ( 'publish' === get_post_status( $page_id ) ) {
+				$titles[ $page_id ] = get_post_field( 'post_title', $page_id );
+			}
+		}
+
+		$out = array();
+
+		foreach ( $raw as $id => $journey ) {
+			$steps = array();
+
+			foreach ( (array) WFFN_Journey::resolve( $journey, $titles ) as $step ) {
+				if ( ! is_array( $step ) ) {
+					continue;
+				}
+
+				$steps[] = array_filter(
+					array(
+						'at'       => isset( $step['at'] ) ? $step['at'] : '',
+						'title'    => isset( $step['title'] ) ? $step['title'] : '',
+						'url'      => isset( $step['url'] ) ? $step['url'] : '',
+						'page_id'  => ! empty( $step['page_id'] ) ? (int) $step['page_id'] : 0,
+						'external' => isset( $step['is_local'] ) && ! $step['is_local'],
+					)
+				);
+			}
+
+			$out[ $id ] = $steps;
+		}
+
+		return $out;
 	}
 
 	/**
@@ -6499,13 +7028,13 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 	}
 
 	/** Shared shape for the contacts/orders/leads list handlers. */
-	private static function list_args( $input ) {
+	private static function list_args( $input, $max = self::LIST_MAX ) {
 		$input = (array) $input;
 
 		return array(
 			'funnel_id'   => ! empty( $input['funnel_id'] ) ? absint( $input['funnel_id'] ) : 0,
 			's'           => isset( $input['search'] ) ? (string) $input['search'] : '',
-			'limit'       => isset( $input['limit'] ) ? max( 1, min( self::LIST_MAX, absint( $input['limit'] ) ) ) : self::LIST_DEFAULT,
+			'limit'       => isset( $input['limit'] ) ? max( 1, min( $max, absint( $input['limit'] ) ) ) : self::LIST_DEFAULT,
 			'page_no'     => isset( $input['page'] ) ? max( 1, absint( $input['page'] ) ) : 1,
 			'total_count' => 'yes',
 		);
@@ -6571,6 +7100,14 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 
 		foreach ( array( 'after', 'before' ) as $key ) {
 			if ( isset( $input[ $key ] ) && is_string( $input[ $key ] ) && preg_match( '/^\\d{4}-\\d{2}-\\d{2}( \\d{2}:\\d{2}:\\d{2})?$/', $input[ $key ] ) ) {
+				// The pattern lets 2026-13-45 through, and the providers then drop the bound and answer for all time.
+				$format = 10 === strlen( $input[ $key ] ) ? '!Y-m-d' : '!Y-m-d H:i:s';
+				$parsed = DateTime::createFromFormat( $format, $input[ $key ] );
+
+				if ( ! $parsed || $parsed->format( substr( $format, 1 ) ) !== $input[ $key ] ) {
+					return new WP_Error( 'fkmcp_invalid_input', sprintf( '%s %s is not a real date and time; pass Y-m-d or Y-m-d H:i:s.', $key, $input[ $key ] ) );
+				}
+
 				$request[ $key ] = $input[ $key ];
 			}
 		}
@@ -6623,6 +7160,35 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 	 */
 	private static function ab_unavailable() {
 		return self::ab_ready() ? null : new WP_Error( 'fkmcp_ab_tests_unavailable', 'The A/B Tests module is not active.' );
+	}
+
+	/**
+	 * The A/B test a Step is the control or a variant of: the newest one that
+	 * is not Completed, else the newest Completed one. 0 when the Step is in none.
+	 */
+	private static function experiment_for_step( $step_id ) {
+		$control = (int) get_post_meta( $step_id, '_bwf_ab_variation_of', true );
+		$control = $control > 0 ? $control : $step_id;
+		$rows    = BWFABT_Core()->get_dataStore()->get_experiment_by_control_id( $control, 'DESC' );
+		$found   = 0;
+
+		foreach ( (array) $rows as $row ) {
+			$row = (array) $row;
+
+			if ( empty( $row['id'] ) ) {
+				continue;
+			}
+
+			if ( ! $found ) {
+				$found = (int) $row['id'];
+			}
+
+			if ( (int) $row['status'] !== BWFABT_Experiment::STATUS_COMPLETE ) {
+				return (int) $row['id'];
+			}
+		}
+
+		return $found;
 	}
 
 	/** Row lookup by primary key - the one read that cannot wp_die(). */
@@ -6857,11 +7423,12 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 		$s = 'WFFN_MCP_Schema';
 
 		return array(
-			'id'     => $s::int( 'Experiment id (experiment_id in other tools).' ),
-			'title'  => $s::str(),
-			'desc'   => $s::str( 'Description; may be empty.' ),
-			'type'   => $s::str( 'Step type under test, e.g. aero (checkout), upsell, landing.' ),
-			'status' => $s::str( 'Draft, Started (running, no winner yet), Paused (stopped, no winner) or Completed (winner declared).' ),
+			'experiment_id' => $s::int( 'The A/B Test id, as every A/B ability takes it.' ),
+			'id'            => $s::int( 'Deprecated alias of experiment_id; use experiment_id.' ),
+			'title'         => $s::str(),
+			'desc'          => $s::str( 'Description; may be empty.' ),
+			'type'          => $s::str( 'Step type under test, e.g. aero (checkout), upsell, landing.' ),
+			'status'        => $s::str( 'Draft, Started (running, no winner yet), Paused (stopped, no winner) or Completed (winner declared).' ),
 		);
 	}
 
@@ -6910,14 +7477,15 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 						'variants'        => $s::arr(
 							$s::obj(
 								array(
-									'id'        => $s::int( 'Variant Step id (control_step_id for links when control is true).' ),
-									'title'     => $s::str(),
-									'traffic'   => $s::num( 'Traffic share, percent 0-100.' ),
-									'control'   => $s::bool( 'true for the control variant.' ),
-									'winner'    => $s::bool(),
-									'active'    => $s::bool( 'false when excluded from traffic.' ),
-									'view_link' => $s::url( 'Public URL of this variant.' ),
-									'edit_link' => $s::url( 'Admin URL that opens this variant in its editor.' ),
+									'variant_id' => $s::int( 'Variant Step id, the variant_id every A/B write takes (control_step_id for links when control is true).' ),
+									'id'         => $s::int( 'Deprecated alias of variant_id; use variant_id in traffics and the other writes.' ),
+									'title'      => $s::str(),
+									'traffic'    => $s::num( 'Traffic share, percent 0-100.' ),
+									'control'    => $s::bool( 'true for the control variant.' ),
+									'winner'     => $s::bool(),
+									'active'     => $s::bool( 'false when excluded from traffic.' ),
+									'view_link'  => $s::url( 'Public URL of this variant.' ),
+									'edit_link'  => $s::url( 'Admin URL that opens this variant in its editor.' ),
 								)
 							)
 						),
@@ -7153,12 +7721,12 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 						'bump_rejected'  => $s::str( 'JSON-encoded list of rejected bump ids.' ),
 						'offer_total'    => $s::num( 'Upsell part of the total.' ),
 						'offer_accepted' => $s::str( 'JSON-encoded list of accepted offer ids.' ),
-						'offer_rejected' => $s::str( 'JSON-encoded list of rejected offer ids.' ),
-					)
+						'offer_rejected' => $s::str( 'JSON-encoded list of rejected offer ids.' ),					)
 				),
-				'Orders attributed to Funnels.',
+				'Orders attributed to Funnels. A field with no value is left out of its row.',
 				array(
-					'window' => $s::any_obj( 'The after/before applied, whole days resolved; absent when listing every order.' ),
+					'window'    => $s::any_obj( 'The after/before applied, whole days resolved; absent when listing every order.' ),
+					'next_page' => $s::int( 'The page to ask for next; absent on the last page.' ),
 				)
 			)
 		);
@@ -7650,6 +8218,57 @@ class FKMCP_Pack_Funnels_Pro extends FKMCP_Pack {
 					'order_total' => $s::num( 'Store currency.' ),
 				),
 				'One order as the Funnel saw it.'
+			)
+		);
+	}
+
+	/**
+	 * One Order's journey steps, shared by the single and the bulk reply.
+	 *
+	 * @return array
+	 */
+	private static function schema_journey_steps() {
+		$s = 'WFFN_MCP_Schema';
+
+		return $s::arr(
+			$s::obj(
+				array(
+					'at'       => $s::datetime( 'When the page was viewed, site time.' ),
+					'title'    => $s::str( 'Page title.' ),
+					'url'      => $s::url( 'Page address.' ),
+					'page_id'  => $s::int( 'Post id of the page; absent for a page outside WordPress.' ),
+					'external' => $s::bool( 'true: a page on another site that sent the buyer.' ),
+				)
+			),
+			'Pages the buyer visited before ordering, oldest first. Empty when tracking is off or recorded nothing for this order.'
+		);
+	}
+
+	/**
+	 * @return array
+	 */
+	private static function schema_get_customer_order_journey() {
+		$s = 'WFFN_MCP_Schema';
+
+		return $s::pro(
+			$s::obj(
+				array(
+					'order_id'  => $s::int( 'With order_id.' ),
+					'tracking'  => $s::bool( 'false: journey tracking is off on this store, so no journey was recorded.' ),
+					'steps'     => self::schema_journey_steps(),
+					'journeys'  => $s::arr(
+						$s::obj(
+							array(
+								'order_id' => $s::int(),
+								'steps'    => self::schema_journey_steps(),
+							)
+						),
+						'With order_ids: one entry per Order found, in the order asked.'
+					),
+					'not_found' => $s::arr( $s::int(), 'With order_ids: ids that are no WooCommerce Order.' ),
+					'pending'   => $s::arr( $s::int(), 'With order_ids: ids left out to keep the reply small; call again with them.' ),
+				),
+				'One Order\'s journey (order_id), or several (order_ids).'
 			)
 		);
 	}

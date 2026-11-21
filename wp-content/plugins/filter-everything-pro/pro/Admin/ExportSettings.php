@@ -97,7 +97,7 @@ class ExportSettings
         $post_filter_field = flrt_post_type_underline_transform(FLRT_FILTERS_POST_TYPE);
         if ($sets) {
             foreach ($sets as $set) {
-                $set->post_content = maybe_unserialize($set->post_content);
+                $set->post_content = flrt_safe_unserialize($set->post_content);
                 $this->settings[$post_filter_set][$set->ID] = (array)$set;
                 $this->settings[$post_filter_set][$set->ID]['post_meta'] = $this->exportPostMeta($set->ID, 'wpc_filter');
                 $fields = get_posts(array(
@@ -109,7 +109,7 @@ class ExportSettings
                     'order'          => 'ASC',
                 ));
                 foreach ($fields as $field) {
-                    $field->post_content = maybe_unserialize($field->post_content);
+                    $field->post_content = flrt_safe_unserialize($field->post_content);
                     $this->settings[$post_filter_set][$set->ID][$post_filter_field][$field->ID] = (array)$field;
                 }
             }
@@ -159,7 +159,7 @@ class ExportSettings
 
         if (!empty($results)) {
             foreach ($results as $key => $value) {
-                $results[$key]['meta_value'] = maybe_unserialize($value['meta_value']);
+                $results[$key]['meta_value'] = flrt_safe_unserialize($value['meta_value']);
             }
             return $results;
         }

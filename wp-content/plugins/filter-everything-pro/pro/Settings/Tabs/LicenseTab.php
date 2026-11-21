@@ -376,7 +376,7 @@ class LicenseTab extends BaseSettings
             } elseif ( $_POST['wpc_license_action'] === 'deactivate') {
 
                 $saved_value         = get_option( $this->optionName );
-                $saved_value_arr     = maybe_unserialize( base64_decode( $saved_value['license_key'] ) );
+                $saved_value_arr     = flrt_safe_unserialize( base64_decode( $saved_value['license_key'] ) );
                 $to_send             = $saved_value_arr;
                 $to_send['home_url'] = home_url();
 

@@ -80,7 +80,7 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 						$this,
 						'woofunnels_page',
 					),
-					'',
+					'none',
 					59
 				);
 				add_submenu_page( 'woofunnels', __( 'Licenses', 'funnel-builder' ), __( 'License', 'funnel-builder' ), $user, 'woofunnels' );

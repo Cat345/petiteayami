@@ -331,7 +331,7 @@ function flrt_get_license_key()
     $license_data = get_option( FLRT_LICENSE_KEY );
 
     if ( $license_data && isset( $license_data['license_key'] ) ) {
-        $decoded = maybe_unserialize( base64_decode( $license_data['license_key'] ) );
+        $decoded = flrt_safe_unserialize( base64_decode( $license_data['license_key'] ) );
         if ( $decoded['key'] ) {
             $license_key = $decoded['key'];
         }

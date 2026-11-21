@@ -1,0 +1,155 @@
+/* FunnelKit Bundles widget inside an order bump. funnelkit-bundles.js moves it into `.wfob_sec_start`. */
+.wfob_bump .wfob-bundle-widget {
+	padding: 0 16px 16px;
+	margin-top: 4px;
+}
+
+.wfob_bump .wfob-bundle-widget[hidden] {
+	display: none;
+}
+
+/* While a bump re-places its lines: dimmed, a spinner, and no second click racing the first. */
+.wfob_bump.wfob-bundle-busy {
+	pointer-events: none;
+	cursor: progress;
+}
+
+.wfob_bump .wfob-bundle-widget {
+	position: relative;
+	transition: opacity 0.15s ease;
+}
+
+.wfob_bump.wfob-bundle-busy .wfob-bundle-widget {
+	opacity: 0.55;
+}
+
+.wfob_bump.wfob-bundle-busy .wfob-bundle-widget::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 24px;
+	height: 24px;
+	margin: -12px 0 0 -12px;
+	border: 2px solid currentColor;
+	border-right-color: transparent;
+	border-radius: 50%;
+	opacity: 0.7;
+	animation: wfob-bundle-spin 0.7s linear infinite;
+}
+
+@keyframes wfob-bundle-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wfob_bump.wfob-bundle-busy .wfob-bundle-widget::after {
+		animation: none;
+	}
+}
+
+/* The badge sits half above each card's top edge and needs more than the list's own gap. */
+.wfob_bump .wfob-bundle-widget .wffn-bundles-fb-stack.wffn-bundles-fb-stack,
+.wfob_bump .wfob-bundle-widget .wffn-bundles-tiers.wffn-bundles-tiers {
+	gap: 16px;
+}
+
+/* The checkout pads badged tiers for its modal row; a bump's full-width tiers keep one height. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfob_bump .wfob-bundle-widget .wffn-bundles.wffn-bundles .wffn-bundles-tier.wffn-bundles-tier:has(.wffn-bundles-tier-badge) {
+	padding-top: var(--wffn-bundles-pad-t);
+}
+
+/* The bump sets every descendant to inherit its font size; the badge keeps the skin's. */
+#wfob_wrap .wfob-bundle-widget .wffn-bundles-tier-badge.wffn-bundles-tier-badge,
+#wfob_qr_model_wrap .wfob-bundle-widget .wffn-bundles-tier-badge.wffn-bundles-tier-badge {
+	font-size: var(--wffn-bundles-badge-size);
+	font-weight: 500;
+	line-height: 1;
+}
+
+/* So does the Fixed bundle's: at the bump's size and line height it ran into the card's price. */
+#wfob_wrap .wfob-bundle-widget .wffn-bundles-fb-badge.wffn-bundles-fb-badge,
+#wfob_qr_model_wrap .wfob-bundle-widget .wffn-bundles-fb-badge.wffn-bundles-fb-badge {
+	font-size: var(--wffn-bundles-badge-size);
+	line-height: 1;
+}
+
+.wfob_bump .wfob-bundle-widget .wffn-bundles-heading.wffn-bundles-heading {
+	margin-bottom: 8px;
+}
+
+/* A tier's two-line price already spaces its unit pickers. */
+.wfob_bump .wfob-bundle-widget .wffn-bundles-qb-units.wffn-bundles-qb-units {
+	margin-top: 0;
+}
+
+/* The checkout hides empty spans in its payment box; the unit grid's first heading cell is one. */
+#wfacp-e-form .wfacp_main_form .woocommerce-checkout-payment .wfob-bundle-widget .wffn-bundles-qb-units-head > span:empty {
+	display: block;
+}
+
+/* The bump's `.wfob_qv-button{display:table}` outweighs the browser's [hidden] default. */
+a.wfob_qv-button[hidden] {
+	display: none;
+}
+
+/* The bump styles every checkbox in its box; a set's ticks keep the skin's own. */
+#payment #wfob_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check,
+#wfob_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check,
+#wfob_qr_model_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check {
+	position: static;
+	display: block;
+	width: var(--wffn-bundles-radio-size);
+	min-width: var(--wffn-bundles-radio-size);
+	height: var(--wffn-bundles-radio-size);
+	border: 2px solid var(--wffn-bundles-radio);
+	border-radius: 4px;
+	background: var(--wffn-bundles-control-bg);
+}
+
+#payment #wfob_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check:checked,
+#wfob_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check:checked,
+#wfob_qr_model_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check:checked {
+	border-color: var(--wffn-bundles-radio-active);
+	background-color: var(--wffn-bundles-radio-active);
+	background-image: var(--wffn-bundles-fbt-tick);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 72%;
+}
+
+#payment #wfob_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check::before,
+#payment #wfob_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check::after,
+#wfob_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check::before,
+#wfob_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check::after,
+#wfob_qr_model_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check::before,
+#wfob_qr_model_wrap .wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check.wffn-bundles-fbt-check::after {
+	content: none;
+	display: none;
+}
+
+/* The checkout hides empty spans in its payment box; the set's "+" is one. */
+#payment #wfob_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-plus.wffn-bundles-fbt-plus,
+#wfob_wrap .wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-plus.wffn-bundles-fbt-plus {
+	display: block;
+}
+
+#wfob_qr_model_wrap .wffn-bundles.wffn-bundles-fbt.wffn-bundles-fbt {
+	margin-block-end: var(--wffn-bundles-block-gap);
+}
+
+/* The quick view's native pickers sit behind the widget's own. */
+#wfob_qr_model_wrap:has(.wfob-bundle-widget) .variations_form table.variations,
+#wfob_qr_model_wrap:has(.wfob-bundle-widget) .variations_form .woocommerce-variation-price,
+#wfob_qr_model_wrap:has(.wfob-bundle-widget) .variations_form .woocommerce-variation-availability {
+	display: none;
+}
+
+/* The phone bar asks for the native pickers the bundle replaces, and covers its add button. */
+@media (max-width: 767px) {
+	#wfob_qr_model_wrap:has(.wfob-bundle-widget) .wfob_option_btn {
+		display: none;
+	}
+}

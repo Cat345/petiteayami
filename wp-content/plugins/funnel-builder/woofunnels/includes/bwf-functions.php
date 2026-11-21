@@ -7,13 +7,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! function_exists( 'bwf_safe_unserialize' ) ) {
 	/**
 	 * Safely unserialize data, disallowing object instantiation to prevent
-	 * PHP Object Injection via POP chains.
+	 * PHP Object Injection via POP chains. stdClass is allowed (no magic methods),
+	 * so cached $wpdb->get_results() rows stay readable.
 	 */
 	function bwf_safe_unserialize( $data ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		if ( ! is_serialized( $data ) ) {
 			return $data;
 		}
-		return unserialize( $data, array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+		return unserialize( $data, array( 'allowed_classes' => array( 'stdClass' ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 	}
 }
 if ( ! function_exists( 'bwf_get_remote_rest_args' ) ) {
@@ -126,7 +127,7 @@ if ( ! function_exists( 'bwf_get_fonts_list' ) ) {
 		 */
 		$fonts[] = array(
 			'id'   => 'default',
-			'name' => __( 'Default', 'funnel-builder' )
+			'name' => __( 'Default', 'funnelkit-woofunnels-textdomain-placeholder' )
 		);
 		foreach ( $web_fonts as $web_font_family ) {
 			if ( $web_font_family !== 'Open Sans' ) {

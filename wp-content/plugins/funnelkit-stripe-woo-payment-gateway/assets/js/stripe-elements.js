@@ -790,7 +790,13 @@ jQuery(function ($) {
 
             this.unblockElement();
             if (error) {
-                $(this.error_container).html(error.message);
+                /**
+                 * Callers pass either a Stripe error object or a plain message string - the SEPA
+                 * submit guards pass `emptySepaIBANMessage`, which is a string. Reading `.message`
+                 * off a string gives undefined, and `.html(undefined)` is jQuery's getter, so those
+                 * messages were silently never rendered. Accept both shapes.
+                 */
+                $(this.error_container).html('string' === typeof error ? error : (error.message || ''));
             } else {
                 $(this.error_container).html('');
             }
@@ -1943,6 +1949,14 @@ jQuery(function ($) {
             this.sepaIBAN = false;
             this.paymentMethod = '';
             this.emptySepaIBANMessage = fkwcs_data.empty_sepa_iban_message;
+
+            /**
+             * `mount()` is asynchronous - the IBAN iframe still has to load before Stripe.js can
+             * read anything out of it. Anything that submits the form before then gets an
+             * IntegrationError ("We could not retrieve data from the specified Element"), so we
+             * latch the Element's `ready` event and refuse to submit until it has fired.
+             */
+            this.element_ready = false;
         }
 
         setupGateway() {
@@ -1966,6 +1980,14 @@ jQuery(function ($) {
                 this.sepaIBAN = true;
                 self.showError('');
 
+            });
+
+            /**
+             * One-way latch: the iframe is loaded from here on, and a later unmount/remount of
+             * the same Element instance does not make it unreadable again.
+             */
+            this.sepa.on('ready', () => {
+                self.element_ready = true;
             });
             this.setup_ready = true;
         }
@@ -2008,12 +2030,29 @@ jQuery(function ($) {
         }
 
         processOrderReview() {
-            if (this.gateway_id === this.selectedGateway()) {
-                if ('' === this.paymentMethod && !this.isSepaSaveCardChosen()) {
-                    this.createPaymentMethod('order_review');
-                    return false;
-                }
+            if (this.gateway_id !== this.selectedGateway()) {
+                return;
             }
+            if ('' !== this.paymentMethod || this.isSepaSaveCardChosen()) {
+                return;
+            }
+
+            /**
+             * The order-pay form can be submitted by something other than the customer. Germanized
+             * ships a `force_pay_order=1` parameter on the pay URL whose script submits
+             * `#order_review` on document ready - before the IBAN iframe is ready, and with no IBAN
+             * typed - after blocking the form with its own overlay. Mirror the guard
+             * processingSubmit() already applies, and take the overlay back off, rather than firing
+             * a request that can only fail.
+             */
+            if (false === this.element_ready || false === this.sepaIBAN) {
+                this.unblockElement();
+                this.showError(this.emptySepaIBANMessage);
+                return false;
+            }
+
+            this.createPaymentMethod('order_review');
+            return false;
         }
 
 
@@ -2052,6 +2091,15 @@ jQuery(function ($) {
                     this.appendMethodId(this.paymentMethod);
                     wcCheckoutForm.trigger('submit');
                 }
+            }).catch((error) => {
+                /**
+                 * Stripe.js rejects - rather than resolving with `result.error` - on integration
+                 * faults, the common one being a submit that beats the IBAN iframe's `ready` event.
+                 * Without this the rejection is swallowed by the browser, showNotice() never runs,
+                 * and the blocking overlay put up by whatever submitted the form stays up forever.
+                 */
+                this.logError(error);
+                this.showNotice(error && error.message ? error.message : this.emptySepaIBANMessage);
             });
 
         }
@@ -2366,6 +2414,47 @@ jQuery(function ($) {
 
         paymentMethodTypes() {
             return ['klarna'];
+        }
+
+        /**
+         * WooCommerce lists Puerto Rico as its own country code (PR), but Stripe and Klarna
+         * treat it as part of the United States: Klarna rejects a purchase_country of PR, so
+         * the billing country must be sent as US with PR as the state.
+         */
+        getBillingAddress(type) {
+            let billing = super.getBillingAddress(type);
+            if (billing && billing.address && 'PR' === billing.address.country) {
+                billing = {...billing, address: {...billing.address, country: 'US', state: 'PR'}};
+            }
+            return billing;
+        }
+
+        /**
+         * Free trials and subscription payment method changes return a SetupIntent ('si'),
+         * which Klarna confirms with confirmKlarnaSetup instead of confirmKlarnaPayment.
+         */
+        confirmStripePayment(clientSecret, redirectURL, intent_type, order_id = false) {
+            if ('si' !== intent_type || 'function' !== typeof this.stripe.confirmKlarnaSetup) {
+                return super.confirmStripePayment(clientSecret, redirectURL, intent_type, order_id);
+            }
+            if (this.gateway_id !== this.selectedGateway()) {
+                return;
+            }
+            this.stripe.confirmKlarnaSetup(clientSecret, {
+                payment_method: this.paymentMethods(),
+                return_url: homeURL + redirectURL,
+                mandate_data: {customer_acceptance: {type: 'online', online: {infer_from_client: true}}},
+            }).then((response) => {
+                if (response.error) {
+                    this.logError(response.error, order_id);
+                    this.showNotice(response.error);
+                    this.showError(response.error);
+                    return;
+                }
+                this.successResponse(response, redirectURL);
+            }).catch(() => {
+                this.showError('user cancelled');
+            });
         }
 
         isSupportedCountries() {

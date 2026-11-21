@@ -1,0 +1,301 @@
+/* Frequently Bought Together — shared by both layouts. Uses --wffn-bundles-* tokens only. */
+
+.wffn-bundles-fbt.wffn-bundles-fbt {
+	container-type: inline-size;
+	margin-block: var(--wffn-bundles-block-gap) 0;
+}
+
+/* FBT keeps the theme's quantity and button, so it carries its own gap to whatever follows it. */
+.wffn-bundles-fbt.wffn-bundles-fbt:not(:last-child) {
+	margin-block-end: var(--wffn-bundles-block-gap);
+}
+
+.wffn-bundles-fbt-card.wffn-bundles-fbt-card {
+	background: var(--wffn-bundles-bg);
+	border: var(--wffn-bundles-border-width) var(--wffn-bundles-border-style) var(--wffn-bundles-border);
+	border-radius: var(--wffn-bundles-corner);
+	padding: var(--wffn-bundles-pad-t) var(--wffn-bundles-pad-r) var(--wffn-bundles-pad-b) var(--wffn-bundles-pad-l);
+}
+
+.wffn-bundles-fbt-divider.wffn-bundles-fbt-divider {
+	height: 1px;
+	background: var(--wffn-bundles-border);
+	margin-block: 12px;
+	margin-inline: calc(var(--wffn-bundles-pad-l) * -1) calc(var(--wffn-bundles-pad-r) * -1);
+}
+
+.wffn-bundles-fbt-thumb.wffn-bundles-fbt-thumb {
+	flex: 0 0 auto;
+	display: inline-block;
+	background: var(--wffn-bundles-thumb-bg);
+	border-radius: var(--wffn-bundles-image-radius);
+	overflow: hidden;
+}
+
+/* No product image: keep the box and draw a neutral picture glyph, so the row doesn't read as a gap. */
+.wffn-bundles-fbt-thumb.wffn-bundles-fbt-thumb:not(:has(img)) {
+	background-color: var(--wffn-bundles-thumb-bg, #f0f0f1);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath d='m21 15-5-5L5 21'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 45%;
+}
+
+.wffn-bundles-fbt-thumb.wffn-bundles-fbt-thumb img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Rows: tick, name + price on one line, the picker below. */
+.wffn-bundles-fbt-items.wffn-bundles-fbt-items {
+	display: flex;
+	flex-direction: column;
+}
+
+.wffn-bundles-fbt-item.wffn-bundles-fbt-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0;
+	cursor: pointer;
+	line-height: 1.35;
+}
+
+.wffn-bundles-fbt-item.is-host:has(.wffn-bundles-fbt-check:disabled) {
+	cursor: default;
+}
+
+.wffn-bundles-fbt-main.wffn-bundles-fbt-main {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+}
+
+.wffn-bundles-fbt-head.wffn-bundles-fbt-head {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	align-self: stretch;
+	min-width: 0;
+}
+
+.wffn-bundles-fbt-name.wffn-bundles-fbt-name {
+	flex: 1 1 auto;
+	font-size: var(--wffn-bundles-title-size);
+	color: var(--wffn-bundles-title-color);
+	font-weight: 500;
+	overflow-wrap: break-word;
+}
+
+/* Never narrower than the longest word; a theme's `*` word-break would undo that floor. */
+.wffn-bundles.wffn-bundles .wffn-bundles-fbt-name,
+.wffn-bundles.wffn-bundles .wffn-bundles-fbt-name * {
+	overflow-wrap: break-word;
+	word-break: normal;
+}
+
+.wffn-bundles-fbt-this.wffn-bundles-fbt-this {
+	font-weight: 600;
+}
+
+.wffn-bundles-fbt-prices.wffn-bundles-fbt-prices {
+	/* Shrinks to one price token, so a narrow row stacks the prices instead of splitting the name. */
+	flex: 0 1 auto;
+	min-width: min-content;
+	display: inline-flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 6px;
+	margin-inline-start: auto;
+}
+
+.wffn-bundles-fbt.wffn-bundles-fbt .wffn-bundles-fbt-price-original {
+	font-size: var(--wffn-bundles-price-size);
+	color: var(--wffn-bundles-regular-price-color);
+	text-decoration: line-through;
+	white-space: nowrap;
+}
+
+.wffn-bundles-fbt.wffn-bundles-fbt .wffn-bundles-fbt-price-final {
+	font-size: var(--wffn-bundles-price-size);
+	color: var(--wffn-bundles-sale-price-color);
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* Narrow: every row stacks its pair the same way, so the prices line up down the list. */
+@container (max-width: 479px) {
+	.wffn-bundles-fbt-prices.wffn-bundles-fbt-prices {
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 0;
+	}
+}
+
+/* The tick box. (0,3,1) clears the `input[type=checkbox]` resets themes ship. */
+.wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check {
+	flex: 0 0 auto;
+	box-sizing: border-box;
+	width: var(--wffn-bundles-radio-size);
+	height: var(--wffn-bundles-radio-size);
+	min-width: var(--wffn-bundles-radio-size);
+	min-height: var(--wffn-bundles-radio-size);
+	margin: 0;
+	padding: 0;
+	border: 2px solid var(--wffn-bundles-radio);
+	border-radius: 4px;
+	background: var(--wffn-bundles-control-bg);
+	-webkit-appearance: none;
+	appearance: none;
+	cursor: pointer;
+	transition: background-color 0.15s, border-color 0.15s;
+	--wffn-bundles-fbt-tick: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check::before,
+.wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check::after {
+	content: none;
+}
+
+.wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check:checked {
+	background-color: var(--wffn-bundles-radio-active);
+	border-color: var(--wffn-bundles-radio-active);
+	background-image: var(--wffn-bundles-fbt-tick);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 72%;
+}
+
+.wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.wffn-bundles.wffn-bundles-fbt input.wffn-bundles-fbt-check:focus-visible {
+	outline: 2px solid var(--wffn-bundles-radio-active);
+	outline-offset: 2px;
+}
+
+/* The viewed product is always in the set: ticked and locked, drawn like any ticked row. */
+.wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-item.is-host input.wffn-bundles-fbt-check:disabled {
+	opacity: 1;
+}
+
+.wffn-bundles-fbt-tag.wffn-bundles-fbt-tag {
+	font-size: var(--wffn-bundles-desc-size);
+	line-height: 1;
+	padding: 4px 7px;
+	border-radius: var(--wffn-bundles-badge-radius);
+	background: var(--wffn-bundles-step-bg);
+	color: var(--wffn-bundles-desc-color);
+}
+
+/* Summary: total, the saving or what unlocks it, and the button. */
+/* The saving sits beside the total and only drops under it when the line is too narrow. */
+.wffn-bundles-fbt-summary.wffn-bundles-fbt-summary {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 10px;
+	transition: opacity 0.15s;
+}
+
+.wffn-bundles-fbt-summary > .wffn-bundles-fbt-add,
+.wffn-bundles-fbt-summary > .wffn-bundles-fbt-hint {
+	flex: 1 1 100%;
+}
+
+/* A rule line ("add one more to save") is longer than a badge, so it keeps its own line. */
+.wffn-bundles-fbt-sum-note.wffn-bundles-fbt-sum-note {
+	flex: 1 1 100%;
+}
+
+.wffn-bundles-fbt-sum-note.wffn-bundles-fbt-sum-note:has(.wffn-bundles-fbt-save) {
+	flex: 0 1 auto;
+}
+
+.wffn-bundles-fbt-summary.wffn-bundles-fbt-pending {
+	opacity: 0.6;
+}
+
+.wffn-bundles-fbt-sum-price.wffn-bundles-fbt-sum-price {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 6px;
+	font-size: var(--wffn-bundles-price-size);
+	color: var(--wffn-bundles-price-desc-color);
+}
+
+.wffn-bundles-fbt.wffn-bundles-fbt .wffn-bundles-fbt-total {
+	font-size: calc(var(--wffn-bundles-price-size) + 2px);
+}
+
+.wffn-bundles-fbt-sum-note.wffn-bundles-fbt-sum-note:empty {
+	display: none;
+}
+
+.wffn-bundles-fbt-save.wffn-bundles-fbt-save {
+	display: inline-flex;
+	align-items: center;
+	font-size: var(--wffn-bundles-price-desc-size);
+	font-weight: 600;
+	color: var(--wffn-bundles-success);
+	background: color-mix(in srgb, var(--wffn-bundles-success) 10%, transparent);
+	padding: 3px 8px;
+	border-radius: var(--wffn-bundles-badge-radius);
+}
+
+.wffn-bundles-fbt-rule.wffn-bundles-fbt-rule {
+	font-size: var(--wffn-bundles-price-desc-size);
+	color: var(--wffn-bundles-price-desc-color);
+}
+
+/* Painted from the design so the product page matches the preview; (0,5,0) outranks a theme's `button.button.alt:hover`. */
+.wffn-bundles.wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-add.wffn-bundles-fbt-add {
+	padding: 12px 16px;
+	border: 0;
+	border-radius: var(--wffn-bundles-image-radius);
+	background: var(--wffn-bundles-radio-active);
+	color: #fff;
+	font-size: var(--wffn-bundles-title-size);
+	font-weight: 500;
+	line-height: 1.35;
+	text-decoration: none;
+	box-shadow: none;
+	cursor: pointer;
+}
+
+.wffn-bundles.wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-add.wffn-bundles-fbt-add:hover,
+.wffn-bundles.wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-add.wffn-bundles-fbt-add:focus-visible {
+	background: color-mix(in srgb, var(--wffn-bundles-radio-active) 88%, #000);
+	color: #fff;
+}
+
+.wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-add {
+	width: 100%;
+	margin: 0;
+}
+
+.wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-add:disabled,
+.wffn-bundles.wffn-bundles.wffn-bundles-fbt .wffn-bundles-fbt-add.wffn-bundles-fbt-add[aria-disabled="true"] {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.wffn-bundles-fbt-hint.wffn-bundles-fbt-hint {
+	font-size: var(--wffn-bundles-price-desc-size);
+	color: var(--wffn-bundles-price-desc-color);
+	line-height: 1.35;
+}
+
+.wffn-bundles-fbt-hint.wffn-bundles-fbt-hint[hidden] {
+	display: none;
+}

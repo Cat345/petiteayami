@@ -1,10 +1,10 @@
 === FunnelKit - Funnel Builder Plugin for WooCommerce Checkout ===
-Contributors: teamfunnelkit, xlplugins
+Contributors: teamfunnelkit, amans2k
 Tags: woocommerce checkout, checkout, funnel builder, order bump, upsell
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.18.0
+Stable tag: 3.19.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -244,7 +244,8 @@ FunnelKit Funnel Builder is the ideal WordPress funnel builder and WooCommerce c
 
 FunnelKit may connect to the following external services, only when the related feature is used:
 
-* **FunnelKit** provides the template library, template images, previews, optional usage tracking and FunnelKit AI. [Terms](https://funnelkit.com/terms-conditions/) and [Privacy Policy](https://funnelkit.com/privacy-policy/)
+* **FunnelKit** provides the template library, template images, previews and optional usage tracking. [Terms](https://funnelkit.com/terms-conditions/) and [Privacy Policy](https://funnelkit.com/privacy-policy/)
+* **FunnelKit AI** (app.funnelkit.com) connects an AI assistant to your store. It is off until an administrator turns on "Allow AI connections" and approves the connection. The service then calls this site's endpoint and receives what its tools return: the site's name and address, funnels and their steps, step, checkout and opt-in form settings, templates, global settings, and bundles with the products and prices in them. The free plugin's tools send no customer or order data. The site's address is also used to look up its FunnelKit license on that service. [Terms](https://funnelkit.com/terms-conditions/) and [Privacy Policy](https://funnelkit.com/privacy-policy/)
 * **Google Fonts** may load when a Google font is selected. [Terms](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy)
 * **Google reCAPTCHA** may be used for opt-in spam prevention. [Terms](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy)
 * **YouTube** may embed tutorial videos on FunnelKit screens. [Terms](https://www.youtube.com/t/terms) and [Privacy Policy](https://policies.google.com/privacy)
@@ -258,6 +259,8 @@ FunnelKit may connect to the following external services, only when the related 
 == Source Code ==
 
 Unminified source for the plugin's compiled JavaScript and CSS, along with the build configuration and build steps, is available here: https://drive.google.com/drive/folders/1Z-R0_Nbb0BOCyqauxvCftjhS9Ve--IHH
+
+The Bundles module (`modules/bundles/`) ships its admin app, blocks and styles in compiled form. Its unminified source is in the same source folder linked above, under `modules/bundles/`, with its build steps in that folder's `README.md` and `package.json`.
 
 == Frequently Asked Questions ==
 
@@ -331,6 +334,10 @@ Yes. FunnelKit Lite includes lead gen, sales funnels, customizable WooCommerce s
 
 It depends on what you're doing. Lite is enough to customize your checkout page and build funnel pages. If you want to replace your store checkout sitewide, add order bumps or one-click upsells, or run A/B tests, you'll need Pro. See current pricing at [funnelkit.com](https://funnelkit.com/?utm_source=fb-lite&utm_campaign=wp-repo&utm_medium=readme&utm_term=pricing).
 
+= Does the free plugin need a license key? =
+
+No. The plugin itself has no license check, and nothing in it is locked. It tells FunnelKit AI, an optional external service listed above, which license tier each of its tools belongs to, and that service decides on its own servers which tools it offers.
+
 = Can I add a side cart or mini cart to my WooCommerce store? =
 
 Yes, with the free [FunnelKit Cart](https://wordpress.org/plugins/cart-for-woocommerce/) plugin. It replaces the static WooCommerce cart page with a slide-out drawer that opens without a page reload, so shoppers can edit quantities and apply coupons in place, then go straight to your FunnelKit checkout. Both plugins are built by the same team and work together with no setup.
@@ -384,6 +391,10 @@ With a library of templates, you can start customizing and creating your funnels
 = I'm new to FunnelKit. Where can I find its documentation? =
 Congratulations on starting your journey with FunnelKit. [Click here](https://funnelkit.com/documentation/) to explore our official FunnelKit documentation.
 
+= Can I keep the Bundles module from loading? =
+
+Yes. Add `define( 'WFFN_DISABLE_BUNDLES', true );` to your `wp-config.php` file. Funnel Builder then skips the Bundles module completely: its screens, product page offers and cart handling do not load. Remove the line to load it again. Bundles you have already set up stay saved.
+
 = I'm stuck. Who do I contact? =
 
 Reach our [Support Team](https://funnelkit.com/support/). We answer questions on the free version too.
@@ -406,6 +417,38 @@ Reach our [Support Team](https://funnelkit.com/support/). We answer questions on
 4. Start creating Funnels.
 
 == Change log ==
+
+*** Funnel Builder ***
+
+= 3.19.0.1 =
+* Fixed: Bundles: Admin UI links were pointing to the incorrect url. (#9908)
+
+= 3.19.0 =
+* Added: Introducing new feature 'Bundles' to allow selling different types of bundles like frequently bought together, Fixed Bundles and more.
+* Added: Optin: Zoho Campaigns is now listed in the opt-in step's "Send contacts to" CRM services. (#9742)
+* Improved: Checkout: Improved compatibility with CookieYes. (#9307)
+* Improved: Checkout: Improved compatibility with Quantity Manager Pro. (#9657)
+* Improved: Checkout: Improved compatibility with Kit (ConvertKit) for WooCommerce. (#9766)
+* Improved: Checkout: Improved compatibility with Easy Product Bundles for WooCommerce. (#9798)
+* Improved: Checkout: Express checkout row now aligns the PayPal button perfectly with the Stripe wallet buttons. (#9806)
+* Improved: Checkout: Improved compatibility with Divi 5. (#9810)
+* Improved: Funnel: Improved compatibility with Bricks Builder. (#9769, #9808)
+* Improved: FunnelKit AI: Rate limits are fine-tuned as per requirements. (#9822)
+* Improved: FunnelKit AI: Template import ability improved. (#9828, #9832)
+* Fixed: FunnelKit AI: Export funnel ability now handles large funnels, so the export completes regardless of the funnel's size. (#9802)
+* Fixed: Checkout: The checkout now sets up its cart on requests that arrive without an Accept header, so the order summary always shows the right products. (#9774)
+* Fixed: Checkout: Opening a checkout in the block editor now works smoothly on setups where WooCommerce has no cart. (#9791)
+* Fixed: Checkout: The "Enter your address to view shipping options" message now appears when shipping costs are hidden until an address is entered. (#9799)
+* Fixed: Checkout: Opening the same checkout in several tabs now keeps each tab's product in the cart. (#9818)
+* Fixed: Funnel: The Funnel Ended event now fires once per order, so automations no longer re-run on thank you page reloads. (#9803)
+
+
+= 3.18.0.1 =
+* Improved: Funnel: FunnelKit AI funnel orders now load within the reply limit, with buyer journeys available as a separate ability. (#9764)
+* Improved: Funnel: FunnelKit AI now reads funnel steps in bulk, pages through orders, applies templates faster and names the reason when a request is declined. (#9772)
+* Improved: Funnel: FunnelKit AI setting and design edits now name the field and allowed values when a change is declined. (#9780)
+* Improved: Funnel: FunnelKit AI now includes the module version in error and sign-in replies for faster troubleshooting. (#9789)
+* Fixed: Funnel: FunnelKit AI global settings now return every settings group the tool lists. (#9781)
 
 = 3.18.0 =
 * Added: Funnel: Added FunnelKit AI (MCP) with a dedicated settings screen and secure sign-in, so AI assistants can build and refine your funnel steps. (#9386)

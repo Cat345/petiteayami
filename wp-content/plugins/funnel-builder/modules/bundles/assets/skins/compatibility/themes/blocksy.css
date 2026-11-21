@@ -1,0 +1,42 @@
+/**
+ * Blocksy — theme palette → widget tokens.
+ *
+ * Cascade rung and specificity rationale: includes/skins/global-design.php.
+ *
+ * Measured on this install — Blocksy's numbered palette, exposed through the
+ * Elementor-global bridge because that is where it resolves to literals:
+ *   --e-global-color-blocksy_palette_1  #2872fa  accent
+ *   --e-global-color-blocksy_palette_2  #1559ed  accent hover
+ *   --e-global-color-blocksy_palette_3  #3A4F66  body text
+ *   --e-global-color-blocksy_palette_4  #192a3d  headings
+ *   --e-global-color-blocksy_palette_5  #e1e8ed  borders
+ *   --e-global-color-blocksy_palette_6  #f2f5f7  light surface
+ *   --theme-link-initial-color          #192a3d  link/heading colour
+ */
+body.wffn-bundles-theme-blocksy .wffn-bundles,
+body.wffn-bundles-theme-blocksy .wffn-bundles-portal,
+body.wffn-bundles-theme-blocksy .wffn-bundles-variant-modal {
+	--wffn-bundles-bg-active: var(--e-global-color-blocksy_palette_6, #fafafa);
+	--wffn-bundles-step-bg: var(--e-global-color-blocksy_palette_6, #f1f2f9);
+	--wffn-bundles-thumb-bg: var(--e-global-color-blocksy_palette_6, #fafafa);
+
+	--wffn-bundles-border: var(--e-global-color-blocksy_palette_5, #dedfea);
+	--wffn-bundles-control-border: var(--e-global-color-blocksy_palette_5, #dedfea);
+	--wffn-bundles-radio: var(--e-global-color-blocksy_palette_5, #c5c5cd);
+	--wffn-bundles-connector: var(--e-global-color-blocksy_palette_5, #353030);
+
+	--wffn-bundles-border-active: var(--e-global-color-blocksy_palette_1, #353030);
+	--wffn-bundles-radio-active: var(--e-global-color-blocksy_palette_1, #353030);
+	--wffn-bundles-badge-bg: var(--e-global-color-blocksy_palette_1, #353030);
+	--wffn-bundles-progress-fill: var(--e-global-color-blocksy_palette_1, #353030);
+	--wffn-bundles-control-accent: var(--e-global-color-blocksy_palette_1, #353030);
+
+	--wffn-bundles-heading-color: var(--e-global-color-blocksy_palette_4, #353030);
+	--wffn-bundles-title-color: var(--e-global-color-blocksy_palette_4, #353030);
+	--wffn-bundles-sale-price-color: var(--e-global-color-blocksy_palette_4, #353030);
+	--wffn-bundles-desc-color: var(--e-global-color-blocksy_palette_3, #82828e);
+	--wffn-bundles-regular-price-color: var(--e-global-color-blocksy_palette_3, #82828e);
+	--wffn-bundles-price-desc-color: var(--e-global-color-blocksy_palette_3, #82828e);
+	--wffn-bundles-control-fg: var(--e-global-color-blocksy_palette_3, #353030);
+	--wffn-bundles-control-muted: var(--e-global-color-blocksy_palette_3, #82828e);
+}

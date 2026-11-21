@@ -1,7 +1,7 @@
 === Filter Everything PRO ===
 Contributors: stepasyuk
 Tags: woocommerce product filter, woocommerce filter, product filter, post filter, faceted search
-Stable tag: 1.9.7
+Stable tag: 1.9.8
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -11,32 +11,19 @@ License URI: https://codecanyon.net/licenses
 The most flexible filters for WooCommerce products & WordPress content. Includes everything needed, supports Elementor & builders, AJAX, quick setup.
 
 == Description ==
-_**Improve your site's navigation and drive more conversions with Filter Everything.**_
+Filter Everything is a versatile filtering plugin that works with any content, from WooCommerce products and blog posts to large catalogs. It handles virtually any filtering scenario and filters by any criterion, with 8 filter views and 25+ settings for each filter. It supports AJAX, sorting, search, and pagination, and it is compatible with page builders, themes, and other plugins. Actively developed for over 5 years, it comes with support from real people.
 
-Filter Everything is a versatile filtering plugin that works with any content type — WooCommerce products, posts, listings, events, and more. It covers filtering completely — every filter type, every layout, and every option you may need, all in one plugin.
+_**Improve your site's navigation and drive more conversions with Filter Everything.**_
 
 Watch a video walkthrough by [WPTuts](https://www.youtube.com/watch?v=g1_qlJvNdsg):
 
 https://www.youtube.com/watch?v=g1_qlJvNdsg
 
-## Filter everything and everywhere
-Use it to filter WooCommerce products, posts, listings, events, and many more — on any page of your site and any device, whether desktop, tablet, or mobile.
 ## See how it works ↗
 -   See how it filters [WooCommerce products](https://demo.filtereverything.pro/product-category/clothing/women/color-red/brand-hm/c-kind-dress/?max_price=100&utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org), [posts](https://demo.filtereverything.pro/posts/category-health/?max_views=8000&date_from=2018-01-01t15.29.13&utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org) & any content
 -   See its [SEO Capabilities](https://demo.filtereverything.pro/product-category/electronics/smartphones/?utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org) (PRO version)
 -   See it work together with [Elementor](https://demo.filtereverything.pro/elementor/category-health/image-yes/?utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org), [ACF](https://demo.filtereverything.pro/example/acf/?utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org) & [WPML](https://wpml.filtereverything.pro/es/filtros-en-espanol/?utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org)
 -   See [Apply button](https://demo.filtereverything.pro/apply-button/?utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org) mode, [Step-by-step](https://demo.filtereverything.pro/step-by-step-filtering/?utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org) filtering, [Built-in search](https://demo.filtereverything.pro/search-and-filter/?utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org) & [Horizontal layout](https://demo.filtereverything.pro/5-columns/color-blue/brand-hm/?utm_source=wprepo&utm_medium=referral&utm_campaign=wordpress_org) in action
-
-## Configure every filtering detail
-25+ filter options covering every need —  display type, filter logic, counters, collapsing, custom URL names, hiding empty filters, and more.
-## Complete filtering toolkit
-Use shortcodes, sort results, and search by text within filtered content. Turn on AJAX filtering with no page reloads. Pick the mode that fits your workflow — Step by step filtering, Select and apply, or Auto-submitting — and choose a horizontal or vertical layout.
-## Unlimited filtering criteria
-Filter by virtually anything — price, brand, category, attributes, color, size, weight, and any other data in your content.
-## Compatible with other plugins and themes
-Works with page builders like Elementor, Divi, Bricks, Oxygen, Breakdance, and Beaver Builder. Filters by custom fields created with ACF. Compatible with multilingual sites built on WPML and Polylang.
-## Works with your existing content
-No need to rebuild your site. Just install, configure, and go. And if any questions come up, our support is fast and focused on actually helping.
 
 ## Core features at a glance
 -   **Filter any content**
@@ -75,6 +62,20 @@ The plugin is also available in a PRO version that significantly expands filteri
 -   **Priority support**
 
 _— And many other powerful features available in Filter Everything PRO._
+
+## Filter everything and everywhere
+Use it to filter WooCommerce products, posts, listings, events, and many more — on any page of your site and any device, whether desktop, tablet, or mobile.
+
+## Configure every filtering detail
+25+ filter options covering every need —  display type, filter logic, counters, collapsing, custom URL names, hiding empty filters, and more.
+## Complete filtering toolkit
+Use shortcodes, sort results, and search by text within filtered content. Turn on AJAX filtering with no page reloads. Pick the mode that fits your workflow — Step by step filtering, Select and apply, or Auto-submitting — and choose a horizontal or vertical layout.
+## Unlimited filtering criteria
+Filter by virtually anything — price, brand, category, attributes, color, size, weight, and any other data in your content.
+## Compatible with other plugins and themes
+Works with page builders like Elementor, Divi, Bricks, Oxygen, Breakdance, and Beaver Builder. Filters by custom fields created with ACF. Compatible with multilingual sites built on WPML and Polylang.
+## Works with your existing content
+No need to rebuild your site. Just install, configure, and go. And if any questions come up, our support is fast and focused on actually helping.
 
 ## Why use filters on your website?
 Filters help visitors quickly _find the content they need_ in just a few clicks, especially on websites that contain large amounts of content.
@@ -132,6 +133,21 @@ The file lists our current notifications: security alerts, update warnings, usag
 The service is provided by Filter Everything (Andrii Stepasiuk): [Terms](https://filtereverything.pro/terms-and-conditions/), [Privacy Policy](https://filtereverything.pro/privacy-policy/).
 
 == Changelog ==
+
+= 1.9.8 =
+*Release Date - 2 November 2026*
+* Security - A security fix related to how Filter Set and Filter data is stored and read, and to who is allowed to create or edit these items
+* Dev   - NEW: «Woo Discount Rules» option on the Settings tab, shown when that plugin is active — choose whether the Price and «On sale» filters should use the discounted prices (on by default, as before)
+* Fix   - Fixed very slow pages, including search results, on sites with Woo Discount Rules: a page with a Price or «On sale» filter made the plugin evaluate the discount rules for every product on every view (5–50 seconds on large catalogs); the discounted prices are now cached and recalculated only for the products or rules that changed
+* Fix   - Fixed the Range list counters of a numeric filter when the cheapest or the most expensive item has a fractional value (e.g. $1.75 with ranges 0–1.50 / 1.60–2.1): that item was counted in the wrong range, and the instant recount filtered it the same way, because the plugin replaced its value with the rounded slider bound
+* Fix   - Fixed the «On Sale» filter counters with Woo Discount Rules: a product discounted by a rule but without a sale price of its own was removed from «No» without being added to «Yes», so the two counters did not add up
+* Fix   - Fixed filtered category pages in a non-default Polylang language (e.g. /uk/product-category/…/) being 301-redirected to the default language as soon as a filter was applied — the plugin copied Polylang's internal language condition into its own tax query, so Polylang resolved the queried category in the wrong language
+* Fix   - Fixed filters on sites where Polylang uses a separate domain or sub-domain for each language: filter links, chips and the Reset link pointed to the default language's domain, and AJAX filtering returned «page not found» on the other languages' domains
+* Fix   - Fixed the «What to filter» field of a Filter Set staying empty when the selected page is on another domain than the admin — for example a Filter Set of a language that Polylang serves from its own domain or sub-domain
+* Fix   - Fixed the Range list of a numeric filter accepting whole numbers only: its Min and Max fields now follow the precision of the «Slider Step» setting, so with a step of 0.01 you can create ranges such as 0 – 1.49
+* Fix   - Fixed filtering on Divi Theme Builder category archive templates whose Blog module shows the «Current Category» (Divi 4 and Divi 5): the filter widget and its counters reacted, but the Blog module kept listing all posts of the category
+* Fix   - Fixed the XML sitemap generation failing with «No URLs were found» when a Filter Set works on the archive of a custom post type (e.g. /jobs/), on multisite sub-sites and on sub-directory installs; a Shop page with a custom slug was skipped the same way
+* Fix   - Fixed the XML sitemap missing indexable pages: posts without an author (e.g. created by an import or an API connector) were not counted, and neither were posts assigned only to a term more than one level below the filtered one
 
 = 1.9.7 =
 *Release Date - 22 September 2026*
@@ -361,29 +377,21 @@ The service is provided by Filter Everything (Andrii Stepasiuk): [Terms](https:/
 *Release Date - 10 January 2024*
 * Fix   - Fixed issue with GET-style parameters in filter URLs after 1.8.0 update
 
-= 1.8.1 =
-*Release Date - 10 January 2024*
-* Fix   - Fixed warning message on the login screen
-* Fix   - Fixed issue with resetting filters cache
-
 [See changelog for all versions](https://demo.filtereverything.pro/changelog.txt).
 
 == Upgrade Notice ==
 
-= 1.9.7 =
-*Release Date - 22 September 2026*
-* Security - A security fix related to the Elementor Pro «Load More» / infinite scroll pagination on filtered pages
-* Dev   - NEW: optional «Plugin notifications» (off unless you allow them) — see «External services» for details
-* Dev   - NEW: The «Block filter URLs in robots.txt» option now also works on sites with a physical robots.txt file — the plugin keeps its rules in a marked block inside that file and updates it automatically; nothing else in the file is touched
-* Tweak - Reworked the License tab: it now asks where you bought the plugin and shows the three steps for that case (CodeCanyon → «Get your License Key» with the Envato account that made the purchase; filtereverything.pro → «My licenses» with the exact site address this site reports), so customers no longer paste the Envato purchase code into the key field
-* Tweak - Activation errors now explain what actually happened instead of a generic «Invalid license key»: a pasted Envato purchase code, a key generated for another address, a key already active on two sites, a filtereverything.pro key for a site that is not registered yet, or a license server that could not be reached
-* Fix   - Fixed the Apply button building a broken GET link (e.g. ?yes=on) instead of the pretty filter URL when two filters share the same custom field with different filter types — such as a numeric «Sale Price» filter and an «On Sale» checkbox both based on _sale_price
-* Fix   - Fixed a fatal error «Call to undefined function is_plugin_active()» when the plugin was loaded outside wp-admin (WP-CLI, cron) — the Breakdance compatibility check now falls back to the active-plugins option
-* Fix   - Fixed a PHP warning «Undefined array key "post_type"» shown to administrators when a Filters widget or block with no Filter Set selected was displayed on a page that has no relevant Filter Set
-* Fix   - Fixed a label or swatch term in Apply-button mode with instant counts getting unselected again right after the click when the instant recount of a large Filter Set took longer than half a second (many terms, slower phones) — the click was processed twice
-* Fix   - Fixed the rating stars filter keeping the count of a rating next to the stars after that rating was clicked again to deselect it, when «Disable filter links for crawlers» is on
-* Fix   - Fixed SEO Rules with a specific category (e.g. «Women's Perfumes + Hugo Boss») generating no URLs for the XML sitemap — only «Any»-category rules made it into the sitemap, although the specific pages were correctly indexable on the frontend
-* Fix   - Fixed the XML sitemap including filtered URLs whose pages are empty and noindex on the frontend: products hidden from the catalog (out of stock with «Hide out of stock items from the catalog» enabled, or excluded from the catalog) no longer count when the sitemap decides whether a filtered page has products
-* Fix   - Fixed the XML sitemap listing filtered URLs without the trailing slash on sites whose permalink structure ends with one, so every entry went through a 301 redirect before reaching the canonical page; the sitemap now follows the site's permalink settings exactly
-* Fix   - Fixed filtering doing nothing on sites with the WP User Manager plugin (and other plugins built on the Brain Cortex router): the router re-ran the main query after Filter Everything had filtered it, so shop and category pages always showed all products
-* Fix   - Fixed the Filters and Chips blocks showing «This content is available to members only» instead of the filters when WP User Manager is active — the blocks passed its content-restriction attributes on to the widget as if they were widget settings
+= 1.9.8 =
+*Release Date - 2 November 2026*
+* Security - A security fix related to how Filter Set and Filter data is stored and read, and to who is allowed to create or edit these items
+* Dev   - NEW: «Woo Discount Rules» option on the Settings tab, shown when that plugin is active — choose whether the Price and «On sale» filters should use the discounted prices (on by default, as before)
+* Fix   - Fixed very slow pages, including search results, on sites with Woo Discount Rules: a page with a Price or «On sale» filter made the plugin evaluate the discount rules for every product on every view (5–50 seconds on large catalogs); the discounted prices are now cached and recalculated only for the products or rules that changed
+* Fix   - Fixed the Range list counters of a numeric filter when the cheapest or the most expensive item has a fractional value (e.g. $1.75 with ranges 0–1.50 / 1.60–2.1): that item was counted in the wrong range, and the instant recount filtered it the same way, because the plugin replaced its value with the rounded slider bound
+* Fix   - Fixed the «On Sale» filter counters with Woo Discount Rules: a product discounted by a rule but without a sale price of its own was removed from «No» without being added to «Yes», so the two counters did not add up
+* Fix   - Fixed filtered category pages in a non-default Polylang language (e.g. /uk/product-category/…/) being 301-redirected to the default language as soon as a filter was applied — the plugin copied Polylang's internal language condition into its own tax query, so Polylang resolved the queried category in the wrong language
+* Fix   - Fixed filters on sites where Polylang uses a separate domain or sub-domain for each language: filter links, chips and the Reset link pointed to the default language's domain, and AJAX filtering returned «page not found» on the other languages' domains
+* Fix   - Fixed the «What to filter» field of a Filter Set staying empty when the selected page is on another domain than the admin — for example a Filter Set of a language that Polylang serves from its own domain or sub-domain
+* Fix   - Fixed the Range list of a numeric filter accepting whole numbers only: its Min and Max fields now follow the precision of the «Slider Step» setting, so with a step of 0.01 you can create ranges such as 0 – 1.49
+* Fix   - Fixed filtering on Divi Theme Builder category archive templates whose Blog module shows the «Current Category» (Divi 4 and Divi 5): the filter widget and its counters reacted, but the Blog module kept listing all posts of the category
+* Fix   - Fixed the XML sitemap generation failing with «No URLs were found» when a Filter Set works on the archive of a custom post type (e.g. /jobs/), on multisite sub-sites and on sub-directory installs; a Shop page with a custom slug was skipped the same way
+* Fix   - Fixed the XML sitemap missing indexable pages: posts without an author (e.g. created by an import or an API connector) were not counted, and neither were posts assigned only to a term more than one level below the filtered one

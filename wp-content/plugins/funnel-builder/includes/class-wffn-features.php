@@ -25,10 +25,22 @@ if ( ! class_exists( 'WFFN_Features' ) ) {
 		const APP_ENQUEUE_PRIORITY = 99;
 
 		/**
+		 * Keys added after Pro began answering on HELD_FILTER. With Pro active and no
+		 * answer, the Pro is older than these keys and its build cannot run them, even
+		 * while this plugin's enqueue is still in place (an older Pro takes the enqueue
+		 * over at priority 5, after window.wffn is built at priority 0).
+		 */
+		const NEEDS_ANSWER = array( 'admin_extensions' );
+
+		/**
+		 * Every optional feature, by key. Besides screens of its own, a key can name a
+		 * surface the admin app offers modules: `admin_extensions` (screens registered on
+		 * `window.wffnExtensions`).
+		 *
 		 * @return string[]
 		 */
 		public static function all() {
-			return array( 'announcements', 'funnelkit_ai' );
+			return array( 'announcements', 'funnelkit_ai', 'admin_extensions' );
 		}
 
 		/**
@@ -52,6 +64,12 @@ if ( ! class_exists( 'WFFN_Features' ) ) {
 			$held = apply_filters( self::HELD_FILTER, null );
 
 			if ( null === $held ) {
+				// Intended exception to the no-Pro-constant rule: the only Pro that never answers predates this handshake, so nothing it ships could answer a filter.
+				// It takes the app over after this is asked (priority 5 > 0), and its build cannot run these keys.
+				if ( in_array( $key, self::NEEDS_ANSWER, true ) && defined( 'WFFN_PRO_VERSION' ) ) {
+					return false;
+				}
+
 				return self::serves_admin_app();
 			}
 

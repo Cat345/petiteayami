@@ -1,4 +1,4 @@
-<?php $get_hash = $this->get_localstorage_hash( 'gtag' ); ?>
+<?php $get_hash = $this->get_localstorage_hash( $is_gads ? 'gad' : 'ga' ); ?>
 var wfocugadEvent = '<?php echo $get_hash . "$k"; ?>';
 var eventName = 'load';
 window.addEventListener('pageshow', (event) => {
@@ -16,7 +16,7 @@ var wfocugadResult = false;
 try {
 
 if ('1' === localStorage.getItem("wfocuH_" + wfocugadHash)) {
-wfocugadResult = false;
+wfocugadResult = true;
 }
 
 } catch (exception) {

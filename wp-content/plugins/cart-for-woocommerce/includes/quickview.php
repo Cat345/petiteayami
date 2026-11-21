@@ -98,6 +98,15 @@ if ( ! class_exists( '\FKCart\Includes\Quickview' ) ) {
 			global $product;
 
 
+			/** A non-variable product that still needs options (e.g. a bundle) gets a plain form for the other plugin to fill */
+			if ( ! fkcart_is_variable_product_type( $product->get_type() ) && fkcart_product_needs_options( $product ) ) {
+				fkcart_get_template_part( 'cart/quick-view/add-to-cart-options', '', array(
+					'cart_key' => $this->cart_key,
+				) );
+
+				return;
+			}
+
 			/** Load the template */
 			fkcart_get_template_part( 'cart/quick-view/add-to-cart-variable', '', array(
 				'available_variations' => $product->get_available_variations(),

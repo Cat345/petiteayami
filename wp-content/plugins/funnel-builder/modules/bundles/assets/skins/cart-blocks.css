@@ -1,0 +1,251 @@
+/* Grouped-bundle look in the block Cart / Checkout / mini-cart: the container
+   line keeps the bundle title, members indent beneath it. Display only. */
+
+/* Cart & Checkout table rows (<tr>: image | product | total). */
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-parent > td {
+	border-bottom: 0;
+	padding-bottom: 4px;
+}
+
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-child > td {
+	border-top: 0;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-child:not(:last-child) > td {
+	border-bottom: 0;
+}
+
+/* A member's indent, as a margin on the thumbnail link so the theme's cell padding
+   neither creates nor removes it. */
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-child > .wc-block-cart-item__image > a {
+	display: inline-block;
+	line-height: 0;
+	margin-inline-start: 30px;
+}
+/* Constraining one axis of an image is a distortion waiting for a theme to claim
+   the other; `height: auto` restores the ratio and `object-fit` is the backstop. */
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-child .wc-block-cart-item__image img {
+	max-width: 52px;
+	height: auto;
+	object-fit: contain;
+}
+
+/* Slightly recede the members so the container reads as the headline. */
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-child .wc-block-cart-item__product {
+	font-size: 0.92em;
+}
+
+/* Members are read-only: the container owns the quantity + total. A nested member
+   keeps its own. (0,4,0)+ clears WooCommerce's (0,3,1) cell rules. */
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-child:not(.wffn-bundles-cart-nested) .wc-block-cart-item__quantity,
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-child:not(.wffn-bundles-cart-nested) .wc-block-cart-item__total,
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-child .wc-block-cart-item__prices,
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-child:not(.wffn-bundles-cart-nested) .wc-block-cart-item__quantity,
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-child:not(.wffn-bundles-cart-nested) .wc-block-components-quantity-selector {
+	display: none;
+}
+/* A heading is priced 0: its total rides in as text before the price, so hide the price itself. */
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-heading .wc-block-cart-item__prices,
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-heading .wc-block-components-product-price__value,
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-heading .wc-block-cart-item__prices,
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-heading .wc-block-components-product-price__value,
+.wc-block-components-order-summary-item.wc-block-components-order-summary-item.wffn-bundles-cart-heading .wc-block-components-product-price__value {
+	display: none;
+}
+/* The saving rides in as text before WooCommerce's per-unit figure, so hide that figure. */
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-save .wc-block-components-sale-badge .wc-block-components-formatted-money-amount,
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-save .wc-block-components-sale-badge .wc-block-components-formatted-money-amount,
+.wc-block-components-order-summary-item.wc-block-components-order-summary-item.wffn-bundles-cart-save .wc-block-components-sale-badge .wc-block-components-formatted-money-amount {
+	display: none;
+}
+/* The narrow cart's total-cell rule (0,5,1) shows the 0 again; the mini-cart sits outside `.wc-block-cart`. */
+.wc-block-cart table.wc-block-cart-items .wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-heading .wc-block-cart-item__total .wc-block-components-product-price__value {
+	display: none;
+}
+/* An add-on quantity is the offer's, so the Store API sends it non-editable
+   and WooCommerce keeps a readonly <input>. Scoped to `[readonly]`; stays for a11y. */
+/* A granted quantity is the offer's, not the shopper's: the Store API sends it as a
+   "Qty: N" detail row (Cart::item_meta), so the locked stepper would only repeat it.
+   Without :has() the plain number stays. */
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-fixedqty .wc-block-components-quantity-selector:has(input[readonly]),
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-fixedqty .wc-block-components-quantity-selector:has(input[readonly]),
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-fixedqty .wc-block-components-quantity-selector:has(input[max="1"]),
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-fixedqty .wc-block-components-quantity-selector:has(input[max="1"]) {
+	display: none;
+}
+
+/* Blocks' cart.css pins this box to 107px, draws the border/radius on the
+   WRAPPER (not the input) and flexes the input to fill it. */
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-fixedqty .wc-block-components-quantity-selector,
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-fixedqty .wc-block-components-quantity-selector {
+	width: auto;
+	min-width: 0;
+	background: none;
+	border: 0;
+	border-radius: 0;
+}
+.wc-block-cart-items__row.wc-block-cart-items__row.wffn-bundles-cart-fixedqty .wc-block-components-quantity-selector__input[readonly],
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-fixedqty .wc-block-components-quantity-selector__input[readonly] {
+	/* `auto` on a number input is the browser's ~20-character default, wider than
+	   the box being removed. Size it to the digits and stop it flexing back out. */
+	flex: 0 0 auto;
+	width: 3ch;
+	min-width: 0;
+	padding: 0;
+	color: var(--wp--preset--color--contrast-2, #777);
+	text-align: start;
+	background: none;
+	border: 0;
+	box-shadow: none;
+	outline: none;
+	pointer-events: none;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+/* Static "Qty: N" shown for members in the classic cart/checkout. */
+.wffn-bundles-cart-childqty.wffn-bundles-cart-childqty {
+	color: var(--wp--preset--color--contrast-2, #777);
+	white-space: nowrap;
+}
+
+/* Mini-cart (flex rows). */
+.wc-block-mini-cart-item.wc-block-mini-cart-item.wffn-bundles-cart-child,
+.wc-block-cart-item.wc-block-cart-item.wffn-bundles-cart-child {
+	position: relative;
+	padding-left: 22px;
+}
+
+/* Classic cart / checkout review table + FunnelKit Aero (wfacp). */
+tr.cart_item.cart_item.wffn-bundles-cart-parent > td {
+	border-bottom: 0;
+}
+/* Rows are ruled with a top border, on the cells or on the row; members drop it to read as one group. */
+tr.cart_item.cart_item.wffn-bundles-cart-child,
+tr.cart_item.cart_item.wffn-bundles-cart-child > td {
+	border-top: 0;
+}
+/* Themes ruling with a bottom border instead: every member but the last, which closes the group. */
+tr.cart_item.cart_item.wffn-bundles-cart-child:has(+ tr.wffn-bundles-cart-child) > td {
+	border-bottom: 0;
+}
+/* (0,6,4) for class-scoped themes; the #order_review form outranks themes that zero these cells by that id. */
+html body tr.cart_item.cart_item.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name,
+html body #order_review tr.cart_item.cart_item.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name {
+	position: relative;
+	padding-left: 30px;
+}
+/* Block themes pad these cells 1em, which a flat 30px barely clears. */
+html body #order_review tr.cart_item.cart_item.cart_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name {
+	padding-left: max(30px, calc(1em + 18px));
+}
+
+/* Order details table: Thank-You and View-Order. Order rows are `.order_item`,
+   not `.cart_item`. (Emails inline a degraded indent — Order_Display::email_styles.) */
+tr.order_item.order_item.wffn-bundles-cart-parent > td {
+	border-bottom: 0;
+}
+tr.order_item.order_item.wffn-bundles-cart-child > td {
+	border-top: 0;
+}
+/* Two cell classes, one surface: the classic template emits `td.product-name`,
+   the Order Confirmation block `td.wc-block-order-confirmation-totals__product`. */
+/* (0,6,4): themes scope order-table cell padding up to (0,4,2), Astra's included. */
+html body tr.order_item.order_item.order_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.product-name,
+html body tr.order_item.order_item.order_item.wffn-bundles-cart-child.wffn-bundles-cart-child > td.wc-block-order-confirmation-totals__product {
+	position: relative;
+	padding-left: 30px;
+	font-size: 0.92em;
+}
+
+/* Block-theme classic cart sizes thumbnails only inside their link (117px); a bundle's own line has none. */
+body:has(> .wp-site-blocks) .woocommerce-cart-form tr.cart_item.wffn-bundles-cart-parent > td.product-thumbnail > img {
+	width: 117px;
+	height: auto;
+}
+
+/* Classic cart: a member's thumbnail takes the indent, capped so a narrow cell keeps the image. */
+tr.cart_item.cart_item.wffn-bundles-cart-child > td.product-thumbnail > a {
+	display: inline-block;
+	line-height: 0;
+	margin-inline-start: min(30px, 25%);
+}
+
+/* FunnelKit Aero rows: a nested pick is read-only and its heading shows one total.
+   Aero scopes its rules under ids, so these carry the same ids to win on specificity. */
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row.wffn-bundles-cart-nested .wfacp_quantity_selector,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row.wffn-bundles-cart-nested .wfacp_delete_item_wrap,
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row.wffn-bundles-cart-nested .product-quantity:has(.wfacp_quantity_selector) {
+	display: none;
+}
+:is(#wfacp-e-form, #wfacp-sec-wrapper) .wfacp_product_row.wffn-bundles-cart-heading .wfacp_product_price_sec > .amount ~ .amount {
+	display: none;
+}
+
+/* Checkout block order-summary rows (for block checkouts). */
+.wc-block-components-order-summary-item.wc-block-components-order-summary-item.wffn-bundles-cart-child {
+	position: relative;
+	/* WooCommerce sizes the row at width: 100%, so the indent must come out of it. */
+	box-sizing: border-box;
+	padding-left: 22px;
+}
+/* A Fixed Bundle child is priced on its container line, as in the cart rows. */
+.wc-block-components-order-summary-item.wc-block-components-order-summary-item.wffn-bundles-cart-child:not(.wffn-bundles-cart-nested) .wc-block-cart-item__prices,
+.wc-block-components-order-summary-item.wc-block-components-order-summary-item.wffn-bundles-cart-child:not(.wffn-bundles-cart-nested) .wc-block-components-order-summary-item__total-price {
+	display: none;
+}
+
+/* Variation / add-on meta on bundle rows. WooCommerce floats `dl.variation`'s
+   label, and a theme's fixed lane on it pushes the value ~104px in. */
+tr.wffn-bundles-cart-bundle.wffn-bundles-cart-bundle dl.variation dt,
+tr.wffn-bundles-cart-bundle.wffn-bundles-cart-bundle .wc-item-meta .wc-item-meta-label,
+.wffn-bundles-cart-bundle.wffn-bundles-cart-bundle dl.variation dt {
+	width: auto;
+	min-width: 0;
+	max-width: none;
+}
+
+/* FunnelKit Thank-You page: one `.wfty_pro_list` div per item. A bundle line's row holds a hidden
+   `.wffn-bundles-ty-row` marker with its grouping classes, so these rules find the row by it. */
+.wfty_pro_list:has(.wffn-bundles-ty-row.wffn-bundles-cart-child) {
+	position: relative;
+}
+/* The rule between rows belongs between groups, not inside one. */
+.wfty_pro_list:has(.wffn-bundles-ty-before-member) > .wfty-hr {
+	display: none;
+}
+
+/* A member as the checkout draws it: a smaller, inset thumb with its name under the bundle's. (0,7,0) over the page's (0,5,0). */
+.wfty_order_details .wfty_pro_list:has(.wffn-bundles-ty-row.wffn-bundles-cart-child) .wfty_leftDiv .wfty_p_img.wfty_p_img {
+	width: 43px;
+	margin-inline-start: 17px;
+}
+
+.wfty_order_details .wfty_pro_list:has(.wffn-bundles-ty-row.wffn-bundles-cart-child) .wfty_leftDiv .wfty_p_img.wfty_p_img img {
+	width: 43px;
+	height: 43px;
+}
+
+/* The count badge centres on the thumbnail's corner, as the checkout draws it. Physical
+   like the page's own `left: 48px`; under RTL the page's `right` wins over `left`. */
+.wfty_order_details .wfty_show_images .wfty_pro_list:has(.wffn-bundles-ty-row) .wfty_quantity_value_box {
+	left: 51px;
+}
+
+.wfty_order_details .wfty_show_images .wfty_pro_list:has(.wffn-bundles-ty-row.wffn-bundles-cart-child) .wfty_quantity_value_box {
+	transform: scale(0.8);
+}
+
+/* Tight inside a group; the last member keeps the page's own gap before the closing rule. */
+.wfty_order_details .wfty_pro_list:has(.wffn-bundles-ty-row.wffn-bundles-cart-child) > :is(.wfty_leftDiv, .wfty_rightDiv) {
+	padding-block-start: 6px;
+}
+
+.wfty_order_details .wfty_pro_list:has(.wffn-bundles-ty-row.wffn-bundles-cart-child):has(.wffn-bundles-ty-before-member) > :is(.wfty_leftDiv, .wfty_rightDiv) {
+	padding-block-end: 6px;
+}
+
+.wfty_order_details .wfty_pro_list:has(.wffn-bundles-ty-row.wffn-bundles-cart-parent):has(.wffn-bundles-ty-before-member) > :is(.wfty_leftDiv, .wfty_rightDiv) {
+	padding-block-end: 8px;
+}

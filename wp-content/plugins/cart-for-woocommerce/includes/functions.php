@@ -95,6 +95,33 @@ if ( ! function_exists( 'fkcart_variable_product_type' ) ) {
 	}
 }
 
+if ( ! function_exists( 'fkcart_product_needs_options' ) ) {
+	/**
+	 * Whether a product has to be configured in the quick view before it can be added.
+	 *
+	 * Variable products always do. Other plugins can flag a product that needs a choice
+	 * of its own (a bundle, a composite) so the drawer offers "Select options" for it.
+	 *
+	 * @param WC_Product $product
+	 *
+	 * @return bool
+	 */
+	function fkcart_product_needs_options( $product ) {
+		if ( ! $product instanceof WC_Product ) {
+			return false;
+		}
+		$needs = fkcart_is_variable_product_type( $product->get_type() );
+
+		/**
+		 * Filters whether a product opens the quick view ("Select options") instead of being added directly.
+		 *
+		 * @param bool       $needs   True for a variable product.
+		 * @param WC_Product $product The product.
+		 */
+		return (bool) apply_filters( 'fkcart_product_needs_options', $needs, $product );
+	}
+}
+
 if ( ! function_exists( 'fkcart_variation_product_type' ) ) {
 	/**
 	 * Check if product type is variation

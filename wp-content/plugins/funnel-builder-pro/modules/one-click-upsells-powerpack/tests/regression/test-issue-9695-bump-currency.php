@@ -217,12 +217,15 @@ if ( $cad ) {
 	$assert( $approx( $cad['converted'], 27.374 ), 'CAD: discount converted to C$27.37 (20 * 1.3687) — not left at base 20' );
 }
 
-// Display path: the un-added bump's shown price (set_bump_plan_price, "One Time"/no plan selected).
-// Asserted by relationship, not absolute value: CURCY's product getters only convert get_true_regular_price()
-// on the frontend, so in wp-cli it stays in the base currency — but the fix is still observable here as
-// (a) the discount applied to the bump is the CONVERTED amount, not the raw base 20, and (b) regular_org
-// is the undiscounted regular (shown struck through), not the discounted price. In the browser, where the
-// getter converts, these render as the ~~C$68.42~~ C$41.05 the shopper should see instead of C$48.42.
+// Display path: the un-added bump's shown price, "One Time"/no plan selected.
+//
+// Exercised through the pipeline the skins actually run — WFOB_Common::set_product_price()
+// on the product object, then the wfob_product_switcher_price_data filter chain, then
+// get_bump_product_price_data()'s fallback to the object when the chain returns nothing.
+// Calling WFOCU_Sublium_Compatibility::set_bump_plan_price() on a bare product in isolation
+// would not represent any real caller: with no plan selected that method deliberately returns
+// $price_data untouched (see FB#582 follow-up — re-deriving the discount there off the regular
+// price showed a $50/$25 product with a $10 "fixed on sale price" bump as $40 instead of $15).
 $compat = null;
 if ( isset( $GLOBALS['wp_filter']['wfob_product_switcher_price_data'] ) ) {
 	foreach ( $GLOBALS['wp_filter']['wfob_product_switcher_price_data']->callbacks as $cbs ) {
@@ -235,13 +238,23 @@ if ( isset( $GLOBALS['wp_filter']['wfob_product_switcher_price_data'] ) ) {
 	}
 }
 $assert( null !== $compat, 'located WFOCU_Sublium_Compatibility instance' );
-if ( $compat ) {
-	$bump             = $compat->set_bump_plan_price( array(), wc_get_product( $product_id ), 1, array( 'discount_type' => 'fixed_discount_reg', 'discount_amount' => 20 ) );
-	$applied_discount = ( isset( $bump['regular_org'], $bump['price'] ) ) ? ( $bump['regular_org'] - $bump['price'] ) : -1;
-	$expected_conv    = function_exists( 'wmc_get_price' ) ? floatval( wmc_get_price( 20 ) ) : 20.0;
-	$assert( $approx( $applied_discount, $expected_conv ), sprintf( 'display bump: applied discount is the CONVERTED amount (%.2f), not the raw base 20', $expected_conv ) );
-	$assert( isset( $bump['regular_org'], $bump['price'] ) && $bump['regular_org'] > $bump['price'], 'display bump: regular_org (strikethrough) is the undiscounted regular, above the offer price' );
-}
+
+$render_bump_price = function ( $options ) use ( $product_id ) {
+	$pro  = WFOB_Common::wc_get_product( $product_id );
+	$pro  = WFOB_Common::set_product_price( $pro, $options, '' );
+	$data = apply_filters( 'wfob_product_switcher_price_data', array(), $pro, 1, $options );
+	if ( empty( $data ) ) {
+		$data['regular_org'] = $pro->get_regular_price( 'edit' );
+		$data['price']       = $pro->get_price( 'edit' );
+	}
+
+	return array( floatval( $data['regular_org'] ), floatval( $data['price'] ) );
+};
+
+list( $bump_regular, $bump_price ) = $render_bump_price( array( 'discount_type' => 'fixed_discount_reg', 'discount_amount' => 20, 'quantity' => 1, 'id' => $product_id ) );
+$expected_conv                     = function_exists( 'wmc_get_price' ) ? floatval( wmc_get_price( 20 ) ) : 20.0;
+$assert( $approx( $bump_regular - $bump_price, $expected_conv ), sprintf( 'display bump: applied discount is the CONVERTED amount (%.2f), not the raw base 20', $expected_conv ) );
+$assert( $bump_regular > $bump_price, 'display bump: regular_org (strikethrough) is the undiscounted regular, above the offer price' );
 
 // USD (base): the amount must stay 20 (no behaviour change).
 $captured = array();

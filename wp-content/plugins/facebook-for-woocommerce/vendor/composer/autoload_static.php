@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
+class ComposerStaticInitbbad756d6958a0b32d16a2aafa7e23c4
 {
     public static $prefixLengthsPsr4 = array (
         'W' =>
@@ -74,13 +74,14 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
         'Automattic\\WooCommerce\\Grow\\Tools\\CompatChecker\\v0_0_1\\Exception\\IncompatibleException' => __DIR__ . '/..' . '/woocommerce/grow/src/Exception/IncompatibleException.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Composer\\Installers\\AglInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/AglInstaller.php',
-        'Composer\\Installers\\AimeosInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/AimeosInstaller.php',
+        'Composer\\Installers\\AkauntingInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/AkauntingInstaller.php',
         'Composer\\Installers\\AnnotateCmsInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/AnnotateCmsInstaller.php',
         'Composer\\Installers\\AsgardInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/AsgardInstaller.php',
         'Composer\\Installers\\AttogramInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/AttogramInstaller.php',
         'Composer\\Installers\\BaseInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/BaseInstaller.php',
         'Composer\\Installers\\BitrixInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/BitrixInstaller.php',
         'Composer\\Installers\\BonefishInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/BonefishInstaller.php',
+        'Composer\\Installers\\BotbleInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/BotbleInstaller.php',
         'Composer\\Installers\\CakePHPInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/CakePHPInstaller.php',
         'Composer\\Installers\\ChefInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ChefInstaller.php',
         'Composer\\Installers\\CiviCrmInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/CiviCrmInstaller.php',
@@ -88,7 +89,7 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
         'Composer\\Installers\\CockpitInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/CockpitInstaller.php',
         'Composer\\Installers\\CodeIgniterInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/CodeIgniterInstaller.php',
         'Composer\\Installers\\Concrete5Installer' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/Concrete5Installer.php',
-        'Composer\\Installers\\CraftInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/CraftInstaller.php',
+        'Composer\\Installers\\ConcreteCMSInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ConcreteCMSInstaller.php',
         'Composer\\Installers\\CroogoInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/CroogoInstaller.php',
         'Composer\\Installers\\DecibelInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/DecibelInstaller.php',
         'Composer\\Installers\\DframeInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/DframeInstaller.php',
@@ -99,6 +100,7 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
         'Composer\\Installers\\EliasisInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/EliasisInstaller.php',
         'Composer\\Installers\\ExpressionEngineInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ExpressionEngineInstaller.php',
         'Composer\\Installers\\EzPlatformInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/EzPlatformInstaller.php',
+        'Composer\\Installers\\ForkCMSInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ForkCMSInstaller.php',
         'Composer\\Installers\\FuelInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/FuelInstaller.php',
         'Composer\\Installers\\FuelphpInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/FuelphpInstaller.php',
         'Composer\\Installers\\GravInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/GravInstaller.php',
@@ -106,9 +108,7 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
         'Composer\\Installers\\ImageCMSInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ImageCMSInstaller.php',
         'Composer\\Installers\\Installer' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/Installer.php',
         'Composer\\Installers\\ItopInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ItopInstaller.php',
-        'Composer\\Installers\\JoomlaInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/JoomlaInstaller.php',
         'Composer\\Installers\\KanboardInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/KanboardInstaller.php',
-        'Composer\\Installers\\KirbyInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/KirbyInstaller.php',
         'Composer\\Installers\\KnownInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/KnownInstaller.php',
         'Composer\\Installers\\KodiCMSInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/KodiCMSInstaller.php',
         'Composer\\Installers\\KohanaInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/KohanaInstaller.php',
@@ -122,6 +122,7 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
         'Composer\\Installers\\MajimaInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/MajimaInstaller.php',
         'Composer\\Installers\\MakoInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/MakoInstaller.php',
         'Composer\\Installers\\MantisBTInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/MantisBTInstaller.php',
+        'Composer\\Installers\\MatomoInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/MatomoInstaller.php',
         'Composer\\Installers\\MauticInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/MauticInstaller.php',
         'Composer\\Installers\\MayaInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/MayaInstaller.php',
         'Composer\\Installers\\MediaWikiInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/MediaWikiInstaller.php',
@@ -137,7 +138,6 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
         'Composer\\Installers\\PantheonInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/PantheonInstaller.php',
         'Composer\\Installers\\PhiftyInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/PhiftyInstaller.php',
         'Composer\\Installers\\PhpBBInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/PhpBBInstaller.php',
-        'Composer\\Installers\\PimcoreInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/PimcoreInstaller.php',
         'Composer\\Installers\\PiwikInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/PiwikInstaller.php',
         'Composer\\Installers\\PlentymarketsInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/PlentymarketsInstaller.php',
         'Composer\\Installers\\Plugin' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/Plugin.php',
@@ -158,9 +158,6 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
         'Composer\\Installers\\StarbugInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/StarbugInstaller.php',
         'Composer\\Installers\\SyDESInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/SyDESInstaller.php',
         'Composer\\Installers\\SyliusInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/SyliusInstaller.php',
-        'Composer\\Installers\\Symfony1Installer' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/Symfony1Installer.php',
-        'Composer\\Installers\\TYPO3CmsInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/TYPO3CmsInstaller.php',
-        'Composer\\Installers\\TYPO3FlowInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/TYPO3FlowInstaller.php',
         'Composer\\Installers\\TaoInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/TaoInstaller.php',
         'Composer\\Installers\\TastyIgniterInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/TastyIgniterInstaller.php',
         'Composer\\Installers\\TheliaInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/TheliaInstaller.php',
@@ -300,11 +297,9 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
         'WooCommerce\\Facebook\\Admin\\Settings_Screens\\Configuration' => __DIR__ . '/../..' . '/includes/Admin/Settings_Screens/Configuration.php',
         'WooCommerce\\Facebook\\Admin\\Settings_Screens\\Localization_Settings_Trait' => __DIR__ . '/../..' . '/includes/Admin/Settings_Screens/Localization_Settings_Trait.php',
         'WooCommerce\\Facebook\\Admin\\Settings_Screens\\Product_Attributes' => __DIR__ . '/../..' . '/includes/Admin/Settings_Screens/Product_Attributes.php',
-        'WooCommerce\\Facebook\\Admin\\Settings_Screens\\Product_Sync' => __DIR__ . '/../..' . '/includes/Admin/Settings_Screens/Product_Sync.php',
         'WooCommerce\\Facebook\\Admin\\Settings_Screens\\Shops' => __DIR__ . '/../..' . '/includes/Admin/Settings_Screens/Shops.php',
         'WooCommerce\\Facebook\\Admin\\Tasks\\Setup' => __DIR__ . '/../..' . '/includes/Admin/Tasks/Setup.php',
         'WooCommerce\\Facebook\\Admin\\WhatsApp_Integration_Settings' => __DIR__ . '/../..' . '/includes/Admin/WhatsApp_Integration_Settings.php',
-        'WooCommerce\\Facebook\\Checkout' => __DIR__ . '/../..' . '/includes/Checkout.php',
         'WooCommerce\\Facebook\\CollectionPage' => __DIR__ . '/../..' . '/includes/CollectionPage.php',
         'WooCommerce\\Facebook\\Commerce' => __DIR__ . '/../..' . '/includes/Commerce.php',
         'WooCommerce\\Facebook\\Debug\\ProfilingLogger' => __DIR__ . '/../..' . '/includes/Debug/ProfilingLogger.php',
@@ -359,6 +354,7 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
         'WooCommerce\\Facebook\\Framework\\Api\\Response' => __DIR__ . '/../..' . '/includes/Framework/Api/Response.php',
         'WooCommerce\\Facebook\\Framework\\Api\\SensitiveData' => __DIR__ . '/../..' . '/includes/Framework/Api/SensitiveData.php',
         'WooCommerce\\Facebook\\Framework\\BatchLogHandler' => __DIR__ . '/../..' . '/includes/Framework/BatchLogHandler.php',
+        'WooCommerce\\Facebook\\Framework\\CrashGuardState' => __DIR__ . '/../..' . '/includes/Framework/CrashGuardState.php',
         'WooCommerce\\Facebook\\Framework\\ErrorLogHandler' => __DIR__ . '/../..' . '/includes/Framework/ErrorLogHandler.php',
         'WooCommerce\\Facebook\\Framework\\Helper' => __DIR__ . '/../..' . '/includes/Framework/Helper.php',
         'WooCommerce\\Facebook\\Framework\\Lifecycle' => __DIR__ . '/../..' . '/includes/Framework/Lifecycle.php',
@@ -427,9 +423,9 @@ class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitbbad756d6958a0b32d16a2aafa7e23c4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitbbad756d6958a0b32d16a2aafa7e23c4::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitbbad756d6958a0b32d16a2aafa7e23c4::$classMap;
 
         }, null, ClassLoader::class);
     }

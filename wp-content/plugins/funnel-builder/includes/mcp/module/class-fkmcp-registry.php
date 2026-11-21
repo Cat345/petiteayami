@@ -278,7 +278,7 @@ class FKMCP_Registry {
 				'category'            => self::CATEGORY,
 				'permission_callback' => $permission,
 				'execute_callback'    => self::conform(
-					self::wrap( $name, $definition['execute_callback'] ),
+					self::wrap( $name, self::with_types( $definition['execute_callback'], isset( $definition['input_schema'] ) ? $definition['input_schema'] : array() ) ),
 					isset( $definition['output_schema'] ) ? $definition['output_schema'] : array()
 				),
 				'meta'                => array(
@@ -646,6 +646,105 @@ class FKMCP_Registry {
 	}
 
 	/** Every ability callback passes through the primary host (audit, rate limit, output scrubbing). */
+	/**
+	 * Core checks the input against its schema and then hands the raw value on: it accepts
+	 * "false" / "0" / "1" for a boolean, "12" for an integer and "a,b" or one value for a
+	 * list. A tool reading ! empty( $input['x'] ), is_int() or is_array() then took "false"
+	 * for yes, refused "12", or skipped the list. The tool gets the value as the schema types
+	 * it instead - only for a field with exactly one of these types, never one that may also
+	 * be text. A list splits on commas only, so "Black Friday" stays one name.
+	 *
+	 * A schema with no such field anywhere returns the callback itself.
+	 *
+	 * @param callable $callback
+	 * @param mixed    $schema The ability's input schema.
+	 *
+	 * @return callable
+	 */
+	private static function with_types( $callback, $schema ) {
+		if ( ! is_array( $schema ) || ! self::has_typed( $schema ) ) {
+			return $callback;
+		}
+
+		return static function ( $input = array() ) use ( $callback, $schema ) {
+			return call_user_func( $callback, self::typed( $input, $schema ) );
+		};
+	}
+
+	/** boolean, integer, number or array when the schema allows exactly that (and maybe null), else ''. */
+	private static function sole_type( $schema ) {
+		if ( ! is_array( $schema ) || ! isset( $schema['type'] ) ) {
+			return '';
+		}
+		$types = array_values( array_diff( (array) $schema['type'], array( 'null' ) ) );
+
+		return 1 === count( $types ) && in_array( $types[0], array( 'boolean', 'integer', 'number', 'array' ), true ) ? $types[0] : '';
+	}
+
+	private static function has_typed( $schema, $depth = 0 ) {
+		if ( ! is_array( $schema ) || $depth >= 12 ) {
+			return false;
+		}
+		if ( '' !== self::sole_type( $schema ) ) {
+			return true;
+		}
+		foreach ( isset( $schema['properties'] ) && is_array( $schema['properties'] ) ? $schema['properties'] : array() as $child ) {
+			if ( self::has_typed( $child, $depth + 1 ) ) {
+				return true;
+			}
+		}
+
+		return isset( $schema['items'] ) && self::has_typed( $schema['items'], $depth + 1 );
+	}
+
+	/** The value as its schema types it; anything the schema leaves open, as sent. */
+	private static function typed( $value, $schema, $depth = 0 ) {
+		if ( ! is_array( $schema ) || $depth >= 12 ) {
+			return $value;
+		}
+
+		switch ( self::sole_type( $schema ) ) {
+			case 'boolean':
+				if ( is_string( $value ) ) {
+					return ! in_array( strtolower( trim( $value ) ), array( 'false', '0', '' ), true ); // rest_sanitize_boolean()
+				}
+
+				return is_int( $value ) || is_float( $value ) ? (bool) $value : $value;
+
+			case 'integer':
+				return is_string( $value ) && 1 === preg_match( '/^\s*-?\d+\s*$/D', $value ) ? (int) trim( $value ) : $value;
+
+			case 'number':
+				return is_string( $value ) && is_numeric( trim( $value ) ) ? trim( $value ) + 0 : $value;
+
+			case 'array':
+				if ( is_string( $value ) ) {
+					$value = array_values( array_filter( array_map( 'trim', explode( ',', $value ) ), 'strlen' ) );
+				} elseif ( is_scalar( $value ) ) {
+					$value = array( $value );
+				}
+				break;
+		}
+
+		if ( ! is_array( $value ) ) {
+			return $value;
+		}
+
+		if ( isset( $schema['properties'] ) && is_array( $schema['properties'] ) ) {
+			foreach ( $schema['properties'] as $key => $child ) {
+				if ( array_key_exists( $key, $value ) ) {
+					$value[ $key ] = self::typed( $value[ $key ], $child, $depth + 1 );
+				}
+			}
+		} elseif ( isset( $schema['items'] ) && is_array( $schema['items'] ) && array_values( $value ) === $value ) {
+			foreach ( $value as $index => $item ) {
+				$value[ $index ] = self::typed( $item, $schema['items'], $depth + 1 );
+			}
+		}
+
+		return $value;
+	}
+
 	private static function wrap( $name, $callback ) {
 		$host = FKMCP_Hosts::primary();
 
