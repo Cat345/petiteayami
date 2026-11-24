@@ -190,6 +190,13 @@ class BWFAN_Common {
 		add_action( 'woocommerce_order_status_failed', array( __CLASS__, 'woocommerce_order_status_failed' ), 999, 2 );
 
 		/**
+		 * Render-time cleanup for stored order notes on sites running FunnelKit Stripe (gateway #1557). Display-only.
+		 * Registered unconditionally: this runs at plugin include, before the gateway defines FKWCS_VERSION on
+		 * plugins_loaded, so the gateway check lives inside defang_order_note_for_display().
+		 */
+		add_filter( 'woocommerce_get_order_note', array( __CLASS__, 'defang_order_note_for_display' ), 1 );
+
+		/**
 		 * Hooked over action_scheduler_pre_init
 		 * Initiating core action scheduler
 		 */
@@ -4391,7 +4398,7 @@ class BWFAN_Common {
 		}
 
 		foreach ( $winback_automations as $automation_id ) {
-			$query = $wpdb->prepare( "SELECT t.ID FROM $task_table_name AS t JOIN $task_meta_table_name AS tm ON t.ID=tm.bwfan_task_id WHERE t.automation_id = %d AND tm.meta_key='integration_data' AND tm.meta_value LIKE %s", $automation_id, '%' . $email . '%' );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
+			$query = $wpdb->prepare( "SELECT t.ID FROM $task_table_name AS t JOIN $task_meta_table_name AS tm ON t.ID=tm.bwfan_task_id WHERE t.automation_id = %d AND tm.meta_key='integration_data' AND tm.meta_value LIKE %s", $automation_id, '%' . $wpdb->esc_like( $email ) . '%' );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
 
 			$tasks_results[ $automation_id ] = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- tables from $wpdb->prefix; values bound via prepare()
 		}
@@ -4418,7 +4425,7 @@ class BWFAN_Common {
 		}
 
 		foreach ( $winback_automations as $automation_id ) {
-			$query = $wpdb->prepare( "SELECT t.ID FROM $task_table_name AS t JOIN $task_meta_table_name AS tm ON t.ID=tm.bwfan_task_id WHERE t.automation_id = %d AND tm.meta_key='integration_data' AND tm.meta_value LIKE %s", $automation_id, '%' . $phone . '%' );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
+			$query = $wpdb->prepare( "SELECT t.ID FROM $task_table_name AS t JOIN $task_meta_table_name AS tm ON t.ID=tm.bwfan_task_id WHERE t.automation_id = %d AND tm.meta_key='integration_data' AND tm.meta_value LIKE %s", $automation_id, '%' . $wpdb->esc_like( $phone ) . '%' );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
 
 			$tasks_results[ $automation_id ] = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- tables from $wpdb->prefix; values bound via prepare()
 		}
@@ -4836,10 +4843,10 @@ class BWFAN_Common {
 	}
 
 	public static function auto_apply_wc_coupon() {
-		if ( ! isset( $_GET['bwfan-coupon'] ) || empty( $_GET['bwfan-coupon'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
+		if ( ! isset( $_GET['bwfan-coupon'] ) || empty( $_GET['bwfan-coupon'] ) || is_array( $_GET['bwfan-coupon'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 			return;
 		}
-		$coupon_code = $_GET['bwfan-coupon']; //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
+		$coupon_code = sanitize_text_field( wp_unslash( $_GET['bwfan-coupon'] ) ); //phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( WC()->cart instanceof WC_Cart && ! empty( $coupon_code ) && ! WC()->cart->has_discount( $coupon_code ) ) {
 			/** Keep existing wc notices */
@@ -12538,6 +12545,16 @@ class BWFAN_Common {
 	public static function save_order_meta( $order_id, $meta_key, $meta_value ) {
 		global $wpdb;
 
+		/**
+		 * Serialize before any direct write. This helper bypasses the WordPress/WooCommerce meta api, which
+		 * serializes on write, so without this an attacker-supplied serialized string would be stored as a
+		 * genuine serialized value and rebuilt into a php object by maybe_unserialize() on every read
+		 * (php object injection). maybe_serialize() double-serializes a serialized-looking string so it
+		 * reads back as a harmless string, and leaves scalars, integers and plain strings untouched. The
+		 * SELECT below returns the stored (serialized) value, so the equality check stays consistent.
+		 */
+		$meta_value = maybe_serialize( $meta_value );
+
 		$hpos_enabled = BWF_WC_Compatibility::is_hpos_enabled();
 		if ( $hpos_enabled ) {
 			$table = "{$wpdb->prefix}wc_orders_meta";
@@ -12565,8 +12582,8 @@ class BWFAN_Common {
 			return;
 		}
 
-		/** If old value is equal to new value */
-		if ( $meta_value === $row['meta_value'] ) {
+		/** If old value is equal to new value. The db returns a string, so cast: an int or float never matched and rewrote the row on every call. */
+		if ( (string) $meta_value === $row['meta_value'] ) {
 			return;
 		}
 
@@ -14542,6 +14559,23 @@ class BWFAN_Common {
 	 */
 	public static function validate_target_link( $link = '', $l_hash = '', $engagement_data = [] ) {
 
+		/** Callers URL-decode the link again before redirecting, so a host that changes on decode (evil.com%23@store.com) is rejected */
+		$link_host = (string) wp_parse_url( (string) $link, PHP_URL_HOST );
+		$decoded   = (string) $link;
+		for ( $i = 0; $i < 5; $i ++ ) {
+			$next = urldecode( $decoded );
+			if ( $next === $decoded ) {
+				break;
+			}
+			$decoded = $next;
+			/** No real link is encoded five times over: one still changing on the fifth decode is treated as hostile */
+			if ( 4 === $i || (string) wp_parse_url( $decoded, PHP_URL_HOST ) !== $link_host ) {
+				do_action( 'bwfan_invalid_tracking_link', $link );
+
+				return home_url();
+			}
+		}
+
 		/** Validate target link if all links not saved and l_hash empty */
 		if ( empty( get_option( 'bwfan_all_link_saved' ) ) && empty( $l_hash ) ) {
 			return self::validate_old_target_link( $link, $engagement_data );
@@ -14592,6 +14626,37 @@ class BWFAN_Common {
 	}
 
 	/**
+	 * Signature for a subscribe link's redirect
+	 *
+	 * Binds the redirect to the exact URL, query included, that the merge tag put in the email,
+	 * so a click can be trusted without a stored row. Stored rows key on host and path only and
+	 * are shared by every recipient, so they cannot pin a per-contact query.
+	 *
+	 * @param string $link
+	 *
+	 * @return string 40 hex characters
+	 */
+	public static function get_subscribe_redirect_signature( $link ) {
+		return hash_hmac( 'sha1', 'bwfan-subscribe-redirect|' . (string) $link, wp_salt( 'nonce' ) );
+	}
+
+	/**
+	 * Whether a subscribe link's redirect carries a valid signature
+	 *
+	 * @param string $link
+	 * @param mixed $signature
+	 *
+	 * @return bool
+	 */
+	public static function is_valid_subscribe_redirect_signature( $link, $signature ) {
+		if ( empty( $link ) || ! is_string( $link ) || ! is_string( $signature ) || 1 !== preg_match( '/^[a-f0-9]{40}$/', $signature ) ) {
+			return false;
+		}
+
+		return hash_equals( self::get_subscribe_redirect_signature( $link ), $signature );
+	}
+
+	/**
 	 * Validate old target link if link is not saved
 	 *
 	 * @param $link
@@ -14610,25 +14675,28 @@ class BWFAN_Common {
 
 		/** Checking by cleaned url */
 		$cleaned_url                        = BWFAN_Core()->conversation->get_cleaned_url( urldecode( $link ) );
-		BWFAN_Email_Conversations::$link_id = BWFAN_Model_Links::get_link_id_by_tid( $cleaned_url, $e_data[0] );
+		BWFAN_Email_Conversations::$link_id = BWFAN_Model_Links::get_link_id_by_tid( $cleaned_url, $e_data[0] ?? [] );
 
-		/** If site url and redirect url host are same */
-		if ( $link_host === $site_url_host ) {
+		/** Same host, or a link stored for this email when it was sent */
+		if ( $link_host === $site_url_host || ! empty( BWFAN_Email_Conversations::$link_id ) ) {
 			return $link;
 		}
 
 		/** Allowed domains */
-		$allowed_domains = apply_filters( 'bwfan_allowed_redirect_domains', [] );
-		if ( empty( $allowed_domains ) ) {
-			return $link;
-		}
+		$allowed_domains = (array) apply_filters( 'bwfan_allowed_redirect_domains', [] );
 
 		/** Filter valid domains */
 		$allowed_domains = array_filter( array_map( function ( $domain ) {
 			return ! empty( $domain ) && is_string( $domain ) ? wp_parse_url( $domain, PHP_URL_HOST ) : false;
 		}, $allowed_domains ) );
 
-		return in_array( $link_host, $allowed_domains, true ) ? $link : $site_url;
+		if ( ! empty( $link_host ) && in_array( $link_host, $allowed_domains, true ) ) {
+			return $link;
+		}
+
+		do_action( 'bwfan_invalid_tracking_link', $link );
+
+		return $site_url;
 	}
 
 	/**
@@ -15620,5 +15688,70 @@ class BWFAN_Common {
 		}
 
 		return $number > 0 ? array_slice( array_values( $found ), 0, $number ) : array_values( $found );
+	}
+
+	/**
+	 * Reduce a note to inert plain text: strip tags, then entity-encode every remaining angle
+	 * bracket so "< tag" cannot re-form once wp_kses_post() runs on display.
+	 *
+	 * @param mixed $text   Raw note content.
+	 * @param int   $length Optional max length, 0 for no limit.
+	 *
+	 * @return string
+	 */
+	public static function sanitize_order_note_text( $text, $length = 0 ) {
+		if ( ! is_scalar( $text ) ) {
+			return '';
+		}
+
+		$text = wp_strip_all_tags( (string) $text );
+		$text = str_replace( array( '<', '>' ), array( '&lt;', '&gt;' ), $text );
+		$text = trim( $text );
+
+		if ( $length > 0 && function_exists( 'mb_substr' ) && mb_strlen( $text ) > $length ) {
+			$text = mb_substr( $text, 0, $length ) . '...';
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Neutralise a stored order note at display time when it carries markup that could re-form a
+	 * tag. Only matching notes are rewritten; legitimate notes are returned untouched and the
+	 * stored row is never changed.
+	 *
+	 * @param array|object $note Note data as built by wc_get_order_note().
+	 *
+	 * @return array|object
+	 */
+	public static function defang_order_note_for_display( $note ) {
+		/** Only on sites running FunnelKit Stripe. Checked here, at render time, when the gateway has loaded. */
+		if ( ! defined( 'FKWCS_VERSION' ) ) {
+			return $note;
+		}
+
+		$content = is_array( $note ) ? ( isset( $note['content'] ) ? $note['content'] : null ) : ( is_object( $note ) && isset( $note->content ) ? $note->content : null );
+
+		if ( ! is_string( $content ) || '' === $content ) {
+			return $note;
+		}
+
+		$is_dangerous = ( 1 === preg_match( '/<[\s\x00]/', $content ) )
+			|| ( false !== stripos( $content, 'tagsdiv' ) )
+			|| ( false !== stripos( $content, 'the-tags' ) );
+
+		if ( ! $is_dangerous ) {
+			return $note;
+		}
+
+		$safe = self::sanitize_order_note_text( $content );
+
+		if ( is_array( $note ) ) {
+			$note['content'] = $safe;
+		} else {
+			$note->content = $safe;
+		}
+
+		return $note;
 	}
 }

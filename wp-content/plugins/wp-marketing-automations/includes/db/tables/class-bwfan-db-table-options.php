@@ -37,6 +37,23 @@ class BWFAN_DB_Table_Options extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Create the table only when it is missing.
+	 *
+	 * dbDelta() treats any schema line whose first word is `key` as an index, so on an existing table it
+	 * misreads the `key` column and runs "ALTER TABLE ... ADD `` (``)", a SQL syntax error. The schema has
+	 * never changed, and the table validation tool repairs its primary key and indexes, so skip dbDelta here.
+	 *
+	 * @return void
+	 */
+	public function create_table() {
+		if ( $this->is_exists() ) {
+			return;
+		}
+
+		parent::create_table();
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string

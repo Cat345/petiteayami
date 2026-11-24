@@ -20,6 +20,25 @@ jQuery(function ($) {
         $ = window.jQuery;
     }
 	const style = fkwcs_data.common_style;
+
+    /**
+     * Shared Button Shape / Button Height for every express wallet button (Apple Pay, Google Pay,
+     * Link, Amazon Pay). Rectangle passes no border radius, so Stripe's default corners are kept;
+     * Pill rounds the corners to half the height. Defined defensively in express-checkout.js too.
+     */
+    window.fkwcsWalletButtonStyle = window.fkwcsWalletButtonStyle || function () {
+        const style = (window.fkwcs_data && window.fkwcs_data.wallet_button_style) || {};
+        const height = parseInt(style.height, 10);
+        const buttonHeight = (height >= 40 && height <= 55) ? height : 42;
+        const borderRadius = 'pill' === style.shape ? Math.ceil(buttonHeight / 2) + 'px' : '';
+
+        return {
+            buttonHeight: buttonHeight,
+            borderRadius: borderRadius,
+            // Appearance variables for the wallet Elements group; empty for Rectangle.
+            variables: borderRadius ? {borderRadius: borderRadius} : {}
+        };
+    };
     window.fkwcsIsDomLoaded = false;
     const available_gateways = {};
     let _current_upe_gateway = 'card';
@@ -251,6 +270,47 @@ jQuery(function ($) {
     function getStripeLocalizedMessage(type, message) {
         return (null !== stripeLocalized[type] && undefined !== stripeLocalized[type]) ? stripeLocalized[type] : message;
     }
+
+    /**
+     * Wallets (Apple Pay, Google Pay, Amazon Pay, Link) are paid for in their own sheet, opened
+     * by their own button, so we hide the order button whenever one is selected. A theme or a
+     * custom stylesheet can out-specify that and leave it on screen - then clicking it submits a
+     * checkout with no payment method, and all the customer gets is "Unable to get payment method
+     * from the browser". Refuse the click and name the button they should press instead.
+     *
+     * Keyed off the hidden marker rather than a list of gateways, so it covers every wallet,
+     * including any added later.
+     */
+    $(document).on('click', '#place_order.fkwcs_hidden', function (e) {
+        const selected = $('input[name="payment_method"]:checked').val();
+
+        // The marker is stale when a gateway outside our plugin is selected: let that order go through.
+        if (!selected || 0 !== selected.indexOf('fkwcs_')) {
+            $(this).removeClass('fkwcs_hidden');
+            return;
+        }
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        const label = $.trim($('label[for="payment_method_' + selected + '"]').text());
+        const prompt = (typeof fkwcs_data !== 'undefined' && fkwcs_data.wallet_button_prompt)
+            ? fkwcs_data.wallet_button_prompt
+            : 'Please use the %s button to complete your payment.';
+
+        $('.woocommerce-error').remove();
+        const message = prompt.replace('%s', function () {
+            return label;
+        }).replace(/\s{2,}/g, ' ');
+        $('.woocommerce-notices-wrapper').eq(0)
+            .empty()
+            .append($('<div class="woocommerce-error fkwcs-errors"></div>').text(message))
+            .show();
+        $('form.checkout').removeClass('processing').unblock();
+        scrollToDiv('.woocommerce-notices-wrapper');
+
+        return false;
+    });
 
 
     class Gateway {
@@ -3062,13 +3122,13 @@ jQuery(function ($) {
                 currency: cur,
                 appearance: {
                     theme: 'stripe',
-                    variables: {},
+                    variables: window.fkwcsWalletButtonStyle().variables,
                 },
                 paymentMethodCreation: 'manual',
                 payment_method_types: ['card'],
             };
             const expressOptions = {
-                buttonHeight: 42,
+                buttonHeight: window.fkwcsWalletButtonStyle().buttonHeight,
                 buttonType: { applePay: fkwcs_data.apple_pay_button_type || 'plain' },
                 buttonTheme: {
                     applePay: fkwcs_data.apple_pay_button_theme || 'black',
@@ -3510,7 +3570,7 @@ jQuery(function ($) {
                     currency: cur,
                     appearance: {
                         theme: 'stripe',
-                        variables: {},
+                        variables: window.fkwcsWalletButtonStyle().variables,
                     },
                 };
             }
@@ -3520,14 +3580,14 @@ jQuery(function ($) {
                 currency: cur,
                 appearance: {
                     theme: 'stripe',
-                    variables: {},
+                    variables: window.fkwcsWalletButtonStyle().variables,
                 },
             };
         }
 
         amazonExpressOptions() {
             return {
-                buttonHeight: 42,
+                buttonHeight: window.fkwcsWalletButtonStyle().buttonHeight,
                 paymentMethods: {
                     googlePay: 'never',
                     applePay: 'never',
@@ -3974,12 +4034,12 @@ jQuery(function ($) {
                 mode: 'payment',
                 amount: amt,
                 currency: cur,
-                appearance: {theme: 'stripe', variables: {}},
+                appearance: {theme: 'stripe', variables: window.fkwcsWalletButtonStyle().variables},
                 paymentMethodCreation: 'manual',
                 payment_method_types: ['card'],
             };
             const expressOptions = {
-                buttonHeight: 42,
+                buttonHeight: window.fkwcsWalletButtonStyle().buttonHeight,
                 buttonType: {googlePay: fkwcs_data.google_pay_btn_theme || 'plain'},
                 buttonTheme: {googlePay: fkwcs_data.google_pay_btn_color || 'black'},
                 paymentMethods: {

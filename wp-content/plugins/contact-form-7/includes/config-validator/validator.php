@@ -19,7 +19,7 @@ class WPCF7_ConfigValidator {
 	/**
 	 * The plugin version in which important updates happened last time.
 	 */
-	const last_important_update = '5.8.1';
+	const last_important_update = '6.2.6';
 
 	const error_codes = array(
 		'maybe_empty',
@@ -38,6 +38,7 @@ class WPCF7_ConfigValidator {
 		'colons_in_names',
 		'upload_filesize_overlimit',
 		'unsafe_email_without_protection',
+		'stripe_deviation',
 	);
 
 	use WPCF7_ConfigValidator_Form;

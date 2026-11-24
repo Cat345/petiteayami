@@ -587,6 +587,8 @@ class BWFAN_API_Carts_Controller extends BWFAN_API_Controller {
 		$checkout_data = json_decode( $item->checkout_data, true );
 
 		if ( is_array( $checkout_data ) && count( $checkout_data ) > 0 ) {
+			/** Labels of the FunnelKit Checkout custom fields saved with this cart */
+			$nice_names = $nice_names + BWFAN_Abandoned_Cart::get_aero_custom_checkout_fields( $checkout_data['aerocheckout_page_id'] ?? 0 );
 			$fields = ( isset( $checkout_data['fields'] ) ) ? $checkout_data['fields'] : [];
 			if ( class_exists( 'WooCommerce' ) ) {
 				$available_gateways = WC()->payment_gateways->payment_gateways();
@@ -957,6 +959,8 @@ class BWFAN_API_Carts_Controller extends BWFAN_API_Controller {
 		$checkout_data = json_decode( $item->checkout_data, true );
 
 		if ( is_array( $checkout_data ) && count( $checkout_data ) > 0 ) {
+			/** Labels of the FunnelKit Checkout custom fields saved with this cart */
+			$nice_names = $nice_names + BWFAN_Abandoned_Cart::get_aero_custom_checkout_fields( $checkout_data['aerocheckout_page_id'] ?? 0 );
 			$fields             = ( isset( $checkout_data['fields'] ) ) ? $checkout_data['fields'] : [];
 			$available_gateways = WC()->payment_gateways->payment_gateways();
 

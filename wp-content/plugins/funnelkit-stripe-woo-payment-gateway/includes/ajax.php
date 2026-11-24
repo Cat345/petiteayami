@@ -270,16 +270,42 @@ class AJAX {
 			if ( $this->verify_order_ownership_for_log_error( $order_id, $order_key ) ) {
 				$order = wc_get_order( $order_id );
 				if ( $order instanceof \WC_Order && false === $order->is_paid() && ! $order->has_status( 'wfocu-pri-order' ) ) {
+					// Everything below comes from an unauthenticated request and ends up in an order note that is
+					// rendered as HTML in wp-admin. Only allowlisted scalar fields are used, and each one is reduced
+					// to plain text, so no client-supplied markup can reach the note.
 					$error_message = '';
-					if ( isset( $_POST['error']['payment_intent']['id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing, FKWCS.CodeAnalysis.FKWCSSpecific.MissingCapabilityCheck, FKWCS.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verified above, frontend AJAX handler for error logging
-						$error_message .= __( 'Intent ID', 'funnelkit-stripe-woo-payment-gateway' ) . ':' . wc_clean( wp_unslash( $_POST['error']['payment_intent']['id'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, FKWCS.CodeAnalysis.FKWCSSpecific.MissingCapabilityCheck, FKWCS.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verified above, frontend AJAX handler for error logging
+					$intent_id     = isset( $error['payment_intent']['id'] ) && is_string( $error['payment_intent']['id'] ) ? $error['payment_intent']['id'] : '';
+					if ( '' !== $intent_id && preg_match( '/^pi_[A-Za-z0-9_]+$/', $intent_id ) ) {
+						$error_message .= __( 'Intent ID', 'funnelkit-stripe-woo-payment-gateway' ) . ':' . $intent_id;
 					}
-					$localized_message = Helper::get_localized_error_message( wc_clean( wp_unslash( $_POST['error'] ) ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, FKWCS.CodeAnalysis.FKWCSSpecific.MissingCapabilityCheck, FKWCS.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verified above, frontend AJAX handler for error logging
 
-					$error_message .= "\n\n" . $localized_message;
+					$error_data = array();
+					foreach ( array( 'type', 'code', 'decline_code', 'message' ) as $error_key ) {
+						if ( isset( $error[ $error_key ] ) && is_scalar( $error[ $error_key ] ) ) {
+							$error_data[ $error_key ] = 'message' === $error_key ? (string) $error[ $error_key ] : sanitize_key( $error[ $error_key ] );
+						}
+					}
+					$error_data = wp_parse_args(
+						$error_data,
+						array(
+							'type'    => '',
+							'code'    => '',
+							'message' => '',
+						)
+					);
 
-					if ( ! empty( $error_message ) ) {
-						WC()->payment_gateways()->payment_gateways()[ $order->get_payment_method() ]->mark_order_failed( $order, $error_message );
+					$localized_message = Helper::sanitize_order_note_text( Helper::get_localized_error_message( $error_data ), 300 );
+
+					if ( '' !== $localized_message ) {
+						$error_message .= "\n\n" . $localized_message;
+					}
+
+					if ( '' !== trim( $error_message ) ) {
+						$gateways = WC()->payment_gateways()->payment_gateways();
+						$gateway  = isset( $gateways[ $order->get_payment_method() ] ) ? $gateways[ $order->get_payment_method() ] : null;
+						if ( $gateway instanceof Abstract_Payment_Gateway ) {
+							$gateway->mark_order_failed( $order, $error_message );
+						}
 					}
 				}
 			}

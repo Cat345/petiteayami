@@ -1,22 +1,22 @@
 {
   "admin/app/src/main.tsx": {
-    "file": "assets/main-70017cb8.js",
+    "file": "assets/main-ff6faa19.js",
     "name": "main",
     "src": "admin/app/src/main.tsx",
     "isEntry": true,
     "css": [
-      "assets/main-ec6b4fd2.css"
+      "assets/main-b626a433.css"
     ]
   },
   "admin/app/src/embed/fb-extensions.tsx": {
-    "file": "assets/fb-extensions-73a37a1b.js",
+    "file": "assets/fb-extensions-10178b63.js",
     "name": "fb-extensions",
     "src": "admin/app/src/embed/fb-extensions.tsx",
     "isEntry": true,
     "css": []
   },
-  "_shared-b0a17870.js": {
-    "file": "assets/shared-b0a17870.js"
+  "_shared-6ed05f52.js": {
+    "file": "assets/shared-6ed05f52.js"
   },
   "_bundles-5d6e70b4.js": {
     "file": "assets/bundles-5d6e70b4.js"
@@ -27,8 +27,8 @@
   "_shared-6bd6f740.js": {
     "file": "assets/shared-6bd6f740.js"
   },
-  "_shared-032ae135.js": {
-    "file": "assets/shared-032ae135.js"
+  "_shared-d581c549.js": {
+    "file": "assets/shared-d581c549.js"
   },
   "_shared-b919cb04.js": {
     "file": "assets/shared-b919cb04.js"
@@ -39,23 +39,23 @@
   "_analytics-3390d89c.js": {
     "file": "assets/analytics-3390d89c.js"
   },
-  "_shared-868d8cee.js": {
-    "file": "assets/shared-868d8cee.js"
+  "_shared-2bee07f4.js": {
+    "file": "assets/shared-2bee07f4.js"
   },
   "_shared-b09f5801.js": {
     "file": "assets/shared-b09f5801.js"
   },
-  "_bundles-386657af.js": {
-    "file": "assets/bundles-386657af.js"
+  "_bundles-69022e5d.js": {
+    "file": "assets/bundles-69022e5d.js"
   },
   "_shared-0f73eb6c.js": {
     "file": "assets/shared-0f73eb6c.js"
   },
-  "_bundles-7af879fc.js": {
-    "file": "assets/bundles-7af879fc.js"
+  "_bundles-83e16221.js": {
+    "file": "assets/bundles-83e16221.js"
   },
-  "_shared-b35d6c2e.js": {
-    "file": "assets/shared-b35d6c2e.js"
+  "_shared-4f6bd7b8.js": {
+    "file": "assets/shared-4f6bd7b8.js"
   },
   "_settings-d1593482.js": {
     "file": "assets/settings-d1593482.js"

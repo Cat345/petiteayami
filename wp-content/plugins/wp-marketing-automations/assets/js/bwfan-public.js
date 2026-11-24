@@ -227,6 +227,22 @@ var BWFAN_Public;
                 }
             });
         },
+        /**
+         * A radio group (payment method, FunnelKit Checkout radio field) has no element with the
+         * field id, so the id lookups miss it. Read the checked option by name instead. This also
+         * covers an option that was pre-selected and never changed by the shopper.
+         */
+        bwfan_capture_radio_fields: function () {
+            if (!BWFAN_Public.checkout_form || !BWFAN_Public.checkout_form.length) {
+                return;
+            }
+            BWFAN_Public.checkout_form.find('input[type=radio]:checked').each(function () {
+                var field_name = $(this).attr('name');
+                if (field_name && BWFAN_Public.checkout_fields.indexOf(field_name) !== -1) {
+                    BWFAN_Public.checkout_fields_data[field_name] = $(this).val();
+                }
+            });
+        },
         bwfanUpdateOnAddressCheckbox: function ( field_name, field_value ) {
             var checkout_formdata = BWFAN_Public.checkout_form.bwfanac_serializeAndEncode();
             checkout_formdata = bwfanac_deserialize_obj(checkout_formdata);
@@ -261,6 +277,11 @@ var BWFAN_Public;
                 return;
             }
             field_name = BWFAN_Public.bwfan_normalize_field_name(field_name);
+
+            /** Every option of a radio group shares the field name; only the checked one holds its value. */
+            if ($(this).attr('type') == 'radio' && !$(this).prop('checked')) {
+                return;
+            }
 
             var field_value = $(this).val();
 
@@ -439,6 +460,8 @@ var BWFAN_Public;
                     'utm_content': utm_content,
                 };
             }
+
+            BWFAN_Public.bwfan_capture_radio_fields();
 
             /**
              * Block checkout: scrape all currently-rendered block inputs into checkout_fields_data
@@ -1397,6 +1420,7 @@ var BWFAN_Public;
         BWFAN_Public.checkout_form.on('click', '.input-checkbox', BWFAN_Public.bwfan_captureCheckoutField);
         BWFAN_Public.checkout_form.on('change', '.input-checkbox', BWFAN_Public.bwfan_captureCheckoutField);
         BWFAN_Public.checkout_form.on('change', '.input-text', BWFAN_Public.bwfan_captureCheckoutField);
+        BWFAN_Public.checkout_form.on('change', 'input[type=radio]', BWFAN_Public.bwfan_captureCheckoutField);
 
         /**
          * WC Blocks checkout: inputs re-render on every Store API push (cart/shipping/totals),
@@ -1471,7 +1495,7 @@ var BWFAN_Public;
         });
 
         var interval = null;
-        var globalSel = '#billing_email,.input-text,.input-checkbox, select';
+        var globalSel = '#billing_email,.input-text,.input-checkbox, select, input[type=radio]';
         var globalEvents = 'blur change';
         if (BWFAN_Public.is_block_checkout) {
             globalSel += ', #email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"], input[name*="marketing-consent"], input[id*="marketing-consent"]';
@@ -1497,6 +1521,11 @@ var BWFAN_Public;
                 }
                 if (interval !== null) clearTimeout(interval);
                 interval = setTimeout(BWFAN_Public.bwfan_get_checkout_data, 300);
+                return;
+            }
+
+            /** A blurred, unchecked radio option carries no value to save. */
+            if ($(this).attr('type') == 'radio' && !$(this).prop('checked')) {
                 return;
             }
 

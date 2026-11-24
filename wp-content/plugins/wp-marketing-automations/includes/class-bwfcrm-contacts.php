@@ -1363,7 +1363,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			$contact_field = BWF_Model_Contact_Fields::get_contact_field_by_id( $contact_id );
 
-			$field_ids      = array_keys( $this->fields );
+			$field_ids      = array_map( 'absint', array_keys( $this->fields ) );
 			$field_ids      = implode( ',', $field_ids );
 			$field_types_db = BWFAN_Model_Fields::get_results( 'SELECT ID, type, meta FROM {table_name} WHERE ID IN (' . $field_ids . ')' );
 

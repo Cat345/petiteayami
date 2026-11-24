@@ -10,8 +10,7 @@
  */
 
 /*
- * This directory is the single source; Funnel Builder syncs it with
- * bin/sync-mcp-module.sh. Removes the leftover fkmcp_ajax_unresolvable option.
+ * Removes the leftover fkmcp_ajax_unresolvable option.
  */
 
 defined( 'ABSPATH' ) || exit;

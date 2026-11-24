@@ -52,22 +52,34 @@ class BWFAN_Subscribe_Link_Handler {
 			if ( 'show_message' !== $confirmation_type ) {
 				$link = ! empty( $general_options['bwfan_confirmation_redirect_url'] ) ? trim( $general_options['bwfan_confirmation_redirect_url'] ) : '';
 			}
+
+			/** Set by the admin in settings, not taken from the request */
+			$is_trusted_link = ! empty( $link );
+		} else {
+			$is_trusted_link = BWFAN_Common::is_valid_subscribe_redirect_signature( $link, filter_input( INPUT_GET, 'bwfan-link-hash' ) );
 		}
-	
+
 		$url = '';
 		if ( ! empty( $link ) ) {
 			// redirecting to bwfan-link if there
 			$link = BWFAN_Common::bwfan_correct_protocol_url( $link );
-			$automation_id = filter_input( INPUT_GET, 'automation-id' );
-			$link = BWFAN_Common::validate_target_link( $link,'', [[  'oid'=>intval($automation_id), 'type'=>1 ]] );
+			if ( ! $is_trusted_link ) {
+				$link = BWFAN_Common::validate_target_link( $link );
+			}
 			$link = BWFAN_Common::append_extra_url_arguments( $link );
 			if ( false !== BWFAN_Common::bwfan_is_valid_link( $link ) ) {
-				$url = BWFAN_Email_Conversations::validate_link( $link );
+				$url = urldecode( BWFAN_Email_Conversations::validate_link( $link ) );
+
+				/** Decoding again can turn an encoded '#' into a new host (evil.com%2amp;3@store.com becomes evil.com#@store.com), so the URL redirected to must keep the checked host */
+				if ( ! self::is_same_host( $url, $link ) ) {
+					do_action( 'bwfan_invalid_tracking_link', $link );
+					$url = home_url();
+				}
 			}
 		}
 
 		if ( empty( $dbcontact->db_contact ) ) {
-			BWFAN_Common::wp_redirect( ! empty( $url ) ? urldecode( $url ) : home_url() );
+			BWFAN_Common::wp_redirect( ! empty( $url ) ? $url : home_url() );
 			exit;
 		}
 
@@ -96,11 +108,29 @@ class BWFAN_Subscribe_Link_Handler {
 		do_action( 'bwfcrm_confirmation_link_clicked', $contact );
 
 		if ( ! empty( $url ) ) {
-			BWFAN_Common::wp_redirect( urldecode( $url ) );
+			BWFAN_Common::wp_redirect( $url );
 			exit;
 		}
 
 		self::display_confirmation_message();
+	}
+
+	/**
+	 * Whether two URLs point at the same host and port
+	 *
+	 * @param string $url
+	 * @param string $checked_url
+	 *
+	 * @return bool
+	 */
+	private static function is_same_host( $url, $checked_url ) {
+		$url         = wp_parse_url( $url );
+		$checked_url = wp_parse_url( $checked_url );
+		if ( empty( $url['host'] ) || empty( $checked_url['host'] ) ) {
+			return false;
+		}
+
+		return strtolower( $url['host'] ) === strtolower( $checked_url['host'] ) && ( $url['port'] ?? null ) === ( $checked_url['port'] ?? null );
 	}
 
 	public static function display_confirmation_message() {

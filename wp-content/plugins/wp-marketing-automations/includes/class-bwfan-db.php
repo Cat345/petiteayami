@@ -169,6 +169,9 @@ class BWFAN_DB {
 		update_option( 'bwfan_ver_1_0', gmdate( 'Y-m-d' ), true );
 		update_option( 'bwfan_new_user', 'yes', true );
 
+		/** Fresh install stores every tracked link at send time, so there is nothing for the 3.5.0 link migration to do */
+		update_option( 'bwfan_all_link_saved', true, true );
+
 		/** Unique key to share in rest calls */
 		$unique_key = wp_generate_password( 32, false );
 		update_option( 'bwfan_u_key', $unique_key, true );
@@ -325,6 +328,7 @@ class BWFAN_DB {
 			'3.5.4'    => '3_5_4',
 			'3.5.5'    => '3_5_5',
 			'3.5.6'    => '3_5_6',
+			'3.8.0'    => '3_8_0',
 		);
 		$db_version = get_option( 'bwfan_db', '2.0' );
 
@@ -1965,6 +1969,36 @@ class BWFAN_DB {
 		/** Log if any mysql errors */
 		if ( ! empty( $db_errors ) ) {
 			BWFAN_Common::log_test_data( array_merge( [ __FUNCTION__ ], $db_errors ), 'db-creation-errors' );
+		}
+
+		/** Updating version key */
+		update_option( 'bwfan_db', $version_key, true );
+	}
+
+	/**
+	 * Run the 3.5.0 link migration on sites that never ran it
+	 *
+	 * Sites installed fresh on 3.5.0 - 3.9.0.1 skipped db_update_3_5_0, so bwfan_all_link_saved
+	 * was never set and click tracking kept using the old, looser link check.
+	 * The migration is idempotent and sets the option when it finishes. It starts off-peak, like
+	 * 3.5.0, because the old check no longer lets an unknown external host through meanwhile.
+	 * Keyed 3.8.0: every release up to 3.9.0.1 leaves bwfan_db at 3.5.6, so it runs there, and before 3.9.1.
+	 *
+	 * @param $version_key
+	 *
+	 * @return void
+	 */
+	public function db_update_3_8_0( $version_key ) {
+		if ( is_array( $this->method_run ) && in_array( '1.0.0', $this->method_run, true ) ) {
+			update_option( 'bwfan_db', $version_key, true );
+			$this->method_run[] = $version_key;
+
+			return;
+		}
+
+		if ( empty( get_option( 'bwfan_all_link_saved' ) ) && ! bwf_has_action_scheduled( 'bwfan_store_template_links' ) ) {
+			$time = BWFAN_Common::get_store_time( '01', '30' );
+			bwf_schedule_recurring_action( $time, 60, 'bwfan_store_template_links' );
 		}
 
 		/** Updating version key */

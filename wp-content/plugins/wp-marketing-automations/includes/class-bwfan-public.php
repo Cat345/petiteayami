@@ -111,16 +111,9 @@ class BWFAN_Public {
 		global $post;
 		$data['current_page_id'] = ( $post instanceof WP_Post ) ? $post->ID : 0;
 
-		$custom_field = [];
-		if ( class_exists( 'WFACP_Common' ) ) {
-			/** FunnelKit Checkout advanced fields */
-			$checkout_fields = ( $post instanceof WP_Post ) ? WFACP_Common::get_checkout_fields( $post->ID ) : [];
-			$custom_field    = isset( $checkout_fields['advanced'] ) ? array_filter( $checkout_fields['advanced'], function ( $fields ) {
-				return 'wfacp_html' !== $fields['type'];
-			} ) : [];
-			$custom_field    = array_column( $custom_field, 'id' );
-		}
-		$data['bwfan_custom_checkout_field'] = $custom_field;
+		/** FunnelKit Checkout custom fields of this page; the cart save allows the same list */
+		$custom_field                        = ( class_exists( 'BWFAN_Abandoned_Cart' ) && $post instanceof WP_Post ) ? array_keys( BWFAN_Abandoned_Cart::get_aero_custom_checkout_fields( $post->ID ) ) : [];
+		$data['bwfan_custom_checkout_field'] = array_map( 'strval', $custom_field );
 
 		$data['bwfan_ab_email_consent']         = '';
 		$data['bwfan_ab_email_consent_message'] = '';

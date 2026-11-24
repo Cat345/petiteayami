@@ -234,7 +234,7 @@ class CashApp extends LocalGateway {
 
 		} catch ( \Exception $e ) {
 			Helper::log( $e->getMessage(), 'warning' );
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 		}
 	}
 
@@ -446,7 +446,7 @@ class CashApp extends LocalGateway {
 			);
 
 		} catch ( \Exception $e ) {
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 			$this->mark_order_failed( $order, $e->getMessage() );
 
 			return array(

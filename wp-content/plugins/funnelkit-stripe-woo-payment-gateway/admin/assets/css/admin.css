@@ -866,3 +866,75 @@ table.fkwcs_f_table {
     position: relative;
     padding-right: 38px;
 }
+
+/* Button Height slider for the express wallet pages (same design as the FunnelKit PayPal slider). */
+.fkwcs-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
+    max-width: 300px;
+}
+
+.fkwcs-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.fkwcs-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #0073aa;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+}
+
+.fkwcs-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #0073aa;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+}
+
+.fkwcs-slider-value {
+    font-weight: 600;
+    color: #0073aa;
+    min-width: 35px;
+    text-align: center;
+    background: #f8f9fa;
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid #dee2e6;
+    font-size: 12px;
+}
+
+.fkwcs-slider:focus {
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.2);
+}
+
+.fkwcs-slider-container:hover .fkwcs-slider {
+    background: #ccc;
+}
+
+.fkwcs-slider-container:hover .fkwcs-slider-value {
+    background: #e9ecef;
+}
+
+.fkwcs-slider-container:hover .fkwcs-slider::-webkit-slider-thumb {
+    transform: scale(1.1);
+}

@@ -386,7 +386,10 @@ class BWFAN_Manage_Profile {
             // Check for DOB part selects
             if ( 'dob' === $field_slug && isset( $value['dob_part'] ) ) {
                 $has_dob_field = true;
-                $dob_parts[ $value['dob_part'] ] = $value['value'];
+                // Only the three real parts are valid keys; anything else (incl. an array) is ignored to avoid an illegal-offset error.
+                if ( in_array( $value['dob_part'], array( 'day', 'month', 'year' ), true ) ) {
+                    $dob_parts[ $value['dob_part'] ] = $value['value'];
+                }
                 // Remove individual parts from update array
                 unset( $fields_to_update[ $key ] );
             }

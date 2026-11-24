@@ -21,6 +21,36 @@
         return window.fkwcsStripeInstances[pubKey];
     };
 
+    // An expired fkwcs_nonce (cached page, tab left open) fails wallet requests with -1: reload once for fresh nonces.
+    // The fkwcs_reload marker in the URL and in the tab's window.name stops a second reload, even if a redirect drops the URL marker.
+    $(document).ajaxError(function (event, xhr, settings) {
+        const url = new URL(window.location.href.split('#')[0]);
+        if (403 === xhr.status && '-1' === xhr.responseText && -1 !== String(settings.url).indexOf('wc-ajax=fkwcs_') && !url.searchParams.has('fkwcs_reload') && -1 === window.name.indexOf('fkwcs_reload')) {
+            window.name += ' fkwcs_reload';
+            url.searchParams.set('fkwcs_reload', '1');
+            window.location.replace(url.href);
+        }
+    });
+
+    /**
+     * Shared Button Shape / Button Height for every express wallet button (Apple Pay, Google Pay,
+     * Link, Amazon Pay). Rectangle passes no border radius, so Stripe's default corners are kept;
+     * Pill rounds the corners to half the height. Defined defensively in stripe-elements.js too.
+     */
+    window.fkwcsWalletButtonStyle = window.fkwcsWalletButtonStyle || function () {
+        const style = (window.fkwcs_data && window.fkwcs_data.wallet_button_style) || {};
+        const height = parseInt(style.height, 10);
+        const buttonHeight = (height >= 40 && height <= 55) ? height : 42;
+        const borderRadius = 'pill' === style.shape ? Math.ceil(buttonHeight / 2) + 'px' : '';
+
+        return {
+            buttonHeight: buttonHeight,
+            borderRadius: borderRadius,
+            // Appearance variables for the wallet Elements group; empty for Rectangle.
+            variables: borderRadius ? {borderRadius: borderRadius} : {}
+        };
+    };
+
     // Configuration for different payment methods
     const PAYMENT_METHOD_CONFIGS = {
         applePay: {
@@ -229,7 +259,7 @@
                             // Show the grey skeleton overlay and reserve a stable height
                             // BEFORE unmounting, so the container does not collapse to 0px
                             // and leave a blank gap while the Link button re-mounts.
-                            $selectorParent.css('min-height', '42px');
+                            $selectorParent.css('min-height', window.fkwcsWalletButtonStyle().buttonHeight + 'px');
                             $selectorParent.find('.fkwcs_smart_button_trigger').removeClass('hide').show();
                             instance.express_buttons[selector].unmount();
                             instance.express_buttons[selector].mount(selector);
@@ -253,6 +283,7 @@
                 }
 
 
+                const walletButtonStyle = window.fkwcsWalletButtonStyle();
                 const elementOptions = {
                     mode: isAmazonSetup ? 'setup' : 'payment',
                     currency: walletCurrency,
@@ -263,6 +294,9 @@
                     },
                     paymentMethodCreation: 'manual',
                 };
+                if (walletButtonStyle.borderRadius) {
+                    elementOptions.appearance.variables.borderRadius = walletButtonStyle.borderRadius;
+                }
                 // Stripe's setup mode does not accept an amount; payment mode requires it.
                 if (!isAmazonSetup) {
                     elementOptions.amount = stripeAmount;
@@ -284,7 +318,7 @@
                     google_theme = 'white';
                 }
                 const expressOptions = {
-                    buttonHeight: 42,
+                    buttonHeight: walletButtonStyle.buttonHeight,
                     layout: {
                         maxColumns: 3,
                         maxRows: 1

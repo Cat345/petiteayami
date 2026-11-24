@@ -300,7 +300,7 @@ class BWFAN_Admin {
 		if ( true === BWFAN_Common::is_sandbox_mode_active() ) {
 			$title .= ' <span style="background-color:#ca4a1f;border-radius:10px;margin-left:0;font-size:10px;padding:3px 6px;">' . __( 'Sandbox', 'wp-marketing-automations' ) . '</span>';
 		}
-		add_menu_page( false, $title, $capability, 'autonami', array( $this, 'autonami_page' ), '', 59 );
+		add_menu_page( false, $title, $capability, 'autonami', array( $this, 'autonami_page' ), 'none', 59 );
 
 		add_submenu_page( 'autonami', __( 'Dashboard', 'wp-marketing-automations' ), __( 'Dashboard', 'wp-marketing-automations' ), $capability, 'autonami', false, 10 );
 

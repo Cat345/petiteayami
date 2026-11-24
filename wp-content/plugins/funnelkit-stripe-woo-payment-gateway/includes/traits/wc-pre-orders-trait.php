@@ -398,7 +398,7 @@ trait WC_Pre_Orders_Trait {
 			return $response;
 		} catch ( \Exception $e ) {
 			Helper::log( 'Pre Orders Error: ' . $e->getMessage() );
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 
 			$order = wc_get_order( $order_id );
 			return array(
@@ -476,7 +476,7 @@ trait WC_Pre_Orders_Trait {
 
 			$error_message = $e->getMessage();
 			/* translators: error message */
-			$order_note = sprintf( __( 'Stripe Transaction Failed (%s)', 'funnelkit-stripe-woo-payment-gateway' ), $error_message );
+			$order_note = Helper::sanitize_order_note_text( sprintf( __( 'Stripe Transaction Failed (%s)', 'funnelkit-stripe-woo-payment-gateway' ), $error_message ) );
 
 			// Mark order as failed if not already set,
 			// otherwise, make sure we add the order note so we can detect when someone fails to check out multiple times
@@ -671,7 +671,7 @@ trait WC_Pre_Orders_Trait {
 
 			if ( $order ) {
 				/* translators: %s: Error message */
-				$order->add_order_note( sprintf( __( 'Payment processing error: %s', 'funnelkit-stripe-woo-payment-gateway' ), $e->getMessage() ) );
+				$order->add_order_note( Helper::sanitize_order_note_text( sprintf( __( 'Payment processing error: %s', 'funnelkit-stripe-woo-payment-gateway' ), $e->getMessage() ) ) );
 			}
 		}
 	}

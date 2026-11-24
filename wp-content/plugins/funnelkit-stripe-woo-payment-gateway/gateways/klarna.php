@@ -113,7 +113,7 @@ class klarna extends LocalGateway {
 				);
 			} catch ( \Exception $e ) {
 				Helper::log( $e->getMessage(), 'warning' );
-				wc_add_notice( $e->getMessage(), 'error' );
+				wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 
 				return array(
 					'result'   => 'fail',

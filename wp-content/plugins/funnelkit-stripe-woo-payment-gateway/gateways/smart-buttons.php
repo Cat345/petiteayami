@@ -194,6 +194,7 @@ class SmartButtons extends CreditCard {
 		parent::register_stripe_js();
 		wp_register_script( 'fkwcs-express-checkout-js', FKWCS_URL . 'assets/js/express-checkout' . Helper::is_min_suffix() . '.js', array( Helper::get_stripesdk_handle() ), FKWCS_VERSION, array( 'in_footer' => false ) );
 		wp_register_style( 'fkwcs-style', FKWCS_URL . 'assets/css/style.css', array(), FKWCS_VERSION );
+		Helper::add_wallet_button_inline_css();
 	}
 
 	/**
@@ -971,7 +972,8 @@ class SmartButtons extends CreditCard {
 	}
 
 	/**
-	 * Propagates product_page_position, checkout_page_position and separator_text to the other
+	 * Propagates product_page_position, checkout_page_position, separator_text and the wallet
+	 * Button Shape / Button Height (one Express Checkout Element draws every wallet) to the other
 	 * express methods whenever one is saved. They all share one button container, so these
 	 * settings must stay in sync across Apple Pay, Google Pay, Link and Amazon Pay.
 	 *
@@ -993,7 +995,7 @@ class SmartButtons extends CreditCard {
 		}
 
 		$source      = get_option( 'woocommerce_' . $source_id . '_settings', array() );
-		$sync_fields = array( 'product_page_position', 'checkout_page_position', 'separator_text' );
+		$sync_fields = array( 'product_page_position', 'checkout_page_position', 'separator_text', 'wallet_button_shape', 'wallet_button_height' );
 		$targets     = array( 'fkwcs_stripe_apple_pay', 'fkwcs_stripe_google_pay', 'fkwcs_stripe_link', 'fkwcs_stripe_amazon_pay' );
 
 		foreach ( $targets as $target_id ) {

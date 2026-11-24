@@ -4,7 +4,7 @@ Tags: woocommerce checkout, checkout, funnel builder, order bump, upsell
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.19.0.1
+Stable tag: 3.19.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -418,7 +418,9 @@ Reach our [Support Team](https://funnelkit.com/support/). We answer questions on
 
 == Change log ==
 
-*** Funnel Builder ***
+= 3.19.0.2 =
+* Fixed: Funnels: Compatibility with FunnelKit Stripe gateway updated. (#9930)
+* Fixed: Bundles: Design tab changes on a Frequently Bought Together bundle now show in the live preview right away, without saving. (#359)
 
 = 3.19.0.1 =
 * Fixed: Bundles: Admin UI links were pointing to the incorrect url. (#9908)

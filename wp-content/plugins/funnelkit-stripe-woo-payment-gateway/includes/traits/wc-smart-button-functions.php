@@ -1071,6 +1071,19 @@ trait Funnelkit_Stripe_Smart_Buttons {
 		}
 
 		/**
+		 * WooCommerce saves only the posted keys that are in the field list, so a billing email disabled by a field editor
+		 * drops the email the wallet sent. Add it back for the express request.
+		 */
+		if ( ! isset( $fields['billing']['billing_email'] ) ) {
+			$fields['billing']['billing_email'] = array(
+				'label'    => __( 'Email address', 'funnelkit-stripe-woo-payment-gateway' ),
+				'type'     => 'email',
+				'required' => false,
+				'validate' => array( 'email' ),
+			);
+		}
+
+		/**
 		 * Set value in checkout custom email confirmation field for handle mismatch case issue
 		 */
 		if ( ! empty( $_POST ) && isset( $_POST['billing_email'] ) && isset( $_POST['billing_email_2'] ) ) { //phpcs:ignore

@@ -72,11 +72,11 @@ class Pack extends \FKMCP_Pack {
 	const ADDON_FEATURES = array(
 		'upsells'        => array(
 			'label' => 'Upsells',
-			'keys'  => array( 'upsellsEnabled', 'upsellsTitle', 'upsellsSubtitle', 'upsells', 'upsellDesign' ),
+			'keys'  => array( 'upsellsEnabled', 'upsellsTitle', 'upsellsSubtitle', 'upsells', 'upsellsParked', 'upsellDesign' ),
 		),
 		'gifts'          => array(
 			'label' => 'Free gifts',
-			'keys'  => array( 'progressiveGiftsEnabled', 'progressiveGiftsBeforeText', 'progressiveGiftsAfterText', 'progressiveGifts', 'giftDesign' ),
+			'keys'  => array( 'progressiveGiftsEnabled', 'progressiveGiftsBeforeText', 'progressiveGiftsAfterText', 'progressiveGifts', 'progressiveGiftsParked', 'giftDesign' ),
 		),
 		'offer_images'   => array(
 			'label' => 'Offer images',

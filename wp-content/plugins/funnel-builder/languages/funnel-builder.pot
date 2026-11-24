@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: FunnelKit Funnel Builder 3.19.0.1\n"
+"Project-Id-Version: FunnelKit Funnel Builder 3.19.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/funnel-builder\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-19T14:04:06+00:00\n"
+"POT-Creation-Date: 2026-11-21T11:42:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: funnel-builder\n"
@@ -40,6 +40,7 @@ msgstr ""
 #: includes/class-wffn-notification-email-controller.php:168
 #: includes/class-wffn-notification-email-controller.php:171
 #: includes/mcp/module/class-fkmcp-registry.php:190
+#: includes/mcp/module/runtime/class-fkmcp-log.php:300
 #: modules/checkouts/builder/elementor/class-wfacp-elementor.php:270
 #: modules/checkouts/builder/gutenberg/class-wfacp-gutenberg.php:278
 #: modules/optins/modules/optin-pages/compatibilities/page-builders/elementor/class-wffn-optin-pages-elementor.php:152
@@ -65,13 +66,13 @@ msgstr ""
 
 #: admin/class-bwf-admin-settings.php:40
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Stripe"
 msgstr ""
 
 #: admin/class-bwf-admin-settings.php:60
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Square"
 msgstr ""
 
@@ -158,14 +159,14 @@ msgstr ""
 
 #: admin/class-wffn-admin-dashboard-widget.php:228
 #: admin/rest-api/class-wffn-rest-announcements.php:445
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Get FunnelKit Stripe"
 msgstr ""
 
 #: admin/class-wffn-admin-dashboard-widget.php:228
 #: admin/rest-api/class-wffn-rest-announcements.php:435
 #: admin/rest-api/class-wffn-rest-announcements.php:447
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Installs from WordPress.org"
 msgstr ""
 
@@ -181,12 +182,12 @@ msgstr ""
 #: admin/class-wffn-admin-dashboard-widget.php:431
 #: admin/includes/class-wffn-product-tab-addon.php:132
 #: admin/app/dist/8385.841bd57e8a897ce8.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Install"
 msgstr ""
 
 #: admin/class-wffn-admin-dashboard-widget.php:236
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Get FunnelKit Square"
 msgstr ""
 
@@ -236,7 +237,7 @@ msgstr ""
 #: admin/app/dist/7576.a290d207284d7bd5.js:1
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Upgrade to PRO"
 msgstr ""
 
@@ -268,13 +269,13 @@ msgstr ""
 #: admin/includes/class-wffn-product-tab-addon.php:132
 #: modules/bundles/includes/admin/product-tab.php:775
 #: modules/checkouts/includes/class-wfacp-template-loader.php:728
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Activate"
 msgstr ""
 
 #: admin/class-wffn-admin-dashboard-widget.php:411
 #: admin/class-wffn-admin-dashboard-widget.php:428
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Connect"
 msgstr ""
 
@@ -463,17 +464,17 @@ msgid "To keep things running smoothly, we have to update the database to the ne
 msgstr ""
 
 #: admin/class-wffn-admin-notifications.php:1243
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Funnel Builder Quick Setup"
 msgstr ""
 
 #: admin/class-wffn-admin-notifications.php:1245
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Thank you for activating Funnel Builder by FunnelKit. Go through a quick setup to ensure most optimal experience."
 msgstr ""
 
 #: admin/class-wffn-admin-notifications.php:1247
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Start Wizard"
 msgstr ""
 
@@ -484,7 +485,7 @@ msgid "First Party Tracking"
 msgstr ""
 
 #: admin/class-wffn-admin.php:318
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Pixel Tracking"
 msgstr ""
 
@@ -519,7 +520,7 @@ msgstr ""
 
 #: admin/class-wffn-admin.php:336
 #: admin/rest-api/class-wffn-rest-optin-api-endpoint.php:836
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Notifications"
 msgstr ""
 
@@ -577,7 +578,7 @@ msgid "Google Maps"
 msgstr ""
 
 #: admin/class-wffn-admin.php:743
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Dashboard"
 msgstr ""
 
@@ -592,7 +593,7 @@ msgstr ""
 #: admin/app/dist/142.daab65a07570a840.js:1
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Funnels"
 msgstr ""
 
@@ -601,7 +602,7 @@ msgstr ""
 #: includes/mcp/class-fkmcp-pack-funnels.php:1987
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
 #: admin/app/dist/5425.d71cda5b8cd50bf5.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Store Checkout"
 msgstr ""
 
@@ -612,7 +613,7 @@ msgstr ""
 #: modules/bundles/includes/admin/navigation.php:110
 #: admin/app/dist/142.daab65a07570a840.js:1
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Analytics"
 msgstr ""
 
@@ -623,7 +624,7 @@ msgstr ""
 
 #: admin/class-wffn-admin.php:775
 #: admin/app/dist/5188.7c53e9785cf2660c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "AI & MCP"
 msgstr ""
 
@@ -660,7 +661,7 @@ msgstr ""
 #: admin/app/dist/6816.7d89e9fea0cde242.js:1
 #: admin/app/dist/7128.ec8d834b76d74be5.js:1
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Settings"
 msgstr ""
 
@@ -675,7 +676,7 @@ msgstr ""
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Conversions"
 msgstr ""
 
@@ -686,14 +687,14 @@ msgstr ""
 #: admin/app/dist/8271.c7a4ce06bdd60d2c.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
 #: admin/app/dist/9511.9fdddcd96d57b4ad.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Referrers"
 msgstr ""
 
 #: admin/class-wffn-admin.php:1239
 #: admin/app/dist/142.daab65a07570a840.js:1
 #: admin/app/dist/8982.f77980096ec29d51.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Cart Upsells"
 msgstr ""
 
@@ -701,7 +702,7 @@ msgstr ""
 #: admin/app/dist/142.daab65a07570a840.js:1
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
 #: admin/app/dist/9469.3765f1cfe33cbe1a.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "UTM Campaigns"
 msgstr ""
 
@@ -730,12 +731,12 @@ msgid "Setting up your funnel..."
 msgstr ""
 
 #: admin/class-wffn-admin.php:1345
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Lite"
 msgstr ""
 
 #: admin/class-wffn-admin.php:1346
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "PRO"
 msgstr ""
 
@@ -748,7 +749,7 @@ msgstr ""
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
 #: admin/app/dist/7576.a290d207284d7bd5.js:1
 #: admin/app/dist/8385.841bd57e8a897ce8.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "One Click Upsells"
 msgstr ""
 
@@ -761,7 +762,7 @@ msgstr ""
 #: modules/optins/modules/optin-pages/class-wffn-optin-pages.php:631
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Upgrade to PRO Now"
 msgstr ""
 
@@ -786,7 +787,7 @@ msgstr ""
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Sales"
 msgstr ""
 
@@ -804,7 +805,7 @@ msgstr ""
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
 #: admin/app/dist/8026.aebfbb6bec989c4e.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 #: modules/optins/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-form-block.js:1
 msgid "Optin"
 msgstr ""
@@ -857,12 +858,12 @@ msgid "Edit Optin Confirmation"
 msgstr ""
 
 #: admin/class-wffn-admin.php:2635
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Edit Store Checkout"
 msgstr ""
 
 #: admin/class-wffn-admin.php:2661
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Edit Funnel"
 msgstr ""
 
@@ -999,7 +1000,7 @@ msgstr ""
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Cancel"
 msgstr ""
 
@@ -1050,7 +1051,7 @@ msgid "Install Bricks Theme"
 msgstr ""
 
 #: admin/includes/class-wffn-header.php:105
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "New"
 msgstr ""
 
@@ -1072,7 +1073,7 @@ msgstr ""
 
 #: admin/includes/class-wffn-header.php:231
 #: admin/app/dist/9518.4e2c57e536d07a4a.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Back"
 msgstr ""
 
@@ -1100,7 +1101,7 @@ msgstr ""
 #: modules/checkouts/builder/oxygen/modules/class-oxy-form.php:153
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 #: modules/checkouts/builder/gutenberg/dist/wfacp-block-editor.js:1
 msgid "Steps"
 msgstr ""
@@ -1762,7 +1763,7 @@ msgstr ""
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
 #: admin/app/dist/9511.9fdddcd96d57b4ad.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Funnel"
 msgstr ""
 
@@ -1811,7 +1812,7 @@ msgstr ""
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/8385.841bd57e8a897ce8.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Order Bump"
 msgstr ""
 
@@ -2791,7 +2792,7 @@ msgstr ""
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Preview"
 msgstr ""
 
@@ -4232,7 +4233,7 @@ msgstr ""
 
 #: admin/rest-api/class-wffn-rest-funnels.php:1129
 #: admin/rest-api/class-wffn-rest-funnels.php:1137
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:2221
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:2304
 #: modules/checkouts/includes/class-wfacp-common-helper.php:1273
 #: admin/app/dist/7993.42d3a84dbe5bbb51.js:1
 msgid "Other"
@@ -4370,7 +4371,7 @@ msgstr ""
 #: modules/bundles/includes/frontend/cart.php:6068
 #: modules/bundles/includes/frontend/order-display.php:269
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Offer"
 msgstr ""
 
@@ -4406,7 +4407,7 @@ msgstr ""
 #: admin/rest-api/class-wffn-rest-global-settings.php:252
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
 #: admin/app/dist/7576.a290d207284d7bd5.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Order Bumps"
 msgstr ""
 
@@ -4750,7 +4751,7 @@ msgstr ""
 
 #: admin/rest-api/class-wffn-rest-tools.php:236
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Start"
 msgstr ""
 
@@ -4887,7 +4888,7 @@ msgid "This order changed to status &ldquo;%s&rdquo;. Please contact us if you n
 msgstr ""
 
 #: emails/admin-email-report-todo-status.php:34
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Setup"
 msgstr ""
 
@@ -5803,7 +5804,7 @@ msgstr ""
 #: includes/bricks-builder/includes/elements/checkout/class-form.php:1839
 #: modules/checkouts/includes/class-wfacp-common-helper.php:758
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Description"
 msgstr ""
 
@@ -6438,7 +6439,7 @@ msgstr ""
 #: modules/thankyou-pages/compatibilities/page-builders/oxygen/modules/class-oxygen-wfty-order-details-widget.php:58
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
 #: admin/app/dist/3754.7d0fd0905c9a9ce8.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 #: modules/thankyou-pages/compatibilities/page-builders/gutenberg/dist/wfty-block-editor.js:1
 msgid "Details"
 msgstr ""
@@ -6753,7 +6754,7 @@ msgid "Go through the checklist and watch your sales soar"
 msgstr ""
 
 #: includes/class-wffn-notification-email-controller.php:312
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Setup Wizard"
 msgstr ""
 
@@ -6763,7 +6764,7 @@ msgstr ""
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/8026.aebfbb6bec989c4e.js:1
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Create Store Checkout"
 msgstr ""
 
@@ -6771,18 +6772,18 @@ msgstr ""
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/4181.0fe1283d417917d4.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Create Order Bump"
 msgstr ""
 
 #: includes/class-wffn-notification-email-controller.php:324
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Create One Click Upsell Offer"
 msgstr ""
 
 #: includes/class-wffn-notification-email-controller.php:328
 #: admin/app/dist/8385.841bd57e8a897ce8.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Enable Pixel Tracking"
 msgstr ""
 
@@ -6790,7 +6791,7 @@ msgstr ""
 #: includes/mcp/class-fkmcp-pack-funnels.php:802
 #: admin/app/dist/8026.aebfbb6bec989c4e.js:1
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Create Funnel"
 msgstr ""
 
@@ -6953,803 +6954,12 @@ msgid "Step type already registered: %s"
 msgstr ""
 
 #: includes/class-wffn-steps.php:107
+#: modules/bundles/includes/mcp/log.php:39
 msgid "WooCommerce"
 msgstr ""
 
 #: includes/class-wffn-substeps.php:70
 msgid "Must be a subclass of WFFN_Substep"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:151
-msgid "The prompt library could not be read."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:200
-msgid "That connection has already ended, or belongs to another administrator."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:293
-msgid "The WordPress Abilities API is missing. WordPress 6.9 or newer is required."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:315
-msgid "The FunnelKit AI endpoint returned 404. Re-save Settings → Permalinks, then check again."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:335
-msgid "This site is ready for FunnelKit AI."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:364
-msgid "Site address"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:371
-msgid "FunnelKit AI needs HTTPS. Once your site supports it, set Site Address (URL) in Settings → General to https://."
-msgstr ""
-
-#. translators: %d: port number in the site address.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:381
-#, php-format
-msgid "FunnelKit AI connects on the standard HTTPS port only, and this site runs on port %d."
-msgstr ""
-
-#. translators: %s: site hostname.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:394
-#, php-format
-msgid "FunnelKit AI connects from the internet, so it can’t reach %s. Connect a live site with a public domain."
-msgstr ""
-
-#. translators: %s: site hostname.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:406
-#, php-format
-msgid "%s is a public HTTPS address."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:421
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1690
-msgid "Home page"
-msgstr ""
-
-#. translators: %s: HTTP error message.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:431
-#, php-format
-msgid "Could not load your home page: %s"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:438
-msgid "Your site address"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:445
-msgid "Your site asks for a password before it loads, which FunnelKit AI can’t get past. Remove the password protection from this site."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:449
-msgid "Your site answers “temporarily unavailable” (503), usually maintenance mode. Turn it off, then check again."
-msgstr ""
-
-#. translators: %d: HTTP status code.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:459
-#, php-format
-msgid "Your home page answered HTTP %d instead of loading normally."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:468
-msgid "Your home page doesn’t share its REST API address (the Link header). A security or speed plugin may remove it; turn that option off."
-msgstr ""
-
-#. translators: 1: REST API address, 2: site hostname.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:480
-#, php-format
-msgid "Your REST API address is %1$s, on another domain. FunnelKit AI needs it on %2$s."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:491
-msgid "Loads and shares its REST API address."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:503
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:952
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1697
-msgid "FunnelKit AI endpoint"
-msgstr ""
-
-#. translators: %s: HTTP error message.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:513
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:706
-#, php-format
-msgid "Could not reach the FunnelKit AI endpoint: %s"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:520
-msgid "The FunnelKit AI endpoint"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:528
-msgid "Another plugin runs an older FunnelKit AI connector that refuses new connections. Update Funnel Builder and FunnelKit Automations, then check again."
-msgstr ""
-
-#. translators: %d: HTTP status code.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:538
-#, php-format
-msgid "The FunnelKit AI endpoint answered HTTP %d instead of asking for sign-in."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:545
-msgid "The endpoint asks for sign-in, but its WWW-Authenticate header doesn’t arrive. A proxy or cache in front of the site may strip it from /wp-json/funnelkit/."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:552
-msgid "Asks for sign-in and names its metadata."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:564
-msgid "Sign-in metadata"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:565
-msgid "The sign-in metadata at /wp-json/funnelkit/.well-known/ doesn’t answer JSON. A security plugin or a rule on /.well-known/ may be in the way."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:566
-msgid "This site’s FunnelKit AI connector is out of date. Update Funnel Builder, then check again."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:579
-msgid "The sign-in metadata names a different address than this site. If the site moved, re-save Settings → Permalinks and check again."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:609
-msgid "Both sign-in documents answer and match this site."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:621
-msgid "The sign-in metadata"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:635
-msgid "Sign-in token address"
-msgstr ""
-
-#. translators: %s: HTTP error message.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:646
-#, php-format
-msgid "Could not reach the sign-in token address: %s"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:652
-msgid "The sign-in token address"
-msgstr ""
-
-#. translators: %s: what blocked the request, e.g. Wordfence.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:671
-#, php-format
-msgid "%s blocks the sign-in token address, /wp-json/funnelkit/oauth/token. Allow requests to it."
-msgstr ""
-
-#. translators: %d: HTTP status code.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:676
-#, php-format
-msgid "The sign-in token address answered HTTP %d instead of the connector’s own reply. A security plugin or firewall may block POST requests to /wp-json/funnelkit/oauth/token."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:682
-msgid "Answers sign-in requests."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:695
-msgid "Authorization header"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:715
-msgid "Reaches WordPress."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:718
-msgid "Your server removes the Authorization header before WordPress sees it, so FunnelKit AI would sign in and then fail on every call. On Apache, add “CGIPassAuth On” to .htaccess, or ask your host to pass the Authorization header to PHP."
-msgstr ""
-
-#. translators: %s: what redirected, e.g. "Your site address".
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:837
-#, php-format
-msgid "%s redirects, and FunnelKit AI doesn’t follow redirects. Make sure Site Address (URL) in Settings → General is the address your site really loads on."
-msgstr ""
-
-#. translators: 1: what redirected, e.g. "Your site address", 2: redirect target URL.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:844
-#, php-format
-msgid "%1$s redirects to %2$s, and FunnelKit AI doesn’t follow redirects. Set Site Address (URL) in Settings → General to the address your site really loads on."
-msgstr ""
-
-#. translators: 1: seconds it took, 2: seconds FunnelKit AI waits.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:860
-#, php-format
-msgid "The FunnelKit AI endpoint took %1$s seconds to answer, and FunnelKit AI waits %2$d. Speed up the site or its hosting, then check again."
-msgstr ""
-
-#. translators: 1: seconds it took, 2: seconds FunnelKit AI waits.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:864
-#, php-format
-msgid "The sign-in metadata took %1$s seconds to answer, and FunnelKit AI waits %2$d. Speed up the site or its hosting, then check again."
-msgstr ""
-
-#. translators: 1: seconds it took, 2: seconds FunnelKit AI waits.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:868
-#, php-format
-msgid "Your home page took %1$s seconds to answer, and FunnelKit AI waits %2$d. Speed up the site or its hosting, then check again."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:953
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:959
-msgid "404 · No route"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:957
-msgid "REST API root, /wp-json/"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:960
-msgid "Routed normally"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:962
-msgid "The whole REST API is unrouted, not just the FunnelKit AI endpoint."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:965
-msgid "Permalink structure"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:966
-msgid "Plain"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:968
-msgid "Plain permalinks leave REST routes unregistered on most servers."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:972
-msgid "The FunnelKit AI endpoint returns 404"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:977
-msgid "Your site is up, but WordPress is not serving the REST route FunnelKit registered. Nothing is blocking the request - the URL simply isn't routed yet, and saving your permalinks fixes it in a few seconds."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:979
-msgid "Why a 404? WordPress needs its rewrite rules flushed after a plugin registers new REST routes - visiting any /wp-json/ URL before that returns 404 the same way, permissions aside."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:981
-msgid "Fix the permalinks"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:984
-msgid "Open Settings → Permalinks"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:985
-msgid "This is a core WordPress screen - no plugin required."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:987
-msgid "Open Permalink Settings"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:993
-msgid "Click Save Changes"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:995
-msgid "No structure is set yet - choose Post name, then save."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:996
-msgid "No edit needed - saving re-flushes the rewrite rules."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:997
-msgid "I've saved it"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1000
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1524
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1559
-msgid "Re-test the connection"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1001
-msgid "The route registers immediately - no cache purge or restart needed."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1003
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1264
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1337
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1527
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1562
-#: admin/app/dist/5188.7c53e9785cf2660c.js:1
-msgid "Re-test connection"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1012
-msgid "Still 404 after saving?"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1013
-msgid "Deactivate anything named \"Disable REST API\", check a security plugin's REST API access setting, and purge any page cache - a cached 404 keeps answering. Then send us the diagnostic report."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1014
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1213
-msgid "Copy diagnostic report"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1015
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1214
-msgid "Contact FunnelKit support"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1119
-msgid "Reachable · the site answered"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1134
-msgid "/robots.txt"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1139
-msgid "Loaded normally · not filtered"
-msgstr ""
-
-#. translators: 1: HTTP status code, 2: what blocked the request, e.g. Cloudflare challenge.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1171
-#, php-format
-msgid "%1$d · %2$s"
-msgstr ""
-
-#. translators: %d: HTTP status code.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1179
-#, php-format
-msgid "HTTP %d"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1199
-msgid "Home page, where FunnelKit AI finds your REST API"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1203
-msgid "FunnelKit AI endpoint and sign-in"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1211
-msgid "Changed it and still failing?"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1212
-msgid "Send us the diagnostic report - it has every check and response we saw."
-msgstr ""
-
-#. translators: %s: site hostname.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1222
-#, php-format
-msgid "Cloudflare is blocking FunnelKit AI from %s"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1225
-msgid "WordPress and FunnelKit are fine. Cloudflare stops FunnelKit AI's server with a browser challenge before it reaches yours. One Cloudflare rule for FunnelKit AI fixes it - about 3 minutes."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1226
-msgid "Why Cloudflare? Even <code>/robots.txt</code>, a public file, is blocked - so the rule sits in front of WordPress."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1228
-msgid "Fix it in Cloudflare"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1231
-msgid "Open Cloudflare and select this site"
-msgstr ""
-
-#. translators: %s: site hostname.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1234
-#, php-format
-msgid "Sign in and pick <strong>%s</strong> from your domains."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1238
-msgid "Open Cloudflare dashboard"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1244
-msgid "Let FunnelKit AI through"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1245
-msgid "Add one rule so FunnelKit AI can reach these URLs. Bot protection stays on for everyone else."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1249
-msgid "Security"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1250
-msgid "WAF"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1251
-msgid "Custom rules"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1252
-msgid "Create rule"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1254
-msgid ""
-"Name it <strong>Allow FunnelKit</strong> and choose <strong>Edit expression</strong>.\n"
-"\n"
-"Paste this expression:"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1256
-msgid ""
-"Set action to <strong>Skip</strong> and tick every component: remaining custom rules, rate limiting, managed rules and Super Bot Fight Mode.\n"
-"\n"
-"Deploy, then drag the rule to the <strong>top</strong> of your custom rules."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1258
-msgid "I've added the rule"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1261
-msgid "Wait 30 seconds, then re-test"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1262
-msgid "Cloudflare applies changes in about 30 seconds. No cache purge needed."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1273
-msgid "Don't manage Cloudflare?"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1274
-msgid "Send this to your host or developer. It says exactly what to change."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1276
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1349
-msgid "Copy message"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1283
-msgid "your security plugin"
-msgstr ""
-
-#. translators: %s: security plugin name, e.g. Wordfence.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1289
-#, php-format
-msgid "%s is blocking FunnelKit AI"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1292
-msgid "A security plugin is blocking FunnelKit AI"
-msgstr ""
-
-#. translators: %s: security plugin name, e.g. Wordfence.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1295
-#, php-format
-msgid "FunnelKit AI reaches WordPress, and %s rejects it. Your host and CDN are clear - the same request loads /robots.txt without a problem."
-msgstr ""
-
-#. translators: %s: security plugin name, e.g. Wordfence.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1301
-#, php-format
-msgid "Fix it in %s"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1310
-msgid "Your server is blocking FunnelKit AI"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1311
-msgid "Your site is fine - FunnelKit AI's requests never reach WordPress. Even a public file, /robots.txt, is blocked for them, so the rule sits above WordPress."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1312
-msgid "Why is this above WordPress? A plugin can only see a request once WordPress has booted - it can't block /robots.txt, which WordPress serves directly. A host or CDN firewall sits in front of that and can."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1314
-msgid "Fix it on your server"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1317
-msgid "Check your host's bot protection"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1318
-msgid "Sign in to your hosting control panel and look for a bot-protection, WAF or firewall add-on - most hosts ship one under Security."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1319
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1538
-msgid "Found it"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1322
-msgid "Allow FunnelKit's URLs"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1323
-msgid "Add one rule so FunnelKit AI can reach these URLs. Leave bot protection on for everyone else."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1327
-msgid "Every host panel is different, but look for a setting to allow specific paths through the firewall. Allow these:"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1329
-msgid "If you manage the server config directly instead, remove the rule that blocks these paths in nginx or Apache, then reload it."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1331
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1489
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1508
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1556
-msgid "I've made the change"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1334
-msgid "Wait a minute, then re-test"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1335
-msgid "Most host firewalls apply changes within a minute. No cache purge needed."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1346
-msgid "Send this to your host"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1347
-msgid "They own the rule, and most support teams clear it in one reply."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1381
-msgid "Open Wordfence → Firewall → Blocking"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1382
-msgid "Look for a custom pattern that blocks REST API requests, and delete or narrow it."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1384
-msgid "Open Wordfence"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1385
-msgid "Under All Options → Rate Limiting, check for a rule blocking unknown crawlers or \"How Wordfence should handle\" a crawler match - turn off whichever one applies, or add an allow rule for this path."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1386
-msgid "Wordfence → Tools → Live Traffic shows the blocked request live if you're not sure which rule fired."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1389
-msgid "Open Sucuri → Firewall (WAF)"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1390
-msgid "If Sucuri shows a website firewall/CloudProxy address there, the block is likely happening on sucuri.net's own dashboard, not in this settings page - sign in there instead."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1392
-msgid "Open Sucuri Firewall settings"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1393
-msgid "Look for a whitelist setting and allowlist the FunnelKit AI path."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1397
-msgid "Open NinjaFirewall → Logs"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1398
-msgid "Find the blocked request in the log - or go straight to Firewall Policies to add an allow rule by hand."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1400
-msgid "Open NinjaFirewall Logs"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1401
-msgid "Under Firewall Policies, allow this path through."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1410
-msgid "Open WP Cerber → Activity"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1411
-msgid "Find the blocked request and see what it names as the reason - Cerber's free tier blocks by IP and rate-limit rules, not by user agent or path."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1413
-msgid "Open WP Cerber Activity"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1415
-msgid "Turn off the rule that matched"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1416
-msgid "Under Main Settings, find the request-rate or \"block IPs that send excessive requests\" rule the Activity log named, and turn it off or raise its limit - FunnelKit AI's IP isn't fixed, so allowlisting one IP won't hold."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1423
-msgid "Open Shield Security → Investigate"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1424
-msgid "Find the blocked request and see which signal it tripped - or go to Configure → Bots and IPs to change the rule directly."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1426
-msgid "Open Shield Security"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1428
-msgid "Stop that signal from penalising this request"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1429
-msgid "Under Configure → Bots and IPs, look for the setting that excludes a signal - a fake crawler match, or an unusual/empty user agent - from being penalised, or add an IP exception if the signal was IP-based."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1439
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1450
-msgid "Open Firewall → Logs"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1440
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1451
-msgid "Find the blocked request in the Firewall log - or go straight to Firewall → Rules to edit the custom rule that matched."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1442
-msgid "Open Solid Security Firewall"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1444
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1455
-msgid "Find and edit the matching rule"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1445
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1456
-msgid "Under Firewall → Rules, each rule matches a FIELD (URL Path or User Agent, for example) against a VALUE. Look for the rule whose VALUE matches this path, then set its ACTION to Allow, or deactivate it:"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1453
-msgid "Open Kadence Security Firewall"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1470
-msgid "I've turned it off"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1483
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1502
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1550
-msgid "URL Path"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1487
-msgid "If nothing in Rules matches, the block isn't coming from a Firewall Rule - check Firewall → Logs again for what actually fired."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1493
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1541
-msgid "Allow FunnelKit AI's path"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1525
-msgid "The change applies immediately - no cache purge needed."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1536
-msgid "Open your security plugin's firewall settings"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1537
-msgid "Look for a rule that blocks REST API requests, or a general \"block unknown bots\" setting, and narrow it."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1542
-msgid "Most security plugins let you allow a path through the firewall."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1560
-msgid "Most plugins apply the change immediately."
-msgstr ""
-
-#. translators: 1: newline-separated paths, 2: site hostname.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1582
-#, php-format
-msgid ""
-"Hi — FunnelKit AI, the service that connects my site to AI apps, is being blocked at the server or CDN level.\n"
-"\n"
-"Requests to my site get a block page on every URL, including /robots.txt. Because /robots.txt never reaches WordPress, the rule is above WordPress, not in a plugin.\n"
-"\n"
-"Please allow requests to these paths:\n"
-"%1$s\n"
-"\n"
-"Site: %2$s\n"
-"Thanks."
-msgstr ""
-
-#. translators: 1: newline-separated paths, 2: site hostname.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1603
-#, php-format
-msgid ""
-"Hi — Cloudflare is serving a challenge to FunnelKit AI, the service that connects my site to AI apps.\n"
-"\n"
-"Requests to my site receive a 403 with cf-mitigated: challenge. FunnelKit AI connects from its own server and cannot solve a browser challenge.\n"
-"\n"
-"Please add a WAF skip rule for these paths:\n"
-"%1$s\n"
-"\n"
-"Zone: %2$s\n"
-"Thanks."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1624
-msgid "FunnelKit AI — connection diagnostic"
-msgstr ""
-
-#. translators: %s: site URL.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1627
-#, php-format
-msgid "Site: %s"
-msgstr ""
-
-#. translators: %s: date and time the test ran.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1632
-#, php-format
-msgid "Run: %s"
-msgstr ""
-
-#. translators: %s: diagnosis title.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1638
-#, php-format
-msgid "Result: %s"
-msgstr ""
-
-#. translators: %s: plain-text verdict.
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1656
-#, php-format
-msgid "Verdict: %s"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1715
-msgid "The check could not be run."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1790
-msgid "The request did not complete."
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:1898
-msgid "an HTML block page"
-msgstr ""
-
-#: includes/mcp/admin/class-wffn-mcp-settings-api.php:2009
-msgid "Context"
 msgstr ""
 
 #: includes/mcp/class-fkmcp-host-fb.php:119
@@ -7972,7 +7182,7 @@ msgstr ""
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Checkout"
 msgstr ""
 
@@ -8139,22 +7349,9 @@ msgstr ""
 #: admin/app/dist/1888.fb50a8249069a180.js:1
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Optin Confirmation"
 msgstr ""
-
-#: includes/mcp/class-wffn-mcp-log.php:73
-#: includes/mcp/class-wffn-mcp-log.php:128
-msgid "The tool failed with an internal error. Quote the error id to the site administrator to look it up in the FunnelKit logs."
-msgstr ""
-
-#. translators: 1: number of calls allowed per minute, 2: seconds until calls are accepted again.
-#: includes/mcp/class-wffn-mcp-rate-limit.php:123
-#, php-format
-msgid "Rate limit reached: %1$d calls per minute. Retry in %2$d second."
-msgid_plural "Rate limit reached: %1$d calls per minute. Retry in %2$d seconds."
-msgstr[0] ""
-msgstr[1] ""
 
 #: includes/mcp/module/class-fkmcp-registry.php:191
 msgid "Tools from the FunnelKit plugins active on this site."
@@ -8255,12 +7452,18 @@ msgstr ""
 msgid "The tool failed on this store. Try again; if it keeps failing, tell the user to contact FunnelKit support."
 msgstr ""
 
-#: includes/mcp/module/connector/class-fkmcp-connector-mcp.php:620
+#. translators: 1: ability name, 2: why the input was refused
+#: includes/mcp/module/connector/class-fkmcp-connector-mcp.php:652
+#, php-format
+msgid "Ability \"%1$s\" has invalid input. Reason: %2$s"
+msgstr ""
+
+#: includes/mcp/module/connector/class-fkmcp-connector-mcp.php:701
 msgid "Changes by AI are paused for this user in FunnelKit settings. Tell the user; do not try another tool to make the change."
 msgstr ""
 
-#: includes/mcp/module/connector/class-fkmcp-connector-mcp.php:623
-#: includes/mcp/module/connector/class-fkmcp-connector-mcp.php:637
+#: includes/mcp/module/connector/class-fkmcp-connector-mcp.php:704
+#: includes/mcp/module/connector/class-fkmcp-connector-mcp.php:718
 msgid "You don't have permission to use this tool."
 msgstr ""
 
@@ -8387,6 +7590,814 @@ msgstr ""
 #: includes/mcp/module/connector/views/error.php:31
 msgid "You can close this window and start again from your AI app."
 msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:218
+msgid "The prompt library could not be read."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:282
+msgid "That connection has already ended, or belongs to another administrator."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:375
+msgid "The WordPress Abilities API is missing. WordPress 6.9 or newer is required."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:397
+msgid "The FunnelKit AI endpoint returned 404. Re-save Settings → Permalinks, then check again."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:417
+msgid "This site is ready for FunnelKit AI."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:446
+msgid "Site address"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:453
+msgid "FunnelKit AI needs HTTPS. Once your site supports it, set Site Address (URL) in Settings → General to https://."
+msgstr ""
+
+#. translators: %d: port number in the site address.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:463
+#, php-format
+msgid "FunnelKit AI connects on the standard HTTPS port only, and this site runs on port %d."
+msgstr ""
+
+#. translators: %s: site hostname.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:476
+#, php-format
+msgid "FunnelKit AI connects from the internet, so it can’t reach %s. Connect a live site with a public domain."
+msgstr ""
+
+#. translators: %s: site hostname.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:488
+#, php-format
+msgid "%s is a public HTTPS address."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:503
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1773
+msgid "Home page"
+msgstr ""
+
+#. translators: %s: HTTP error message.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:513
+#, php-format
+msgid "Could not load your home page: %s"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:520
+msgid "Your site address"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:527
+msgid "Your site asks for a password before it loads, which FunnelKit AI can’t get past. Remove the password protection from this site."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:531
+msgid "Your site answers “temporarily unavailable” (503), usually maintenance mode. Turn it off, then check again."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:541
+#, php-format
+msgid "Your home page answered HTTP %d instead of loading normally."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:550
+msgid "Your home page doesn’t share its REST API address (the Link header). A security or speed plugin may remove it; turn that option off."
+msgstr ""
+
+#. translators: 1: REST API address, 2: site hostname.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:562
+#, php-format
+msgid "Your REST API address is %1$s, on another domain. FunnelKit AI needs it on %2$s."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:573
+msgid "Loads and shares its REST API address."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:585
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1035
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1780
+msgid "FunnelKit AI endpoint"
+msgstr ""
+
+#. translators: %s: HTTP error message.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:595
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:789
+#, php-format
+msgid "Could not reach the FunnelKit AI endpoint: %s"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:602
+msgid "The FunnelKit AI endpoint"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:610
+msgid "Another plugin runs an older FunnelKit AI connector that refuses new connections. Update Funnel Builder and FunnelKit Automations, then check again."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:620
+#, php-format
+msgid "The FunnelKit AI endpoint answered HTTP %d instead of asking for sign-in."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:627
+msgid "The endpoint asks for sign-in, but its WWW-Authenticate header doesn’t arrive. A proxy or cache in front of the site may strip it from /wp-json/funnelkit/."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:634
+msgid "Asks for sign-in and names its metadata."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:646
+msgid "Sign-in metadata"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:647
+msgid "The sign-in metadata at /wp-json/funnelkit/.well-known/ doesn’t answer JSON. A security plugin or a rule on /.well-known/ may be in the way."
+msgstr ""
+
+#. translators: %s: this plugin's name, e.g. Funnel Builder
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:649
+#, php-format
+msgid "This site’s FunnelKit AI connector is out of date. Update %s, then check again."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:662
+msgid "The sign-in metadata names a different address than this site. If the site moved, re-save Settings → Permalinks and check again."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:692
+msgid "Both sign-in documents answer and match this site."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:704
+msgid "The sign-in metadata"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:718
+msgid "Sign-in token address"
+msgstr ""
+
+#. translators: %s: HTTP error message.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:729
+#, php-format
+msgid "Could not reach the sign-in token address: %s"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:735
+msgid "The sign-in token address"
+msgstr ""
+
+#. translators: %s: what blocked the request, e.g. Wordfence.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:754
+#, php-format
+msgid "%s blocks the sign-in token address, /wp-json/funnelkit/oauth/token. Allow requests to it."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:759
+#, php-format
+msgid "The sign-in token address answered HTTP %d instead of the connector’s own reply. A security plugin or firewall may block POST requests to /wp-json/funnelkit/oauth/token."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:765
+msgid "Answers sign-in requests."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:778
+msgid "Authorization header"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:798
+msgid "Reaches WordPress."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:801
+msgid "Your server removes the Authorization header before WordPress sees it, so FunnelKit AI would sign in and then fail on every call. On Apache, add “CGIPassAuth On” to .htaccess, or ask your host to pass the Authorization header to PHP."
+msgstr ""
+
+#. translators: %s: what redirected, e.g. "Your site address".
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:920
+#, php-format
+msgid "%s redirects, and FunnelKit AI doesn’t follow redirects. Make sure Site Address (URL) in Settings → General is the address your site really loads on."
+msgstr ""
+
+#. translators: 1: what redirected, e.g. "Your site address", 2: redirect target URL.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:927
+#, php-format
+msgid "%1$s redirects to %2$s, and FunnelKit AI doesn’t follow redirects. Set Site Address (URL) in Settings → General to the address your site really loads on."
+msgstr ""
+
+#. translators: 1: seconds it took, 2: seconds FunnelKit AI waits.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:943
+#, php-format
+msgid "The FunnelKit AI endpoint took %1$s seconds to answer, and FunnelKit AI waits %2$d. Speed up the site or its hosting, then check again."
+msgstr ""
+
+#. translators: 1: seconds it took, 2: seconds FunnelKit AI waits.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:947
+#, php-format
+msgid "The sign-in metadata took %1$s seconds to answer, and FunnelKit AI waits %2$d. Speed up the site or its hosting, then check again."
+msgstr ""
+
+#. translators: 1: seconds it took, 2: seconds FunnelKit AI waits.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:951
+#, php-format
+msgid "Your home page took %1$s seconds to answer, and FunnelKit AI waits %2$d. Speed up the site or its hosting, then check again."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1036
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1042
+msgid "404 · No route"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1040
+msgid "REST API root, /wp-json/"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1043
+msgid "Routed normally"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1045
+msgid "The whole REST API is unrouted, not just the FunnelKit AI endpoint."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1048
+msgid "Permalink structure"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1049
+msgid "Plain"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1051
+msgid "Plain permalinks leave REST routes unregistered on most servers."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1055
+msgid "The FunnelKit AI endpoint returns 404"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1060
+msgid "Your site is up, but WordPress is not serving the REST route FunnelKit registered. Nothing is blocking the request - the URL simply isn't routed yet, and saving your permalinks fixes it in a few seconds."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1062
+msgid "Why a 404? WordPress needs its rewrite rules flushed after a plugin registers new REST routes - visiting any /wp-json/ URL before that returns 404 the same way, permissions aside."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1064
+msgid "Fix the permalinks"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1067
+msgid "Open Settings → Permalinks"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1068
+msgid "This is a core WordPress screen - no plugin required."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1070
+msgid "Open Permalink Settings"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1076
+msgid "Click Save Changes"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1078
+msgid "No structure is set yet - choose Post name, then save."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1079
+msgid "No edit needed - saving re-flushes the rewrite rules."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1080
+msgid "I've saved it"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1083
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1607
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1642
+msgid "Re-test the connection"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1084
+msgid "The route registers immediately - no cache purge or restart needed."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1086
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1347
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1420
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1610
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1645
+#: admin/app/dist/5188.7c53e9785cf2660c.js:1
+msgid "Re-test connection"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1095
+msgid "Still 404 after saving?"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1096
+msgid "Deactivate anything named \"Disable REST API\", check a security plugin's REST API access setting, and purge any page cache - a cached 404 keeps answering. Then send us the diagnostic report."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1097
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1296
+msgid "Copy diagnostic report"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1098
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1297
+msgid "Contact FunnelKit support"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1202
+msgid "Reachable · the site answered"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1217
+msgid "/robots.txt"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1222
+msgid "Loaded normally · not filtered"
+msgstr ""
+
+#. translators: 1: HTTP status code, 2: what blocked the request, e.g. Cloudflare challenge.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1254
+#, php-format
+msgid "%1$d · %2$s"
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1262
+#, php-format
+msgid "HTTP %d"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1282
+msgid "Home page, where FunnelKit AI finds your REST API"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1286
+msgid "FunnelKit AI endpoint and sign-in"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1294
+msgid "Changed it and still failing?"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1295
+msgid "Send us the diagnostic report - it has every check and response we saw."
+msgstr ""
+
+#. translators: %s: site hostname.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1305
+#, php-format
+msgid "Cloudflare is blocking FunnelKit AI from %s"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1308
+msgid "WordPress and FunnelKit are fine. Cloudflare stops FunnelKit AI's server with a browser challenge before it reaches yours. One Cloudflare rule for FunnelKit AI fixes it - about 3 minutes."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1309
+msgid "Why Cloudflare? Even <code>/robots.txt</code>, a public file, is blocked - so the rule sits in front of WordPress."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1311
+msgid "Fix it in Cloudflare"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1314
+msgid "Open Cloudflare and select this site"
+msgstr ""
+
+#. translators: %s: site hostname.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1317
+#, php-format
+msgid "Sign in and pick <strong>%s</strong> from your domains."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1321
+msgid "Open Cloudflare dashboard"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1327
+msgid "Let FunnelKit AI through"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1328
+msgid "Add one rule so FunnelKit AI can reach these URLs. Bot protection stays on for everyone else."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1332
+msgid "Security"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1333
+msgid "WAF"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1334
+msgid "Custom rules"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1335
+msgid "Create rule"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1337
+msgid ""
+"Name it <strong>Allow FunnelKit</strong> and choose <strong>Edit expression</strong>.\n"
+"\n"
+"Paste this expression:"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1339
+msgid ""
+"Set action to <strong>Skip</strong> and tick every component: remaining custom rules, rate limiting, managed rules and Super Bot Fight Mode.\n"
+"\n"
+"Deploy, then drag the rule to the <strong>top</strong> of your custom rules."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1341
+msgid "I've added the rule"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1344
+msgid "Wait 30 seconds, then re-test"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1345
+msgid "Cloudflare applies changes in about 30 seconds. No cache purge needed."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1356
+msgid "Don't manage Cloudflare?"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1357
+msgid "Send this to your host or developer. It says exactly what to change."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1359
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1432
+msgid "Copy message"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1366
+msgid "your security plugin"
+msgstr ""
+
+#. translators: %s: security plugin name, e.g. Wordfence.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1372
+#, php-format
+msgid "%s is blocking FunnelKit AI"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1375
+msgid "A security plugin is blocking FunnelKit AI"
+msgstr ""
+
+#. translators: %s: security plugin name, e.g. Wordfence.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1378
+#, php-format
+msgid "FunnelKit AI reaches WordPress, and %s rejects it. Your host and CDN are clear - the same request loads /robots.txt without a problem."
+msgstr ""
+
+#. translators: %s: security plugin name, e.g. Wordfence.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1384
+#, php-format
+msgid "Fix it in %s"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1393
+msgid "Your server is blocking FunnelKit AI"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1394
+msgid "Your site is fine - FunnelKit AI's requests never reach WordPress. Even a public file, /robots.txt, is blocked for them, so the rule sits above WordPress."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1395
+msgid "Why is this above WordPress? A plugin can only see a request once WordPress has booted - it can't block /robots.txt, which WordPress serves directly. A host or CDN firewall sits in front of that and can."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1397
+msgid "Fix it on your server"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1400
+msgid "Check your host's bot protection"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1401
+msgid "Sign in to your hosting control panel and look for a bot-protection, WAF or firewall add-on - most hosts ship one under Security."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1402
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1621
+msgid "Found it"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1405
+msgid "Allow FunnelKit's URLs"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1406
+msgid "Add one rule so FunnelKit AI can reach these URLs. Leave bot protection on for everyone else."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1410
+msgid "Every host panel is different, but look for a setting to allow specific paths through the firewall. Allow these:"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1412
+msgid "If you manage the server config directly instead, remove the rule that blocks these paths in nginx or Apache, then reload it."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1414
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1572
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1591
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1639
+msgid "I've made the change"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1417
+msgid "Wait a minute, then re-test"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1418
+msgid "Most host firewalls apply changes within a minute. No cache purge needed."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1429
+msgid "Send this to your host"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1430
+msgid "They own the rule, and most support teams clear it in one reply."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1464
+msgid "Open Wordfence → Firewall → Blocking"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1465
+msgid "Look for a custom pattern that blocks REST API requests, and delete or narrow it."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1467
+msgid "Open Wordfence"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1468
+msgid "Under All Options → Rate Limiting, check for a rule blocking unknown crawlers or \"How Wordfence should handle\" a crawler match - turn off whichever one applies, or add an allow rule for this path."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1469
+msgid "Wordfence → Tools → Live Traffic shows the blocked request live if you're not sure which rule fired."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1472
+msgid "Open Sucuri → Firewall (WAF)"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1473
+msgid "If Sucuri shows a website firewall/CloudProxy address there, the block is likely happening on sucuri.net's own dashboard, not in this settings page - sign in there instead."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1475
+msgid "Open Sucuri Firewall settings"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1476
+msgid "Look for a whitelist setting and allowlist the FunnelKit AI path."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1480
+msgid "Open NinjaFirewall → Logs"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1481
+msgid "Find the blocked request in the log - or go straight to Firewall Policies to add an allow rule by hand."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1483
+msgid "Open NinjaFirewall Logs"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1484
+msgid "Under Firewall Policies, allow this path through."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1493
+msgid "Open WP Cerber → Activity"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1494
+msgid "Find the blocked request and see what it names as the reason - Cerber's free tier blocks by IP and rate-limit rules, not by user agent or path."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1496
+msgid "Open WP Cerber Activity"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1498
+msgid "Turn off the rule that matched"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1499
+msgid "Under Main Settings, find the request-rate or \"block IPs that send excessive requests\" rule the Activity log named, and turn it off or raise its limit - FunnelKit AI's IP isn't fixed, so allowlisting one IP won't hold."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1506
+msgid "Open Shield Security → Investigate"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1507
+msgid "Find the blocked request and see which signal it tripped - or go to Configure → Bots and IPs to change the rule directly."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1509
+msgid "Open Shield Security"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1511
+msgid "Stop that signal from penalising this request"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1512
+msgid "Under Configure → Bots and IPs, look for the setting that excludes a signal - a fake crawler match, or an unusual/empty user agent - from being penalised, or add an IP exception if the signal was IP-based."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1522
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1533
+msgid "Open Firewall → Logs"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1523
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1534
+msgid "Find the blocked request in the Firewall log - or go straight to Firewall → Rules to edit the custom rule that matched."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1525
+msgid "Open Solid Security Firewall"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1527
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1538
+msgid "Find and edit the matching rule"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1528
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1539
+msgid "Under Firewall → Rules, each rule matches a FIELD (URL Path or User Agent, for example) against a VALUE. Look for the rule whose VALUE matches this path, then set its ACTION to Allow, or deactivate it:"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1536
+msgid "Open Kadence Security Firewall"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1553
+msgid "I've turned it off"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1566
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1585
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1633
+msgid "URL Path"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1570
+msgid "If nothing in Rules matches, the block isn't coming from a Firewall Rule - check Firewall → Logs again for what actually fired."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1576
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1624
+msgid "Allow FunnelKit AI's path"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1608
+msgid "The change applies immediately - no cache purge needed."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1619
+msgid "Open your security plugin's firewall settings"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1620
+msgid "Look for a rule that blocks REST API requests, or a general \"block unknown bots\" setting, and narrow it."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1625
+msgid "Most security plugins let you allow a path through the firewall."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1643
+msgid "Most plugins apply the change immediately."
+msgstr ""
+
+#. translators: 1: newline-separated paths, 2: site hostname.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1665
+#, php-format
+msgid ""
+"Hi — FunnelKit AI, the service that connects my site to AI apps, is being blocked at the server or CDN level.\n"
+"\n"
+"Requests to my site get a block page on every URL, including /robots.txt. Because /robots.txt never reaches WordPress, the rule is above WordPress, not in a plugin.\n"
+"\n"
+"Please allow requests to these paths:\n"
+"%1$s\n"
+"\n"
+"Site: %2$s\n"
+"Thanks."
+msgstr ""
+
+#. translators: 1: newline-separated paths, 2: site hostname.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1686
+#, php-format
+msgid ""
+"Hi — Cloudflare is serving a challenge to FunnelKit AI, the service that connects my site to AI apps.\n"
+"\n"
+"Requests to my site receive a 403 with cf-mitigated: challenge. FunnelKit AI connects from its own server and cannot solve a browser challenge.\n"
+"\n"
+"Please add a WAF skip rule for these paths:\n"
+"%1$s\n"
+"\n"
+"Zone: %2$s\n"
+"Thanks."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1707
+msgid "FunnelKit AI — connection diagnostic"
+msgstr ""
+
+#. translators: %s: site URL.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1710
+#, php-format
+msgid "Site: %s"
+msgstr ""
+
+#. translators: %s: date and time the test ran.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1715
+#, php-format
+msgid "Run: %s"
+msgstr ""
+
+#. translators: %s: diagnosis title.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1721
+#, php-format
+msgid "Result: %s"
+msgstr ""
+
+#. translators: %s: plain-text verdict.
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1739
+#, php-format
+msgid "Verdict: %s"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1798
+msgid "The check could not be run."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1873
+msgid "The request did not complete."
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:1981
+msgid "an HTML block page"
+msgstr ""
+
+#: includes/mcp/module/runtime/admin/class-fkmcp-settings-api.php:2092
+msgid "Context"
+msgstr ""
+
+#. translators: %s: the log store to look the error id up in, e.g. FunnelKit
+#: includes/mcp/module/runtime/class-fkmcp-log.php:306
+#, php-format
+msgid "The tool failed with an internal error. Quote the error id to the site administrator to look it up in the %s logs."
+msgstr ""
+
+#. translators: 1: number of calls allowed per minute, 2: seconds until calls are accepted again.
+#: includes/mcp/module/runtime/class-fkmcp-rate-limit.php:125
+#, php-format
+msgid "Rate limit reached: %1$d calls per minute. Retry in %2$d second."
+msgid_plural "Rate limit reached: %1$d calls per minute. Retry in %2$d seconds."
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/wffn-functions.php:51
 msgid "Attention"
@@ -8553,7 +8564,7 @@ msgstr ""
 #: modules/bundles/includes/admin/product-tab.php:784
 #: admin/app/dist/1015.1bf95f9cc17c0162.js:1
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Actions"
 msgstr ""
 
@@ -8578,7 +8589,7 @@ msgstr ""
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Draft"
 msgstr ""
 
@@ -9146,7 +9157,7 @@ msgstr ""
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Close"
 msgstr ""
 
@@ -9625,11 +9636,6 @@ msgstr ""
 msgid "(only %s left in stock)"
 msgstr ""
 
-#: modules/bundles/includes/mcp/log.php:80
-#: modules/bundles/includes/mcp/log.php:135
-msgid "The tool failed with an internal error. Quote the error id to the site administrator to look it up in the WooCommerce logs."
-msgstr ""
-
 #: modules/bundles/includes/mcp/pack.php:277
 msgid "Get Bundles Context"
 msgstr ""
@@ -9695,19 +9701,13 @@ msgid "Export Bundles"
 msgstr ""
 
 #: modules/bundles/includes/mcp/pack.php:2679
-#: modules/bundles/plugin.php:384
+#: modules/bundles/plugin.php:392
 msgid "Bundles is switched off. Switch it on to make changes."
 msgstr ""
 
 #: modules/bundles/includes/mcp/pack.php:2680
-#: modules/bundles/plugin.php:385
+#: modules/bundles/plugin.php:393
 msgid "Switch Bundles on to make changes."
-msgstr ""
-
-#. translators: %d: number of calls allowed per minute.
-#: modules/bundles/includes/mcp/rate-limit.php:92
-#, php-format
-msgid "Rate limit reached: %d calls per minute. Wait before retrying."
 msgstr ""
 
 #: modules/bundles/includes/rest/controller.php:183
@@ -11568,7 +11568,7 @@ msgstr ""
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "OK"
 msgstr ""
 
@@ -11602,7 +11602,7 @@ msgstr ""
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Update"
 msgstr ""
 
@@ -11629,7 +11629,7 @@ msgid "Want to offer users different product options?"
 msgstr ""
 
 #: modules/checkouts/includes/class-wfacp-common-helper.php:779
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Unlock this Pro feature now and experience the fully-loaded version."
 msgstr ""
 
@@ -11645,7 +11645,7 @@ msgstr ""
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Delete"
 msgstr ""
 
@@ -11850,7 +11850,7 @@ msgstr ""
 #: modules/optins/modules/optin-pages/class-wffn-optin-pages.php:1748
 #: modules/optins/modules/optin-pages/includes/class-wffn-optin-form-field.php:152
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Required"
 msgstr ""
 
@@ -12497,7 +12497,7 @@ msgstr ""
 #: steps/landing/class-wffn-step-landing.php:65
 #: admin/app/dist/5425.d71cda5b8cd50bf5.js:1
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Sales Page"
 msgstr ""
 
@@ -12547,7 +12547,7 @@ msgstr ""
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Name"
 msgstr ""
 
@@ -13060,7 +13060,7 @@ msgstr ""
 #: admin/app/dist/1888.fb50a8249069a180.js:1
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Thank You"
 msgstr ""
 
@@ -13456,7 +13456,7 @@ msgstr ""
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/8385.841bd57e8a897ce8.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Learn More"
 msgstr ""
 
@@ -13922,12 +13922,12 @@ msgstr ""
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "One Click Upsell Offer"
 msgstr ""
 
 #: subcore/settings.php:1604
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 #: modules/thankyou-pages/compatibilities/page-builders/gutenberg/dist/wfty-block-editor.js:1
 msgid "Thank you"
 msgstr ""
@@ -13955,7 +13955,7 @@ msgstr ""
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Save"
 msgstr ""
 
@@ -14091,7 +14091,7 @@ msgstr ""
 #: admin/app/dist/3754.7d0fd0905c9a9ce8.js:1
 #: admin/app/dist/6117.c42ac6d215acf843.js:1
 #: admin/app/dist/8982.f77980096ec29d51.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Failed to activate plugin"
 msgstr ""
 
@@ -14288,7 +14288,7 @@ msgstr ""
 #: admin/app/dist/7128.ec8d834b76d74be5.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Changes Saved"
 msgstr ""
 
@@ -14418,7 +14418,7 @@ msgid "Select Step"
 msgstr ""
 
 #: admin/app/dist/1256.6d9bc2824f5ef4ea.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Languages"
 msgstr ""
 
@@ -14471,7 +14471,7 @@ msgid "vs."
 msgstr ""
 
 #: admin/app/dist/1950.6f8f86c055c223fa.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Today"
 msgstr ""
 
@@ -14484,7 +14484,7 @@ msgid "This Week"
 msgstr ""
 
 #: admin/app/dist/1950.6f8f86c055c223fa.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Last Week"
 msgstr ""
 
@@ -14493,37 +14493,37 @@ msgid "This Month"
 msgstr ""
 
 #: admin/app/dist/1950.6f8f86c055c223fa.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Last Month"
 msgstr ""
 
 #: admin/app/dist/1950.6f8f86c055c223fa.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Quarter to Date"
 msgstr ""
 
 #: admin/app/dist/1950.6f8f86c055c223fa.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Last Quarter"
 msgstr ""
 
 #: admin/app/dist/1950.6f8f86c055c223fa.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Year to Date"
 msgstr ""
 
 #: admin/app/dist/1950.6f8f86c055c223fa.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Last Year"
 msgstr ""
 
 #: admin/app/dist/1950.6f8f86c055c223fa.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "On Specific Date"
 msgstr ""
 
 #: admin/app/dist/1950.6f8f86c055c223fa.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Custom Date Range"
 msgstr ""
 
@@ -14597,7 +14597,7 @@ msgstr ""
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Please wait…"
 msgstr ""
 
@@ -14640,7 +14640,7 @@ msgstr ""
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Download this complete funnel before deletion."
 msgstr ""
 
@@ -14657,7 +14657,7 @@ msgid ". The path of dependent offers would need an update."
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "You are about to delete step. This action cannot be undone. Cancel to stop, Delete to proceed."
 msgstr ""
 
@@ -14665,13 +14665,13 @@ msgstr ""
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
 #: admin/app/dist/8982.f77980096ec29d51.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "You are about to delete "
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid ". This action cannot be undone. Cancel to stop, Delete to proceed."
 msgstr ""
 
@@ -14720,21 +14720,21 @@ msgstr ""
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "A/B Test Draft"
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "A/B Test Running"
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "A/B Test Paused"
 msgstr ""
 
@@ -14745,13 +14745,13 @@ msgstr ""
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "One Click Upsell"
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Thankyou"
 msgstr ""
 
@@ -14788,40 +14788,40 @@ msgstr ""
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "A/B Testing"
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Increased Conversion Rates"
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Greater Return on Ad Spend"
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Reduced Bounce Rates"
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
 #: admin/app/dist/7374.ba1a452a2877ff15.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "We're downloading funnel before deletion"
 msgstr ""
 
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Step deleted successfully"
 msgstr ""
 
@@ -14840,7 +14840,7 @@ msgstr ""
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "A/B Test"
 msgstr ""
 
@@ -14862,7 +14862,7 @@ msgstr ""
 #: admin/app/dist/2670.32fc28e2f965d2c6.js:1
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Publish"
 msgstr ""
 
@@ -15036,7 +15036,7 @@ msgid "We are exporting store checkout."
 msgstr ""
 
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Confirm"
 msgstr ""
 
@@ -15056,7 +15056,7 @@ msgstr ""
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Add New Step"
 msgstr ""
 
@@ -15081,12 +15081,12 @@ msgid "Import Store Checkout"
 msgstr ""
 
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "List Mode"
 msgstr ""
 
 #: admin/app/dist/3228.00ea3a51d7d59d1f.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Canvas Mode"
 msgstr ""
 
@@ -15117,7 +15117,7 @@ msgstr ""
 
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Funnel Templates"
 msgstr ""
 
@@ -15148,7 +15148,7 @@ msgstr ""
 
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Title Updation Failed"
 msgstr ""
 
@@ -15160,13 +15160,13 @@ msgstr ""
 
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Oops it seems old version of Experiments is activated."
 msgstr ""
 
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Please deactivate, You won't loose existing experiments for the funnel."
 msgstr ""
 
@@ -15223,7 +15223,7 @@ msgstr ""
 
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Status Updation Failed"
 msgstr ""
 
@@ -15359,7 +15359,7 @@ msgstr ""
 
 #: admin/app/dist/3477.f59babf1ff7fc4ba.js:1
 #: admin/app/dist/7768.ae96967904d7ec9c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Unable to load Funnel Steps"
 msgstr ""
 
@@ -16047,7 +16047,7 @@ msgid "Permissions & Privacy"
 msgstr ""
 
 #: admin/app/dist/5188.7c53e9785cf2660c.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Connected"
 msgstr ""
 
@@ -16200,7 +16200,7 @@ msgstr ""
 #: admin/app/dist/5534.8fe1eb24f0db78c6.js:1
 #: admin/app/dist/8271.c7a4ce06bdd60d2c.js:1
 #: admin/app/dist/9511.9fdddcd96d57b4ad.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Track sources of the order from platforms like Google Ads, Facebook, Google, Instagram, Pinterest, TikTok, Snapchat, and others."
 msgstr ""
 
@@ -16374,7 +16374,7 @@ msgid "Offer free trials or sign-up fees to attract new customers and boost conv
 msgstr ""
 
 #: admin/app/dist/6117.c42ac6d215acf843.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Subscriber Profiles"
 msgstr ""
 
@@ -16399,17 +16399,17 @@ msgid "The smarter way to add subscriptions and recurring payments to your WooCo
 msgstr ""
 
 #: admin/app/dist/6117.c42ac6d215acf843.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Subscribe & Save"
 msgstr ""
 
 #: admin/app/dist/6117.c42ac6d215acf843.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Recurring Payments"
 msgstr ""
 
 #: admin/app/dist/6117.c42ac6d215acf843.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Installment Plans"
 msgstr ""
 
@@ -16426,7 +16426,7 @@ msgid "Sublium is the most user-friendly plugin to simplify, manage, and scale r
 msgstr ""
 
 #: admin/app/dist/6117.c42ac6d215acf843.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "And More…"
 msgstr ""
 
@@ -16488,7 +16488,7 @@ msgid "Setup Checkout"
 msgstr ""
 
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Optin Thankyou"
 msgstr ""
 
@@ -16522,7 +16522,7 @@ msgid "All orders below version 3.6 will be categorized under Others."
 msgstr ""
 
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "All Funnels"
 msgstr ""
 
@@ -16535,12 +16535,12 @@ msgid "No Comparison"
 msgstr ""
 
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Previous Period"
 msgstr ""
 
 #: admin/app/dist/6702.e70dccd353b99ca6.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Previous Year"
 msgstr ""
 
@@ -16847,7 +16847,7 @@ msgstr ""
 #: admin/app/dist/8982.f77980096ec29d51.js:1
 #: admin/app/dist/9099.7d7ec5d7bb6c5988.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "This action is irreversible"
 msgstr ""
 
@@ -17173,7 +17173,7 @@ msgid "Conversion Analytics"
 msgstr ""
 
 #: admin/app/dist/8026.aebfbb6bec989c4e.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "View Details"
 msgstr ""
 
@@ -17380,7 +17380,7 @@ msgid "Pick a template, add a checkout and thank you page. Optionally mark check
 msgstr ""
 
 #: admin/app/dist/8385.841bd57e8a897ce8.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Create"
 msgstr ""
 
@@ -17415,7 +17415,7 @@ msgstr ""
 #: admin/app/dist/8385.841bd57e8a897ce8.js:1
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Go to Settings"
 msgstr ""
 
@@ -17456,7 +17456,7 @@ msgid "Install stripe gateway by Funnelkit"
 msgstr ""
 
 #: admin/app/dist/8385.841bd57e8a897ce8.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Recommended"
 msgstr ""
 
@@ -17679,13 +17679,13 @@ msgstr ""
 
 #: admin/app/dist/8982.f77980096ec29d51.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Error: "
 msgstr ""
 
 #: admin/app/dist/8982.f77980096ec29d51.js:1
 #: admin/app/dist/9336.62088e99c86ce8ff.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "There are some technical difficulties while deleting step. Please contact support"
 msgstr ""
 
@@ -17986,7 +17986,7 @@ msgstr ""
 
 #: admin/app/dist/9332.d22d1b6268e4d2e9.js:1
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "View Docs"
 msgstr ""
 
@@ -18390,7 +18390,7 @@ msgid "Recover More Upsells with FunnelKit "
 msgstr ""
 
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "How to setup Square with FunnelKit"
 msgstr ""
 
@@ -18399,7 +18399,7 @@ msgid "Supports One Click Upsells with Express Checkout"
 msgstr ""
 
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Better Express Payment with Apple & Google Pay"
 msgstr ""
 
@@ -18408,7 +18408,7 @@ msgid "Recover failure upsells"
 msgstr ""
 
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "How to setup Stripe with FunnelKit"
 msgstr ""
 
@@ -18507,7 +18507,7 @@ msgid "Contact Support."
 msgstr ""
 
 #: admin/app/dist/9765.acb3d2be7e1956b4.js:1
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Alert!"
 msgstr ""
 
@@ -18760,665 +18760,665 @@ msgstr ""
 msgid "Fetching details…"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "There are some technical difficulties while deleting step. Contact Support"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Express Payment with Apple & Google Pay"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Keep one click upsells working with Square orders"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Let your customers pay by ACH bank transfer"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Accepting gift cards by offering a convenient payment option."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "BNPL - while sellers get paid the full amount immediately."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Allow sellers to accept Cash App payments"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Real time bi-directional sync"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Personalised Support for payments"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Square Connect"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Need help?"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Watch Video, "
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Read Docs,"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Contact Support"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Activate Square"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Connect Square to accept all major Square payment methods"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Supports Affirm, Klarna and AfterPay Buy Now Pay Later Services."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Cart and One Click Upsells with Express Pay"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Stripe Connect"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Activate Stripe"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Thousands of businesses use FunnelKit Stripe to receive their payments"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Result"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Results"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Funnel templates"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Create New Funnel"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Something went wrong"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Oops! Something went wrong. Try Refreshing."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Refresh Page"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Next steps"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Still facing issues?"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Read our "
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "troubleshooting docs"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid " for detailed help. "
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Press F12 "
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "for console details. "
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Send screenshot to our support team for help "
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "PAGE NOT FOUND"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "The page you are looking for doesn’t exist"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "GO TO DASHBOARD"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "This section could not be displayed."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Contact Now"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Top Checkout & Funnel Builder:"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "This is a PRO feature"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "FunnelKit PRO"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "We're sorry, this feature is not available on your plan. Please upgrade to the premium plan to unlock all these awesome features."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "{{ Feature Name }}"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Single & Multi Step Checkout"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Flexible Field Editor"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Pro Template Library"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Cart upsells"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "AB Testing"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "UTM and Referrer tracking"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "This feature is locked. To get full access of funnelkit upgrade to PRO"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "All Categories"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Create a category & assign to Funnels"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Create Category"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Funnel Categories"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Unsaved Changes"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Looks like you have made changes. Do you want to save these changes before you leave?"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Discard Changes"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Unable to load contact data"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "An unexpected error occurred while loading this page."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Click Refresh Page and try again."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "If it keeps happening, contact support."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Start Onboarding"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Supports One Click Upsells with Express Pay Options"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Personalised Support for any payments related issues"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Switch to"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Use"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid " FunnelKit's Stripe for Maximum Compatibility & Trustworthy Support"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Recurring Discounts"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Free Trial"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Sign-up Fees"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Turn One-Time Sales Into Recurring Revenue"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Your funnels bring in buyers. Sublium turns them into subscribers with predictable, recurring revenue. Works with your checkouts, upsells, and automations out of the box."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Activate Sublium"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Accept Credit Cards, Apple Pay, and Google Pay"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Accept ACH, Gift Cards, Afterpay, and Cash App"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Supports one-click upsells with Square orders"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Get personalized support for Square payment setup"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Use FunnelKit's Square for Maximum Compatibility & Trustworthy Support"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 #, js-format
 msgid "%d/%d Completed"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Activate License"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Welcome to Funnel Builder"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Quick Setup"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Dismiss the incomplete setup?"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Complete the setup to get maximum out of FunnelKit."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "I’ll do it later"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Dismiss Setup"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Increase Revenue by 15-20%"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Set up optimised checkouts, order bumps, one click upsells & let your buyer go through easy checkout process while accepting more offers."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Set up store checkout for your storefront"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Sell specific products with funnels"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Increase average order value with order bump and upsells"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "View Documentation"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Get Support"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "To do list"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Disabled"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Offers"
 msgstr ""
 
 #. translators: 1: slide number, 2: number of slides
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 #, js-format
 msgid "%1$d of %2$d"
 msgstr ""
 
 #. translators: %d: slide number
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 #, js-format
 msgid "Show offer %d"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Need support?"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Contact us"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Latest Features"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Changelog"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "No announcements right now."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "There are some technical difficulties while duplicating step. Contact Support"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Optional"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Funnel Updated"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "The Store Checkout is already setup. To change the template, delete the current steps and re-import new template again."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Go to Store Checkout"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Free Trials"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Sublium Subscriptions activated successfully"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Introducing Sublium"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "A security plugin or firewall on your site is blocking FunnelKit from loading."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Open your security plugin or firewall settings (or ask your hosting provider)."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Allow requests to /wp-json/funnelkit-app/ — add it to the allowlist."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Click Refresh Page to try again."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "FunnelKit’s features couldn’t be loaded. The plugin may be outdated or its links need refreshing."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Make sure FunnelKit is active and updated to the latest version."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Open Settings → Permalinks and click Save Changes."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Click Refresh Page."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "The server couldn’t complete this request."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Your account doesn’t have permission for this action."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Ask a site administrator to give your account the required access."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Log out and back in, then click Refresh Page."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Your session has expired."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Log in again if you’re asked to."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "You appear to be offline."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Check your internet connection."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Click Refresh Page once you’re back online."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "We couldn’t reach your server."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Check that your site is online and reachable."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "The server didn’t accept this request."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "The response is not a valid JSON response."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "An unexpected error occurred."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "You appear to be offline. Check your internet connection and try again."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "We couldn’t reach your server. Please try again in a moment."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Unsafe content blocked"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "This request was blocked because it contained potentially unsafe content, such as scripts or HTML. Please remove it and try again."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Got it"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Sales Page URL Slug"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "A/B Test Completed"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "This step is in Draft. Click Publish to make it accessible to everyone."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "The A/B test is already running at this step. A/B test will be paused in Draft mode."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Make Draft"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Draft Step"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "You are about to draft this Step. It will be no longer available to visitors when drafted. Cancel to stop, Confirm to proceed."
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 #, js-format
 msgid "You're using FunnelKit %s. Sorry, to get full access to Template Library "
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "You're using FunnelKit Lite. To unlock more features consider "
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Upgrading to PRO"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Don't miss out on atleast 10-15% additional revenue"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "All Time"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Yesterday"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Week to Date"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Last 7 Days"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Last 30 Days"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Month to Date"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "No Compare"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Till"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Following pages will require to create store checkout"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "1. Checkout page"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "2. Thank You page"
 msgstr ""
 
-#: admin/app/dist/main-1795096968.js:1
+#: admin/app/dist/main-1795261290.js:1
 msgid "Note: You have to custom build and design your pages. We will auto add the checkout and thankyou step"
 msgstr ""
 

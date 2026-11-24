@@ -574,6 +574,10 @@ class Stripe {
 		add_action( 'woocommerce_api_wc_stripe', array( $this, 'control_webhook' ) );
 		add_filter( 'rest_pre_dispatch', array( $this, 'control_webhook' ), 10, 3 );
 
+		// Read-side backstop: neutralise any already-stored malicious order note when WooCommerce fetches it
+		// for display, so sites attacked before the input fix are protected the next time an admin opens the order.
+		add_filter( 'woocommerce_get_order_note', array( Stripe\Helper::class, 'defang_order_note_for_display' ), 1 );
+
 		add_filter( 'woocommerce_order_get_payment_method', array( $this, 'change_payment_method' ), 99, 2 );
 		add_filter( 'woocommerce_subscription_get_payment_method', array( $this, 'change_payment_method' ), 99, 2 );
 

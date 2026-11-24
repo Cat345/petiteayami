@@ -844,7 +844,7 @@ class CreditCard extends Abstract_Payment_Gateway {
 
 		} catch ( \Exception $e ) {
 			Helper::log( $e->getMessage(), 'warning' );
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 
 			/* translators: error message */
 			$this->mark_order_failed( $order, $e->getMessage() );
@@ -1482,22 +1482,38 @@ class CreditCard extends Abstract_Payment_Gateway {
 
 			remove_action( 'woocommerce_get_customer_payment_tokens', array( $this, 'maybe_sync_gateway_tokens' ), 8 );
 
+			// WC parity: a payment method already kept locally is left alone and not re-created.
 			foreach ( $payment_methods as $payment_method ) {
 				if ( ! isset( $payment_method->type ) ) {
+					continue;
+				}
+
+				if ( isset( $stored_tokens[ $payment_method->id ] ) ) {
+					$cached = $stored_tokens[ $payment_method->id ];
+					// Keep the copy already moved to a newer payment method of the same card in this loop.
+					if ( ! isset( $tokens[ $cached->get_id() ] ) || $tokens[ $cached->get_id() ]->get_token() === $payment_method->id ) {
+						$tokens[ $cached->get_id() ] = $cached;
+					}
+					unset( $stored_tokens[ $payment_method->id ] );
+
 					continue;
 				}
 
 				$token                      = Helper::create_payment_token_for_user( $user_id, $payment_method, $this->id, $payment_method->livemode );
 				$tokens[ $token->get_id() ] = $token;
 
-				if ( isset( $stored_tokens[ $token->get_token() ] ) ) {
-					unset( $stored_tokens[ $token->get_token() ] );
+				// Match by token ID: a token reused for the same card may now point at this newer payment method,
+				// while its old payment method ID is still the key here.
+				foreach ( $stored_tokens as $stored_pm_id => $stored_token ) {
+					if ( $stored_token->get_id() === $token->get_id() ) {
+						unset( $stored_tokens[ $stored_pm_id ] );
+					}
 				}
 			}
 
 			if ( ! empty( $tokens ) && ! empty( $gateway_id ) ) {
 				foreach ( $tokens as $key => $token ) {
-					if ( $this->id !== $token->get_gateway_id() || $this->test_mode !== $token->get_meta( 'mode' ) ) {
+					if ( ! $token || $this->id !== $token->get_gateway_id() || $this->test_mode !== $token->get_meta( 'mode' ) ) {
 						unset( $tokens[ $key ] );
 					}
 				}
@@ -1823,5 +1839,101 @@ class CreditCard extends Abstract_Payment_Gateway {
 
 		}
 		exit;
+	}
+
+	/**
+	 * Button Shape / Button Height field for an express wallet settings page (Apple Pay, Google Pay,
+	 * Link, Amazon Pay). Every wallet page shows the same shared value; see Helper::get_wallet_button_style().
+	 *
+	 * @param string $field 'shape' or 'height'.
+	 *
+	 * @return array
+	 */
+	protected function get_wallet_button_style_field( $field ) {
+		if ( 'shape' === $field ) {
+			return array(
+				'title'       => __( 'Button Shape', 'funnelkit-stripe-woo-payment-gateway' ),
+				'type'        => 'select',
+				'options'     => array(
+					'pill' => __( 'Pill', 'funnelkit-stripe-woo-payment-gateway' ),
+					'rect' => __( 'Rectangle', 'funnelkit-stripe-woo-payment-gateway' ),
+				),
+				'default'     => 'rect',
+				'description' => __( 'Applies to all express wallet buttons (Apple Pay, Google Pay, Link, Amazon Pay).', 'funnelkit-stripe-woo-payment-gateway' ),
+				'desc_tip'    => true,
+			);
+		}
+
+		return array(
+			'title'       => __( 'Button Height', 'funnelkit-stripe-woo-payment-gateway' ),
+			'type'        => 'fkwcs_slider',
+			'description' => __( 'Set the height of the express wallet buttons (Apple Pay, Google Pay, Link, Amazon Pay).', 'funnelkit-stripe-woo-payment-gateway' ),
+			'default'     => 42,
+			'min'         => 40,
+			'max'         => 55,
+			'step'        => 1,
+			'unit'        => 'px',
+		);
+	}
+
+	/**
+	 * Slider field (same markup as the FunnelKit PayPal Button Height slider).
+	 *
+	 * @param string $key Field key.
+	 * @param array  $data Field data.
+	 *
+	 * @return string
+	 */
+	public function generate_fkwcs_slider_html( $key, $data ) {
+		$field_key = $this->get_field_key( $key );
+		$defaults  = array(
+			'title'             => '',
+			'default'           => '',
+			'class'             => '',
+			'css'               => '',
+			'desc_tip'          => false,
+			'description'       => '',
+			'custom_attributes' => array(),
+			'min'               => 0,
+			'max'               => 100,
+			'step'              => 1,
+			'unit'              => '',
+		);
+
+		$data  = wp_parse_args( $data, $defaults );
+		$value = $this->get_option( $key, $data['default'] );
+
+		ob_start();
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?></label>
+				<?php echo wp_kses_post( $this->get_tooltip_html( $data ) ); ?>
+			</th>
+			<td class="forminp">
+				<fieldset>
+					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
+					<div class="fkwcs-slider-container">
+						<input
+							type="range"
+							id="<?php echo esc_attr( $field_key ); ?>"
+							name="<?php echo esc_attr( $field_key ); ?>"
+							value="<?php echo esc_attr( $value ); ?>"
+							min="<?php echo esc_attr( $data['min'] ); ?>"
+							max="<?php echo esc_attr( $data['max'] ); ?>"
+							step="<?php echo esc_attr( $data['step'] ); ?>"
+							class="fkwcs-slider <?php echo esc_attr( $data['class'] ); ?>"
+							style="<?php echo esc_attr( $data['css'] ); ?>"
+							data-unit="<?php echo esc_attr( $data['unit'] ); ?>"
+							<?php echo wp_kses_post( $this->get_custom_attribute_html( $data ) ); ?>
+						/>
+						<span class="fkwcs-slider-value"><?php echo esc_html( $value . $data['unit'] ); ?></span>
+					</div>
+					<?php echo wp_kses_post( $this->get_description_html( $data ) ); ?>
+				</fieldset>
+			</td>
+		</tr>
+		<?php
+		return ob_get_clean();
 	}
 }

@@ -88,7 +88,8 @@ class BWFAN_Contact_Subscribe_Link extends BWFAN_Merge_Tag {
 			if ( BWFAN_Core()->conversation && method_exists( BWFAN_Core()->conversation, 'maybe_insert_link' ) ) {
 				BWFAN_Core()->conversation->maybe_insert_link( $redirect_url, [ 'type' => 1, 'oid' => $automation_id ] );
 			}
-			$args['bwfan-link'] = rawurlencode( $redirect_url );
+			$args['bwfan-link']      = rawurlencode( $redirect_url );
+			$args['bwfan-link-hash'] = BWFAN_Common::get_subscribe_redirect_signature( $redirect_url );
 		}
 
 		return add_query_arg( $args, esc_url_raw( home_url( '/' ) ) );

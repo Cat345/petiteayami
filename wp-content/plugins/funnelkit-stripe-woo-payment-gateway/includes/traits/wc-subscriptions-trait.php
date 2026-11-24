@@ -239,7 +239,7 @@ trait WC_Subscriptions_Trait {
 				'redirect' => $this->get_return_url( $subscription ),
 			);
 		} catch ( \Exception $e ) {
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 			Helper::log( 'Payment Failed. Reason: ' . $e->getMessage() );
 			if ( false === $is_change_subs && ! empty( $subscription ) ) {
 				/* translators: error message */

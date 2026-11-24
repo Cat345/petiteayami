@@ -559,6 +559,8 @@ final class FKMCP_Connector_Mcp {
 
 		if ( is_wp_error( $value ) ) {
 			if ( 'ability_invalid_input' === $value->get_error_code() ) {
+				$value = new WP_Error( 'ability_invalid_input', self::invalid_input_reason( $ability, $input, $value ), $value->get_error_data() );
+
 				return self::result( $id, self::input_refusal( $value, $ability ) );
 			}
 
@@ -603,6 +605,85 @@ final class FKMCP_Connector_Mcp {
 			rtrim( $message, '. ' ) . ". Correct the arguments to match the tool's input schema and call it again.",
 			self::error_data( $data, $class )
 		);
+	}
+
+	/**
+	 * Why an input was refused, naming what this call is missing. When every
+	 * root alternative pins one property to fixed values (create-automation's
+	 * source, describe-automation-part's kind), core reports the first
+	 * alternative that failed, whichever one the input chose: a source=definition
+	 * call without a title was told "recipe_slug is a required property", and an
+	 * agent that cannot act on the reason sends the same call again. The input is
+	 * checked again against the root plus the alternative its own value picks, or
+	 * the root alone when it picks none; any other refusal keeps core's reason.
+	 */
+	private static function invalid_input_reason( $ability, $input, WP_Error $error ) {
+		$message = $error->get_error_message();
+		$schema  = $ability->get_input_schema();
+
+		if ( ! is_array( $input ) || ! is_array( $schema ) || ! function_exists( 'rest_validate_value_from_schema' ) ) {
+			return $message;
+		}
+
+		$key    = isset( $schema['oneOf'] ) ? 'oneOf' : 'anyOf';
+		$branch = isset( $schema[ $key ] ) && is_array( $schema[ $key ] ) ? self::chosen_branch( $schema[ $key ], $input ) : null;
+
+		if ( null === $branch ) {
+			return $message;
+		}
+
+		unset( $schema['oneOf'], $schema['anyOf'] );
+
+		if ( ! empty( $branch['required'] ) && is_array( $branch['required'] ) ) {
+			$schema['required'] = array_values( array_unique( array_merge( isset( $schema['required'] ) ? (array) $schema['required'] : array(), $branch['required'] ) ) );
+		}
+
+		if ( ! empty( $branch['properties'] ) && is_array( $branch['properties'] ) ) {
+			$schema['properties'] = array_merge( isset( $schema['properties'] ) ? (array) $schema['properties'] : array(), $branch['properties'] );
+		}
+
+		$verdict = rest_validate_value_from_schema( $input, $schema, 'input' );
+
+		if ( ! is_wp_error( $verdict ) ) {
+			return $message;
+		}
+
+		/* translators: 1: ability name, 2: why the input was refused */
+		return sprintf( __( 'Ability "%1$s" has invalid input. Reason: %2$s', 'funnel-builder' ), $ability->get_name(), $verdict->get_error_message() );
+	}
+
+	/**
+	 * The alternative an input picks by the one property every alternative pins
+	 * with an enum: that alternative, an empty array when the input's value is in
+	 * none of them, or null when the alternatives share no such property.
+	 */
+	private static function chosen_branch( array $branches, array $input ) {
+		$pinned = null;
+
+		foreach ( $branches as $branch ) {
+			$enums = array();
+			foreach ( ( is_array( $branch ) && isset( $branch['properties'] ) && is_array( $branch['properties'] ) ) ? $branch['properties'] : array() as $name => $property ) {
+				if ( is_array( $property ) && isset( $property['enum'] ) && is_array( $property['enum'] ) ) {
+					$enums[] = $name;
+				}
+			}
+			$pinned = null === $pinned ? $enums : array_values( array_intersect( $pinned, $enums ) );
+		}
+
+		if ( empty( $pinned ) ) {
+			return null;
+		}
+
+		$name  = $pinned[0];
+		$value = array_key_exists( $name, $input ) ? $input[ $name ] : null;
+
+		foreach ( $branches as $branch ) {
+			if ( in_array( $value, $branch['properties'][ $name ]['enum'], true ) ) {
+				return $branch;
+			}
+		}
+
+		return array();
 	}
 
 	/**

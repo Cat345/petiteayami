@@ -684,7 +684,7 @@ final class BWFAN_Header {
 					}
 					echo '<span class="bwfan_header_l2_wrap">';
 					if ( ! empty( $this->data['level_2_title'] ) ) {
-						echo '<span id="bwfan_automation_name">' . $this->data['level_2_title'] . '</span>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo '<span id="bwfan_automation_name">' . esc_html( $this->data['level_2_title'] ) . '</span>';
 					}
 					if ( ! empty( $this->data['level_2_post_title'] ) ) {
 						echo $this->data['level_2_post_title']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

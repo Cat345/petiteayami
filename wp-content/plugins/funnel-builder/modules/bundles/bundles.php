@@ -17,7 +17,7 @@ if ( ! defined( 'WFFN_PLUGIN_FILE' ) ) {
 define( 'WFFN_BUNDLES_FILE', __FILE__ );
 define( 'WFFN_BUNDLES_DIR', __DIR__ );
 define( 'WFFN_BUNDLES_URL', plugins_url( '/', __FILE__ ) );
-define( 'WFFN_BUNDLES_VERSION', '1.0.0' );
+define( 'WFFN_BUNDLES_VERSION', '1.0.1' );
 
 /**
  * Schema version, decoupled from the plugin version.

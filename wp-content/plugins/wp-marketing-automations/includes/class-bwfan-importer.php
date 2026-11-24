@@ -62,6 +62,7 @@ class BWFAN_Importer {
 		require_once $importers_dir . '/class-autoresponder-importer-interface.php';
 
 		if ( ! empty( $slug ) ) {
+			$slug       = sanitize_key( $slug ); // strip path separators; slug names a bundled importer class file only
 			$class_file = $importers_dir . '/class-' . $slug . '-importer.php';
 
 			if ( file_exists( $class_file ) ) {

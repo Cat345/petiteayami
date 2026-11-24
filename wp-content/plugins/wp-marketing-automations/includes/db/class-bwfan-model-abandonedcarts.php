@@ -36,7 +36,7 @@ class BWFAN_Model_Abandonedcarts extends BWFAN_Model {
 		$table_name = $wpdb->prefix . 'bwfan_abandonedcarts';
 
 		// Whitelist allowed column names
-		$allowed_columns = array( 'ID', 'email', 'user_id', 'checkout_page_id' );
+		$allowed_columns = array( 'ID', 'email', 'user_id', 'checkout_page_id', 'cookie_key' );
 		$where_clauses   = array();
 		$where_values    = array();
 

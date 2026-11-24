@@ -1,5 +1,11 @@
 *** FunnelKit Funnel Builder Pro ***
 
+= 3.19.0.3 (Nov 20, 2026) =
+* Fixed: Fixed: Admin app licensing issue since today's update. (#500)
+
+= 3.19.0.2 (Nov 20, 2026) =
+* Fixed: Bundles: Admin UI incorrect plan access corrected. (#9927)
+
 = 3.19.0.1 (Nov 19, 2026) =
 * Fixed: Bundles: Admin UI links were pointing to the incorrect url. (#9908)
 

@@ -4,7 +4,7 @@ Tags: stripe, apple pay, google pay, WooCommerce Stripe
 Requires at least: 5.4.0
 Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 1.16.0.1
+Stable tag: 1.17.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,6 +284,14 @@ Yes, visit our complete documentation on [Stripe Payment Gateway for WooCommerce
 
 
 == Change log ==
+
+= 1.17.0 =
+* Added: Express Checkout: New style settings for button shape and height to make it look similar to other 3rd-party buttons. (#1533)
+* Improved: Wallets: Added a helper message while selecting the wallets as a gateway to pay using their respective button. (#1515)
+* Improved: Hardened code on how order notes are updated and displayed. (#1557)
+* Fixed: Express Checkout: The wallet's billing email is now kept on cart and side cart orders even when a checkout field editor has turned off the Billing Email field. (#1554)
+* Fixed: Payment Methods: A card already saved on the account is now recognised automatically at checkout, so it stays listed once and keeps its latest expiry. (#1522)
+* Fixed: Express Checkout: Wallet requests from cached pages and long-open tabs are now handled for expired nonce. (#1539)
 
 
 = 1.16.0.1 =

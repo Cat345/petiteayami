@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 WC requires at least: 8.8
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -62,6 +62,11 @@ This produces `admin/app/dist/`, which Bundles enqueues in wp-admin.
 
 == Changelog ==
 
+= 1.0.1 (Nov 20, 2026) =
+* Improved: Bundles: Stores whose plan includes the Bundles Addon now see an Install Bundles Addon button on the Quantity Breaks and Mix & Match cards, with a Download from My Account link beneath it. (#9933)
+* Fixed: Bundles: Design tab changes on a Frequently Bought Together bundle now show in the live preview right away, without saving. (#359)
+* Fixed: Bundles: Upsell and progressive gift setup is now kept when its toggle is switched off and back on. (#360)
+
 = 1.0.0 =
 * Initial release.
 * Fixed Bundle: a set of specific products sold together as one pack, discounted as a whole or per item. Members that are variable products have their options chosen in the widget.
@@ -77,6 +82,9 @@ This produces `admin/app/dist/`, which Bundles enqueues in wp-admin.
 * FunnelKit PayPal and WooCommerce PayPal Payments compatibility for buying a bundle from the product page buttons.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Shows an Install Bundles Addon button on the Quantity Breaks and Mix & Match cards, updates the FBT Design tab preview without saving, and keeps upsell and gift setup when its toggle is switched off and on.
 
 = 1.0.0 =
 Initial release.

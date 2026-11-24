@@ -4,7 +4,7 @@ Tags: cart abandonment, follow up emails, email marketing, newsletter, marketing
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.9.0.1
+Stable tag: 3.9.0.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -424,6 +424,12 @@ FunnelKit may connect to the following external services, only when the related 
 * **YouTube** may embed tutorial videos on FunnelKit screens. [Terms](https://www.youtube.com/t/terms) and [Privacy Policy](https://policies.google.com/privacy)
 
 == Change log ==
+
+= 3.9.0.2 (Nov 20, 2026) =
+* Improved: Reliability and validation improvements in abandoned cart recovery. (props Respect) (#5023)
+* Improved: Abandoned cart capture now includes FunnelKit Checkout custom fields and radio selections. (#4980)
+* Fixed: Subscribe link redirect going to the home page instead of the set URL on new installations. (#4989)
+* Fixed: Abandoned carts sharing an email address across visitors are now tracked separately. (#4981)
 
 = 3.9.0.1 (Nov 10, 2026) =
 * Improved: Added WebP image support for Global Styles logos, with compatibility guidance for email clients that may not support the format. (#4890)

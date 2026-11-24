@@ -233,8 +233,10 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			require __DIR__ . '/includes/optin-pro/woofunnels-optins-pro.php';
 			require __DIR__ . '/includes/wc_thankyou-pro/woofunnels-wc_thankyou-pro.php';
 
-			// Stripe builds below 1.16.0 leak order-pay data; see the class header. Lite copy wins when present.
-			if ( defined( 'FKWCS_VERSION' ) && version_compare( FKWCS_VERSION, '1.16.0', '<' ) && ! class_exists( 'WFFN_Compatibility_FK_Stripe' ) ) {
+			// FunnelKit Stripe compat: carries the always-on order-note render backstop plus the
+			// version-gated order-pay PII scrub (see the class). Loads for any FunnelKit Stripe install;
+			// the Lite copy wins when present.
+			if ( defined( 'FKWCS_VERSION' ) && ! class_exists( 'WFFN_Compatibility_FK_Stripe' ) ) {
 				require_once __DIR__ . '/includes/compatibilities/class-wffn-pro-fk-stripe-compatibility.php';
 			}
 			/**

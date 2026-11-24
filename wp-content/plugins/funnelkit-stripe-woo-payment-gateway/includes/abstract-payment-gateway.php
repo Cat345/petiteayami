@@ -317,6 +317,8 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 				'current_user_billing_for_order' => $this->get_current_user_billing_details_for_order(),
 				'nonce'                          => wp_create_nonce( 'fkwcs_nonce' ),
 				'ajax_url'                       => admin_url( 'admin-ajax.php' ),
+				/* translators: %s: the selected payment method, e.g. Google Pay */
+				'wallet_button_prompt'           => __( 'Please use the %s button to complete your payment.', 'funnelkit-stripe-woo-payment-gateway' ),
 			)
 		);
 
@@ -1501,10 +1503,12 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 			// Add order note to document the API failure
 			if ( $order instanceof \WC_Order ) {
 				$order->add_order_note(
-					sprintf(
-						/* translators: %s: Error message */
-						__( 'Unable to verify dispute status due to Stripe API error: %s. Payment allowed to complete.', 'funnelkit-stripe-woo-payment-gateway' ),
-						$e->getMessage()
+					Helper::sanitize_order_note_text(
+						sprintf(
+							/* translators: %s: Error message */
+							__( 'Unable to verify dispute status due to Stripe API error: %s. Payment allowed to complete.', 'funnelkit-stripe-woo-payment-gateway' ),
+							$e->getMessage()
+						)
 					)
 				);
 			}
@@ -2813,6 +2817,7 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 
 	public function enqueue_cc_css() {
 		wp_enqueue_style( 'fkwcs-style', FKWCS_URL . 'assets/css/style' . Helper::is_min_suffix() . '.css', array(), FKWCS_VERSION );
+		Helper::add_wallet_button_inline_css();
 	}
 
 	/**
@@ -3457,7 +3462,10 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 
 			// Append (never replace) the issuer decline code so the note carries the real reason instead of
 			// only Stripe's generic message. The shopper-facing notice is untouched.
-			$reason = $message . $this->get_decline_code_note_suffix();
+			// The message can carry text that originated in the browser or in a remote API response, and
+			// order notes are rendered as HTML in wp-admin, so it is always reduced to plain text here.
+			$message = Helper::sanitize_order_note_text( $message );
+			$reason  = Helper::sanitize_order_note_text( $message . $this->get_decline_code_note_suffix() );
 
 			if ( $order->has_status( $status ) ) {
 

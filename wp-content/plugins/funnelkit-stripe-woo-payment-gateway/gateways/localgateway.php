@@ -186,7 +186,7 @@ abstract class LocalGateway extends Abstract_Payment_Gateway {
 			}
 		} catch ( \Exception $e ) {
 			Helper::log( $e->getMessage(), 'warning' );
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 		}
 	}
 

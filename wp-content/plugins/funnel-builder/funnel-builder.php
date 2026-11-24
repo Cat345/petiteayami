@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Funnel Builder
  * Plugin URI: https://funnelkit.com/wordpress-funnel-builder/
  * Description: Create high-converting sales funnels on WordPress that look professional by following a well-guided step-by-step process.
- * Version: 3.19.0.1
+ * Version: 3.19.0.2
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -211,6 +211,12 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		/**
 		 * Every FunnelKit plugin bundling the MCP module registers a candidate;
 		 * the highest version boots on plugins_loaded (priority 0).
+		 *
+		 * The module is the shared fk-mcp-core submodule, and the version below is
+		 * only a floor: arbitration reads the real one from the bundled copy's own
+		 * VERSION file, so it can never disagree with the code beside it. The
+		 * argument stays because an older bootstrap, from a plugin that has not
+		 * updated yet, is the one that may define fkmcp_register_module().
 		 */
 		public function load_mcp_module() {
 			if ( ! $this->is_mcp_request() ) {
@@ -254,7 +260,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		 */
 		public function define_plugin_properties() {
 
-			define( 'WFFN_VERSION', '3.19.0.1' );
+			define( 'WFFN_VERSION', '3.19.0.2' );
 			define( 'WFFN_BWF_VERSION', '1.10.12.84' );
 
 			define( 'WFFN_MIN_WC_VERSION', '3.5.0' );

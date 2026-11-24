@@ -209,7 +209,8 @@ class FKMCP_Registry {
 		'fkmcp_not_draft'           => 400,
 		'fkmcp_automation_mismatch' => 400,
 		'fkmcp_unavailable'         => 400,
-		'fkmcp_channel_unavailable' => 400,
+		'fkmcp_channel_unavailable' => 400, // an older Pro still returns this one
+		'fkmcp_channel_not_connected' => 400,
 		'fkmcp_not_found'           => 404,
 		'fkmcp_unknown_tool'        => 404,
 		'fkmcp_stale'               => 409,

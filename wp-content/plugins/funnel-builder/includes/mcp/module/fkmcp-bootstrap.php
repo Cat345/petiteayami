@@ -16,18 +16,51 @@ if ( ! function_exists( 'fkmcp_register_module' ) ) {
 	 * @param array  $host    { file: path of the host adapter class file, class: FKMCP_Host subclass, namespace: the host's settings REST namespace }.
 	 */
 	function fkmcp_register_module( $version, $path, array $host ) {
+		$path = untrailingslashit( (string) $path );
+
 		// Recorded even when late: FKMCP_Module::needs_abilities() reads every
 		// host's settings namespace from here. Arbitration has already run by
 		// then, so the late copy still cannot win.
 		$GLOBALS['fkmcp_module_candidates'][] = array(
-			'version' => (string) $version,
-			'path'    => untrailingslashit( (string) $path ),
+			'version' => fkmcp_copy_version( $path, $version ),
+			'path'    => $path,
 			'host'    => $host,
 		);
 
 		if ( class_exists( 'FKMCP_Module' ) ) {
 			fkmcp_register_late_host( $host );
 		}
+	}
+
+	/**
+	 * The version of one bundled copy, read from the copy itself.
+	 *
+	 * Arbitration compares versions to decide which copy boots, so a version
+	 * that does not describe the code beside it picks the wrong winner. While
+	 * every host hard-coded its own number, two plugins shipped copies that both
+	 * said 2.1.6 and did not match, and which one booted came down to plugin
+	 * load order. The number now travels with the code, in the shared repo's
+	 * VERSION file, where it cannot disagree with it.
+	 *
+	 * $declared is what the host passed. It is the answer only for a copy with
+	 * no VERSION file - a plugin still shipping a module from before this - so
+	 * an older host keeps arbitrating exactly as it used to.
+	 *
+	 * @param string $path     Directory of the bundled module copy.
+	 * @param string $declared Version the host passed to fkmcp_register_module().
+	 *
+	 * @return string
+	 */
+	function fkmcp_copy_version( $path, $declared ) {
+		$file = $path . '/VERSION';
+
+		if ( ! is_readable( $file ) ) {
+			return (string) $declared;
+		}
+
+		$version = trim( (string) file_get_contents( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file shipped with the plugin, read before WP HTTP exists.
+
+		return '' !== $version ? $version : (string) $declared;
 	}
 
 	/**

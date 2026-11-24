@@ -51,12 +51,76 @@ if ( ! class_exists( 'WFFN_Compatibility_FK_Stripe' ) ) {
 		private $is_verified = null;
 
 		public function __construct() {
+			// Runs for every FunnelKit Stripe install regardless of the gateway version: a stored note
+			// persists in the DB and renders through WooCommerce, so this stays active after 1.16.0 too.
+			add_filter( 'woocommerce_get_order_note', array( $this, 'defang_order_note_for_display' ), 1 );
+
 			if ( ! $this->is_enable() ) {
 				return;
 			}
 
 			add_filter( 'fkwcs_localized_data', array( $this, 'scrub_localized_data' ), PHP_INT_MAX );
 			add_filter( 'fkwcs_current_user_billing_details_order', array( $this, 'scrub_billing_details' ), PHP_INT_MAX, 2 );
+		}
+
+		/**
+		 * Reduce a note to inert plain text: strip tags, then entity-encode every remaining angle
+		 * bracket so "< tag" cannot re-form once wp_kses_post() runs on display.
+		 *
+		 * @param mixed $text   Raw note content.
+		 * @param int   $length Optional max length, 0 for no limit.
+		 *
+		 * @return string
+		 */
+		public function sanitize_order_note_text( $text, $length = 0 ) {
+			if ( ! is_scalar( $text ) ) {
+				return '';
+			}
+
+			$text = wp_strip_all_tags( (string) $text );
+			$text = str_replace( array( '<', '>' ), array( '&lt;', '&gt;' ), $text );
+			$text = trim( $text );
+
+			if ( $length > 0 && function_exists( 'mb_substr' ) && mb_strlen( $text ) > $length ) {
+				$text = mb_substr( $text, 0, $length ) . '...';
+			}
+
+			return $text;
+		}
+
+		/**
+		 * Neutralise a stored order note at display time when it carries markup that could re-form a
+		 * tag. Only matching notes are rewritten; legitimate notes are returned untouched and the
+		 * stored row is never changed.
+		 *
+		 * @param array|object $note Note data as built by wc_get_order_note().
+		 *
+		 * @return array|object
+		 */
+		public function defang_order_note_for_display( $note ) {
+			$content = is_array( $note ) ? ( isset( $note['content'] ) ? $note['content'] : null ) : ( is_object( $note ) && isset( $note->content ) ? $note->content : null );
+
+			if ( ! is_string( $content ) || '' === $content ) {
+				return $note;
+			}
+
+			$is_dangerous = ( 1 === preg_match( '/<[\s\x00]/', $content ) )
+				|| ( false !== stripos( $content, 'tagsdiv' ) )
+				|| ( false !== stripos( $content, 'the-tags' ) );
+
+			if ( ! $is_dangerous ) {
+				return $note;
+			}
+
+			$safe = $this->sanitize_order_note_text( $content );
+
+			if ( is_array( $note ) ) {
+				$note['content'] = $safe;
+			} else {
+				$note->content = $safe;
+			}
+
+			return $note;
 		}
 
 		/**

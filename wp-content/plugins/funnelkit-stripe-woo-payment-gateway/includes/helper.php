@@ -104,6 +104,48 @@ abstract class Helper {
 		return apply_filters( 'fkwcs_gateway_settings', $settings, $gateway );
 	}
 
+	/**
+	 * Button Shape and Button Height shared by every express wallet button (Apple Pay, Google Pay,
+	 * Link, Amazon Pay). Stripe draws all wallets of one Express Checkout Element with one shape and
+	 * height, so every wallet page carries the same pair and SmartButtons::sync_shared_position_settings()
+	 * keeps them in sync on save; read from the first enabled method, like checkout_page_position.
+	 *
+	 * @return array{shape: string, height: int} Shape 'rect' or 'pill'; height 40-55 (Stripe's range).
+	 */
+	public static function get_wallet_button_style() {
+		$shape  = '';
+		$height = 0;
+		foreach ( array( 'fkwcs_stripe_apple_pay', 'fkwcs_stripe_google_pay', 'fkwcs_stripe_link', 'fkwcs_stripe_amazon_pay' ) as $gid ) {
+			$method_settings = self::get_gateway_settings( $gid );
+			if ( isset( $method_settings['enabled'] ) && 'yes' === $method_settings['enabled'] ) {
+				$shape  = $method_settings['wallet_button_shape'] ?? '';
+				$height = absint( $method_settings['wallet_button_height'] ?? 0 );
+				break;
+			}
+		}
+
+		return array(
+			'shape'  => 'pill' === $shape ? 'pill' : 'rect',
+			'height' => ( $height >= 40 && $height <= 55 ) ? $height : 42,
+		);
+	}
+
+	/**
+	 * Expose the wallet Button Height to the stylesheet as --fkwcs-wallet-button-height, so the
+	 * wallet iframe caps match what Stripe draws (button height + 8px) instead of a fixed value.
+	 *
+	 * @return void
+	 */
+	public static function add_wallet_button_inline_css() {
+		static $added = false;
+		if ( $added || ! wp_style_is( 'fkwcs-style', 'registered' ) ) {
+			return;
+		}
+		$added = true;
+		$style = self::get_wallet_button_style();
+		wp_add_inline_style( 'fkwcs-style', ':root{--fkwcs-wallet-button-height:' . absint( $style['height'] ) . 'px}' );
+	}
+
 
 	/**
 	 * List of currencies supported by Stripe that has no decimals
@@ -774,6 +816,78 @@ abstract class Helper {
 	}
 
 	/**
+	 * Reduces a failure reason to inert plain text before it is stored in an order note.
+	 *
+	 * Order notes are rendered in wp-admin through wp_kses_post(), which re-normalises "< tag" into a real
+	 * "<tag>". sanitize_text_field() and strip_tags() leave "< tag" untouched, so a payload such as
+	 * '< div class="tagsdiv" ...>' survives sanitising and becomes live markup on the order screen. Real tags
+	 * are stripped first, then every angle bracket left is encoded, so the result can never form a tag again.
+	 *
+	 * @param mixed $text   Raw reason text.
+	 * @param int   $length Optional maximum length, 0 for no limit.
+	 *
+	 * @return string
+	 */
+	public static function sanitize_order_note_text( $text, $length = 0 ) {
+		if ( ! is_scalar( $text ) ) {
+			return '';
+		}
+
+		$text = wp_strip_all_tags( (string) $text );
+		$text = str_replace( array( '<', '>' ), array( '&lt;', '&gt;' ), $text );
+		$text = trim( $text );
+
+		if ( $length > 0 && function_exists( 'mb_substr' ) && mb_strlen( $text ) > $length ) {
+			$text = mb_substr( $text, 0, $length ) . '...';
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Read-side backstop for order notes that were stored before the input fix.
+	 *
+	 * The input sanitiser only protects notes written after the update. A site attacked earlier still has
+	 * the payload in wp_comments, and it executes the next time an admin opens that order. This filters the
+	 * note content when WooCommerce fetches it for display (the admin order screen and the REST notes
+	 * endpoint both run every note through the woocommerce_get_order_note filter), and neutralises any note
+	 * that carries the attack signature, so a stored payload renders as inert text instead of live markup.
+	 *
+	 * Only a note that matches the signature is rewritten. A legitimate note, for example the Stripe dashboard
+	 * link this gateway adds, never contains "<" followed by whitespace or the WordPress tag-box markers, so
+	 * it passes through untouched.
+	 *
+	 * @param array|object $note The note data array (as built by wc_get_order_note) or object.
+	 *
+	 * @return array|object
+	 */
+	public static function defang_order_note_for_display( $note ) {
+		$content = is_array( $note ) ? ( isset( $note['content'] ) ? $note['content'] : null ) : ( is_object( $note ) && isset( $note->content ) ? $note->content : null );
+
+		if ( ! is_string( $content ) || '' === $content ) {
+			return $note;
+		}
+
+		$is_dangerous = ( 1 === preg_match( '/<[\s\x00]/', $content ) )
+			|| ( false !== stripos( $content, 'tagsdiv' ) )
+			|| ( false !== stripos( $content, 'the-tags' ) );
+
+		if ( ! $is_dangerous ) {
+			return $note;
+		}
+
+		$safe = self::sanitize_order_note_text( $content );
+
+		if ( is_array( $note ) ) {
+			$note['content'] = $safe;
+		} else {
+			$note->content = $safe;
+		}
+
+		return $note;
+	}
+
+	/**
 	 * Wrapper for the new client class object
 	 *
 	 * @param $client_secret
@@ -840,11 +954,11 @@ abstract class Helper {
 			self::localize_global_data(),
 			array(
 
-				'is_product_page'         => is_product() || wc_post_content_has_shortcode( 'product_page' ),
-				'is_cart'                 => is_cart(),
-				'admin_ajax'              => admin_url( 'admin-ajax.php' ),
-				'fkwcs_nonce'             => wp_create_nonce( 'fkwcs_nonce' ),
-				'shipping_required'       => ! empty( $wp->query_vars['order-pay'] ) ? 'no' : wc_bool_to_string( $need_shipping ),
+				'is_product_page'                  => is_product() || wc_post_content_has_shortcode( 'product_page' ),
+				'is_cart'                          => is_cart(),
+				'admin_ajax'                       => admin_url( 'admin-ajax.php' ),
+				'fkwcs_nonce'                      => wp_create_nonce( 'fkwcs_nonce' ),
+				'shipping_required'                => ! empty( $wp->query_vars['order-pay'] ) ? 'no' : wc_bool_to_string( $need_shipping ),
 				/**
 				 * When the wallet does NOT collect the shipping address ("Disable Shipping Info in
 				 * Payment Wallet"), the customer fills the shipping section on the checkout form, so
@@ -855,11 +969,12 @@ abstract class Helper {
 				 * true to this filter.
 				 */
 				'express_copy_billing_to_shipping' => wc_bool_to_string( apply_filters( 'fkwcs_express_copy_billing_to_shipping', false ) ),
-				'is_ssl'                  => is_ssl(),
-				'mode'                    => get_option( 'fkwcs_mode', 'test' ),
-				'js_nonce'                => wp_create_nonce( 'fkwcs_js_nonce' ),
-				'stripe_localized'        => self::get_localized_messages(),
-				'default_cards'           => array(
+				'wallet_button_style'              => self::get_wallet_button_style(),
+				'is_ssl'                           => is_ssl(),
+				'mode'                             => get_option( 'fkwcs_mode', 'test' ),
+				'js_nonce'                         => wp_create_nonce( 'fkwcs_js_nonce' ),
+				'stripe_localized'                 => self::get_localized_messages(),
+				'default_cards'                    => array(
 					'mastercard' => __( 'MasterCard', 'funnelkit-stripe-woo-payment-gateway' ),
 					'visa'       => __( 'Visa', 'funnelkit-stripe-woo-payment-gateway' ),
 					'amex'       => __( 'American Express', 'funnelkit-stripe-woo-payment-gateway' ),
@@ -868,9 +983,9 @@ abstract class Helper {
 					'diners'     => __( 'Diners Club', 'funnelkit-stripe-woo-payment-gateway' ),
 					'unionpay'   => __( 'UnionPay', 'funnelkit-stripe-woo-payment-gateway' ),
 				),
-				'not_allowed_string'      => __( 'is not allowed', 'funnelkit-stripe-woo-payment-gateway' ),
-				'get_home_url'            => get_home_url(),
-				'sepa_options'            => array(
+				'not_allowed_string'               => __( 'is not allowed', 'funnelkit-stripe-woo-payment-gateway' ),
+				'get_home_url'                     => get_home_url(),
+				'sepa_options'                     => array(
 						'supportedCountries' => array( 'SEPA' ),
 						'placeholderCountry' => WC()->countries->get_base_country(),
 						'style'              => array(
@@ -880,23 +995,23 @@ abstract class Helper {
 							),
 						),
 					),
-				'empty_sepa_iban_message' => __( 'Please enter a IBAN number to proceed.', 'funnelkit-stripe-woo-payment-gateway' ),
-				'empty_bank_message'      => __( 'Please select a bank to proceed.', 'funnelkit-stripe-woo-payment-gateway' ),
-				'wc_ajax_endpoint'        => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
-				'assets_url'              => FKWCS_URL . 'assets/',
-				'icons'                   => array(
+				'empty_sepa_iban_message'          => __( 'Please enter a IBAN number to proceed.', 'funnelkit-stripe-woo-payment-gateway' ),
+				'empty_bank_message'               => __( 'Please select a bank to proceed.', 'funnelkit-stripe-woo-payment-gateway' ),
+				'wc_ajax_endpoint'                 => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
+				'assets_url'                       => FKWCS_URL . 'assets/',
+				'icons'                            => array(
 						'applepay_gray'  => FKWCS_URL . 'assets/icons/apple_pay_gray.svg',
 						'applepay_light' => FKWCS_URL . 'assets/icons/apple_pay_light.svg',
 						'gpay_light'     => FKWCS_URL . 'assets/icons/gpay_light.svg',
 						'gpay_gray'      => FKWCS_URL . 'assets/icons/gpay_gray.svg',
 						'link'           => FKWCS_URL . 'assets/icons/link.svg',
 					),
-				'is_change_payment_page'  => isset( $_GET['change_payment_method'] ) ? 'yes' : 'no', //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			'is_add_payment_page'         => is_wc_endpoint_url( 'add-payment-method' ) ? 'yes' : 'no',
-			'is_pay_for_order_page'       => is_wc_endpoint_url( 'order-pay' ) ? 'yes' : 'no',
-			'debug_log'                   => ! empty( get_option( 'fkwcs_debug_log' ) ) ? get_option( 'fkwcs_debug_log' ) : 'no',
-			'debug_msg'                   => __( 'Stripe enabled Payment Request is not available in this browser', 'funnelkit-stripe-woo-payment-gateway' ),
-			'common_style'                => array(
+				'is_change_payment_page'           => isset( $_GET['change_payment_method'] ) ? 'yes' : 'no', //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'is_add_payment_page'                  => is_wc_endpoint_url( 'add-payment-method' ) ? 'yes' : 'no',
+			'is_pay_for_order_page'                => is_wc_endpoint_url( 'order-pay' ) ? 'yes' : 'no',
+			'debug_log'                            => ! empty( get_option( 'fkwcs_debug_log' ) ) ? get_option( 'fkwcs_debug_log' ) : 'no',
+			'debug_msg'                            => __( 'Stripe enabled Payment Request is not available in this browser', 'funnelkit-stripe-woo-payment-gateway' ),
+			'common_style'                         => array(
 				'base'    => array(
 					'padding'         => '3px',
 					'iconColor'       => '#c4f0ff',
@@ -916,15 +1031,15 @@ abstract class Helper {
 			'color'     => 'red',
 			),
 			),
-			'inline_style'                => array(
+			'inline_style'                         => array(
 				'base' => array(
 					'color'    => '#32325d',
 					'fontSize' => '14px',
 				),
 			),
-			'shipping_error'              => __( 'Shipping address is invalid or no shipping methods are available. Please update your address.', 'funnelkit-stripe-woo-payment-gateway' ),
-			'stripe_js_url'               => apply_filters( 'fkwcs_stripe_js_url', 'https://js.stripe.com/v3/' ),
-			'stripe_sdk_init_recovery'    => self::get_stripe_sdk_init_recovery_localized(),
+			'shipping_error'                       => __( 'Shipping address is invalid or no shipping methods are available. Please update your address.', 'funnelkit-stripe-woo-payment-gateway' ),
+			'stripe_js_url'                        => apply_filters( 'fkwcs_stripe_js_url', 'https://js.stripe.com/v3/' ),
+			'stripe_sdk_init_recovery'             => self::get_stripe_sdk_init_recovery_localized(),
 			)
 		);
 		return $data;
@@ -991,6 +1106,109 @@ abstract class Helper {
 
 
 	/**
+	 * Payment method fingerprint for the given payment method object, or null
+	 * when the object carries no fingerprint we can match on.
+	 *
+	 * @param object $payment_method stripe payment method.
+	 *
+	 * @return string|null
+	 */
+	public static function get_payment_method_fingerprint( $payment_method ) {
+		if ( ! is_object( $payment_method ) ) {
+			return null;
+		}
+		foreach ( array( 'card', 'sepa_debit', 'us_bank_account', 'acss_debit', 'au_becs_debit', 'bacs_debit' ) as $type ) {
+			if ( isset( $payment_method->{$type} ) && is_object( $payment_method->{$type} ) && ! empty( $payment_method->{$type}->fingerprint ) ) {
+				return $payment_method->{$type}->fingerprint;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Find an existing token of the user whose stored fingerprint matches the given one.
+	 * Mirrors WC_Stripe_Payment_Tokens::get_duplicate_token() -- lets us reuse the
+	 * existing token instead of creating a duplicate when repeat checkouts re-create
+	 * the same physical card as a new Stripe payment_method.
+	 *
+	 * @param int    $user_id        user id.
+	 * @param string $gateway_id     gateway id to match the token against.
+	 * @param object $payment_method stripe payment method.
+	 *
+	 * @return \WC_Payment_Token|null
+	 */
+	public static function find_user_token_for_payment_method( $user_id, $gateway_id, $payment_method ) {
+		if ( empty( $user_id ) || ! is_object( $payment_method ) ) {
+			return null;
+		}
+
+		$fingerprint = self::get_payment_method_fingerprint( $payment_method );
+		if ( ! $fingerprint ) {
+			return null;
+		}
+
+		if ( ! class_exists( 'WC_Payment_Tokens' ) ) {
+			return null;
+		}
+		// Base method deliberately (like WC_Stripe_Payment_Tokens::get_duplicate_token()):
+		// get_customer_tokens() applies the woocommerce_get_customer_payment_tokens filter,
+		// which can re-enter this sync path and spiral during token creation.
+		$tokens = \WC_Payment_Tokens::get_tokens(
+			array(
+				'user_id'    => $user_id,
+				'gateway_id' => $gateway_id,
+				'limit'      => 100,
+			)
+		);
+		foreach ( (array) $tokens as $token ) {
+			if ( $token && method_exists( $token, 'get_meta' ) && $token->get_meta( 'fingerprint' ) === $fingerprint ) {
+				return $token;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Mark an existing token as belonging to the given gateway/user and mode,
+	 * mirroring what happens when the token is recreated.
+	 *
+	 * @param \WC_Payment_Token $token      token to adopt.
+	 * @param int               $user_id    user id.
+	 * @param string            $gateway_id gateway id to assign.
+	 * @param bool              $is_live    whether the payment method was created in live mode.
+	 * @param object|null       $payment_method stripe payment method with the same fingerprint.
+	 *
+	 * @return \WC_Payment_Token
+	 */
+	public static function adopt_payment_token( $token, $user_id, $gateway_id, $is_live, $payment_method = null ) {
+		$token->set_gateway_id( $gateway_id );
+		$token->set_user_id( $user_id );
+		$token->update_meta_data( 'mode', ( $is_live ) ? 'live' : 'test' );
+
+		// The same card saved again comes as a newer payment method, maybe with a new expiry. Point the token
+		// at the newest one, like WooCommerce Stripe, so it shows and charges the current card details.
+		// Only a newer one moves it, so the sync stays stable while the older one is still attached.
+		$created = is_object( $payment_method ) && isset( $payment_method->created ) ? (int) $payment_method->created : 0;
+		if ( $created > 0 && ! empty( $payment_method->id ) && $payment_method->id !== $token->get_token() && $created > (int) $token->get_meta( 'pm_created' ) ) {
+			$token->set_token( $payment_method->id );
+			$token->update_meta_data( 'pm_created', $created );
+			if ( $token instanceof \WC_Payment_Token_CC && isset( $payment_method->card ) && is_object( $payment_method->card ) ) {
+				$token->set_expiry_month( $payment_method->card->exp_month );
+				$token->set_expiry_year( $payment_method->card->exp_year );
+				$token->set_card_type( strtolower( $payment_method->card->brand ) );
+				$token->set_last4( $payment_method->card->last4 );
+			}
+		}
+		$token->save_meta_data();
+		$token->save();
+		self::$token_cache[ $token->get_id() ] = $token;
+
+		return $token;
+	}
+
+	/**
 	 * Tokenize card payment
 	 *
 	 * @param int    $user_id id of current user placing.
@@ -1046,6 +1264,24 @@ abstract class Helper {
 			}
 		}
 
+		// The same card is re-created as a new Stripe payment_method on every
+		// "save card" checkout. Collapse it onto the existing WC token for the same
+		// fingerprint instead of creating a duplicate entry.
+		// No-harm rule: anything that can fail inside fingerprint matching (missing
+		// data, DB error, unexpected object shape) falls through to normal token
+		// creation -- fingerprint matching is an optimisation, never a single point
+		// of failure on the payment path.
+		try {
+			$fingerprint       = self::get_payment_method_fingerprint( $payment_method );
+			$fingerprint_match = self::find_user_token_for_payment_method( $user_id, $gateway_id, $payment_method );
+			if ( ! is_null( $fingerprint_match ) ) {
+				return self::adopt_payment_token( $fingerprint_match, $user_id, $gateway_id, $is_live, $payment_method );
+			}
+		} catch ( \Throwable $e ) {
+			self::log( 'Fingerprint token match failed, falling back to normal token creation: ' . $e->getMessage() );
+			$fingerprint = null;
+		}
+
 		$token = new \WC_Payment_Token_CC();
 		$token->set_expiry_month( $payment_method->card->exp_month );
 		$token->set_expiry_year( $payment_method->card->exp_year );
@@ -1055,6 +1291,12 @@ abstract class Helper {
 		$token->set_token( $payment_method->id );
 		$token->set_user_id( $user_id );
 		$token->update_meta_data( 'mode', ( $is_live ) ? 'live' : 'test' );
+		if ( ! is_null( $fingerprint ) ) {
+			$token->update_meta_data( 'fingerprint', $fingerprint );
+		}
+		if ( ! empty( $payment_method->created ) ) {
+			$token->update_meta_data( 'pm_created', (int) $payment_method->created );
+		}
 		$token->save_meta_data();
 		$token->save();
 		self::$token_cache[ $token->get_id() ] = $token;

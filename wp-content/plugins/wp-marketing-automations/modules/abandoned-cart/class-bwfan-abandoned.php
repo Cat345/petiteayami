@@ -22,6 +22,8 @@ class BWFAN_Abandoned_Cart {
 	protected $restored_cart_details = array();
 	protected $user_id = 0;
 	protected $added_to_cart = null;
+	/** Cart row ID linked to each order in this request, keyed by order ID */
+	protected $linked_cart_ids = [];
 
 	/**
 	 *   Construct
@@ -429,7 +431,8 @@ class BWFAN_Abandoned_Cart {
 		if ( $recovered_cart_id > 0 ) {
 			$cart_cids[ $recovered_cart_id ] = $recovered_cart_cids;
 		}
-		foreach ( array_keys( $cart_cids ) as $cart_id ) {
+		$cart_ids = array_merge( array_keys( $cart_cids ), $this->get_pre_order_cart_ids( $order, array_keys( $cart_cids ), $cart_details ) );
+		foreach ( $cart_ids as $cart_id ) {
 			BWFAN_Model_Abandonedcarts::delete( $cart_id );
 
 			/** Delete v1 automation tasks if present */
@@ -445,6 +448,53 @@ class BWFAN_Abandoned_Cart {
 		foreach ( $cart_cids as $cart_id => $cids ) {
 			$this->end_cart_recovered_automation( $cart_id, $cids );
 		}
+	}
+
+	/**
+	 * The buyer's other carts for the order's billing email that never reached an automation.
+	 *
+	 * A shopper can leave one cart row per device. Paying for the order settles all of them, so the ones
+	 * still pending, re-scheduled, without automation or cooling off (0, 4, 3, 5) are cleared with the
+	 * order's own row instead of ageing into Lost carts. In-progress rows (1) go through the recovery
+	 * credit above, and rows created after the order belong to a later cart.
+	 *
+	 * Only the buyer's own rows are cleared: same visitor cookie as the order's cart row, or the order's
+	 * customer. The billing email is typed by the buyer, so it alone never selects another shopper's carts.
+	 *
+	 * @param WC_Order $order
+	 * @param int[] $exclude_ids - rows already being cleared
+	 * @param array $order_cart - the order's own cart row
+	 *
+	 * @return int[]
+	 */
+	protected function get_pre_order_cart_ids( $order, $exclude_ids, $order_cart = [] ) {
+		$billing_email = BWFAN_Woocommerce_Compatibility::get_billing_email( $order );
+		$date_created  = $order->get_date_created();
+		if ( ! is_email( $billing_email ) || ! $date_created instanceof WC_DateTime ) {
+			return [];
+		}
+
+		/** This runs in a background action with no visitor cookie, so the owner comes from the order's cart row and customer */
+		$owner = [
+			'cookie_key' => is_array( $order_cart ) && ! empty( $order_cart['cookie_key'] ) ? $order_cart['cookie_key'] : '',
+			'user_id'    => absint( $order->get_customer_id() ),
+		];
+		if ( empty( $owner['cookie_key'] ) && empty( $owner['user_id'] ) ) {
+			return [];
+		}
+
+		global $wpdb;
+		$where = $wpdb->prepare( 'WHERE `status` IN (0,3,4,5) AND `email` = %s AND `created_time` <= %s', $billing_email, gmdate( 'Y-m-d H:i:s', $date_created->getTimestamp() ) );
+		$carts = BWFAN_Model_Abandonedcarts::get_abandoned_data( $where, '', '', 'ID', ARRAY_A );
+		if ( ! is_array( $carts ) || empty( $carts ) ) {
+			return [];
+		}
+
+		$carts = array_filter( $carts, function ( $cart ) use ( $owner ) {
+			return self::is_same_cart_owner( $owner, $cart );
+		} );
+
+		return array_values( array_diff( array_map( 'absint', array_column( $carts, 'ID' ) ), array_map( 'absint', $exclude_ids ) ) );
 	}
 
 	/**
@@ -543,7 +593,7 @@ class BWFAN_Abandoned_Cart {
 	 */
 	public function get_cart_by_multiple_key( $where ) {
 		// $where must be a caller-prepared clause (every caller passes a $wpdb->prepare()'d fragment). Never pass raw input here.
-		$query        = "SELECT * FROM {table_name} WHERE $where AND status != 2";
+		$query        = "SELECT * FROM {table_name} WHERE ( $where ) AND status != 2 ORDER BY `ID` DESC LIMIT 0,1";
 		$cart_details = BWFAN_Model_Abandonedcarts::get_results( $query );
 		if ( ! is_array( $cart_details ) || 0 === count( $cart_details ) ) {
 			return false;
@@ -684,6 +734,61 @@ class BWFAN_Abandoned_Cart {
 	}
 
 	/**
+	 * Whether the current visitor owns an abandoned cart row.
+	 *
+	 * @param array|false  $cart_row Abandoned cart row.
+	 * @param string|false $tracking_cookie The visitor's bwfan_visitor value.
+	 *
+	 * @return bool True when the row's cookie_key matches the visitor cookie, or the row belongs to the logged-in user.
+	 */
+	private function is_cart_owner( $cart_row, $tracking_cookie ) {
+		if ( ! is_array( $cart_row ) ) {
+			return false;
+		}
+
+		if ( ! empty( $tracking_cookie ) && ! empty( $cart_row['cookie_key'] ) && hash_equals( (string) $cart_row['cookie_key'], (string) $tracking_cookie ) ) {
+			return true;
+		}
+
+		return is_user_logged_in() && ! empty( $cart_row['user_id'] ) && absint( $cart_row['user_id'] ) === get_current_user_id();
+	}
+
+	/**
+	 * The current visitor's own cart row: the row keyed to their tracking cookie, else, for a logged-in
+	 * user, their row for the email (email AND user ID). An email alone never selects a row.
+	 *
+	 * @param string|false $tracking_cookie The visitor's bwfan_visitor value.
+	 * @param string $email Email to match the logged-in user's rows by.
+	 *
+	 * @return array|false
+	 */
+	private function get_own_cart_row( $tracking_cookie, $email = '' ) {
+		$cart_details = $this->get_cart_by_cookie( $tracking_cookie );
+		if ( false !== $cart_details || empty( $email ) || ! is_user_logged_in() ) {
+			return $cart_details;
+		}
+
+		global $wpdb;
+
+		return $this->get_cart_by_multiple_key( $wpdb->prepare( 'email = %s AND user_id = %d', $email, get_current_user_id() ) );
+	}
+
+	/**
+	 * Cart row keyed to a tracking cookie. A blank cookie is no cookie: it would match every row saved without one.
+	 *
+	 * @param string|false $tracking_cookie The visitor's bwfan_visitor value.
+	 *
+	 * @return array|false
+	 */
+	private function get_cart_by_cookie( $tracking_cookie ) {
+		if ( empty( $tracking_cookie ) ) {
+			return false;
+		}
+
+		return $this->get_cart_by_key( 'cookie_key', $tracking_cookie, '%s' );
+	}
+
+	/**
 	 * Get cart ID and status by cookie key using lightweight query.
 	 *
 	 * This method only selects the necessary columns (ID, status) instead of
@@ -740,7 +845,11 @@ class BWFAN_Abandoned_Cart {
 			return;
 		}
 
-		$token = BWFAN_Common::create_token( 16 );
+		/** Keep the visitor value when only bwfan_session is gone; a new one would orphan the row this request still reads by the old one */
+		$token = BWFAN_Common::get_cookie( 'bwfan_visitor' );
+		if ( empty( $token ) ) {
+			$token = BWFAN_Common::create_token( 16 );
+		}
 		BWFAN_Common::set_cookie( 'bwfan_session', 1, time() + DAY_IN_SECONDS * 365 ); // set tracking cookie for 1 year from now
 		BWFAN_Common::set_cookie( 'bwfan_visitor', $token, time() + DAY_IN_SECONDS * 365 );
 
@@ -852,10 +961,12 @@ class BWFAN_Abandoned_Cart {
 
 		/** Restore fields data for Gutenberg checkout block */
 		if ( ! empty( $checkout_data['fields'] ) && is_array( $checkout_data['fields'] ) && WC()->customer instanceof WC_Customer ) {
-			$data = [];
-			foreach ( $checkout_data['fields'] as $key => $value ) {
-				$data[ $key ] = $value;
-			}
+			/**
+			 * Default fields only. set_props() calls set_{key}() for every key, and a FunnelKit Checkout
+			 * custom field ID is chosen by the store owner: an ID such as role, email or id would run a
+			 * WC_Customer setter with a value typed by the shopper.
+			 */
+			$data = array_intersect_key( $checkout_data['fields'], self::get_woocommerce_default_checkout_nice_names() );
 			try {
 				WC()->customer->set_props( $data );
 			} catch ( Error $e ) {
@@ -1132,12 +1243,18 @@ class BWFAN_Abandoned_Cart {
 	 * @since 1.0.0
 	 */
 	public function set_session_for_recovered_cart() {
-		if ( isset( $_GET['bwfan-ab-id'] ) && isset( $_GET['automation-id'] ) && ! is_null( WC()->session ) ) { //phpcs:ignore WordPress.Security.NonceVerification
+		/**
+		 * Require a non-empty bwfan-ab-id and cast both ids to integers. automation-id and track-id are
+		 * always integer db ids in a genuine recovery link (see the cart-recovery-link merge tag and the
+		 * t_track_id taskmeta row). absint() turns any hostile value, such as a serialized php object, into
+		 * 0 or a plain integer, which blocks the second-order object injection these values used to carry.
+		 */
+		if ( ! empty( $_GET['bwfan-ab-id'] ) && isset( $_GET['automation-id'] ) && ! is_null( WC()->session ) ) { //phpcs:ignore WordPress.Security.NonceVerification
 			$ab_data = array(
-				'automation_id' => sanitize_text_field( wp_unslash( $_GET['automation-id'] ) ), //phpcs:ignore WordPress.Security.NonceVerification
+				'automation_id' => is_scalar( $_GET['automation-id'] ) ? absint( wp_unslash( $_GET['automation-id'] ) ) : 0, //phpcs:ignore WordPress.Security.NonceVerification -- an array (automation-id[]=x) is never genuine; absint() would turn it into 1
 			);
 			if ( isset( $_GET['track-id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification
-				$ab_data['track_id'] = sanitize_text_field( wp_unslash( $_GET['track-id'] ) ); //phpcs:ignore WordPress.Security.NonceVerification
+				$ab_data['track_id'] = is_scalar( $_GET['track-id'] ) ? absint( wp_unslash( $_GET['track-id'] ) ) : 0; //phpcs:ignore WordPress.Security.NonceVerification
 			}
 			WC()->session->set( 'bwfan_abandoned_order_data', $ab_data );
 		}
@@ -1149,8 +1266,6 @@ class BWFAN_Abandoned_Cart {
 	 * @param $order - order object or order id
 	 */
 	public function attach_order_id_to_abandoned_row( $order ) {
-		global $wpdb;
-
 		if ( ! $order instanceof WC_Order ) {
 			$order = wc_get_order( $order );
 		}
@@ -1160,15 +1275,19 @@ class BWFAN_Abandoned_Cart {
 		}
 
 		/** Cast at the source: the raw POST value used to be saved as order meta and later reach SQL */
-		$ab_cart_id = intval( filter_input( INPUT_POST, 'bwfan_cart_id' ) );
+		$ab_cart_id      = intval( filter_input( INPUT_POST, 'bwfan_cart_id' ) );
+		$tracking_cookie = BWFAN_Common::get_cookie( 'bwfan_visitor' );
+		$tracking_cookie = empty( $tracking_cookie ) ? WC()->session->get( 'bwfan_visitor' ) : $tracking_cookie;
+		/**
+		 * A posted cart ID is used only when the caller owns that row. Another visitor's row, or one already
+		 * deleted, falls back to the shopper's own row, never to a row found by billing email alone.
+		 */
+		if ( $ab_cart_id > 0 && ! $this->is_cart_owner( BWFAN_Model_Abandonedcarts::get( $ab_cart_id ), $tracking_cookie ) ) {
+			$ab_cart_id = 0;
+		}
 		if ( 0 === $ab_cart_id ) {
-			$tracking_cookie = BWFAN_Common::get_cookie( 'bwfan_visitor' );
-			$tracking_cookie = empty( $tracking_cookie ) ? WC()->session->get( 'bwfan_visitor' ) : $tracking_cookie;
-			$billing_email   = BWFAN_Woocommerce_Compatibility::get_billing_email( $order );
-			$sql_where       = 'email = %s OR cookie_key = %s';
-			$sql_where       = $wpdb->prepare( $sql_where, $billing_email, $tracking_cookie ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$cart_details    = $this->get_cart_by_multiple_key( $sql_where );
-			$ab_cart_id      = ( is_array( $cart_details ) && isset( $cart_details['ID'] ) ) ? $cart_details['ID'] : 0;
+			$cart_details = $this->get_own_cart_row( $tracking_cookie, BWFAN_Woocommerce_Compatibility::get_billing_email( $order ) );
+			$ab_cart_id   = ( is_array( $cart_details ) && isset( $cart_details['ID'] ) ) ? intval( $cart_details['ID'] ) : 0;
 		}
 		if ( empty( $ab_cart_id ) ) {
 			return;
@@ -1176,7 +1295,6 @@ class BWFAN_Abandoned_Cart {
 
 		$cart_row = BWFAN_Model_Abandonedcarts::get( $ab_cart_id );
 		if ( empty( $cart_row ) ) {
-			/** Row was already recovered and deleted. */
 			return;
 		}
 
@@ -1192,8 +1310,14 @@ class BWFAN_Abandoned_Cart {
 		$row_affected = BWFAN_Model_Abandonedcarts::update( [ 'order_id' => $order->get_id() ], [ 'ID' => $ab_cart_id ] );
 		if ( empty( $row_affected ) ) {
 			/** Row deleted between the fetch above and this update, or this order is already attached (meta written on the earlier call). Either way, don't write a stale cart id. */
+			if ( $linked_order_id === $order->get_id() ) {
+				$this->linked_cart_ids[ $order->get_id() ] = $ab_cart_id;
+			}
+
 			return;
 		}
+
+		$this->linked_cart_ids[ $order->get_id() ] = $ab_cart_id;
 
 		BWFAN_Common::save_order_meta( $order->get_id(), 'bwfan_cart_id', $ab_cart_id );
 	}
@@ -1227,7 +1351,7 @@ class BWFAN_Abandoned_Cart {
 		 * second order placed from the same session (double submit, or a re-opened recovery link) finds
 		 * the row still pointing at the first order and must not be credited too.
 		 */
-		$ab_cart_id = absint( filter_input( INPUT_POST, 'bwfan_cart_id' ) );
+		$ab_cart_id = isset( $this->linked_cart_ids[ $order->get_id() ] ) ? absint( $this->linked_cart_ids[ $order->get_id() ] ) : 0;
 		if ( 0 === $ab_cart_id ) {
 			$restored_details = WC()->session->get( 'restored_cart_details' );
 			$ab_cart_id       = ( is_array( $restored_details ) && isset( $restored_details['ID'] ) ) ? absint( $restored_details['ID'] ) : 0;
@@ -1244,9 +1368,16 @@ class BWFAN_Abandoned_Cart {
 			}
 		}
 
-		BWFAN_Common::save_order_meta( $order->get_id(), '_bwfan_ab_cart_recovered_a_id', $abandoned_data['automation_id'] );
+		/** Re-cast to int before writing; never store a non-integer automation id, and skip a 0. */
+		$recovered_automation_id = absint( $abandoned_data['automation_id'] );
+		if ( $recovered_automation_id > 0 ) {
+			BWFAN_Common::save_order_meta( $order->get_id(), '_bwfan_ab_cart_recovered_a_id', $recovered_automation_id );
+		}
 		if ( isset( $abandoned_data['track_id'] ) ) {
-			BWFAN_Common::save_order_meta( $order->get_id(), '_bwfan_ab_cart_recovered_t_id', $abandoned_data['track_id'] );
+			$recovered_track_id = absint( $abandoned_data['track_id'] );
+			if ( $recovered_track_id > 0 ) {
+				BWFAN_Common::save_order_meta( $order->get_id(), '_bwfan_ab_cart_recovered_t_id', $recovered_track_id );
+			}
 		}
 		// no need to save as it will be saved after create order hook
 
@@ -1536,7 +1667,7 @@ class BWFAN_Abandoned_Cart {
 	public function update_items_in_abandoned_table( $wfacp_id, $request ) {
 		$tracking_cookie = BWFAN_Common::get_cookie( 'bwfan_visitor' );
 		$tracking_cookie = empty( $tracking_cookie ) ? WC()->session->get( 'bwfan_visitor' ) : $tracking_cookie;
-		$cart_details    = $this->get_cart_by_key( 'cookie_key', $tracking_cookie, '%s' ); // check cart by cookie
+		$cart_details    = $this->get_cart_by_cookie( $tracking_cookie );
 
 		if ( false === $cart_details || ! is_array( $cart_details ) || empty( $cart_details ) ) {
 			return;
@@ -1728,8 +1859,9 @@ class BWFAN_Abandoned_Cart {
 				],
 			];
 		}
-		$data['fields'] = array_intersect_key( $data['fields'], self::get_woocommerce_default_checkout_nice_names() );
-		$data['fields'] = array_merge( $data['fields'], $dob_fields );
+		$data['fields'] = array_intersect_key( $data['fields'], self::get_woocommerce_default_checkout_nice_names() + self::get_aero_custom_checkout_fields( $data['aerocheckout_page_id'] ) );
+		/** array_replace, not array_merge: a numeric custom field ID (e.g. 4980) is an integer key that array_merge would renumber to 0 */
+		$data['fields'] = array_replace( $data['fields'], $dob_fields );
 
 		/** Consent checkbox not rendered (setting off / contact already subscribed): treat as granted, same as the hidden input on classic checkout. Block checkout posts nothing in that case. */
 		if ( ! isset( $data['fields']['bwfan_user_consent'] ) && ! in_array( 'bwfan_user_consent', (array) $exclude_checkout_fields, true ) && BWFAN_Common::is_marketing_consent_implicit() ) {
@@ -1859,6 +1991,37 @@ class BWFAN_Abandoned_Cart {
 		return false;
 	}
 
+	/**
+	 * Custom fields added in the form editor of a FunnelKit Checkout page, as field ID => label.
+	 * HTML-only fields (order summary, coupon, shipping method) hold no shopper input and are skipped.
+	 * Password fields are skipped so a password is never sent to or stored with the cart.
+	 *
+	 * @param int|string $page_id FunnelKit Checkout page ID
+	 *
+	 * @return array
+	 */
+	public static function get_aero_custom_checkout_fields( $page_id ) {
+		$page_id = absint( $page_id );
+		if ( 0 === $page_id || ! class_exists( 'WFACP_Common' ) ) {
+			return array();
+		}
+
+		$checkout_fields = WFACP_Common::get_checkout_fields( $page_id );
+		if ( ! is_array( $checkout_fields ) || empty( $checkout_fields['advanced'] ) || ! is_array( $checkout_fields['advanced'] ) ) {
+			return array();
+		}
+
+		$custom_fields = array();
+		foreach ( $checkout_fields['advanced'] as $field ) {
+			if ( ! is_array( $field ) || empty( $field['id'] ) || ( isset( $field['type'] ) && in_array( $field['type'], array( 'wfacp_html', 'wfacp_wysiwyg', 'password' ), true ) ) ) {
+				continue;
+			}
+			$custom_fields[ $field['id'] ] = ( ! empty( $field['label'] ) && is_string( $field['label'] ) ) ? wp_strip_all_tags( $field['label'] ) : $field['id'];
+		}
+
+		return $custom_fields;
+	}
+
 	public static function get_woocommerce_default_checkout_nice_names() {
 		return apply_filters( 'bwfan_ab_default_checkout_nice_names', array(
 			'billing_first_name' => __( 'First Name', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -1936,10 +2099,20 @@ class BWFAN_Abandoned_Cart {
 			}
 		}
 
+		$tracking_cookie = BWFAN_Common::get_cookie( 'bwfan_visitor' );
+		$tracking_cookie = empty( $tracking_cookie ) ? WC()->session->get( 'bwfan_visitor' ) : $tracking_cookie;
+		if ( empty( $tracking_cookie ) ) {
+			global $cookie_set;
+			if ( is_array( $cookie_set ) && isset( $cookie_set['bwfan_visitor'] ) ) {
+				$tracking_cookie = $cookie_set['bwfan_visitor'];
+			}
+		}
+
 		if ( is_array( $checkout_fields_data ) && isset( $checkout_fields_data['bwfan_cart_id'] ) && intval( $checkout_fields_data['bwfan_cart_id'] ) > 0 ) {
 			/** Cart ID found */
 			$cart_details = BWFAN_Model_Abandonedcarts::get( $checkout_fields_data['bwfan_cart_id'] );
-			if ( isset( $cart_details['ID'] ) && intval( $cart_details['ID'] ) === intval( $checkout_fields_data['bwfan_cart_id'] ) ) {
+			/** The cart ID is posted by the browser: only the row's owner writes to it, anyone else falls through to their own row */
+			if ( isset( $cart_details['ID'] ) && intval( $cart_details['ID'] ) === intval( $checkout_fields_data['bwfan_cart_id'] ) && $this->is_cart_owner( $cart_details, $tracking_cookie ) ) {
 				$cart_details['email'] = ( ! is_null( $email ) ) ? $email : $cart_details['email'];
 				if ( is_array( $checkout_fields_data ) && count( $checkout_fields_data ) > 0 ) {
 					$cart_details['checkout_data'] = $checkout_fields_data;
@@ -1952,30 +2125,17 @@ class BWFAN_Abandoned_Cart {
 		}
 
 		/** First time cart */
-		$tracking_cookie = BWFAN_Common::get_cookie( 'bwfan_visitor' );
-		$tracking_cookie = empty( $tracking_cookie ) ? WC()->session->get( 'bwfan_visitor' ) : $tracking_cookie;
-		if ( empty( $tracking_cookie ) ) {
-			global $cookie_set;
-			if ( is_array( $cookie_set ) && isset( $cookie_set['bwfan_visitor'] ) ) {
-				$tracking_cookie = $cookie_set['bwfan_visitor'];
-			}
-		}
-
-		$cart_details = $this->get_cart_by_key( 'cookie_key', $tracking_cookie, '%s' ); // check cart by cookie
 		if ( ! empty( $email ) ) {
 			$data['email'] = $email;
-
-			/** check cart by guest email id */
-			if ( false === $cart_details ) {
-				global $wpdb;
-				$sql_where    = 'email = %s';
-				$sql_where    = $wpdb->prepare( $sql_where, $email ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-				$cart_details = $this->get_cart_by_multiple_key( $sql_where );
-				if ( is_array( $cart_details ) && count( $cart_details ) > 0 ) {
-					$cart_details['cookie_key'] = $tracking_cookie;
-				} else {
-					$cart_details = false;
-				}
+		}
+		$cart_details = $this->get_own_cart_row( $tracking_cookie, $email );
+		if ( is_array( $cart_details ) ) {
+			if ( ! empty( $tracking_cookie ) ) {
+				$cart_details['cookie_key'] = $tracking_cookie;
+			}
+			/** A row saved while the shopper was a guest joins their account once they log in, so their other devices find it */
+			if ( is_user_logged_in() && empty( $cart_details['user_id'] ) ) {
+				$cart_details['user_id'] = get_current_user_id();
 			}
 		}
 
@@ -2160,10 +2320,20 @@ class BWFAN_Abandoned_Cart {
 		if ( isset( $_POST['email'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 			$email = sanitize_email( $_POST['email'] ); //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 			if ( ! empty( $email ) ) {
-				$where = array(
-					'email' => $email,
-				);
-				BWFAN_Model_Abandonedcarts::delete_abandoned_cart_row( $where );
+				/** Delete only the caller's own rows: matched by visitor cookie, or by user ID when logged in */
+				$tracking_cookie = $this->get_tracking_cookie();
+				if ( ! empty( $tracking_cookie ) ) {
+					BWFAN_Model_Abandonedcarts::delete_abandoned_cart_row( array(
+						'email'      => $email,
+						'cookie_key' => $tracking_cookie,
+					) );
+				}
+				if ( is_user_logged_in() ) {
+					BWFAN_Model_Abandonedcarts::delete_abandoned_cart_row( array(
+						'email'   => $email,
+						'user_id' => get_current_user_id(),
+					) );
+				}
 			}
 		}
 
@@ -2308,7 +2478,8 @@ class BWFAN_Abandoned_Cart {
 	 * @return void
 	 */
 	public function add_to_cart() {
-		if ( is_null( $this->added_to_cart ) ) {
+		/** On a recovery link restore this request still carries the browser's previous visitor cookie; the restored row already holds these items */
+		if ( is_null( $this->added_to_cart ) || $this->is_cart_restored ) {
 			return;
 		}
 
@@ -2402,8 +2573,7 @@ class BWFAN_Abandoned_Cart {
 		$coupon_data  = $post_parameters['coupon_data'];
 		$items        = $post_parameters['items'];
 		$fees         = $post_parameters['fees'];
-		$cart_details = $abandoned_obj->get_cart_by_key( 'cookie_key', $post_parameters['bwfan_visitor'], '%s' );
-		$cart_details = empty( $cart_details ) && ! empty( $email ) ? $abandoned_obj->get_cart_by_key( 'email', $email, '%s' ) : $cart_details;
+		$cart_details = $abandoned_obj->get_own_cart_row( $post_parameters['bwfan_visitor'], $email );
 
 		if ( ! empty( $email ) && empty( $cart_details ) ) {
 			self::insert_cart_row( array(
@@ -2609,17 +2779,33 @@ class BWFAN_Abandoned_Cart {
 		if ( empty( $carts ) && ! is_array( $carts ) ) {
 			return;
 		}
-		$unique_carts    = [];
-		$emails          = [];
+		$first_carts     = [];
+		$kept_carts      = [];
 		$duplicate_carts = [];
+		/**
+		 * Oldest first. The owner of the oldest cart for an email wins: a later cart saved under the same
+		 * email by another visitor (another device, or someone typing that email) is dropped, so typing an
+		 * email can never replace the cart its shopper already has. Within the winner's own carts the
+		 * newest one is kept, as it holds their latest items.
+		 */
+		usort( $carts, function ( $a, $b ) {
+			return absint( $a['ID'] ) <=> absint( $b['ID'] );
+		} );
 		foreach ( $carts as $cart ) {
-			if ( in_array( $cart['email'], $emails, true ) ) {
-				$duplicate_carts[] = $cart;
+			$email = $cart['email'];
+			if ( ! isset( $first_carts[ $email ] ) ) {
+				$first_carts[ $email ] = $cart;
+				$kept_carts[ $email ]  = $cart;
 				continue;
 			}
-			$emails[]       = $cart['email'];
-			$unique_carts[] = $cart;
+			if ( self::is_same_cart_owner( $first_carts[ $email ], $cart ) ) {
+				$duplicate_carts[]    = $kept_carts[ $email ];
+				$kept_carts[ $email ] = $cart;
+				continue;
+			}
+			$duplicate_carts[] = $cart;
 		}
+		$unique_carts = array_values( $kept_carts );
 		/** Verify duplicate carts in "In Progress" status, update the oldest record with the latest data, and delete the remaining duplicates. */
 		$unique_carts = self::check_for_cart_in_progress( $unique_carts );
 		if ( empty( $duplicate_carts ) ) {
@@ -2644,6 +2830,22 @@ class BWFAN_Abandoned_Cart {
 		$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholders generated; ids bound via prepare() %d
 
 		return $unique_carts;
+	}
+
+	/**
+	 * Whether two abandoned cart rows belong to the same shopper: same visitor cookie, or same user ID.
+	 *
+	 * @param array $cart_a Abandoned cart row.
+	 * @param array $cart_b Abandoned cart row.
+	 *
+	 * @return bool
+	 */
+	private static function is_same_cart_owner( $cart_a, $cart_b ) {
+		if ( ! empty( $cart_a['cookie_key'] ) && ! empty( $cart_b['cookie_key'] ) && hash_equals( (string) $cart_a['cookie_key'], (string) $cart_b['cookie_key'] ) ) {
+			return true;
+		}
+
+		return ! empty( $cart_a['user_id'] ) && absint( $cart_a['user_id'] ) === absint( $cart_b['user_id'] ?? 0 );
 	}
 
 	/**
@@ -2690,7 +2892,10 @@ class BWFAN_Abandoned_Cart {
 
 	/**
 	 * Check for duplicate in-progress carts and update newest data into oldest entry
-	 * Keep the oldest cart entry and delete the newest duplicates
+	 * Only the same shopper's in-progress carts (same cookie or same user ID) are merged: the oldest one is kept,
+	 * with its token so recovery links already sent keep working, and the newer ones are deleted.
+	 * A cart whose email already has another visitor's cart in progress is deleted: the earlier cart keeps
+	 * running, so one email never runs two reminder sequences at once and no cart is left waiting.
 	 *
 	 * Supports both single cart (backward compatibility) and multiple carts
 	 *
@@ -2743,8 +2948,24 @@ class BWFAN_Abandoned_Cart {
 				continue;
 			}
 
+			/** A matching email alone proves nothing about who owns a cart: only the same shopper's in-progress carts are merged */
+			$own_carts = array_values( array_filter( $existing_carts, function ( $cart ) use ( $active_cart ) {
+				return self::is_same_cart_owner( $cart, $active_cart );
+			} ) );
+			if ( empty( $own_carts ) ) {
+				/** Another visitor's earlier cart is in progress for this email: it keeps running and this later cart is dropped */
+				BWFAN_Common::log_test_data( [
+					'email'           => $email,
+					'running_cart_id' => $existing_carts[0]['ID'],
+					'deleted_id'      => intval( $active_cart['ID'] ),
+				], 'fka-duplicate-cart-dropped', true );
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwfan_abandonedcarts WHERE `ID` = %d", intval( $active_cart['ID'] ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$indices_to_remove[] = $index;
+				continue;
+			}
+
 			/** Get oldest cart (first in array) */
-			$oldest_cart = $existing_carts[0];
+			$oldest_cart = $own_carts[0];
 
 			/** Prepare update data from newest active abandoned cart to oldest cart */
 			$update_data = [
@@ -2760,7 +2981,6 @@ class BWFAN_Abandoned_Cart {
 				'checkout_data'      => $active_cart['checkout_data'] ?? '',
 				'checkout_page_id'   => $active_cart['checkout_page_id'] ?? 0,
 				'cookie_key'         => $active_cart['cookie_key'] ?? '',
-				'token'              => $active_cart['token'] ?? '',
 			];
 
 			/** Update oldest cart with newest active abandoned cart's data */
@@ -2768,8 +2988,8 @@ class BWFAN_Abandoned_Cart {
 
 			BWFAN_Model_Abandonedcarts::update( $update_data, $where );
 
-			/** Collect IDs of all carts except the oldest one (to delete) */
-			$ids_to_delete = array_filter( array_column( $existing_carts, 'ID' ), function ( $id ) use ( $oldest_cart ) {
+			/** Collect IDs of the shopper's other in-progress carts (to delete) */
+			$ids_to_delete = array_filter( array_column( $own_carts, 'ID' ), function ( $id ) use ( $oldest_cart ) {
 				return intval( $id ) !== intval( $oldest_cart['ID'] );
 			} );
 

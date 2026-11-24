@@ -330,6 +330,10 @@
 
     $(document).ready(function () {
 
+        // Button Height slider: show the current value next to it (same as the FunnelKit PayPal slider).
+        $('.fkwcs-slider').on('input change', function () {
+            $(this).siblings('.fkwcs-slider-value').text($(this).val() + ($(this).data('unit') || ''));
+        });
 
         generateCheckoutDemo(style);
         toggleOptions();

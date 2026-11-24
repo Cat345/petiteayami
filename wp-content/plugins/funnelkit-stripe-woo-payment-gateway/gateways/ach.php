@@ -216,7 +216,7 @@ class ACH extends LocalGateway {
 			}
 		} catch ( \Exception $e ) {
 			Helper::log( $e->getMessage(), 'warning' );
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 		}
 	}
 
@@ -341,7 +341,7 @@ class ACH extends LocalGateway {
 
 				} catch ( \Exception $e ) {
 					Helper::log( 'Payment confirmation failed : ' . $e->getMessage() );
-					wc_add_notice( $e->getMessage(), 'error' );
+					wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 
 				}
 			}
@@ -365,7 +365,7 @@ class ACH extends LocalGateway {
 			);
 
 		} catch ( \Exception $e ) {
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 
 			/* translators: error message */
 			$order->update_status( 'failed' );
@@ -447,9 +447,11 @@ class ACH extends LocalGateway {
 
 				}
 
-				// Load the right message and update the status.
+				// Load the right message and mark the order failed. Route through mark_order_failed() (not a
+				// direct update_status) so the Stripe-supplied message is sanitised before it reaches the order
+				// note, matching every other gateway and the #1557 fix.
 				$status_message = isset( $intent->last_payment_error ) /* translators: 1) The error message that was received from Stripe. */ ? sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'funnelkit-stripe-woo-payment-gateway' ), $intent->last_payment_error->message ) : __( 'Stripe SCA authentication failed.', 'funnelkit-stripe-woo-payment-gateway' );
-				$order->update_status( 'failed', $status_message );
+				$this->mark_order_failed( $order, $status_message );
 
 			} elseif ( 'pending' === $intent->status || 'processing' === $intent->status ) {
 				$order_stock_reduced = Helper::get_meta( $order, '_order_stock_reduced' );
@@ -621,6 +623,17 @@ class ACH extends LocalGateway {
 				return $token_obj;
 			}
 		}
+
+		try {
+			$fingerprint       = Helper::get_payment_method_fingerprint( $payment_method );
+			$fingerprint_match = Helper::find_user_token_for_payment_method( $user_id, $this->id, $payment_method );
+			if ( ! is_null( $fingerprint_match ) ) {
+				return Helper::adopt_payment_token( $fingerprint_match, $user_id, $this->id, $is_live, $payment_method );
+			}
+		} catch ( \Throwable $e ) {
+			Helper::log( 'Fingerprint token match failed, falling back to normal token creation: ' . $e->getMessage() );
+			$fingerprint = null;
+		}
 		$token = new ACHToken();
 		$token->set_last4( $payment_method->us_bank_account->last4 );
 		$token->set_bank_name( $payment_method->us_bank_account->bank_name );
@@ -628,6 +641,12 @@ class ACH extends LocalGateway {
 		$token->set_token( $payment_method->id );
 		$token->set_user_id( $user_id );
 		$token->update_meta_data( 'mode', ( $is_live ) ? 'live' : 'test' );
+		if ( null !== $fingerprint ) {
+			$token->update_meta_data( 'fingerprint', $fingerprint );
+		}
+		if ( ! empty( $payment_method->created ) ) {
+			$token->update_meta_data( 'pm_created', (int) $payment_method->created );
+		}
 		$token->save_meta_data();
 		$token->save();
 

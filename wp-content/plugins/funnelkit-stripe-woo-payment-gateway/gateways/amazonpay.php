@@ -278,6 +278,8 @@ class AmazonPay extends CreditCard {
 					),
 					'default' => 'above-checkout',
 				),
+				'wallet_button_shape'    => $this->get_wallet_button_style_field( 'shape' ),
+				'wallet_button_height'   => $this->get_wallet_button_style_field( 'height' ),
 				'separator_text'         => array(
 					'title'   => __( 'Separator Text', 'funnelkit-stripe-woo-payment-gateway' ),
 					'type'    => 'text',
@@ -432,7 +434,7 @@ class AmazonPay extends CreditCard {
 			return array( 'result' => 'fail' );
 		} catch ( \Exception $e ) {
 			Helper::log( 'Amazon Pay process_payment error: ' . $e->getMessage(), 'warning' );
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 
 			return array( 'result' => 'fail' );
 		}
@@ -529,7 +531,7 @@ class AmazonPay extends CreditCard {
 			return array( 'result' => 'fail' );
 		} catch ( \Exception $e ) {
 			Helper::log( 'Amazon Pay zero-amount setup error: ' . $e->getMessage(), 'warning' );
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 
 			return array( 'result' => 'fail' );
 		}

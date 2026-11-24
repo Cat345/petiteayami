@@ -304,6 +304,8 @@ class GooglePay extends CreditCard {
 					),
 					'default' => 'round-border',
 				),
+				'wallet_button_shape'   => $this->get_wallet_button_style_field( 'shape' ),
+				'wallet_button_height'  => $this->get_wallet_button_style_field( 'height' ),
 				'separator_text'        => array(
 					'title'   => __( 'Separator Text', 'funnelkit-stripe-woo-payment-gateway' ),
 					'type'    => 'text',

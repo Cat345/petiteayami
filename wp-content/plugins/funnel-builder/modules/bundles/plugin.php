@@ -272,6 +272,14 @@ class Plugin {
 		}
 
 		$relative = preg_replace( '/^' . preg_quote( $this->default_namespace . '\\', '/' ) . '/', '', $class );
+
+		// The MCP classes extend Funnel Builder's, so its MCP runtime has to be in
+		// place before one of them is defined. Everything that uses them runs well
+		// after the host has booted, but the autoloader can be entered from
+		// anywhere and a missing parent class is a fatal, not a notice.
+		if ( 0 === strpos( $relative, 'Includes\\Mcp\\' ) && class_exists( 'WFFN_MCP_Loader' ) ) {
+			\WFFN_MCP_Loader::load();
+		}
 		$relative = preg_replace(
 			array( '/([a-z0-9])([A-Z])/', '/_/', '/\\\\/' ),
 			array( '$1-$2', '-', DIRECTORY_SEPARATOR ),

@@ -335,7 +335,7 @@ class Sepa extends Abstract_Payment_Gateway {
 			}
 		} catch ( Exception $e ) {
 			Helper::log( $e->getMessage(), 'warning' );
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 		}
 	}
 
@@ -415,7 +415,7 @@ class Sepa extends Abstract_Payment_Gateway {
 			);
 
 		} catch ( \Exception $e ) {
-			wc_add_notice( $e->getMessage(), 'error' );
+			wc_add_notice( esc_html( $e->getMessage() ), 'error' );
 
 			/* translators: error message */
 			$this->mark_order_failed( $order, $e->getMessage() );
@@ -846,24 +846,27 @@ class Sepa extends Abstract_Payment_Gateway {
 				$user_agent = 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' );
 			}
 
-			$response = $client->setup_intents( 'create', array(
+			$response = $client->setup_intents(
+				'create',
 				array(
-					'payment_method'       => $source_id,
-					'customer'             => $customer_id,
-					'payment_method_types' => array( 'sepa_debit' ),
-					'confirm'              => true,
-					'usage'                => 'off_session',
-					'mandate_data'         => array(
-						'customer_acceptance' => array(
-							'type'   => 'online',
-							'online' => array(
-								'ip_address' => $ip_address,
-								'user_agent' => $user_agent,
+					array(
+						'payment_method'       => $source_id,
+						'customer'             => $customer_id,
+						'payment_method_types' => array( 'sepa_debit' ),
+						'confirm'              => true,
+						'usage'                => 'off_session',
+						'mandate_data'         => array(
+							'customer_acceptance' => array(
+								'type'   => 'online',
+								'online' => array(
+									'ip_address' => $ip_address,
+									'user_agent' => $user_agent,
+								),
 							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
 			if ( empty( $response['success'] ) ) {
 				/** Renewals stay broken until a mandate exists, so this is worth shouting about. */
@@ -891,12 +894,29 @@ class Sepa extends Abstract_Payment_Gateway {
 				return $token_obj;
 			}
 		}
+
+		try {
+			$fingerprint       = Helper::get_payment_method_fingerprint( $payment_method );
+			$fingerprint_match = Helper::find_user_token_for_payment_method( $user_id, $this->id, $payment_method );
+			if ( ! is_null( $fingerprint_match ) ) {
+				return Helper::adopt_payment_token( $fingerprint_match, $user_id, $this->id, $is_live, $payment_method );
+			}
+		} catch ( \Throwable $e ) {
+			Helper::log( 'Fingerprint token match failed, falling back to normal token creation: ' . $e->getMessage() );
+			$fingerprint = null;
+		}
 		$token = new Token();
 		$token->set_last4( $payment_method->sepa_debit->last4 );
 		$token->set_gateway_id( $this->id );
 		$token->set_token( $payment_method->id );
 		$token->set_user_id( $user_id );
 		$token->update_meta_data( 'mode', ( $is_live ) ? 'live' : 'test' );
+		if ( null !== $fingerprint ) {
+			$token->update_meta_data( 'fingerprint', $fingerprint );
+		}
+		if ( ! empty( $payment_method->created ) ) {
+			$token->update_meta_data( 'pm_created', (int) $payment_method->created );
+		}
 		$token->save_meta_data();
 		$token->save();
 

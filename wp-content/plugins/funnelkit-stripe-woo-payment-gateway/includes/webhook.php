@@ -875,7 +875,8 @@ class Webhook {
 		$message  = __( 'Intent ID', 'funnelkit-stripe-woo-payment-gateway' ) . ':' . $intent->id;
 		$message .= "\n\n" . Helper::get_localized_error_message( $intent->last_payment_error );
 		$message .= ' [via Stripe Webhook]';
-		$order->update_status( 'failed', $message );
+		// Stripe-supplied text is reduced to inert plain text before it reaches the admin-rendered note (#1557).
+		$order->update_status( 'failed', Helper::sanitize_order_note_text( $message ) );
 
 		do_action( 'fkwcs_webhook_payment_failed', $order );
 	}
@@ -936,6 +937,8 @@ class Webhook {
 
 		$error_message .= "\n\n" . $localized_message;
 		$error_message .= ' [via Stripe Webhook]';
+		// Stripe-supplied text is reduced to inert plain text before it reaches the admin-rendered note (#1557).
+		$error_message = Helper::sanitize_order_note_text( $error_message );
 		if ( ! empty( $error_message ) ) {
 
 			if ( $order->has_status( 'failed' ) ) {
@@ -1018,12 +1021,22 @@ class Webhook {
 	public function get_order_id_from_intent_query( $payment_intent, $meta_key = '_fkwcs_intent_id' ) {
 		global $wpdb;
 
+		// A Stripe id is always of the form pi_/seti_/ch_/py_ followed by alphanumerics. Reject anything else so
+		// an empty or wildcard-bearing value (for example a dispute event with no linked payment intent, which
+		// would otherwise build a '%%' LIKE that matches an arbitrary order) can never resolve to an unrelated order.
+		if ( ! is_string( $payment_intent ) || 1 !== preg_match( '/^(pi|seti|ch|py)_[A-Za-z0-9]+$/', $payment_intent ) ) {
+			return null;
+		}
+
+		// Escape LIKE wildcards in the (already format-checked) id before the substring match.
+		$like = '%' . $wpdb->esc_like( $payment_intent ) . '%';
+
 		if ( class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' ) && method_exists( '\Automattic\WooCommerce\Utilities\OrderUtil', 'custom_orders_table_usage_is_enabled' ) && OrderUtil::custom_orders_table_usage_is_enabled() ) {
 
-			$order_id = $wpdb->get_var( $wpdb->prepare( 'SELECT om.order_id FROM ' . $wpdb->prefix . 'wc_orders_meta AS om INNER JOIN ' . $wpdb->prefix . 'wc_orders AS o ON om.order_id = o.id WHERE o.type = %s AND om.meta_key = %s AND om.meta_value LIKE %s LIMIT 1', 'shop_order', $meta_key, '%' . $payment_intent . '%' ) );
+			$order_id = $wpdb->get_var( $wpdb->prepare( 'SELECT om.order_id FROM ' . $wpdb->prefix . 'wc_orders_meta AS om INNER JOIN ' . $wpdb->prefix . 'wc_orders AS o ON om.order_id = o.id WHERE o.type = %s AND om.meta_key = %s AND om.meta_value LIKE %s LIMIT 1', 'shop_order', $meta_key, $like ) );
 
 		} else {
-			$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts AS posts LEFT JOIN $wpdb->postmeta AS postmeta ON posts.ID = postmeta.post_id WHERE posts.post_type = %s AND postmeta.meta_key = %s AND postmeta.meta_value LIKE %s LIMIT 1", 'shop_order', $meta_key, '%' . $payment_intent . '%' ) );
+			$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts AS posts LEFT JOIN $wpdb->postmeta AS postmeta ON posts.ID = postmeta.post_id WHERE posts.post_type = %s AND postmeta.meta_key = %s AND postmeta.meta_value LIKE %s LIMIT 1", 'shop_order', $meta_key, $like ) );
 		}
 
 		return $order_id;

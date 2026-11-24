@@ -570,7 +570,7 @@ body #fkwcs-expresscheckout-fieldset .gpay-card-info-iframe {
 
 body #fkcart-modal .fkwcs_smart_cart_button {
     padding: 0 !important;
-    min-height: 42px;
+    min-height: 40px;
 }
 
 /* Keep the express button container as a positioned, fixed-height box in the
@@ -581,11 +581,14 @@ body #fkcart-modal .fkwcs_express_smart_button_wrapper.fkwcs_stripe_smart_button
 body #fkcart-modal #fkcart_fkwcs_smart_button_link,
 body #fkcart-modal .fkwcs_stripe_smart_button_wrapper.cart {
     position: relative;
-    min-height: 42px;
+    min-height: 40px;
 }
 
+/* !important exception: FunnelKit Checkout's own rule caps these iframes with
+ * `max-height: 52px !important`, which only another !important can override. Without it a
+ * 55px Button Height (63px iframe) is squeezed to 52px in the express row. */
 #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:not(#wfacp_smart_button_wc_payment_gpay_apay) .fkwcs_smart_buttons iframe {
-    max-height: 52px !important;
+    max-height: calc(var(--fkwcs-wallet-button-height, 42px) + 8px) !important;
     margin: 0 !important;
     width: 100% !important;
 }
@@ -597,13 +600,14 @@ body #fkcart-modal .fkwcs_stripe_smart_button_wrapper.cart {
  * Link and Amazon Pay all render inside ONE iframe per slot — so Stripe must size those
  * iframes itself, exactly as it does on the native checkout. Clamping them to 42px crops
  * every row past the first and those wallets silently disappear here while the native
- * checkout still shows them. */
+ * checkout still shows them. The max-height keeps !important for the same reason as the rule
+ * above (it must beat the checkout's `max-height: 52px !important`). */
 #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container#wfacp_smart_button_fkwcs_apple_pay .fkwcs_express_smart_button_wrapper iframe,
 #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container#wfacp_smart_button_fkwcs_stripe_google_pay .fkwcs_express_smart_button_wrapper iframe,
 #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container#wfacp_smart_button_fkwcs_amazon_pay .fkwcs_express_smart_button_wrapper iframe,
 #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container#wfacp_smart_button_fkwcs_link .fkwcs_express_smart_button_wrapper iframe {
     height: 100% !important;
-    max-height: 52px !important;
+    max-height: calc(var(--fkwcs-wallet-button-height, 42px) + 8px) !important;
 }
 
 .fkwcs_stripe_smart_express_button_wrapper {
@@ -666,7 +670,7 @@ padding-top: 0px;
 }
 
 .wfacp_main_form  .fkwcs_stripe_smart_button_wrapper .fkwcs_express_smart_button_wrapper {
-	max-height:52px;
+	max-height: calc(var(--fkwcs-wallet-button-height, 42px) + 8px);
  }
 .wfacp_main_form span.fkwcs_smart_button_trigger{
 	display: none !important;
@@ -694,7 +698,7 @@ span.fkwcs_smart_button_trigger {
 .fkwcs_smart_button_shown .__PrivateStripeElement iframe {
     width: 100% !important;
     margin: 0 !important;
-    max-height: 52px;
+    max-height: calc(var(--fkwcs-wallet-button-height, 42px) + 8px);
 }
 
 .fkwcs_express_pending .wfacp_smart_button_container {
@@ -708,14 +712,14 @@ span.fkwcs_smart_button_trigger {
 .fkwcs_smart_buttons.fkwcs_smart_product_button,
 .fkwcs_smart_buttons.fkwcs_smart_checkout_button
  {
-    max-height: 52px;
+    max-height: calc(var(--fkwcs-wallet-button-height, 42px) + 8px);
 }
 #wfacp_smart_buttons.fkwcs_button_loaded{
 	display: none !important;
 }
 .fkwcs_smart_buttons.fkwcs_smart_cart_button{
-	max-height: 52px;
-	min-height: 42px;
+	max-height: calc(var(--fkwcs-wallet-button-height, 42px) + 8px);
+	min-height: 40px;
 }
 @media (max-width: 760px) {
     #fkwcs-stripe-elements-wrapper .fkwcs-tooltip::after {
