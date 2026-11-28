@@ -22,6 +22,7 @@ use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Media_T
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Post_Content;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Post_Template;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Quote;
+use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Separator;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Video;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Social_Link;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Social_Links;
@@ -40,7 +41,9 @@ const ALLOWED_BLOCK_TYPES = array(
 'core/list',
 'core/list-item',
 'core/paragraph',
+'core/preformatted',
 'core/quote',
+'core/separator',
 'core/spacer',
 'core/social-link',
 'core/social-links',
@@ -67,9 +70,22 @@ $this->initialized = true;
 add_filter( 'woocommerce_email_editor_theme_json', array( $this, 'adjust_theme_json' ), 10, 1 );
 add_filter( 'safe_style_css', array( $this, 'allow_styles' ) );
 add_action( 'woocommerce_email_editor_render_start', array( $this, 'reset_renderers' ) );
+add_action( 'woocommerce_email_editor_render_start', array( $this, 'disable_web_image_attributes' ) );
+add_action( 'woocommerce_email_editor_render_end', array( $this, 'restore_web_image_attributes' ) );
 }
 public function reset_renderers(): void {
 $this->renderers = array();
+}
+public function disable_web_image_attributes(): void {
+add_filter( 'wp_get_loading_optimization_attributes', array( $this, 'get_no_image_attributes' ), PHP_INT_MAX );
+add_filter( 'wp_calculate_image_srcset_meta', array( $this, 'get_no_image_attributes' ), PHP_INT_MAX );
+}
+public function get_no_image_attributes(): array {
+return array();
+}
+public function restore_web_image_attributes(): void {
+remove_filter( 'wp_get_loading_optimization_attributes', array( $this, 'get_no_image_attributes' ), PHP_INT_MAX );
+remove_filter( 'wp_calculate_image_srcset_meta', array( $this, 'get_no_image_attributes' ), PHP_INT_MAX );
 }
 public function adjust_theme_json( \WP_Theme_JSON $editor_theme_json ): \WP_Theme_JSON {
 $theme_json = (string) file_get_contents( __DIR__ . '/theme.json' );
@@ -112,6 +128,7 @@ return $this->renderers[ $block_name ];
 switch ( $block_name ) {
 case 'core/heading':
 case 'core/paragraph':
+case 'core/preformatted':
 case 'core/site-title':
 case 'core/post-title':
 $renderer = new Text();
@@ -142,6 +159,9 @@ $renderer = new Group();
 break;
 case 'core/quote':
 $renderer = new Quote();
+break;
+case 'core/separator':
+$renderer = new Separator();
 break;
 case 'core/social-link':
 $renderer = new Social_Link();

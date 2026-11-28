@@ -33,17 +33,7 @@ $width -= Styles_Helper::parse_value( $padding['right'] ?? '0px' );
 return "{$width}px";
 }
 public function translate_slug_to_color( string $color_slug ): string {
-$settings = $this->get_theme_settings();
-$color_definitions = array_merge(
-$settings['color']['palette']['theme'] ?? array(),
-$settings['color']['palette']['default'] ?? array()
-);
-foreach ( $color_definitions as $color_definition ) {
-if ( $color_definition['slug'] === $color_slug ) {
-return strtolower( $color_definition['color'] );
-}
-}
-return $color_slug;
+return Styles_Helper::resolve_color_from_palette( $this->get_theme_settings(), $color_slug );
 }
 public function get_email_context(): array {
 return $this->email_context;

@@ -107,11 +107,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     </div>
 
     <div class="acfwf-storeagent-notice-content">
-        <h3><?php esc_html_e( 'Boost Your Store with AI-Powered Customer Support', 'advanced-coupons-for-woocommerce-free' ); ?></h3>
+        <h3><?php esc_html_e( 'AI Customer Support and a WooCommerce MCP Server for Your Store', 'advanced-coupons-for-woocommerce-free' ); ?></h3>
         <p>
             <?php
             esc_html_e(
-                'Want to cut down on repetitive support questions and give your customers instant answers? Our sister plugin, StoreAgent, adds an AI-powered chat assistant to your store. It learns from your products and policies to deliver accurate, 24/7 support—saving you time and boosting conversions.',
+                'Our sister plugin, StoreAgent, adds an AI chatbot that answers shopper questions 24/7 using your products and policies. It also includes a WooCommerce MCP server, so you can connect ChatGPT or Claude to your store and read or manage your coupons, store credit, and more just by asking. Both are free to start.',
                 'advanced-coupons-for-woocommerce-free'
             );
             ?>

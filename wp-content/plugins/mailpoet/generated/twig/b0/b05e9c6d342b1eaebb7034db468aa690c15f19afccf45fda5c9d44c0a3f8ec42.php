@@ -90,6 +90,6 @@ class __TwigTemplate_c9698819ba62cbd2a50d0d8966b632b15dab68db5924228afc7775b0b33
 
     public function getSourceContext()
     {
-        return new Source("", "woocommerce/settings_button.html", "/home/circleci/mailpoet/mailpoet/views/woocommerce/settings_button.html");
+        return new Source("", "woocommerce/settings_button.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/woocommerce/settings_button.html");
     }
 }

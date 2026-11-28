@@ -136,10 +136,21 @@ class Calculation {
      * Class constructor.
      *
      * @since 1.4
+     * @since 4.7.7 Added the `$refresh` parameter so a validator can build an isolated
+     *              instance without reading/mutating the cart (e.g. `remove_coupons()` inside
+     *              `refresh_bogo_deals()` -> `get_bogo_deals_from_cart()`). Every existing
+     *              `get_instance()` call site passes no arguments, so the default `true` keeps
+     *              that path byte-for-byte unchanged. Note the Singleton trait forwards its
+     *              arguments, so `get_instance( false )` would cache an unrefreshed singleton for
+     *              the rest of the request — always build an unrefreshed instance with `new`.
      * @access public
+     *
+     * @param boolean $refresh Whether to refresh the BOGO deals list from the current cart state.
      */
-    public function __construct() {
-        $this->refresh_bogo_deals();
+    public function __construct( $refresh = true ) {
+        if ( $refresh ) {
+            $this->refresh_bogo_deals();
+        }
     }
 
     /**
@@ -258,6 +269,27 @@ class Calculation {
     public static function clear_session_data() {
         \WC()->session->set( 'acfw_bogo_cart_hash', null );
         \WC()->session->set( 'acfw_bogo_entries', null );
+    }
+
+    /**
+     * Invalidate BOGO session data, but keep the matched entries.
+     *
+     * Clears the cart hash, so the next calculation runs again, and clears the notices. Keeps the
+     * matched entries, so the next calculation still knows which deal items the cart had. The
+     * "Remove the free item from the cart" option needs them to remove those items (issue #1640).
+     *
+     * @since 4.8
+     * @access public
+     */
+    public static function invalidate_session_data() {
+        \WC()->session->set( 'acfw_bogo_cart_hash', null );
+
+        $session_entries = \WC()->session->get( 'acfw_bogo_entries' );
+
+        if ( is_array( $session_entries ) ) {
+            $session_entries['notices'] = array();
+            \WC()->session->set( 'acfw_bogo_entries', $session_entries );
+        }
     }
 
     /*
@@ -555,6 +587,44 @@ class Calculation {
     }
 
     /**
+     * Get how much of a cart item's spare quantity may be counted towards a trigger.
+     *
+     * The same spare quantity as calculate_cart_item_spare_quantity(), narrowed to what the
+     * customer can actually be said to have bought. A line can hold units that are only in the
+     * cart because a deal put them there, and those must not earn the deal that handed them over:
+     * left countable, a repeating deal grants a reward, the reward's own line satisfies the
+     * trigger again, and the cart loops until PHP runs out of time
+     * (Rymera-Web-Co/advanced-coupons-for-woocommerce#1636).
+     *
+     * Deal matching deliberately keeps the full spare quantity -- a reward the customer is holding
+     * is still the thing the deal is being applied to. Only the trigger side is narrowed, and only
+     * through this filter, so the quantity a line contributes can be reduced without hiding the
+     * line: a line that is part reward and part bought still counts the part that was bought.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param array $cart_item Cart item data.
+     * @return int Quantity of the cart item that may be counted towards a trigger.
+     */
+    public function calculate_cart_item_trigger_quantity( $cart_item ) {
+        $spare_qty = $this->calculate_cart_item_spare_quantity( $cart_item );
+
+        /**
+         * Filter the quantity of a cart item that may be counted towards a BOGO trigger.
+         *
+         * @since 4.7.7
+         *
+         * @param int                $spare_qty Quantity available to the trigger.
+         * @param array              $cart_item Cart item data.
+         * @param Abstract_BOGO_Deal $bogo_deal BOGO Deal object being verified.
+         */
+        $trigger_qty = apply_filters( 'acfw_bogo_cart_item_trigger_quantity', $spare_qty, $cart_item, $this->_bogo_deal );
+
+        return max( 0, min( (int) $trigger_qty, $spare_qty ) );
+    }
+
+    /**
      * Verify triggers of a BOGO Deal from cart spare quantities.
      *
      * @since 1.4
@@ -591,7 +661,7 @@ class Calculation {
                         && $this->_bogo_deal->is_cart_item_match_entries( $cart_item, $trigger )
                     ) {
                         $needed_qty = $this->_bogo_deal->get_needed_trigger_quantity( $entry_id );
-                        $spare_qty  = $this->calculate_cart_item_spare_quantity( $cart_item );
+                        $spare_qty  = $this->calculate_cart_item_trigger_quantity( $cart_item );
                         $quantity   = min( $needed_qty, $spare_qty );
 
                         if ( $quantity ) {
@@ -633,7 +703,7 @@ class Calculation {
                         && $this->_bogo_deal->is_cart_item_match_entries( $cart_item, $trigger )
                     ) {
                         $needed_qty = $this->_bogo_deal->get_needed_trigger_quantity( $entry_id );
-                        $spare_qty  = $this->calculate_cart_item_spare_quantity( $cart_item );
+                        $spare_qty  = $this->calculate_cart_item_trigger_quantity( $cart_item );
                         $quantity   = min( $needed_qty, $spare_qty );
 
                         if ( $quantity ) {

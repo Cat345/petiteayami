@@ -1866,4 +1866,57 @@ class Helper_Functions {
         // For unknown plugins, we'll assume they don't exist.
         return false;
     }
+
+    /**
+     * Get the advanced coupon meta keys that store one meta row per value.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @return array List of meta keys.
+     */
+    public function get_coupon_meta_not_unique_keys() {
+        /**
+         * Filter the advanced coupon meta keys that store one meta row per value.
+         *
+         * @since 4.6.0
+         * @since 4.7.7 Add the disallowed customers and disallowed emails keys. Also used by the duplicate meta migration.
+         *
+         * @param array $keys List of meta keys.
+         */
+        $keys = apply_filters(
+            'acfw_coupon_meta_data_not_unique_keys',
+            array(
+                '_acfw_allowed_customers',
+                '_acfw_disallowed_customers',
+                '_acfw_disallowed_emails',
+            )
+        );
+
+        return array_values( (array) $keys );
+    }
+
+    /**
+     * Get the meta value that the duplicate advanced coupon meta cleanup keeps from the rows of one key.
+     *
+     * A key has one row, except on a coupon that has duplicate rows from the bug fixed in 4.7.7. The cleanup
+     * (Bootstrap) keeps the last row that is not empty, or the last row when all rows are empty.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param array $values Raw (serialized) meta values of one key, ordered by meta ID.
+     * @return string Raw meta value.
+     */
+    public function get_kept_coupon_meta_value( $values ) {
+        $values = (array) $values;
+
+        foreach ( array_reverse( $values ) as $value ) {
+            if ( '' !== $value && 'a:0:{}' !== $value ) {
+                return $value;
+            }
+        }
+
+        return end( $values );
+    }
 }

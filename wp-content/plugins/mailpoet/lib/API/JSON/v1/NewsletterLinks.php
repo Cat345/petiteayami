@@ -156,7 +156,8 @@ class NewsletterLinks extends APIEndpoint {
    * @param array<string, string> $urls
    */
   private function addUrl(array &$urls, string $url): void {
-    $url = trim($url);
+    // links sent before they were stored with plain ampersands keep "&amp;", so both forms are listed once
+    $url = trim(NewsletterLinksService::decodeAmpersands($url));
     if (!$this->isSelectableUrl($url)) {
       return;
     }

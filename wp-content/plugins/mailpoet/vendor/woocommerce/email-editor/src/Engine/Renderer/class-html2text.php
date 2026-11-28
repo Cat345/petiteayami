@@ -3,11 +3,14 @@ declare( strict_types = 1 );
 namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer;
 if (!defined('ABSPATH')) exit;
 class Html2Text {
+public const HR_ATTRIBUTE = 'data-email-separator';
 public static function default_options(): array {
 return array(
 'ignore_errors' => false,
 'drop_links' => false,
 'char_set' => 'auto',
+'mark_bold' => false,
+'tag_link_targets' => false,
 );
 }
 public static function convert( string $html, $options = array() ): string {
@@ -158,7 +161,7 @@ return $next_name;
 private static function iterate_over_node( \DOMNode $node, ?string $prev_name, bool $in_pre, bool $is_office_document, array $options ): string {
 if ( $node instanceof \DOMText ) {
 if ( $in_pre ) {
-$text = "\n" . trim( self::render_text( $node->wholeText ), "\n\r\t " ) . "\n";
+$text = self::render_text( $node->wholeText );
 $result = preg_replace( "/[ \t]*\n/im", "\n", $text );
 $text = null !== $result ? $result : $text;
 return str_replace( "\n", "\r", $text );
@@ -175,6 +178,9 @@ if ( $node instanceof \DOMDocumentType || $node instanceof \DOMProcessingInstruc
 return '';
 }
 $name = strtolower( $node->nodeName );
+if ( $node instanceof \DOMElement && $node->hasAttribute( self::HR_ATTRIBUTE ) ) {
+$name = 'hr';
+}
 $next_name = self::next_child_name( $node );
 switch ( $name ) {
 case 'hr':
@@ -197,8 +203,10 @@ case 'h5':
 case 'h6':
 case 'ol':
 case 'ul':
-case 'pre':
 $output = "\n\n";
+break;
+case 'pre':
+$output = "\n\r";
 break;
 case 'td':
 case 'th':
@@ -273,7 +281,7 @@ case 'p':
 $output .= "\n\n";
 break;
 case 'br':
-$output .= "\n";
+$output .= $in_pre ? "\r" : "\n";
 break;
 case 'div':
 break;
@@ -288,6 +296,10 @@ $output = $node->getAttribute( 'title' );
 }
 if ( ! $output && $node instanceof \DOMElement && $node->getAttribute( 'title' ) ) {
 $output = $node->getAttribute( 'title' );
+}
+$tag_href = $options['tag_link_targets'] && $node instanceof \DOMElement ? $node->getAttribute( 'data-link-href' ) : '';
+if ( '' !== $tag_href ) {
+$href = $output ? $tag_href : '';
 }
 if ( ! $href ) {
 if ( $node instanceof \DOMElement && $node->getAttribute( 'name' ) ) {
@@ -330,6 +342,14 @@ $output = '';
 break;
 case 'li':
 $output .= "\n";
+break;
+case 'b':
+case 'strong':
+$bold_text = trim( $output );
+if ( $options['mark_bold'] && '' !== $bold_text ) {
+$leading = substr( $output, 0, strlen( $output ) - strlen( ltrim( $output ) ) );
+$output = $leading . '*' . $bold_text . '*' . substr( $output, strlen( rtrim( $output ) ) );
+}
 break;
 case 'blockquote':
 $output = self::process_whitespace_newlines( $output );

@@ -66,6 +66,9 @@ const CreateCouponButton = (props: IProps) => {
   const editId = urlParams.get('id') ?? '0';
   const isAITemplate = editId === 'ai-temp';
 
+  // New AI templates use the `ai-temp` ID. StoreAgent and the premium plugin also mark new and saved AI templates.
+  const isAIGenerated = isAITemplate || !!template?.generated_by_ai;
+
   const { labels } = acfwAdminApp.coupon_templates_page;
 
   const handleCreateCoupon = () => {
@@ -80,6 +83,7 @@ const CreateCouponButton = (props: IProps) => {
 
     const data: ICouponTemplateFormData = {
       id: template.id,
+      is_ai: isAIGenerated,
       fields: template.fields.map((field) => ({
         key: field.field,
         value: field.value,

@@ -193,61 +193,108 @@ class Order_Details implements Model_Interface {
      * Register hooks for WC REST API overrides.
      *
      * @since 4.5.6
+     * @deprecated 4.7.7 The REST responses are filtered by remove_empty_advanced_coupon_meta_from_coupon_response()
+     *                   and remove_empty_advanced_coupon_meta_from_order_response(), registered in run().
      * @access public
      */
     public function wc_rest_api_override_hooks() {
-        add_filter( 'woocommerce_data_store_wp_post_read_meta', array( $this, 'remove_empty_advanced_coupon_meta_data' ), 10, 2 );
-        add_filter( 'woocommerce_data_store_wp_order_item_read_meta', array( $this, 'remove_empty_advanced_coupon_meta_data' ), 10, 2 );
+        wc_deprecated_function( __METHOD__, '4.7.7' );
     }
 
     /**
      * Remove empty meta data for advanced coupon fields.
      *
+     * The old filter of the data store read hid empty meta rows from a coupon save in the same request, which added
+     * duplicate rows. This stub returns the meta data list unchanged, so a callback that is still hooked does no harm.
+     *
      * @since 1.4.2
+     * @deprecated 4.7.7 Use remove_empty_advanced_coupon_meta_from_coupon_response() or
+     *                   remove_empty_advanced_coupon_meta_from_order_response().
      * @access public
      *
      * @param array $metadata Meta data list.
      * @param mixed $coupon   Object passed in filter.
-     * @return array Filtered meta data list.
+     * @return array Meta data list, unchanged.
      */
-    public function remove_empty_advanced_coupon_meta_data( $metadata, $coupon ) {
-        // handle requests for standalone coupon meta data.
-        if ( $coupon instanceof \WC_Coupon ) {
-            $metadata = array_filter(
-                $metadata,
-                function ( $m ) {
-                return ! $this->_is_advanced_coupon_meta_data_empty( $m->meta_key, $m->meta_value );
-                }
-            );
-        }
-
-        // handle requests for coupon meta data inside orders.
-        if ( $coupon instanceof \WC_Order_Item_Coupon ) {
-            $metadata = array_map(
-                function ( $m ) {
-
-                    if ( 'coupon_data' === $m->meta_key ) {
-                        $data = maybe_unserialize( $m->meta_value );
-
-                        if ( is_array( $data ) && isset( $data['meta_data'] ) && is_array( $data['meta_data'] ) ) {
-                            $data['meta_data'] = array_filter(
-                                $data['meta_data'],
-                                function ( $m ) {
-                                    return ! $this->_is_advanced_coupon_meta_data_empty( $m->key, $m->value );
-                                }
-                            );
-
-                            $m->meta_value = maybe_serialize( $data );
-                        }
-                    }
-
-                    return $m;
-                },
-                $metadata
-            );
-        }
-
+    public function remove_empty_advanced_coupon_meta_data( $metadata, $coupon ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+        wc_deprecated_function( __METHOD__, '4.7.7', __CLASS__ . '::remove_empty_advanced_coupon_meta_from_coupon_response' );
         return $metadata;
+    }
+
+    /**
+     * Hide empty advanced coupon meta data in the WC REST API coupon response.
+     *
+     * This only changes the response data. It does not change the meta data that the coupon object loads, so a
+     * coupon save in the same request still finds its existing meta rows and does not add duplicates.
+     *
+     * @since 4.7.7 Replaces remove_empty_advanced_coupon_meta_data() (1.4.2), which filtered the data store read.
+     * @access public
+     *
+     * @param \WP_REST_Response $response REST response object.
+     * @return \WP_REST_Response Filtered REST response object.
+     */
+    public function remove_empty_advanced_coupon_meta_from_coupon_response( $response ) {
+        if ( ! $response instanceof \WP_REST_Response ) {
+            return $response;
+        }
+
+        $data = $response->get_data();
+
+        if ( isset( $data['meta_data'] ) && is_array( $data['meta_data'] ) ) {
+            $data['meta_data'] = $this->_remove_empty_advanced_coupon_meta( $data['meta_data'] );
+            $response->set_data( $data );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Hide empty advanced coupon meta data in the coupon data of order coupon lines in the WC REST API order response.
+     *
+     * @since 4.7.7 Replaces remove_empty_advanced_coupon_meta_data() (1.4.2), which filtered the data store read.
+     * @access public
+     *
+     * @param \WP_REST_Response $response REST response object.
+     * @return \WP_REST_Response Filtered REST response object.
+     */
+    public function remove_empty_advanced_coupon_meta_from_order_response( $response ) {
+        if ( ! $response instanceof \WP_REST_Response ) {
+            return $response;
+        }
+
+        $data = $response->get_data();
+
+        if ( empty( $data['coupon_lines'] ) || ! is_array( $data['coupon_lines'] ) ) {
+            return $response;
+        }
+
+        foreach ( $data['coupon_lines'] as $line_index => $coupon_line ) {
+            if ( empty( $coupon_line['meta_data'] ) || ! is_array( $coupon_line['meta_data'] ) ) {
+                continue;
+            }
+
+            // The order REST response formats coupon line meta entries as arrays.
+            foreach ( $coupon_line['meta_data'] as $meta_index => $meta ) {
+                if ( ! is_array( $meta ) || 'coupon_data' !== ( $meta['key'] ?? null ) ) {
+                    continue;
+                }
+
+                foreach ( array( 'value', 'display_value' ) as $prop ) {
+                    $coupon_data = $meta[ $prop ] ?? null;
+
+                    if ( is_array( $coupon_data ) && isset( $coupon_data['meta_data'] ) && is_array( $coupon_data['meta_data'] ) ) {
+                        $coupon_data['meta_data'] = $this->_remove_empty_advanced_coupon_meta( $coupon_data['meta_data'] );
+                        $meta[ $prop ]            = $coupon_data;
+                    }
+                }
+
+                $data['coupon_lines'][ $line_index ]['meta_data'][ $meta_index ] = $meta;
+            }
+        }
+
+        $response->set_data( $data );
+
+        return $response;
     }
 
     /*
@@ -299,6 +346,56 @@ class Order_Details implements Model_Interface {
     }
 
     /**
+     * Remove empty advanced coupon meta entries from a meta data list.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @param array $meta_data List of meta entries (\WC_Meta_Data objects or arrays).
+     * @return array Filtered list, reindexed.
+     */
+    private function _remove_empty_advanced_coupon_meta( $meta_data ) {
+        return array_values(
+            array_filter(
+                $meta_data,
+                function ( $meta ) {
+                    return ! $this->_is_advanced_coupon_meta_data_empty(
+                        (string) $this->_get_meta_prop( $meta, 'key' ),
+                        $this->_get_meta_prop( $meta, 'value' )
+                    );
+                }
+            )
+        );
+    }
+
+    /**
+     * Get a property of a meta entry.
+     *
+     * The entries are \WC_Meta_Data objects (coupon response) or arrays (the legacy `coupon_data` of an order coupon
+     * line). WooCommerce and the plugin only write these two shapes, so any other shape (e.g. stdClass) returns null
+     * and the entry is kept in the response.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @param mixed  $meta Meta entry (\WC_Meta_Data object or array).
+     * @param string $prop Property name.
+     * @return mixed Property value, or null when not set.
+     */
+    private function _get_meta_prop( $meta, $prop ) {
+        if ( $meta instanceof \WC_Meta_Data ) {
+            $data = $meta->get_data();
+            return $data[ $prop ] ?? null;
+        }
+
+        if ( is_array( $meta ) ) {
+            return $meta[ $prop ] ?? null;
+        }
+
+        return null;
+    }
+
+    /**
      * Check if a given meta key is for ACFW and if the value is empty or not.
      *
      * @since 1.4.2
@@ -339,6 +436,7 @@ class Order_Details implements Model_Interface {
         add_filter( 'woocommerce_admin_order_preview_get_order_details', array( $this, 'add_coupons_list_in_order_preview_popup' ), 10, 2 );
         add_action( 'woocommerce_email_before_order_table', array( $this, 'coupons_list_email_register_hook' ), 10, 2 );
         add_action( 'woocommerce_email_after_order_table', array( $this, 'coupons_list_email_unregister_hook' ), 10, 2 );
-        add_action( 'rest_api_init', array( $this, 'wc_rest_api_override_hooks' ) );
+        add_filter( 'woocommerce_rest_prepare_shop_coupon_object', array( $this, 'remove_empty_advanced_coupon_meta_from_coupon_response' ) );
+        add_filter( 'woocommerce_rest_prepare_shop_order_object', array( $this, 'remove_empty_advanced_coupon_meta_from_order_response' ) );
     }
 }

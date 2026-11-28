@@ -177,6 +177,11 @@ class ACFW_Settings extends \WC_Settings_Page {
                 $settings = apply_filters( 'acfw_setting_advanced_options', $this->_get_advanced_section_options() );
                 break;
 
+            case 'acfw_setting_ai_mcp_section':
+                // Fields are added by the AI_MCP model.
+                $settings = apply_filters( 'acfw_setting_ai_mcp_options', array() );
+                break;
+
             case 'acfw_setting_modules_section':
             default:
                 $settings = apply_filters( 'acfw_setting_modules_section_options', $this->_get_modules_section_options() );
@@ -357,6 +362,15 @@ class ACFW_Settings extends \WC_Settings_Page {
                     'price'  => __( 'Price modification — adjust the deal product prices directly (default).', 'advanced-coupons-for-woocommerce-free' ),
                     'coupon' => __( 'Coupon amount — keep product prices unchanged and apply the discount to the coupon total.', 'advanced-coupons-for-woocommerce-free' ),
                 ),
+            ),
+
+            array(
+                'title'    => __( 'Prevent coupon from applying when the BOGO trigger is not met', 'advanced-coupons-for-woocommerce-free' ),
+                'type'     => 'checkbox',
+                'desc'     => __( 'Reject the coupon with an error instead of applying it and granting nothing.', 'advanced-coupons-for-woocommerce-free' ),
+                'desc_tip' => __( 'When enabled, a BOGO Deal coupon is rejected if the required trigger products are not in the cart, or are no longer in the cart. When disabled (default), the coupon still applies but grants no deal.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'       => Plugin_Constants::BOGO_PREVENT_APPLY_WHEN_TRIGGER_NOT_MET,
+                'default'  => 'no',
             ),
 
             array(
@@ -736,6 +750,15 @@ class ACFW_Settings extends \WC_Settings_Page {
                 'type'  => 'checkbox',
                 'desc'  => __( 'Automatically display the form for redeeming store credits on the checkout page upon page load. This eliminates the need for the customer to click on the label to make the form visible.', 'advanced-coupons-for-woocommerce-free' ),
                 'id'    => Plugin_Constants::AUTO_DISPLAY_STORE_CREDITS_REDEEM_FORM,
+            ),
+
+            array(
+                'title'    => __( 'Show store credits notice to guests on checkout', 'advanced-coupons-for-woocommerce-free' ),
+                'type'     => 'checkbox',
+                'desc'     => __( 'Shows a short message on the checkout page that tells logged out customers they can pay with store credits after they log in. The redeem form itself stays hidden for guests.', 'advanced-coupons-for-woocommerce-free' ),
+                'desc_tip' => __( 'The message only appears when WooCommerce lets customers log in or create an account during checkout. See WooCommerce > Settings > Accounts & Privacy.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'       => Plugin_Constants::SHOW_STORE_CREDITS_GUEST_NOTICE,
+                'default'  => 'no',
             ),
 
             array(

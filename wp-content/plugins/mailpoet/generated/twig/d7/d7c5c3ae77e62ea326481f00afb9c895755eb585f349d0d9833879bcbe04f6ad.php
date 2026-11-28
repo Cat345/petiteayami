@@ -80,6 +80,6 @@ class __TwigTemplate_d6341c5162908a885b57705e06e73154b2d52297c4365c96e9d029d3494
 
     public function getSourceContext()
     {
-        return new Source("", "newsletter/templates/blocks/unknownBlockFallback/block.hbs", "/home/circleci/mailpoet/mailpoet/views/newsletter/templates/blocks/unknownBlockFallback/block.hbs");
+        return new Source("", "newsletter/templates/blocks/unknownBlockFallback/block.hbs", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/newsletter/templates/blocks/unknownBlockFallback/block.hbs");
     }
 }

@@ -70,6 +70,6 @@ class __TwigTemplate_f7a4c38fa3d47c8e0c6c275df5fd7c91a8852e62fcc110ef4bcee2f2a74
 
     public function getSourceContext()
     {
-        return new Source("", "newsletter/templates/blocks/posts/settingsSelectionEmpty.hbs", "/home/circleci/mailpoet/mailpoet/views/newsletter/templates/blocks/posts/settingsSelectionEmpty.hbs");
+        return new Source("", "newsletter/templates/blocks/posts/settingsSelectionEmpty.hbs", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/newsletter/templates/blocks/posts/settingsSelectionEmpty.hbs");
     }
 }

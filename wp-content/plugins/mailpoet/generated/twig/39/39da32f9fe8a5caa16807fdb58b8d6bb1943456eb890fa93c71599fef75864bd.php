@@ -185,6 +185,6 @@ class __TwigTemplate_756448057f537f5715d1a262e5a4bc2ae04cea7f694f005ae4bcfe6c686
 
     public function getSourceContext()
     {
-        return new Source("", "segments/dynamic.html", "/home/circleci/mailpoet/mailpoet/views/segments/dynamic.html");
+        return new Source("", "segments/dynamic.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/segments/dynamic.html");
     }
 }

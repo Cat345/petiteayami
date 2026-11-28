@@ -89,6 +89,7 @@ $allowed_iframe_style_handles = array(
 'wp-block-library-css',
 'wp-block-editor-content-css',
 'wp-edit-blocks-css',
+'wp-base-styles-css',
 );
 foreach ( \WP_Block_Type_Registry::get_instance()->get_all_registered() as $block ) {
 if ( ! isset( $block->supports['email'] ) || ! $block->supports['email'] ) {

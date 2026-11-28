@@ -105,6 +105,7 @@ class Advanced_Coupon extends \WC_Coupon {
      * Read data from DB and save on instance.
      *
      * @since 1.0
+     * @since 4.7.7 When a key has duplicate meta rows, read the row that the duplicate meta cleanup keeps.
      * @access public
      */
     private function advanced_read() {
@@ -124,8 +125,8 @@ class Advanced_Coupon extends \WC_Coupon {
                 continue;
             }
 
-            // fetch raw meta data if present, latest value.
-            $raw_data = maybe_unserialize( end( $meta_data[ Plugin_Constants::META_PREFIX . $prop ] ) );
+            // fetch raw meta data if present. Read the row that the duplicate meta cleanup keeps.
+            $raw_data = maybe_unserialize( $this->_helper_functions->get_kept_coupon_meta_value( $meta_data[ Plugin_Constants::META_PREFIX . $prop ] ) );
 
             // make sure fetched data has the correct type.
             switch ( $prop ) {
@@ -857,19 +858,29 @@ class Advanced_Coupon extends \WC_Coupon {
      * Check if coupon URL is valid.
      *
      * @since 1.3.4
+     * @since 4.7.7 Add the $check_code_override parameter and guard the query name access.
      * @access public
      *
+     * @param bool $check_code_override Whether the request also has to match the coupon's code URL
+     *                                  override. Only the coupon endpoint carries that value in the
+     *                                  URL it is given, so other entry points pass false.
      * @return boolean Flag that determines if coupon is valid or not.
      */
-    public function is_coupon_url_valid() {
+    public function is_coupon_url_valid( $check_code_override = true ) {
         global $wp_query;
 
-        // check if code override is turned on, and make sure override value and the query name is the same.
-        // we sanitize the override value again cause query name will always have a sanitized equivalent value.
-        // we also need to transform query name to all lowercase value here, cause sanitize_title replaces accents with small characters.
-        $override = sanitize_title( $this->get_advanced_prop( 'code_url_override' ) );
-        if ( $override && strtolower( $wp_query->query['name'] ) !== $override ) {
-            return;
+        if ( $check_code_override ) {
+            // check if code override is turned on, and make sure override value and the query name is the same.
+            // we sanitize the override value again cause query name will always have a sanitized equivalent value.
+            // we also need to transform query name to all lowercase value here, cause sanitize_title replaces accents with small characters.
+            // the query name is guarded because this is a public method: the coupon endpoint always
+            // has one by the time it gets here, but an outside caller can be on any request.
+            $override   = sanitize_title( $this->get_advanced_prop( 'code_url_override' ) );
+            $query_name = isset( $wp_query->query['name'] ) ? strtolower( $wp_query->query['name'] ) : '';
+
+            if ( $override && $query_name !== $override ) {
+                return false;
+            }
         }
 
         return $this->get_advanced_prop( 'disable_url_coupon' ) !== 'yes';

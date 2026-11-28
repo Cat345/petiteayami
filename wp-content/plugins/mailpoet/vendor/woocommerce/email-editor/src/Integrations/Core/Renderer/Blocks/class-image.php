@@ -202,17 +202,50 @@ if ( $html->next_tag( array( 'tag_name' => 'img' ) ) ) {
 $styles = $html->get_attribute( 'style' ) ?? '';
 $styles = Styles_Helper::parse_styles_to_array( $styles );
 $height = $styles['height'] ?? null;
-if ( $height && 'auto' !== $height ) {
+$has_fixed_height = $height && 'auto' !== $height;
+if ( $has_fixed_height ) {
 $height = Styles_Helper::parse_value( $height );
 $html->set_attribute( 'height', esc_attr( $height ) );
 }
 if ( isset( $parsed_block['attrs']['width'] ) ) {
-$width = Styles_Helper::parse_value( $parsed_block['attrs']['width'] );
+$block_width = (string) $parsed_block['attrs']['width'];
+$width = Styles_Helper::parse_value( $block_width );
+if ( ! $has_fixed_height && strpos( $block_width, '%' ) === false ) {
+$this->scale_height_attribute( $html, $width );
+}
 $html->set_attribute( 'width', esc_attr( $width ) );
 }
 $block_content = $html->get_updated_html();
 }
 return $block_content;
+}
+private function scale_height_attribute( \WP_HTML_Tag_Processor $html, float $new_width ): void {
+$saved_width = $html->get_attribute( 'width' );
+$saved_height = $html->get_attribute( 'height' );
+if ( ! is_string( $saved_width ) || ! is_numeric( $saved_width ) || ! is_string( $saved_height ) || ! is_numeric( $saved_height ) ) {
+return;
+}
+if ( (float) $saved_width <= 0 ) {
+return;
+}
+$scaled_height = max( 1, (int) round( (float) $saved_height * ( $new_width / (float) $saved_width ) ) );
+$html->set_attribute( 'height', esc_attr( (string) $scaled_height ) );
+}
+private function add_caption_class( string $caption_html ): string {
+if ( '' === $caption_html ) {
+return $caption_html;
+}
+$html = new \WP_HTML_Tag_Processor( $caption_html );
+if ( ! $html->next_tag( array( 'tag_name' => 'SPAN' ) ) ) {
+return $caption_html;
+}
+$existing_class = trim( (string) ( $html->get_attribute( 'class' ) ?? '' ) );
+$classes = preg_split( '/\s+/', $existing_class, -1, PREG_SPLIT_NO_EMPTY );
+if ( is_array( $classes ) && in_array( 'wp-element-caption', $classes, true ) ) {
+return $caption_html;
+}
+$html->set_attribute( 'class', $existing_class ? $existing_class . ' wp-element-caption' : 'wp-element-caption' );
+return $html->get_updated_html();
 }
 private function get_caption_styles( Rendering_Context $rendering_context, array $parsed_block ): string {
 $theme_data = $rendering_context->get_theme_json()->get_data();
@@ -340,6 +373,7 @@ $image_html = $dom_helper->get_outer_html( $img_tag );
 $figcaption = $dom_helper->find_element( 'figcaption' );
 $figcaption_html = $figcaption ? $dom_helper->get_outer_html( $figcaption ) : '';
 $figcaption_html = str_replace( array( '<figcaption', '</figcaption>' ), array( '<span', '</span>' ), $figcaption_html );
+$figcaption_html = $this->add_caption_class( $figcaption_html );
 $anchor_tag = $dom_helper->find_element( 'a' );
 $anchor_tag_href = $anchor_tag ? $dom_helper->get_attribute_value( $anchor_tag, 'href' ) : '';
 $anchor_data_link_href = $anchor_tag ? $dom_helper->get_attribute_value( $anchor_tag, 'data-link-href' ) : '';
@@ -355,8 +389,11 @@ return array(
 private function cleanup_image_html( string $content_html ): string {
 $html = new \WP_HTML_Tag_Processor( $content_html );
 if ( $html->next_tag( array( 'tag_name' => 'img' ) ) ) {
-$html->remove_attribute( 'srcset' );
-$html->remove_attribute( 'class' );
+foreach ( $html->get_attribute_names_with_prefix( '' ) ?? array() as $attribute_name ) {
+if ( ! in_array( $attribute_name, array( 'src', 'alt', 'title', 'width', 'height', 'style' ), true ) ) {
+$html->remove_attribute( $attribute_name );
+}
+}
 }
 return $html->get_updated_html();
 }

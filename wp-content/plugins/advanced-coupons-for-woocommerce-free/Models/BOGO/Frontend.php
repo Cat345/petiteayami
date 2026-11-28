@@ -8,6 +8,7 @@ use ACFWF\Helpers\Helper_Functions;
 use ACFWF\Helpers\Plugin_Constants;
 use ACFWF\Interfaces\Model_Interface;
 use ACFWF\Models\Objects\Advanced_Coupon;
+use ACFWF\Models\Objects\BOGO\Advanced;
 use ACFWF\Models\Objects\BOGO\Calculation;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -94,6 +95,21 @@ class Frontend extends Base_Model implements Model_Interface {
      * @var array
      */
     private $_repriced_cart_items = array();
+
+    /**
+     * Memoised result of the `matched` deal entries read for the current calculation pass,
+     * or null when it has not been resolved yet.
+     *
+     * One cart render calls calculate_bogo_discounts_for_coupon() once per BOGO coupon row and
+     * the checkout calls it again, so `acfw_bogo_resolve_deal_entries` fired several times per
+     * request over identical entries. That is cheap with nothing hooked, but an integration
+     * doing real work on it (bundle child lookups, for example) paid for every call.
+     *
+     * @since 4.7.7
+     * @access private
+     * @var array|null
+     */
+    private $_resolved_matched_deals = null;
 
     /*
     |--------------------------------------------------------------------------
@@ -208,6 +224,172 @@ class Frontend extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Reject a BOGO Deal coupon apply/re-validation when its trigger products are not (or no
+     * longer are) in the cart, instead of silently applying it and granting no deal.
+     *
+     * Opt-in via `Plugin_Constants::BOGO_PREVENT_APPLY_WHEN_TRIGGER_NOT_MET`, default off, so an
+     * opted-out store pays almost nothing (the setting check is the first, cheapest gate).
+     * `woocommerce_coupon_is_valid` fires from every `WC_Discounts::is_coupon_valid()` call,
+     * including on each cart totals recalculation, so this also re-validates a coupon that was
+     * applied while the trigger was met and later drops out of qualifying. Note the message below
+     * is only surfaced on the apply path: `WC_Cart::check_cart_coupons()` calls `is_valid()`, which
+     * discards it and shows WooCommerce's own "it has now been removed from your order" notice
+     * instead. That is intended — the removal reason is generic to every invalidity cause there.
+     *
+     * Cart context only. `WC_Discounts` also validates ORDERS (admin "Apply coupon" on an order,
+     * the orders REST controller), and in admin AJAX `WC()->cart` is loaded but is the admin's own,
+     * normally empty, cart. Validating an order against that cart would reject every BOGO coupon a
+     * store manager tries to add to an order, so the discounts object decides the context.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param bool          $value     Filter return value.
+     * @param \WC_Coupon    $coupon    Coupon object (may be a plain WC_Coupon, not necessarily the
+     *                                 Advanced_Coupon subclass — `woocommerce_coupon_is_valid` fires
+     *                                 this filter with whatever WC_Discounts::is_coupon_valid() was
+     *                                 given).
+     * @param \WC_Discounts $discounts Discounts object being validated, or null when a third party
+     *                                fires the filter without it.
+     * @return bool Filter return value (unchanged when the coupon is allowed).
+     * @throws \Exception When the BOGO deal's trigger products are not in the cart.
+     */
+    public function prevent_apply_when_bogo_trigger_not_met( $value, $coupon, $discounts = null ) {
+        if ( 'yes' !== get_option( Plugin_Constants::BOGO_PREVENT_APPLY_WHEN_TRIGGER_NOT_MET, 'no' ) ) {
+            return $value;
+        }
+
+        if ( ! $coupon->is_type( 'acfw_bogo' ) ) {
+            return $value;
+        }
+
+        // Only validate when WC_Discounts is working on the cart. An order (admin order editor,
+        // orders REST controller) carries its own line items, which this trigger probe does not
+        // read — it reads WC()->cart. Without this guard an order would be validated against the
+        // admin's own empty cart and every BOGO coupon would be rejected.
+        $discounted_object = $discounts instanceof \WC_Discounts ? $discounts->get_object() : null;
+
+        if ( ! $discounted_object instanceof \WC_Cart || ! \WC()->cart ) {
+            return $value;
+        }
+
+        $bogo_deal = $this->_get_bogo_deal_for_validation( $coupon );
+
+        // A BOGO-typed coupon with no configured deal data is deliberately not a BOGO deal (same
+        // predicate as Calculation::get_bogo_deals_from_cart()), and a deal with no triggers has
+        // nothing to fail.
+        if ( ! $bogo_deal->is_bogo_deal || ! $bogo_deal->triggers ) {
+            return $value;
+        }
+
+        $advanced_coupon = $bogo_deal->get_coupon();
+
+        if ( ! $this->_is_bogo_trigger_met( $advanced_coupon, $bogo_deal ) ) {
+            // Translators: %s is the coupon code.
+            $message = __( 'Sorry, coupon "%s" cannot be applied because the required products for this deal are not in your cart.', 'advanced-coupons-for-woocommerce-free' );
+
+            throw new \Exception( esc_html( sprintf( $message, $coupon->get_code() ) ) );
+        }
+
+        return $value;
+    }
+
+    /**
+     * Build the BOGO deal object used by the trigger validator, memoised per coupon code.
+     *
+     * `woocommerce_coupon_is_valid` fires once per coupon per validation pass, and several passes
+     * run per request. Rebuilding this each time would re-fire `woocommerce_get_shop_coupon_data`
+     * (and, for store-credit virtual coupons, a session-writing filter chain) and re-parse all the
+     * trigger/deal meta — the same cost `_get_applied_bogo_coupon_codes()` is memoised to avoid.
+     *
+     * The deal object is mutated by `reset_counters()` before each probe, so reusing the instance
+     * across calls is safe only because the probe always resets it first.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @param \WC_Coupon $coupon Coupon object, possibly a plain WC_Coupon.
+     * @return Advanced BOGO deal object for the coupon.
+     */
+    private function _get_bogo_deal_for_validation( $coupon ) {
+        static $cache = array();
+
+        $code = strtolower( (string) $coupon->get_code() );
+
+        if ( ! isset( $cache[ $code ] ) ) {
+            // The filter can hand us a plain WC_Coupon, but Advanced needs the Advanced_Coupon
+            // subclass for get_advanced_prop(). Re-wrap by code, same as
+            // _get_applied_bogo_coupon_codes() does above.
+            $advanced_coupon = $coupon instanceof Advanced_Coupon ? $coupon : new Advanced_Coupon( (string) $coupon->get_code() );
+
+            $cache[ $code ] = new Advanced( $advanced_coupon );
+        }
+
+        return $cache[ $code ];
+    }
+
+    /**
+     * Verify a BOGO Deal's triggers with an isolated, side-effect-free Calculation instance.
+     *
+     * Uses `new Calculation( false )` rather than `Calculation::get_instance()` so the probe never
+     * reads/mutates the shared calculation singleton (ACFWP #1198, commit fe87120f), and passes
+     * `$save_temp = false` to `verify_triggers()` so it writes no temporary matched entries.
+     *
+     * Memoised per coupon code + cart contents signature: `woocommerce_coupon_is_valid` fires
+     * repeatedly per request (once per coupon per validation pass), and `verify_triggers()` loops
+     * cart items x triggers each time.
+     *
+     * Two deliberate limits, both of which can only let a coupon through, never wrongly reject one:
+     *
+     * - `$trigger_only = false` matches the fallback pass the implementation itself falls back to
+     *   (`_implement_bogo_deal()`), so a product that is both a trigger and a deal product still
+     *   counts as a trigger. Passing `true` here would reject coupons the implementation does go on
+     *   to fulfil through that fallback.
+     * - The isolated instance has no matched entries, so every cart item reads as fully spare. Stock
+     *   already consumed by another applied BOGO coupon is therefore not subtracted. With the
+     *   default limit of one BOGO coupon per cart this cannot arise; a store that raises
+     *   `ALLOWED_BOGO_COUPONS_COUNT` can still apply a second coupon that contends for the same
+     *   trigger stock and grants nothing.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @param Advanced_Coupon    $coupon    Advanced coupon object.
+     * @param Abstract_BOGO_Deal $bogo_deal BOGO deal object built from the coupon.
+     * @return bool True when the deal's triggers are met by the current cart.
+     */
+    private function _is_bogo_trigger_met( $coupon, $bogo_deal ) {
+        static $cache = array();
+
+        $cart_signature = array();
+
+        foreach ( \WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+            $cart_signature[ $cart_item_key ] = array(
+                'product_id'   => $cart_item['product_id'],
+                'variation_id' => $cart_item['variation_id'],
+                'quantity'     => $cart_item['quantity'],
+            );
+        }
+
+        $cache_key = md5( (string) wp_json_encode( array( $coupon->get_code(), $cart_signature ) ) );
+
+        if ( ! isset( $cache[ $cache_key ] ) ) {
+            $calculation = new Calculation( false );
+            $calculation->set_bogo_deal( $bogo_deal );
+
+            // Populate needed_triggers from the deal's triggers before verifying. A freshly
+            // built deal object has not run this yet (it normally happens as part of the
+            // Calculation singleton's own implementation flow), and verify_triggers() would
+            // otherwise read an empty counter and report every trigger as already satisfied.
+            $bogo_deal->reset_counters( 'trigger' );
+
+            $cache[ $cache_key ] = $calculation->verify_triggers( false, false );
+        }
+
+        return $cache[ $cache_key ];
+    }
+
+    /**
      * Implement BOGO Deals for all applied coupon in the cart.
      *
      * @since 1.4
@@ -224,6 +406,10 @@ class Frontend extends Base_Model implements Model_Interface {
         if ( ! \WC()->cart instanceof \WC_Cart ) {
             return;
         }
+
+        // This pass can change the matched entries, so anything resolved from the previous one
+        // is stale from here on.
+        $this->_clear_resolved_deal_entries();
 
         // Capture the previous calculation's matched deal entries up front, before anything
         // clears the session. Needed to detect deal items that must be removed even when the
@@ -312,6 +498,7 @@ class Frontend extends Base_Model implements Model_Interface {
      * Run BOGO implementation
      *
      * @since 1.4
+     * @since 4.7.7 Caps the repeat loop at the cart's own unit count so a deal cannot spin forever.
      * @access private
      *
      * @param Abstract_BOGO_Deal $bogo_deal BOGO Deal object.
@@ -329,6 +516,14 @@ class Frontend extends Base_Model implements Model_Interface {
         if ( apply_filters( 'acfwf_before_implement_bogo_for_coupon', false ) ) {
             return;
         }
+
+        // Defensive cap on the repeat loop, for deals with no repeat limit set. Every pass that
+        // keeps the loop going has to fulfil a deal, which consumes at least one unit of the cart
+        // it started with, so no correctly behaving deal can run more passes than the cart holds
+        // units. A deal that runs past that is feeding itself -- stop instead of letting the cart
+        // spin until PHP runs out of time (Rymera-Web-Co/advanced-coupons-for-woocommerce#1636).
+        $max_runs = max( 1, (int) array_sum( array_column( \WC()->cart->get_cart_contents(), 'quantity' ) ) );
+        $runs     = 0;
 
         do {
             $deals_fulfilled = false;
@@ -408,6 +603,7 @@ class Frontend extends Base_Model implements Model_Interface {
 
             // Increment run counter for the BOGO Deal.
             $bogo_deal->increment_run_counter();
+            ++$runs;
 
             // For same-products with repeat, continuation depends solely on whether any product
             // still has spare quantity — NOT on is_deal_fulfilled(). With multiple variations,
@@ -419,8 +615,19 @@ class Frontend extends Base_Model implements Model_Interface {
                 $deals_fulfilled = $has_spare;
             }
         } while (
-            $bogo_deal->is_repeat && $deals_fulfilled
+            $bogo_deal->is_repeat && $deals_fulfilled && $runs < $max_runs
         );
+
+        if ( $bogo_deal->is_repeat && $deals_fulfilled ) {
+            wc_get_logger()->warning(
+                sprintf(
+                    'BOGO deal for coupon %1$s stopped at the safety cap of %2$d repeat passes. The discount shown may be incomplete.',
+                    $bogo_deal->get_coupon()->get_code(),
+                    $max_runs
+                ),
+                array( 'source' => 'acfwf-bogo-deals' )
+            );
+        }
     }
 
     /**
@@ -430,6 +637,11 @@ class Frontend extends Base_Model implements Model_Interface {
      * @access private
      */
     private function _set_matching_cart_item_deals_prices() {
+        // Resolved once for the whole pass, not per line: an integration redirecting a
+        // container's entries onto other lines has to see the same mapping for every line it
+        // touches, and the lines it redirects onto are visited by this very loop.
+        $resolved_deals = $this->get_resolved_deal_entries();
+
         foreach ( \WC()->cart->get_cart_contents() as $cart_item ) {
 
             $key = $cart_item['key'];
@@ -440,7 +652,12 @@ class Frontend extends Base_Model implements Model_Interface {
                 continue;
             }
 
-            $deals = $this->_calculation->get_entries_by_cart_item( $key, 'deal' );
+            $deals = array_filter(
+                $resolved_deals,
+                function ( $entry ) use ( $key ) {
+                    return $entry['key'] === $key;
+                }
+            );
 
             // don't proceed if there are no deal entries for the current item.
             if ( empty( $deals ) ) {
@@ -571,6 +788,9 @@ class Frontend extends Base_Model implements Model_Interface {
     public function reset_bogo_deals_prices() {
         $cart_keys = array_keys( \WC()->cart->get_cart_contents() );
 
+        // The entries the memoised read was resolved from no longer describe this cart.
+        $this->_clear_resolved_deal_entries();
+
         // Remove _price_display entries for items that are no longer in cart.
         foreach ( $this->_price_display as $key => $data ) {
             if ( ! in_array( $key, $cart_keys, true ) ) {
@@ -638,7 +858,15 @@ class Frontend extends Base_Model implements Model_Interface {
      * as granting nothing. Cart mutations use the non-refreshing WooCommerce cart methods and
      * a re-entrancy guard so they are safe to run inside woocommerce_before_calculate_totals.
      *
+     * A line an add-on reports as un-removable (acfw_bogo_can_remove_unqualified_deal_item) is
+     * left alone, and a removal a third party refuses by throwing is skipped rather than allowed
+     * to escape into WooCommerce's totals calculation. A refusal is logged and announced through
+     * acfw_bogo_unqualified_deal_item_removal_refused so it is not silent.
+     *
      * @since 4.7.4
+     * @since 4.7.7 Consults acfw_bogo_can_remove_unqualified_deal_item, and reports a refused
+     *        removal through a log line and acfw_bogo_unqualified_deal_item_removal_refused
+     *        instead of discarding it.
      * @access private
      *
      * @param array $previous_matched Matched entries from the previous calculation (pre-clear).
@@ -754,10 +982,64 @@ class Frontend extends Base_Model implements Model_Interface {
                         continue;
                     }
 
+                    // Some cart lines cannot be taken out on their own. A product sold inside a
+                    // bundle is the case this exists for: its contents are only allowed to change
+                    // together with their container, so removing one would either be refused
+                    // outright or leave the customer holding a half dismantled bundle. An add-on
+                    // that knows a line is like that answers false here and the line is left
+                    // alone.
+                    if ( ! apply_filters( 'acfw_bogo_can_remove_unqualified_deal_item', true, $key, $cart_item, $coupon ) ) {
+                        continue;
+                    }
+
                     // Use set_quantity() with $refresh_totals = false so the cart is not
                     // recalculated mid-hook (remove_cart_item() would call calculate_totals()
                     // and re-enter this calculation). A resulting quantity of 0 removes the line.
-                    \WC()->cart->set_quantity( $key, $line_qty - $remove_qty, false );
+                    //
+                    // Removing a line runs third-party code that is entitled to refuse by
+                    // throwing -- Product Bundles does exactly that for a mandatory bundled item.
+                    // An exception here would otherwise travel all the way out through
+                    // woocommerce_before_calculate_totals and take the cart page down, so a
+                    // refusal leaves the line in place and moves on to the next one instead. The
+                    // notice below is deliberately inside the same path: telling a customer an
+                    // item was removed when it is still in their cart is worse than saying
+                    // nothing.
+                    try {
+                        \WC()->cart->set_quantity( $key, $line_qty - $remove_qty, false );
+                    } catch ( \Exception $e ) {
+                        // Leave a trace. Swallowing the refusal outright makes an item that
+                        // stayed in the cart indistinguishable from one the deal still covers,
+                        // which is not something a support engineer can work out from the
+                        // outside. Logging it names the coupon and the reason, and the action
+                        // lets an add-on react.
+                        wc_get_logger()->debug(
+                            sprintf(
+                                'BOGO: removing the unqualified deal item %1$s for coupon "%2$s" was refused: %3$s',
+                                $key,
+                                $coupon_code,
+                                $e->getMessage()
+                            ),
+                            array( 'source' => 'acfwf-bogo' )
+                        );
+
+                        do_action( 'acfw_bogo_unqualified_deal_item_removal_refused', $key, $cart_item, $coupon, $e );
+
+                        // A refusal normally leaves the line exactly as it was, but nothing
+                        // promises the throw did not come from a callback that ran after the
+                        // quantity had already changed. Listeners of the removal action keep
+                        // their own record of what a deal granted, so tell them whenever the
+                        // line really did shrink -- otherwise their record outlives the cart.
+                        // The customer notice stays skipped either way: a removal that ended
+                        // in an exception is not a state worth announcing.
+                        $remaining_item = \WC()->cart->get_cart_item( $key );
+                        $remaining_qty  = empty( $remaining_item ) ? 0 : (int) $remaining_item['quantity'];
+
+                        if ( $remaining_qty < $line_qty ) {
+                            do_action( 'acfw_bogo_removed_unqualified_deal_item', $key, $cart_item, $coupon );
+                        }
+
+                        continue;
+                    }
 
                     // Escape the product name and strings: wc_add_notice() does not escape, and
                     // custom themes or the filter below could output the notice unescaped. The
@@ -833,6 +1115,7 @@ class Frontend extends Base_Model implements Model_Interface {
      * This checks if any cart item matching the triggers still has enough quantity for another trigger+deal.
      *
      * @since 4.6.9
+     * @since 4.7.7 Reads the trigger-side quantity so it agrees with verify_triggers().
      * @access private
      *
      * @param Abstract_BOGO_Deal $bogo_deal BOGO Deal object.
@@ -847,8 +1130,10 @@ class Frontend extends Base_Model implements Model_Interface {
             // Find matching cart items for this trigger.
             foreach ( $cart_items as $cart_item ) {
                 if ( $bogo_deal->is_cart_item_match_entries( $cart_item, $trigger ) ) {
-                    // Calculate spare quantity after current matched entries.
-                    $spare_qty = $this->_calculation->calculate_cart_item_spare_quantity( $cart_item );
+                    // Calculate spare quantity after current matched entries. Read it through the
+                    // trigger-side calculation so this decision and the verify_triggers() pass it
+                    // gates agree on how much of the line the customer can be said to have bought.
+                    $spare_qty = $this->_calculation->calculate_cart_item_trigger_quantity( $cart_item );
 
                     // Check if spare quantity is enough for at least one more trigger+deal cycle.
                     // For same-products, we need trigger_qty + deal_qty spare.
@@ -897,7 +1182,10 @@ class Frontend extends Base_Model implements Model_Interface {
             $notice_type = isset( $settings['notice_type'] ) && $settings['notice_type'] ? $settings['notice_type'] : 'notice';
             $button_url  = isset( $settings['button_url'] ) && $settings['button_url'] ? $settings['button_url'] : get_permalink( wc_get_page_id( 'shop' ) );
             $button_text = isset( $settings['button_text'] ) && $settings['button_text'] ? $settings['button_text'] : __( 'View Deals', 'advanced-coupons-for-woocommerce-free' );
-            $notice_text = sprintf( '<span class="acfw-bogo-notice-text">%s <a href="%s" class="button">%s</a></span>', $message, $button_url, $button_text );
+            // NOTE: esc_url() here is belt-and-braces. Both places the URL is authored already
+            // escape it, but this markup is rendered as raw HTML on the classic pages and, since
+            // 4.7.7, by our own block notice component, so it should not depend on that.
+            $notice_text = sprintf( '<span class="acfw-bogo-notice-text">%s <a href="%s" class="button">%s</a></span>', $message, esc_url( $button_url ), $button_text );
 
             $this->_calculation->add_notice( $notice_text, $notice_type, $coupon->get_code() );
         }
@@ -908,9 +1196,11 @@ class Frontend extends Base_Model implements Model_Interface {
      *
      * @since 4.6.0
      * @since 4.6.1 Call reget_bogo_coupon_codes() to ensure that the coupon codes are up-to-date.
+     * @since 4.7.7 Tag the wrapper with the coupon code and the notice type so the block
+     *              component can key each notice and render it with its own status.
      * @access public
      *
-     * @return array BOGO eligible notices WC Blocks.
+     * @return array BOGO eligible notice markup for the WC blocks, one HTML string per notice.
      */
     public function get_eligible_deal_notices_message_wc_blocks() {
         $notices_wc_blocks = array();
@@ -926,7 +1216,35 @@ class Frontend extends Base_Model implements Model_Interface {
         // Checking if there are any BOGO coupon codes applied.
         if ( ! empty( $bogo_deals ) ) {
             foreach ( $this->_calculation->get_notices() as $notice ) {
-                $notices_wc_blocks[] = htmlentities( $notice['message'] );
+                // Tag the wrapper with the coupon and the notice type, the two pieces of
+                // per-notice data the message text cannot convey. The default message is
+                // identical for every coupon and interpolates the remaining-deals quantity, so
+                // nothing derived from it can identify a notice; and the type is a per-coupon
+                // setting that never reached the block pages at all, which left every block
+                // banner rendering as "info" whatever the coupon was set to (see issue #1630).
+                //
+                // This is done here rather than where the notice is built, for two reasons.
+                // Calculation::add_notice() de-duplicates on exact message equality, so a
+                // per-coupon attribute in the stored message would silently disable that for
+                // the classic pages too. And wc_kses_notice() strips data attributes from a
+                // span anyway, so it would never have reached the classic DOM. The classic
+                // pages need neither wrapper attribute: wc_add_notice() already carries the
+                // coupon on the notice itself, and the type is the notice's own.
+                //
+                // Keeping both on the wrapper is also what keeps every payload entry a plain
+                // HTML string, which is what makes the change safe for a shopper still running
+                // a bundle cached from before it — see the allow-list comment in BOGODeals.tsx.
+                $message = str_replace(
+                    '<span class="acfw-bogo-notice-text">',
+                    sprintf(
+                        '<span class="acfw-bogo-notice-text" data-coupon="%s" data-notice-type="%s">',
+                        esc_attr( $notice['coupon_code'] ),
+                        esc_attr( $notice['type'] )
+                    ),
+                    $notice['message']
+                );
+
+                $notices_wc_blocks[] = htmlentities( $message );
             }
         }
 
@@ -1248,11 +1566,13 @@ class Frontend extends Base_Model implements Model_Interface {
             foreach ( $order_coupons as $order_coupon ) {
                 $discounts = $this->calculate_bogo_discounts_for_coupon( $order_coupon->get_code() );
 
-                // calculate the total discount via BOGO for coupon.
+                // calculate the total discount via BOGO for coupon. Each row's 'amount' is the
+                // discount on ONE unit, so the row total (amount x quantity) is what the coupon
+                // line is worth -- summing 'amount' understated every deal of more than one unit.
                 $bogo_discount = array_reduce(
                     $discounts,
                     function ( $c, $d ) {
-                        return $c + $d['amount'];
+                        return $c + $d['total'];
                     },
                     0.0
                 );
@@ -1265,6 +1585,24 @@ class Frontend extends Base_Model implements Model_Interface {
 
         // clear session data.
         Calculation::clear_session_data();
+    }
+
+    /**
+     * Save bogo discounts to order placed through the Store API (block checkout).
+     *
+     * The block checkout never fires `woocommerce_checkout_order_processed`, so a block order
+     * saved neither the BOGO discounts order meta nor the coupon line's BOGO discount — the
+     * breakdown the customer saw in the cart was simply lost once the order was placed. The
+     * Store API fires `woocommerce_store_api_checkout_order_processed` instead, which passes the
+     * order object only, so this wrapper adapts that signature to the shared handler.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param \WC_Order $order Order object.
+     */
+    public function save_bogo_discounts_to_order_via_store_api( $order ) {
+        $this->save_bogo_discounts_to_order( $order->get_id(), array(), $order );
     }
 
     /*
@@ -1343,9 +1681,107 @@ class Frontend extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Get the matched BOGO deal entries that drive cart line pricing, the coupon's discount
+     * breakdown and the order BOGO discounts meta.
+     *
+     * Entries are matched against the cart line the deal was found on, and that line is not
+     * always the line carrying the value. A product that acts as a container for other cart
+     * lines -- a priced-individually bundle, for example -- has no price of its own, so a deal
+     * matched against it resolves to a zero discount, records nothing in `$_price_display`,
+     * and leaves both the breakdown row and the order meta empty even though the customer is
+     * receiving the discount (issue #1652).
+     *
+     * `acfw_bogo_resolve_deal_entries` is the seam for that case: an integration redirects a
+     * container's entries onto the lines that do carry the value once, and the deal line price,
+     * the breakdown row and the order meta all follow from that single mapping. Each entry keeps
+     * its own `discount_type`/`discount`, so an integration splitting one container entry
+     * across several lines states each line's share on the entry it creates for that line.
+     *
+     * What the seam does not govern is the coupon amount in "coupon" discount application mode.
+     * That figure comes from `filter_bogo_coupon_discount_amount()` on
+     * `woocommerce_coupon_get_discount_amount`, which reads the matched entries directly, so an
+     * integration already filtering the coupon amount there is not overruled from here. An
+     * integration redirecting entries in that mode owns both sides, and the share it reports
+     * through this filter has to equal the amount it hands WooCommerce, or the breakdown rows
+     * stop adding up to the coupon line.
+     *
+     * Nothing is redirected by default, so a cart with no integration hooked resolves exactly
+     * the entries the calculation matched.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param string $db Entries db. Accepts 'matched', 'allowed', 'temp' or 'all_matched'.
+     * @return array Deal entries.
+     */
+    public function get_resolved_deal_entries( $db = 'all_matched' ) {
+        // Only the `matched` read is memoised, and only until the calculation changes. The
+        // `all_matched` read runs once per calculation pass and is the pass an integration
+        // records its redirect from, so it is left to fire every time.
+        if ( 'matched' === $db && null !== $this->_resolved_matched_deals ) {
+            return $this->_resolved_matched_deals;
+        }
+
+        if ( ! $this->_calculation instanceof Calculation ) {
+            $this->_calculation = Calculation::get_instance();
+        }
+
+        $deals = array_filter(
+            $this->_calculation->get_all_entries( $db ),
+            function ( $entry ) {
+                return isset( $entry['type'] ) && 'deal' === $entry['type'];
+            }
+        );
+
+        /**
+         * Filter the matched BOGO deal entries before they are used for cart line pricing,
+         * the coupon's discount breakdown and the order BOGO discounts meta.
+         *
+         * @since 4.7.7
+         *
+         * @param array       $deals       Deal entries, each carrying the cart item key it was matched against.
+         * @param string      $db          Entries db the entries were read from.
+         * @param Calculation $calculation BOGO calculation object.
+         */
+        $resolved = apply_filters( 'acfw_bogo_resolve_deal_entries', array_values( $deals ), $db, $this->_calculation );
+
+        // A resolved entry prices a cart line and lands in the order record, so drop anything
+        // that does not carry the fields both of those readers rely on. Entries the calculation
+        // built always carry them; one an integration composed may not.
+        $entries = array_values(
+            array_filter(
+                is_array( $resolved ) ? $resolved : array(),
+                function ( $entry ) {
+                    return is_array( $entry ) && isset( $entry['key'], $entry['coupon'], $entry['quantity'], $entry['discount'], $entry['discount_type'] );
+                }
+            )
+        );
+
+        if ( 'matched' === $db ) {
+            $this->_resolved_matched_deals = $entries;
+        }
+
+        return $entries;
+    }
+
+    /**
+     * Discard the memoised `matched` deal entries.
+     *
+     * Called wherever the entries they were resolved from can have changed: at the top of a
+     * calculation pass, and where the price display bookkeeping is pruned.
+     *
+     * @since 4.7.7
+     * @access private
+     */
+    private function _clear_resolved_deal_entries() {
+        $this->_resolved_matched_deals = null;
+    }
+
+    /**
      * Calculate BOGO discounts for a coupon.
      *
      * @since 4.5.8
+     * @since 4.7.7 Read the deal entries through the `acfw_bogo_resolve_deal_entries` seam.
      * @access public
      *
      * @param string $coupon_code Coupon code.
@@ -1356,11 +1792,24 @@ class Frontend extends Base_Model implements Model_Interface {
             $this->_calculation = Calculation::get_instance();
         }
 
-        $deals     = $this->_calculation->get_entries_by_coupon( $coupon_code, 'deal' );
+        $deals     = array_filter(
+            $this->get_resolved_deal_entries( 'matched' ),
+            function ( $entry ) use ( $coupon_code ) {
+                return $entry['coupon'] === $coupon_code;
+            }
+        );
         $discounts = array();
 
         foreach ( $deals as $deal ) {
-            $data              = isset( $this->_price_display[ $deal['key'] ] ) ? $this->_price_display[ $deal['key'] ] : array();
+            $data = isset( $this->_price_display[ $deal['key'] ] ) ? $this->_price_display[ $deal['key'] ] : array();
+
+            // A deal entry whose cart line was never recorded in the price display has no
+            // prices to report from, so skip it before reading them. Reading them first
+            // raised undefined array key warnings on PHP 8 (issue #1652).
+            if ( empty( $data ) || ! isset( $data['price']['regular'], $data['new_price'] ) ) {
+                continue;
+            }
+
             $discounted_prices = isset( $data['discounted_prices'] ) ? $data['discounted_prices'] : array();
 
             $price = $data['price']['regular'];
@@ -1391,7 +1840,7 @@ class Frontend extends Base_Model implements Model_Interface {
              * This happens when the price deal is using override to increase the price instead of a discount.
              * So we don't show this in the discount summary.
              */
-            if ( empty( $data ) || 0 >= $total || $data['new_price'] >= $data['price'] ) {
+            if ( 0 >= $total || $data['new_price'] >= $data['price']['regular'] ) {
                 continue;
             }
 
@@ -1480,6 +1929,7 @@ class Frontend extends Base_Model implements Model_Interface {
         }
 
         add_filter( 'woocommerce_coupon_is_valid', array( $this, 'restrict_cart_to_only_one_bogo_deal' ), 10, 2 );
+        add_filter( 'woocommerce_coupon_is_valid', array( $this, 'prevent_apply_when_bogo_trigger_not_met' ), 10, 3 );
         add_action( 'woocommerce_before_calculate_totals', array( $this, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
         add_filter( 'woocommerce_cart_item_price', array( $this, 'display_discounted_price' ), 10, 2 );
         // "Coupon amount" discount application mode: deliver BOGO discounts through the
@@ -1489,6 +1939,7 @@ class Frontend extends Base_Model implements Model_Interface {
         add_filter( 'woocommerce_cart_totals_coupon_html', array( $this, 'display_bogo_discount_summary' ), 10, 3 );
         add_filter( 'acfwf_cart_checkout_block_coupon_summary', array( $this, 'add_bogo_discount_summary_to_cart_checkout_block' ), 10, 2 );
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_bogo_discounts_to_order' ), 10, 3 );
+        add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'save_bogo_discounts_to_order_via_store_api' ), 10, 1 );
         add_action( 'woocommerce_before_cart', array( $this, 'display_bogo_notices_on_classic_pages' ), 9 );
         // Prevent WooPayments Multi-Currency from double-converting BOGO-set prices.
         // skip_bogo_price_conversion (priority 50) asks WooPayments to skip conversion.

@@ -3,6 +3,7 @@ import { ISettingOption } from './fields';
 export interface ISection {
   id: string;
   title: string;
+  badge?: string;
   fields: ISectionField[];
   show: boolean;
   module: string | boolean;

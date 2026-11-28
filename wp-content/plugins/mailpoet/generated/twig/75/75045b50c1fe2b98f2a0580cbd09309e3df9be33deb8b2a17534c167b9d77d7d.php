@@ -126,6 +126,6 @@ class __TwigTemplate_1a7328011b0cf7158e35fc314e7b6993b8417919d1f5ef0a796941a8e33
 
     public function getSourceContext()
     {
-        return new Source("", "subscribers/importExport/import/step_data_manipulation.html", "/home/circleci/mailpoet/mailpoet/views/subscribers/importExport/import/step_data_manipulation.html");
+        return new Source("", "subscribers/importExport/import/step_data_manipulation.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/subscribers/importExport/import/step_data_manipulation.html");
     }
 }

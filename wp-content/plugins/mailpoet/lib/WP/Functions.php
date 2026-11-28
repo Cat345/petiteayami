@@ -174,8 +174,8 @@ class Functions {
     return wp_register_ability($name, $args);
   }
 
-  public function currentUserCan($capability) {
-    return current_user_can($capability);
+  public function currentUserCan($capability, ...$args) {
+    return current_user_can($capability, ...$args);
   }
 
   public function wpDoingCron(): bool {
@@ -333,6 +333,15 @@ class Functions {
 
   public function getPost($post = null, $output = OBJECT, $filter = 'raw') {
     return get_post($post, $output, $filter);
+  }
+
+  /**
+   * @param string $field
+   * @param int $postId
+   * @return mixed
+   */
+  public function getPostField(string $field, int $postId) {
+    return get_post_field($field, $postId, 'raw');
   }
 
   public function getTerm(int $termId, string $taxonomy = '') {
@@ -739,6 +748,40 @@ class Functions {
     return wp_delete_post($id, $force);
   }
 
+  /**
+   * @return \WP_Post|false|null
+   */
+  public function wpTrashPost(int $id) {
+    return wp_trash_post($id);
+  }
+
+  /**
+   * @return \WP_Post|false|null
+   */
+  public function wpUntrashPost(int $id) {
+    return wp_untrash_post($id);
+  }
+
+  public function wpCountPosts(string $type = 'post', string $perm = ''): \stdClass {
+    return wp_count_posts($type, $perm);
+  }
+
+  public function wpQuery(array $args): \WP_Query {
+    return new \WP_Query($args);
+  }
+
+  public function registerPostMeta(string $postType, string $metaKey, array $args = []): bool {
+    return register_post_meta($postType, $metaKey, $args);
+  }
+
+  public function registerBlockPattern(string $name, array $properties): bool {
+    return register_block_pattern($name, $properties);
+  }
+
+  public function registerBlockPatternCategory(string $name, array $properties): bool {
+    return register_block_pattern_category($name, $properties);
+  }
+
   public function wpJsonEncode($data, $options = 0, $depth = 512) {
     return wp_json_encode($data, $options, $depth);
   }
@@ -854,6 +897,10 @@ class Functions {
 
   public function stripShortcodes(string $content): string {
     return strip_shortcodes($content);
+  }
+
+  public function shortcodeExists(string $tag): bool {
+    return shortcode_exists($tag);
   }
 
   public function inTheLoop(): bool {
@@ -998,6 +1045,10 @@ class Functions {
     return wp_kses($string, $allowedHtml, $allowedProtocols);
   }
 
+  public function forceBalanceTags(string $text): string {
+    return force_balance_tags($text);
+  }
+
   public function wpKsesAllowedHtml($context = '') {
     return wp_kses_allowed_html($context);
   }
@@ -1064,6 +1115,10 @@ class Functions {
     return sanitize_key($key);
   }
 
+  public function sanitizeHexColor(string $color): string {
+    return (string)sanitize_hex_color($color);
+  }
+
   public function sanitizeTextField(string $text): string {
     return sanitize_text_field($text);
   }
@@ -1082,6 +1137,14 @@ class Functions {
    */
   public function wpUnslash($value) {
     return wp_unslash($value);
+  }
+
+  /**
+   * @param string|array $value
+   * @return ($value is array ? array : string)
+   */
+  public function wpSlash($value) {
+    return wp_slash($value);
   }
 
   public function restUrl(string $path = '', string $scheme = 'rest'): string {

@@ -43,8 +43,8 @@ trait Admin_Refund_Store_Credits_Discount {
             return;
         }
 
-        $sc_discount  = \ACFWF()->Store_Credits_Calculate->get_total_store_credits_discount_for_order( $order->get_id() );
-        $sc_discount -= \ACFWF()->Store_Credits_Calculate->get_total_refunded_store_credits_discount_for_order( $order ); // Deduct the discount amount that has already been refunded.
+        // Net of anything already refunded and of credit a cancellation has given back.
+        $sc_discount = \ACFWF()->Store_Credits_Calculate->get_net_store_credits_discount_for_order( $order );
 
         // Skip if the store credits discount is already fully refunded.
         if ( 0 >= $sc_discount ) {
@@ -72,7 +72,12 @@ trait Admin_Refund_Store_Credits_Discount {
      * @param int $order_id Order ID.
      */
     public function display_refunded_store_credits_discount_summary( $order_id ) {
-        $order    = wc_get_order( $order_id );
+        $order = wc_get_order( $order_id );
+
+        if ( ! $order instanceof \WC_Order ) {
+            return;
+        }
+
         $refunded = \ACFWF()->Store_Credits_Calculate->get_total_refunded_store_credits_discount_for_order( $order );
 
         // Skip if there is no refunded store credits discount amount.
@@ -80,8 +85,10 @@ trait Admin_Refund_Store_Credits_Discount {
             return;
         }
 
-        $sc_discount = \ACFWF()->Store_Credits_Calculate->get_total_store_credits_discount_for_order( $order->get_id() );
-        $total       = $sc_discount - $refunded;
+        // The first row is what the order carries, so the three rows still add up: a cancellation
+        // takes the credit off the first row, and the refunds come off it to make the total.
+        $sc_discount = \ACFWF()->Store_Credits_Calculate->get_applied_store_credits_discount_for_order( $order->get_id() );
+        $total       = max( 0, $sc_discount - $refunded );
 
         include $this->_constants->VIEWS_ROOT_PATH . 'store-credits' . DIRECTORY_SEPARATOR . 'view-edit-refunded-store-credit-discount.php';
     }
@@ -115,11 +122,16 @@ trait Admin_Refund_Store_Credits_Discount {
                 throw new \Exception( __( 'Invalid request.', 'advanced-coupons-for-woocommerce-free' ) );
             }
 
-            $order_id     = absint( $_POST['order_id'] );
-            $amount       = (float) wc_format_decimal( wp_unslash( $_POST['amount'] ) );
-            $order        = \wc_get_order( $order_id );
-            $sc_discount  = \ACFWF()->Store_Credits_Calculate->get_total_store_credits_discount_for_order( $order->get_id() );
-            $sc_discount -= \ACFWF()->Store_Credits_Calculate->get_total_refunded_store_credits_discount_for_order( $order ); // Deduct the discount amount that has already been refunded.
+            $order_id = absint( $_POST['order_id'] );
+            $amount   = (float) wc_format_decimal( wp_unslash( $_POST['amount'] ) );
+            $order    = \wc_get_order( $order_id );
+
+            if ( ! $order instanceof \WC_Order ) {
+                throw new \Exception( __( 'Invalid request.', 'advanced-coupons-for-woocommerce-free' ) );
+            }
+            // Net of anything already refunded and of credit a cancellation has given back. The
+            // button is hidden in that case, but this handler is reachable without it.
+            $sc_discount = \ACFWF()->Store_Credits_Calculate->get_net_store_credits_discount_for_order( $order );
 
             if ( ! $sc_discount || ! $amount || $amount > $sc_discount ) {
                 throw new \Exception( __( 'The amount provided is invalid.', 'advanced-coupons-for-woocommerce-free' ) );

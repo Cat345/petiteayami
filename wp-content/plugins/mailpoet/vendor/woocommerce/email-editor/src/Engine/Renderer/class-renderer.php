@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer;
 if (!defined('ABSPATH')) exit;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer;
+use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Css_Selector_Normalizer;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context;
 use Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates;
@@ -15,7 +16,6 @@ private Content_Renderer $content_renderer;
 private Templates $templates;
 private Css_Inliner $css_inliner;
 private Process_Manager $process_manager;
-private Personalization_Tags_Registry $personalization_tags_registry;
 private array $personalization_tag_placeholders = array();
 const TEMPLATE_FILE = 'template-canvas.php';
 const TEMPLATE_STYLES_FILE = 'template-canvas.css';
@@ -31,8 +31,8 @@ $this->content_renderer = $content_renderer;
 $this->templates = $templates;
 $this->theme_controller = $theme_controller;
 $this->css_inliner = $css_inliner;
-$this->personalization_tags_registry = $personalization_tags_registry;
 $this->process_manager = $process_manager;
+unset( $personalization_tags_registry );
 }
 public function render( \WP_Post $post, string $subject, string $pre_header, string $language, string $meta_robots = '', string $template_slug = '' ): array {
 if ( ! $template_slug ) {
@@ -78,7 +78,7 @@ array(
 );
 $template_styles .= '.email_layout_wrapper { box-sizing: border-box;}';
 $template_styles .= file_get_contents( __DIR__ . '/' . self::TEMPLATE_STYLES_FILE );
-$template_styles = wp_strip_all_tags( (string) apply_filters( 'woocommerce_email_renderer_styles', $template_styles, $post ) );
+$template_styles = Css_Selector_Normalizer::normalize( wp_strip_all_tags( (string) apply_filters( 'woocommerce_email_renderer_styles', $template_styles, $post ) ) );
 $all_styles = '<style>' . $template_styles . $content_styles . '</style>';
 $rendered_template = $this->inline_css_styles( $all_styles . $rendered_template );
 $rendered_template = $this->process_manager->postprocess( $rendered_template );
@@ -125,7 +125,14 @@ if ( ! is_string( $template ) ) {
 return '';
 }
 $template = $this->preserve_personalization_tags( $template );
-$result = Html2Text::convert( (string) $template, array( 'ignore_errors' => true ) );
+$result = Html2Text::convert(
+(string) $template,
+array(
+'ignore_errors' => true,
+'mark_bold' => true,
+'tag_link_targets' => true,
+)
+);
 if ( ! $result ) {
 return '';
 }
@@ -133,31 +140,15 @@ $result = $this->restore_personalization_tags( $result );
 return $result;
 }
 private function preserve_personalization_tags( string $template ): string {
-$all_registered_tags = $this->personalization_tags_registry->get_all();
 $this->personalization_tag_placeholders = array();
 $counter = 0;
-$base_tokens = array();
-$token_prefixes = array();
-foreach ( $all_registered_tags as $tag ) {
-$token = $tag->get_token();
-$base_tokens[ $token ] = true;
-$token_prefixes[] = preg_quote( substr( $token, 1, -1 ), '/' );
-}
-if ( empty( $token_prefixes ) ) {
-return $template;
-}
-$pattern = '/<!--\[(' . implode( '|', $token_prefixes ) . ')(?:\s+[^\]]*)?\]-->/';
 $template = preg_replace_callback(
-$pattern,
-function ( $matches ) use ( &$counter, $base_tokens ) {
-$base_token = '[' . $matches[1] . ']';
-if ( isset( $base_tokens[ $base_token ] ) ) {
+'/<!--\[[a-zA-Z0-9\-\/]+(?:\s+[^\]]*)?\]-->/',
+function ( $matches ) use ( &$counter ) {
 $placeholder = 'PERSONALIZATION_TAG_PLACEHOLDER_' . $counter;
 $this->personalization_tag_placeholders[ $placeholder ] = $matches[0];
 ++$counter;
 return $placeholder;
-}
-return $matches[0];
 },
 $template
 );
@@ -167,9 +158,7 @@ private function restore_personalization_tags( string $text ): string {
 if ( empty( $this->personalization_tag_placeholders ) ) {
 return $text;
 }
-foreach ( $this->personalization_tag_placeholders as $placeholder => $html_comment ) {
-$text = str_replace( $placeholder, $html_comment, $text );
-}
-return $text;
+$text = (string) preg_replace( '/\*(PERSONALIZATION_TAG_PLACEHOLDER_\d+)\*/', '$1', $text );
+return strtr( $text, $this->personalization_tag_placeholders );
 }
 }

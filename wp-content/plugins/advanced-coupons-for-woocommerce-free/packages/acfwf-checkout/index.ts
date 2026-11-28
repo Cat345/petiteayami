@@ -1,6 +1,7 @@
 import accordionEvents from './accordion';
 import storeCreditEvents from './storeCredits';
 import checkoutGenericEvents from './checkoutUtils';
+import initCartConditionNotice from '../shared/utils/cartConditionNotice';
 
 // Import CSS.
 import '../shared/wc-block/index.scss';
@@ -10,4 +11,5 @@ jQuery(function ($) {
   checkoutGenericEvents();
   accordionEvents();
   storeCreditEvents();
+  initCartConditionNotice();
 });

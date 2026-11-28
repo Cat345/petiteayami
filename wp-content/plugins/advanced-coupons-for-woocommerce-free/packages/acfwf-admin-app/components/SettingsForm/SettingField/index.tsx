@@ -11,6 +11,7 @@ import { sanitizeHtml } from '../../../../shared/utils';
 import FunnelKitUpsell from './FunnelKitUpsell';
 import ImportStoreCreditsField from './ImportStoreCreditsField';
 import ClearDetachedStoreCreditsField from './ClearDetachedStoreCreditsField';
+import AiMcpPanel from './AiMcpPanel';
 
 // Styles
 import './index.scss';
@@ -95,6 +96,11 @@ const SettingField = (props: IProps) => {
   // clear detached store credit entries (Advanced tab).
   if ('acfw_clear_detached_store_credits' === id) {
     return <ClearDetachedStoreCreditsField field={field} />;
+  }
+
+  // AI / MCP panel.
+  if ('acfw_ai_mcp' === type && field?.data) {
+    return <AiMcpPanel data={field.data} />;
   }
 
   // return empty

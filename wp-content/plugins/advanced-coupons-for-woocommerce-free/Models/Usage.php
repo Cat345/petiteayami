@@ -94,6 +94,7 @@ class Usage extends Base_Model implements Model_Interface, Initializable_Interfa
      * Append versions and license data for all ACFW related plugins.
      *
      * @since 4.5.1
+     * @since 4.7.7 Send the license key only when it has a valid format, else send a status. Read the key with get_site_option() (issue #1671).
      * @access private
      *
      * @param array $data Usage data.
@@ -123,28 +124,70 @@ class Usage extends Base_Model implements Model_Interface, Initializable_Interfa
         if ( 1 === $data['acfwp'] ) {
             $data['acfwp_version']       = \ACFWP()->Plugin_Constants->VERSION;
             $data['acfwp_license_email'] = get_option( \ACFWP()->Plugin_Constants->OPTION_ACTIVATION_EMAIL );
-            $data['acfwp_license_key']   = get_option( \ACFWP()->Plugin_Constants->OPTION_LICENSE_KEY );
+            $data['acfwp_license_key']   = $this->_get_license_key_usage_value( get_site_option( \ACFWP()->Plugin_Constants->OPTION_LICENSE_KEY ) );
         }
 
         // LPFW data.
         if ( 1 === $data['lpfw'] ) {
             $data['lpfw_version']       = \LPFW()->Plugin_Constants->VERSION;
             $data['lpfw_license_email'] = get_option( \LPFW()->Plugin_Constants->OPTION_ACTIVATION_EMAIL );
-            $data['lpfw_license_key']   = get_option( \LPFW()->Plugin_Constants->OPTION_LICENSE_KEY );
+            $data['lpfw_license_key']   = $this->_get_license_key_usage_value( get_site_option( \LPFW()->Plugin_Constants->OPTION_LICENSE_KEY ) );
         }
 
         // AGC data.
         if ( 1 === $data['agc'] ) {
             $data['agc_version']       = \AGCFW()->Plugin_Constants->VERSION;
             $data['agc_license_email'] = get_option( \AGCFW()->Plugin_Constants->OPTION_ACTIVATION_EMAIL );
-            $data['agc_license_key']   = get_option( \AGCFW()->Plugin_Constants->OPTION_LICENSE_KEY );
+            $data['agc_license_key']   = $this->_get_license_key_usage_value( get_site_option( \AGCFW()->Plugin_Constants->OPTION_LICENSE_KEY ) );
         }
+    }
+
+    /**
+     * Get the usage data value of a stored license key.
+     *
+     * A browser can autofill a saved password into a license key field, so the stored value can be a password.
+     * Return the key only when it contains a UUID, as a password does not. Else return a status, never the value.
+     * The crack signatures are the same as the ones the license key notice uses (issue #1656).
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @param mixed $license_key Stored license key value.
+     * @return string The license key (whitespace removed) when it has a valid format, else one of: empty, crack, invalid.
+     */
+    private function _get_license_key_usage_value( $license_key ) {
+        $license_key = is_string( $license_key ) ? preg_replace( '/\s+/', '', $license_key ) : '';
+
+        if ( '' === $license_key ) {
+            return 'empty';
+        }
+
+        // Genuine keys contain a UUID. Do not anchor it, as keys are sometimes pasted with extra characters.
+        if ( preg_match( '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i', $license_key ) ) {
+            return $license_key;
+        }
+
+        $crack_signatures = array(
+            '/^[*\-]+$/',
+            '/^X{4}(-X{4})+$/',
+            '/bypass|nullified|weadown/i',
+            '/^[0-9A-Z]{32}$/',
+        );
+
+        foreach ( $crack_signatures as $crack_signature ) {
+            if ( preg_match( $crack_signature, $license_key ) ) {
+                return 'crack';
+            }
+        }
+
+        return 'invalid';
     }
 
     /**
      * Append settings data.
      *
      * @since 4.5.1
+     * @since 4.7.7 Exclude the license key, activation email, update data, settings hash and installed version options (issue #1671).
      * @access private
      *
      * @param array $data Usage data.
@@ -161,10 +204,11 @@ class Usage extends Base_Model implements Model_Interface, Initializable_Interfa
             OR option_name LIKE 'acfwp_%'
             OR option_name LIKE 'lpfw_%'
             OR option_name LIKE 'agcfw_%')
-            AND (option_name NOT LIKE '%license_key%'
-            OR option_name NOT LIKE '%activation_email%'
-            OR option_name NOT LIKE '%settings_hash%'
-            OR option_name NOT LIKE '%installed_version%')
+            AND option_name NOT LIKE '%license_key%'
+            AND option_name NOT LIKE '%activation_email%'
+            AND option_name NOT LIKE '%option_update_data%'
+            AND option_name NOT LIKE '%settings_hash%'
+            AND option_name NOT LIKE '%installed_version%'
             AND (option_name != 'acfw_recent_coupon_templates')
             "
         );
@@ -403,6 +447,9 @@ class Usage extends Base_Model implements Model_Interface, Initializable_Interfa
      * Send the checkin.
      *
      * @since 4.5.1
+     * @since 4.7.7 Shorten the once-per-week guard window to six days, so a run is only
+     *              rejected when the previous send landed more than a day later in its
+     *              window than this one (issue #1637).
      * @access public
      * @param bool $override            Flag to override if tracking is allowed or not.
      * @param bool $ignore_last_checkin Flag to ignore that last checkin time check.
@@ -421,9 +468,13 @@ class Usage extends Base_Model implements Model_Interface, Initializable_Interfa
             return false;
         }
 
-        // Send a maximum of once per week.
+        // Send a maximum of once per week. The window is deliberately shorter than the weekly
+        // cron interval because WP-Cron adds a variable delay to every run; a run that fires
+        // slightly under seven days after a more delayed previous send is still the run for the
+        // period that has not been reported yet, and rejecting it drops that period's data
+        // entirely, because the payload only ever covers the previous week and never backfills.
         $last_send = get_option( Plugin_Constants::USAGE_LAST_CHECKIN );
-        if ( is_numeric( $last_send ) && $last_send > strtotime( '-1 week' ) && ! ( $ignore_last_checkin || defined( 'ACFW_TESTING_SITE' ) ) ) {
+        if ( is_numeric( $last_send ) && $last_send > strtotime( '-6 days' ) && ! ( $ignore_last_checkin || defined( 'ACFW_TESTING_SITE' ) ) ) {
             return false;
         }
 
@@ -449,6 +500,7 @@ class Usage extends Base_Model implements Model_Interface, Initializable_Interfa
      * Track the number of coupons created via the Coupon Templates feature.
      *
      * @since 4.6.3
+     * @since 4.7.7 Track coupons created from AI templates and the number of saved AI templates.
      * @access public
      * @param bool $override            Flag to override if tracking is allowed or not.
      */
@@ -475,6 +527,7 @@ class Usage extends Base_Model implements Model_Interface, Initializable_Interfa
             SELECT meta_value AS template, COUNT(*) AS count
             FROM {$wpdb->postmeta}
             WHERE meta_key = '_acfw_coupon_from_template_ID'
+                AND meta_value NOT IN ( '', '0' )
             GROUP BY meta_value
             ORDER BY count DESC
             LIMIT 3
@@ -482,11 +535,49 @@ class Usage extends Base_Model implements Model_Interface, Initializable_Interfa
         );
         $most_popular_templates = wp_list_pluck( $most_popular_templates, 'template' );
 
+        // Retrieve the total number of coupons created via AI-generated coupon templates.
+        $total_coupons_created_from_ai_templates = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = 'yes'",
+                Plugin_Constants::COUPON_FROM_AI_TEMPLATE_META
+            )
+        );
+
         // Update the wp_options table with the tracking data.
         update_option( Plugin_Constants::TOTAL_CREATED_WITH_COUPON_TEMPLATES, $total_coupons_created_from_templates, false );
         update_option( Plugin_Constants::MOST_POPULAR_TEMPLATES, $most_popular_templates, false );
+        update_option( Plugin_Constants::TOTAL_CREATED_WITH_AI_TEMPLATES, (int) $total_coupons_created_from_ai_templates, false );
+        update_option( Plugin_Constants::TOTAL_SAVED_AI_TEMPLATES, $this->_count_saved_ai_templates(), false );
 
         return true;
+    }
+
+    /**
+     * Count the saved AI coupon templates of all users.
+     *
+     * The premium plugin saves each AI template as a JSON file in `uploads/advanced-coupons/ai-templates/user-{ID}/`.
+     * Only the number of files is counted. The template content is not read.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @return int Number of saved AI coupon templates.
+     */
+    private function _count_saved_ai_templates() {
+        $upload_dir = wp_upload_dir( null, false );
+
+        if ( ! empty( $upload_dir['error'] ) ) {
+            return 0;
+        }
+
+        // Keep in sync with ACFWP\Models\Coupon_Generator_Template_Manager (BASE_DIR, user directory and file name format).
+        $base_dir = class_exists( '\ACFWP\Models\Coupon_Generator_Template_Manager' )
+            ? \ACFWP\Models\Coupon_Generator_Template_Manager::BASE_DIR
+            : 'advanced-coupons/ai-templates';
+
+        $files = glob( trailingslashit( $upload_dir['basedir'] ) . $base_dir . '/user-*/template-*.json' );
+
+        return is_array( $files ) ? count( $files ) : 0;
     }
 
     /**

@@ -467,6 +467,6 @@ class __TwigTemplate_cd01f7185dd0d7e17c724aeebb70949dd844805e176c8702c46453d27d2
 
     public function getSourceContext()
     {
-        return new Source("", "newsletter/templates/blocks/posts/settingsDisplayOptions.hbs", "/home/circleci/mailpoet/mailpoet/views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs");
+        return new Source("", "newsletter/templates/blocks/posts/settingsDisplayOptions.hbs", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs");
     }
 }

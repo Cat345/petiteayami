@@ -63,8 +63,10 @@ function initDateFields() {
     // change minimum datetime for expire field when start field value changes.
     onChange: function ([dateObject]: Date[], dateStr: string, instance: any) {
       if (dateObject) {
-        dateObject.setMinutes(dateObject.getMinutes() + 1);
-        scheduleExpireField._flatpickr.set('minDate', dateObject);
+        // clone the date so the start field's own selected date is not changed.
+        const nextExpireMinDate = new Date(dateObject);
+        nextExpireMinDate.setMinutes(nextExpireMinDate.getMinutes() + 1);
+        scheduleExpireField._flatpickr.set('minDate', nextExpireMinDate);
 
         validate_date_range_field_values();
       } else {
@@ -84,8 +86,10 @@ function initDateFields() {
     // change maximum datetime for start field when expire field value changes.
     onChange: function ([dateObject]: Date[], dateStr: string, instance: any) {
       if (dateObject) {
-        dateObject.setMinutes(dateObject.getMinutes() - 1);
-        scheduleStartField._flatpickr.set('maxDate', dateObject);
+        // clone the date so the expire field's own selected date is not changed.
+        const nextStartMaxDate = new Date(dateObject);
+        nextStartMaxDate.setMinutes(nextStartMaxDate.getMinutes() - 1);
+        scheduleStartField._flatpickr.set('maxDate', nextStartMaxDate);
 
         validate_date_range_field_values();
       } else {

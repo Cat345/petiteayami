@@ -117,6 +117,8 @@ class Checkout_Integration extends Base_Model implements IntegrationInterface {
                 'store_credits_module'                   => \ACFWF()->Helper_Functions->is_module( Plugin_Constants::STORE_CREDITS_MODULE ), // Check if store credits module is enabled.
                 'is_allow_store_credits'                 => \ACFWF()->Store_Credits_Checkout->is_allow_store_credits(), // Check if store credits is allowed.
                 'auto_display_store_credits_redeem_form' => get_option( Plugin_Constants::AUTO_DISPLAY_STORE_CREDITS_REDEEM_FORM, 'no' ), // Check if store credits should always be shown.
+                'show_guest_notice'                      => \ACFWF()->Store_Credits_Checkout->is_show_guest_store_credits_notice(), // Check if the guest store credits notice must be shown.
+                'guest_notice_text'                      => \ACFWF()->Store_Credits_Checkout->get_guest_store_credits_notice_text(),
             ),
             'caret_img_src' => $this->_constants->IMAGES_ROOT_URL . 'caret.svg',
         );

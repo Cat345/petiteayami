@@ -203,6 +203,7 @@ Personalizer::class,
 function ( $container ) {
 return new Personalizer(
 $container->get( Personalization_Tags_Registry::class ),
+$container->get( Email_Editor_Logger::class ),
 );
 }
 );

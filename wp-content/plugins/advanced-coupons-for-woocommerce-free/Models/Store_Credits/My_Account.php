@@ -124,8 +124,7 @@ class My_Account implements Model_Interface, Initializable_Interface {
         }
 
         // Don't display store credits if "Hide Store Credits when balance is zero" is enabled and the user has no balance.
-        if ( 'yes' === get_option( Plugin_Constants::STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE, 'no' ) &&
-            \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id() ) <= 0 ) {
+        if ( $this->_is_store_credits_hidden_for_current_user() ) {
             return $items;
         }
 
@@ -147,16 +146,10 @@ class My_Account implements Model_Interface, Initializable_Interface {
      * Register store credits custom endpoint.
      *
      * @since 4.0
-     * @access public
+     * @access private
      */
     private function _register_store_credits_endpoint() {
-
-        // Don't register store credits endpoint if "Hide Store Credits when balance is zero" is enabled and the user has no balance.
-        if ( 'yes' === get_option( Plugin_Constants::STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE, 'no' ) &&
-            \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id() ) <= 0 ) {
-            return;
-        }
-
+        // Always register the endpoint. Rewrite rules are saved for the whole site, so they must not depend on the current user.
         add_rewrite_endpoint( $this->_get_store_credits_endpoint(), EP_ROOT | EP_PAGES );
     }
 
@@ -170,15 +163,30 @@ class My_Account implements Model_Interface, Initializable_Interface {
      * @return array Filtered query vars.
      */
     public function register_store_credits_endpoint_query_vars( $vars ) {
-
-        // Don't register store credits endpoint if "Hide Store Credits when balance is zero" is enabled and the user has no balance.
-        if ( 'yes' === get_option( Plugin_Constants::STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE, 'no' ) &&
-            \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id() ) <= 0 ) {
-            return $vars;
-        }
-
         $vars[] = $this->_get_store_credits_endpoint();
         return $vars;
+    }
+
+    /**
+     * Redirect the customer to the My Account dashboard when the store credits page is hidden for them.
+     *
+     * @since 4.7.7
+     * @access public
+     */
+    public function maybe_redirect_hidden_store_credits_endpoint() {
+        global $wp_query;
+
+        if ( ! isset( $wp_query->query_vars[ $this->_get_store_credits_endpoint() ] ) || ! is_account_page() ) {
+            return;
+        }
+
+        // Redirect to the dashboard if "Hide Store Credits when balance is zero" is enabled and the user has no balance.
+        if ( ! is_user_logged_in() || ! $this->_is_store_credits_hidden_for_current_user() ) {
+            return;
+        }
+
+        wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
+        exit;
     }
 
     /**
@@ -316,6 +324,19 @@ class My_Account implements Model_Interface, Initializable_Interface {
         return apply_filters( 'acfw_store_credits_endpoint', Plugin_Constants::STORE_CREDITS_ENDPOINT );
     }
 
+    /**
+     * Check if the store credits menu item and page are hidden for the current user.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @return bool True if hidden, false otherwise.
+     */
+    private function _is_store_credits_hidden_for_current_user() {
+        return 'yes' === get_option( Plugin_Constants::STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE, 'no' ) &&
+            \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id() ) <= 0;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
@@ -348,6 +369,7 @@ class My_Account implements Model_Interface, Initializable_Interface {
         add_filter( 'woocommerce_account_menu_items', array( $this, 'register_myaccount_menu_item' ) );
         add_filter( 'query_vars', array( $this, 'register_store_credits_endpoint_query_vars' ) );
         add_filter( 'the_title', array( $this, 'store_credits_tab_endpoint_title' ) );
+        add_action( 'template_redirect', array( $this, 'maybe_redirect_hidden_store_credits_endpoint' ) );
         add_action( 'woocommerce_account_' . $this->_get_store_credits_endpoint() . '_endpoint', array( $this, 'display_store_credits_my_account_markup' ) );
         add_shortcode( 'acfw_customer_store_credit_balance', array( $this, 'customer_store_credit_balance' ) );
         add_shortcode( 'acfw_store_credit_my_account_page_content', array( $this, 'display_store_credits_shortcode' ) );

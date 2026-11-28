@@ -153,6 +153,7 @@ class Queries {
 
         $offset       = ( $params['page'] - 1 ) * $params['per_page'];
         $sort_columns = array(
+            'id'      => 'e.entry_id',
             'user_id' => 'e.entry_id',
             'date'    => 'e.entry_date',
             'type'    => 'e.entry_type',

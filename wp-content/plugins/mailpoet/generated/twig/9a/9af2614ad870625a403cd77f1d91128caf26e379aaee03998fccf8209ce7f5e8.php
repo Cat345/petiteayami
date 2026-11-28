@@ -83,6 +83,6 @@ if(typeof window.mailpoet_analytics_public_id === \x27string\x27 && window.mailp
 
     public function getSourceContext()
     {
-        return new Source("", "analytics.html", "/home/circleci/mailpoet/mailpoet/views/analytics.html");
+        return new Source("", "analytics.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/analytics.html");
     }
 }

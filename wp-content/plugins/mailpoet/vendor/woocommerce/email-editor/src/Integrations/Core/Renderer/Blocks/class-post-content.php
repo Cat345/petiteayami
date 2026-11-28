@@ -38,6 +38,15 @@ $wp_query = $backup_query;
 if ( empty( $post_content ) ) {
 return '';
 }
-return $post_content;
+return $this->remove_web_only_image_attributes( $post_content );
+}
+private function remove_web_only_image_attributes( string $content ): string {
+$html = new \WP_HTML_Tag_Processor( $content );
+while ( $html->next_tag( array( 'tag_name' => 'img' ) ) ) {
+foreach ( array( 'loading', 'decoding', 'fetchpriority', 'srcset', 'sizes' ) as $attribute_name ) {
+$html->remove_attribute( $attribute_name );
+}
+}
+return $html->get_updated_html();
 }
 }

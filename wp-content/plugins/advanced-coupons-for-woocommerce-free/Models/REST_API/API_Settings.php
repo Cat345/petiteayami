@@ -507,6 +507,14 @@ class API_Settings implements Model_Interface {
                 'module' => Plugin_Constants::STORE_CREDITS_MODULE,
             ),
             array(
+                'id'     => 'ai_mcp_section',
+                'title'  => __( 'AI / MCP', 'advanced-coupons-for-woocommerce-free' ),
+                'badge'  => __( 'New', 'advanced-coupons-for-woocommerce-free' ),
+                'fields' => 'ai_mcp_section' === $current_section ? $this->_get_single_section_fields( $current_section ) : array(),
+                'show'   => true,
+                'module' => false,
+            ),
+            array(
                 'id'     => 'modules_section',
                 'title'  => __( 'Modules', 'advanced-coupons-for-woocommerce-free' ),
                 'fields' => 'modules_section' === $current_section ? $this->_get_single_section_fields( $current_section ) : array(),

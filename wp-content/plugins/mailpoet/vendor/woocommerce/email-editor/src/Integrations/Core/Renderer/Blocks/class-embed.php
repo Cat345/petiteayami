@@ -128,7 +128,7 @@ $caption = trim( $matches[1] );
 if ( '' === $caption ) {
 return '';
 }
-return '<div style="text-align: center; margin-top: 8px;">' . Html_Processing_Helper::sanitize_caption_html( $caption ) . '</div>';
+return '<div class="wp-element-caption" style="text-align: center; margin-top: 8px;">' . Html_Processing_Helper::sanitize_caption_html( $caption ) . '</div>';
 }
 protected function render_content( string $block_content, array $parsed_block, Rendering_Context $rendering_context ): string {
 $attr = $parsed_block['attrs'] ?? array();

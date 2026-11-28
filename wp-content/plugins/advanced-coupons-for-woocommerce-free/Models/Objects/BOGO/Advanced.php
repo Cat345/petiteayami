@@ -126,6 +126,8 @@ class Advanced extends Abstract_BOGO_Deal {
      * Check if the provided cart item matches the items set in the trigger/deal entry.
      *
      * @since 1.4
+     * @since 4.7.7 Applies acfw_bogo_is_cart_item_match_entries to the specific-products match as well,
+     *              passing the computed match as the filter value.
      * @access public
      *
      * @param array   $cart_item Cart item data.
@@ -142,14 +144,22 @@ class Advanced extends Abstract_BOGO_Deal {
                     ? array( $cart_item['variation_id'], $cart_item['product_id'] ) // should check the parent product.
                     : array( $cart_item['product_id'] );
 
+                $matched = false;
+
                 foreach ( $ids_to_check as $item_id ) {
                     $filtered_id = apply_filters( 'acfw_filter_cart_item_product_id', $item_id );
                     if ( in_array( $filtered_id, $entry['ids'], true ) ) {
-                        return $filtered_id;
+                        $matched = $filtered_id;
+                        break;
                     }
                 }
 
-                return false;
+                // This type is matched here rather than by an add-on, so the answer is handed to
+                // the same filter the other types go through instead of being returned straight
+                // away. The match that was just computed is the starting value, so with nothing
+                // hooked the result is exactly what it has always been -- the matched id, or
+                // false -- and an add-on can narrow it without having to redo the matching.
+                return apply_filters( 'acfw_bogo_is_cart_item_match_entries', $matched, $cart_item, $entry, $is_deal, $type, $this );
 
             default:
                 return apply_filters( 'acfw_bogo_is_cart_item_match_entries', false, $cart_item, $entry, $is_deal, $type, $this );

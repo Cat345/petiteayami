@@ -11,6 +11,7 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\TrackingConfig;
@@ -208,6 +209,9 @@ class Clicks {
       }
       $url = $this->appendRequestMethod($processedUrl);
     } else {
+      // Links sent before they were stored with plain ampersands keep "&amp;". Decoded before shortcodes
+      // and tags are resolved, so the checks below compare the URL the redirect sends.
+      $url = NewsletterLinks::decodeAmpersands($url);
       $this->shortcodes->setQueue($queue);
       $this->shortcodes->setNewsletter($newsletter);
       $this->shortcodes->setSubscriber($subscriber);

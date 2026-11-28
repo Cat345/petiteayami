@@ -38,6 +38,7 @@ export interface ICouponTemplateListItem {
 export interface ICouponTemplate extends ICouponTemplateListItem {
   fields: ICouponTemplateField[];
   cart_conditions: (ICartConditionGroup | ICartConditionGroupLogic)[];
+  generated_by_ai?: boolean;
 }
 
 export interface ICouponTemplateCategory {
@@ -77,7 +78,9 @@ export interface IFieldComponentProps {
 }
 
 export interface ICouponTemplateFormData {
-  id: number;
+  // AI template IDs are strings (`ai-temp`, `template-…`). The server reads a non-numeric ID as 0.
+  id: number | string;
+  is_ai?: boolean;
   fields: ICouponTemplateFieldData[];
   cart_conditions: (ICartConditionGroup | ICartConditionGroupLogic)[];
 }

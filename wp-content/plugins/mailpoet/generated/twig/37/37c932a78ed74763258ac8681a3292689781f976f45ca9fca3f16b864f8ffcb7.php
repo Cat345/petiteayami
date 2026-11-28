@@ -232,6 +232,6 @@ class __TwigTemplate_8af1b0123e44e0dbc01ef4376ab3d01514a0306b6a607ad264d10a53f47
 
     public function getSourceContext()
     {
-        return new Source("", "subscription/manage_subscription.html", "/home/circleci/mailpoet/mailpoet/views/subscription/manage_subscription.html");
+        return new Source("", "subscription/manage_subscription.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/subscription/manage_subscription.html");
     }
 }

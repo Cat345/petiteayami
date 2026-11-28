@@ -79,6 +79,6 @@ class __TwigTemplate_207089b3e015287bbc04bcee6c45e9a624ad67e2a80c754f48d54bb8da1
 
     public function getSourceContext()
     {
-        return new Source("", "logs_data.html", "/home/circleci/mailpoet/mailpoet/views/logs_data.html");
+        return new Source("", "logs_data.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/logs_data.html");
     }
 }

@@ -431,12 +431,33 @@ class Store_Credit_Entry {
      * Validate customer balance.
      *
      * @since 4.0
+     * @since 4.7.7 Also check an existing entry whose amount is being raised, against the increase only.
      * @access protected
+     *
+     * @return true|\WP_Error True when the balance covers the amount, error object otherwise.
      */
     protected function _validate_customer_balance() {
-        $balance = \ACFWF()->Store_Credits_Calculate->get_customer_balance( $this->_data['user_id'], true );
 
-        if ( ! $this->_data['id'] && 'decrease' === $this->_data['type'] && $balance < $this->_data['amount'] ) {
+        if ( 'decrease' !== $this->_data['type'] ) {
+            return true;
+        }
+
+        $balance = \ACFWF()->Store_Credits_Calculate->get_customer_balance( $this->_data['user_id'], true );
+        $amount  = (float) $this->_data['amount'];
+
+        if ( $this->_data['id'] ) {
+            // The balance already has this entry's stored amount taken out of it, so only the
+            // increase has to be covered. An amount that stays the same or goes down hands credit
+            // back instead of spending it and must not be blocked - the REST endpoint re-saves
+            // every property, so editing only a note comes through here too.
+            $amount -= $this->_get_offsettable_stored_amount();
+
+            if ( 0 >= wc_add_number_precision( $amount ) ) {
+                return true;
+            }
+        }
+
+        if ( wc_add_number_precision( $balance ) < wc_add_number_precision( $amount ) ) {
             return new \WP_Error(
                 'insufficient_user_store_credit_balance',
                 __( "The user's store credit balance is insufficient.", 'advanced-coupons-for-woocommerce-free' ),
@@ -448,6 +469,43 @@ class Store_Credit_Entry {
         }
 
         return true;
+    }
+
+    /**
+     * Get the amount this entry already takes out of the balance being checked.
+     *
+     * Only a stored row against the same customer counts. A REST edit can move an entry to another
+     * user, and the saved amount is then coming out of that balance for the first time, so there is
+     * nothing already deducted to offset it against.
+     *
+     * A stored row that is still a decrease offsets the new amount: the balance already has it
+     * taken out. A stored increase does the opposite - saving it as a decrease also takes that
+     * credit back out of the balance - so it is returned negative and adds to what has to be
+     * covered.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @return float Stored entry amount, negated for a stored increase, or zero when the stored
+     *               row does not bear on this save.
+     */
+    private function _get_offsettable_stored_amount() {
+        global $wpdb;
+
+        $stored = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT entry_amount, user_id, entry_type FROM {$wpdb->acfw_store_credits} WHERE entry_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $this->get_id()
+            )
+        );
+
+        if ( ! $stored || (int) $stored->user_id !== (int) $this->_data['user_id'] ) {
+            return 0.0;
+        }
+
+        return 'decrease' === $stored->entry_type
+            ? (float) $stored->entry_amount
+            : - (float) $stored->entry_amount;
     }
 
     /**

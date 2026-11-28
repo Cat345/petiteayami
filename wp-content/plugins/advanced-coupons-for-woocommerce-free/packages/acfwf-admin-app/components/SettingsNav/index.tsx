@@ -77,11 +77,12 @@ const SettingsNav = (props: IProps) => {
 
   return (
     <Menu className="acfw-settings-nav" defaultSelectedKeys={[defaultKey]}>
-      {filteredSections.map(({ id, title }) => (
+      {filteredSections.map(({ id, title, badge }) => (
         <Menu.Item key={id}>
           <Link to={`${pathPrefix}admin.php?page=acfw-settings&section=${id}`}>
             <MenuIcon section={id} />
             {title}
+            {badge ? <span className="acfw-settings-nav-badge">{badge}</span> : null}
           </Link>
         </Menu.Item>
       ))}

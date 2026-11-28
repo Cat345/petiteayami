@@ -271,6 +271,6 @@ class __TwigTemplate_53b89d2127c3e3553aef87a0684de61c60938709506258cd8a7cd55ed96
 
     public function getSourceContext()
     {
-        return new Source("", "form/front_end_form.html", "/home/circleci/mailpoet/mailpoet/views/form/front_end_form.html");
+        return new Source("", "form/front_end_form.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/form/front_end_form.html");
     }
 }

@@ -71,6 +71,6 @@ class __TwigTemplate_ac817dfd1e8dd75a0b226a1f7ca4b088662e648d3cb663850d54f18c3b8
 
     public function getSourceContext()
     {
-        return new Source("", "settings_translations.html", "/home/circleci/mailpoet/mailpoet/views/settings_translations.html");
+        return new Source("", "settings_translations.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/settings_translations.html");
     }
 }

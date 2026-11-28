@@ -44,7 +44,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.7.6.1';
+    const VERSION             = '4.7.7';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
@@ -72,6 +72,10 @@ class Plugin_Constants {
     const SAVETO_NOTICE_SHOW_AFTER    = 'acfwf_saveto_notice_show_after';
     const SAVETO_NOTICE_DISMISSED     = 'acfwf_saveto_notice_dismissed';
     const STOREAGENT_NOTICE_DISMISSED = 'acfwf_storeagent_notice_dismissed';
+
+    // License key notices (user meta keys that store the dismissal timestamp).
+    const UNOFFICIAL_COPY_NOTICE_DISMISSED = 'acfwf_unofficial_copy_notice_dismissed';
+    const INVALID_KEY_NOTICE_DISMISSED     = 'acfwf_invalid_license_key_notice_dismissed';
 
     // WC Admin.
     const REGISTER_WC_ADMIN_NOTE = 'acfwf_register_wc_admin_note';
@@ -126,6 +130,7 @@ class Plugin_Constants {
     const REFUND_STORE_CREDIT_DISCOUNT_ENTRY         = 'acfw_refund_store_credit_discount_entry_id';
     const DISPLAY_STORE_CREDITS_REDEEM_FORM          = 'acfw_display_store_credits_redeem_form';
     const AUTO_DISPLAY_STORE_CREDITS_REDEEM_FORM     = 'acfw_auto_display_store_credits_redeem_form';
+    const SHOW_STORE_CREDITS_GUEST_NOTICE            = 'acfw_show_store_credits_guest_notice';
     const ALLOW_STORE_CREDITS_FOR_RENEWAL            = 'acfw_allow_store_credits_for_renewal';
 
     // Settings Constants.
@@ -204,6 +209,9 @@ class Plugin_Constants {
     // Discount application mode (per feature: 'price' bakes the discount into item/rate prices, 'coupon' attributes it to the coupon amount).
     const BOGO_DISCOUNT_APPLICATION_MODE = 'acfw_bogo_discount_application_mode';
 
+    // Reject a BOGO coupon apply/re-validation when its trigger products are not in the cart, instead of applying it and granting nothing.
+    const BOGO_PREVENT_APPLY_WHEN_TRIGGER_NOT_MET = 'acfw_bogo_prevent_apply_when_trigger_not_met';
+
     // Advance Usage Limits.
     const USAGE_LIMITS_CRON = 'acfw_advanced_usage_limits_cron';
 
@@ -239,6 +247,9 @@ class Plugin_Constants {
     // Coupon Templates.
     const TOTAL_CREATED_WITH_COUPON_TEMPLATES = 'acfw_total_coupons_created_with_coupon_templates';
     const MOST_POPULAR_TEMPLATES              = 'acfw_most_popular_templates';
+    const TOTAL_CREATED_WITH_AI_TEMPLATES     = 'acfw_total_coupons_created_with_ai_templates';
+    const TOTAL_SAVED_AI_TEMPLATES            = 'acfw_total_saved_ai_templates';
+    const COUPON_FROM_AI_TEMPLATE_META        = '_acfw_coupon_from_ai_template';
 
     // Emails.
     const SEND_COUPON_ACTION_SCHEDULE = 'acfwf_send_coupon_action_schedule';

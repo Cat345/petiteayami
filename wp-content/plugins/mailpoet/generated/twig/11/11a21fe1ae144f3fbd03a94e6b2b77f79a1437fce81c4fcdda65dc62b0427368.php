@@ -104,6 +104,6 @@ class __TwigTemplate_b2e90aa663ee76ef09938814932102214bf0368922c2c205f621d8de927
 
     public function getSourceContext()
     {
-        return new Source("", "subscription/confirm_unsubscribe.html", "/home/circleci/mailpoet/mailpoet/views/subscription/confirm_unsubscribe.html");
+        return new Source("", "subscription/confirm_unsubscribe.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/subscription/confirm_unsubscribe.html");
     }
 }

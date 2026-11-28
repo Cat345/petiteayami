@@ -230,6 +230,6 @@ class __TwigTemplate_e9532cf0026e4c617bee1d3c81fed011d9d7ae14ad609d02eaa36481262
 
     public function getSourceContext()
     {
-        return new Source("", "emails/congratulatoryMssEmail.html", "/home/circleci/mailpoet/mailpoet/views/emails/congratulatoryMssEmail.html");
+        return new Source("", "emails/congratulatoryMssEmail.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/emails/congratulatoryMssEmail.html");
     }
 }

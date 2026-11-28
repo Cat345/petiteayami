@@ -1,9 +1,9 @@
-=== Advanced Coupons for WooCommerce – BOGO Coupons, Store Credit & WooCommerce Coupon Plugin ===
+=== Advanced Coupons for WooCommerce – BOGO, Store Credit & WooCommerce Coupons ===
 Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo, store credit, coupon plugin, discount codes
 Requires at least: 5.9
-Tested up to: 7.1.3
-Stable tag: 4.7.6.1
+Tested up to: 7.1.5
+Stable tag: 4.7.7
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -87,6 +87,9 @@ We're building a smarter store credit system for WooCommerce with Advanced Coupo
 > <strong>ADVANCED GIFT CARDS</strong><br />
 > Are you looking to sell WooCommerce gift cards? We have a sister plugin called Advanced Gift Cards plugin which integrates perfectly with this free Advanced Coupons plugin. Customers redeem gift cards directly to this free plugin's store credit feature.<br /><br />Click here to view the features and purchase the <a href="https://advancedcouponsplugin.com/?utm_source=wprepo&utm_medium=link&utm_campaign=agc" rel="friend">Advanced Gift Cards</a> plugin.
 
+> <strong>ADVANCED LOYALTY PROGRAM</strong><br />
+> Want to run a loyalty program for your WooCommerce store? Our Advanced Loyalty Program add-on lets customers earn points for their orders and redeem them for coupons on future orders.<br /><br />Click here to view the features and purchase the <a href="https://advancedcouponsplugin.com/pricing/loyalty/?utm_source=wprepo&utm_medium=link&utm_campaign=acfwf" rel="friend">Advanced Loyalty Program</a>.
+
 = WooCommerce Discount Rules & Coupon Rules (Cart Conditions) =
 
 Have you ever wanted to apply rules to your coupons? That's where Cart Conditions come in. Cart Conditions are like giving coupons rules to follow before it will let your customers apply them.
@@ -138,9 +141,11 @@ Use WooCommerce URL coupons on buttons, images and text. Show them on your sideb
 
 WooCommerce coupons are your store's discount codes and promo codes. Advanced Coupons extends every WooCommerce coupon code with cart conditions, BOGO deals, URL coupons, store credit and coupon categories.
 
-Run your promotions with confidence. Set exactly when a discount code applies, who can use it, and what happens when the customer's cart no longer qualifies.
+Run your WooCommerce promotions with confidence. Set exactly when a discount code applies, who can use it, and what happens when the customer's cart no longer qualifies.
 
 In the Premium version you can also auto apply promo codes so customers never have to type a coupon code at all.
+
+Need bulk coupons? Premium also lets you bulk generate 100's or 1000's of unique coupon codes for a single coupon (Virtual Coupons), ideal for welcome emails and abandoned cart sequences.
 
 = Smart Coupons Categories =
 
@@ -176,11 +181,11 @@ Not only is Advanced Coupons compatible with standard WooCommerce coupons, it's 
 
 If you want WooCommerce coupons that are advanced AND compatible with all the existing tools you are using then Advanced Coupons is the tool for you.
 
-= The Best WooCommerce Coupon Plugin (3 Reasons) =
+= The Best WooCommerce Coupon Plugin (2 Reasons) =
 
 When it comes to marketing your store, standard WooCommerce coupons are too underpowered to be useful. That why you need extra WooCommerce coupons features.
 
-The mission of Advanced Coupons is to be the undisputed BEST WooCommerce coupons features extender on the market. Here are 3 top reasons you need Advanced Coupons:
+The mission of Advanced Coupons is to be the undisputed BEST WooCommerce coupons features extender on the market. Here are 2 top reasons you need Advanced Coupons:
 
 **Reason #1: WooCommerce BOGO coupons are more PROFITABLE (It's simple math!)**
 
@@ -208,21 +213,6 @@ Have you ever had a customer use a coupon they weren't meant to? Did they get mo
 Cart conditions are like a set of rules your customer needs to abide by before they can apply a coupon. And if they apply the coupon and then later become ineligible, the cart conditions will remove that coupon.
 
 Gone are the days of losing out by having to put up with customers looking to scrape something extra. You can set up complex rules for your WooCommerce Coupons to abide by which, over time, will save you bucket loads.
-
-**Reason #3: We're a coupon plugin dedicated to your success!**
-
-There's lots of other "features" that I could give you as reasons of why this is the best WooCommerce coupon extension plugin. But really there's only one more reason you should care about: we care about your success!
-
-Unlike many other coupon plugins on the market our parent company, Rymera, is a professional WooCommerce extension company. Your business will be backed by a real company with real support, not just someone writing plugins on the weekend as a hobby.
-
-We are 100% dedicated to helping STORE OWNERS. We are also store owners just like you, we're out there making a living selling online using WooCommerce. We actually use this product ourselves!
-
-Our team believes wholeheartedly that small stores can grow into big stores, so we've dedicated our entire company's existence to helping WooCommerce store owners.
-
-Our mission is "To help store owners succeed with professional-grade tools that help them grow". By installing Advanced Coupons, you're taking the first step to getting to the next level with your store.
-
-To your continued success!
-~ Josh & the team at Advanced Coupons
 
 = Other Great Uses For Advanced Coupons =
 
@@ -404,37 +394,27 @@ Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
 
+= 4.7.7 =
+* Improvement: Prevent coupon from applying if BOGO trigger is not met
+* Improvement: Show admin notices when the stored ACFWP licence key is cracked or not valid
+* Improvement: Show store credits info on checkout page for guest users that it should be available for logged-in users
+* Improvement: Update bundled third-party libraries
+* Integration: AI / MCP settings section that promotes StoreAgent and controls MCP write access
+* Bug Fix: BOGO "Remove the free item from the cart" doesn't remove deal items when an auto-applied coupon's cart condition fails
+* Bug Fix: BOGO deal notice always renders as "Info" on the cart and checkout blocks, ignoring the per-coupon notice type
+* Bug Fix: BOGO: priced-individually bundles get no discount breakdown row and empty order BOGO meta
+* Bug Fix: Cart conditions non-qualifying notice button renders as plain text on classic cart and checkout
+* Bug Fix: Cart conditions non-qualifying notice fires for unrelated coupon invalidity reasons (scheduler, role restrictions)
+* Bug Fix: Coupon templates and Advanced Promo Kit settings menu items have no icons
+* Bug Fix: Saved coupon settings silently don't apply: duplicate _acfw_* meta rows when rest_api_init fires before a coupon save
+* Bug Fix: Scheduler shifts coupon start/expiry date by one minute when the other date is set
+* Bug Fix: Security: data validation hardening
+* Bug Fix: Store credits page returns 404 for all customers when "Hide store credits on My Account if zero balance" is on and rewrite rules are rebuilt by a user with no store credit
+* Bug Fix: Store credit returned on cancel can be re-applied or refunded again from the order screen without deducting the customer's balance
+* Bug Fix: WooCommerce 11: BOGO deal notice markup is stripped on cart and checkout blocks
+
 = 4.7.6.1 =
 * Bug Fix: Store credit (after tax) lets a resumed failed order complete without payment or without deducting credit
-
-= 4.7.6 =
-* Bug Fix: Coupon Expiry Date column shows blank for any non-expired coupon, even when Scheduler was never used
-* Bug Fix: Dashboard License Activation Status shows Inactive while License page shows Active
-* Bug Fix: Dashboard reports endpoint exhausts PHP memory and fatals on high-volume stores
-* Bug Fix: Non-Qualifying auto-apply notice ignores coupon Scheduler start/expiry dates
-* Bug Fix: One-BOGO restriction blocks a replacement BOGO coupon within the same request (stale Calculation cache)
-* Bug Fix: Scheduler misclassifies coupons with a native WooCommerce expiry date as Scheduler-enabled
-* Bug Fix: Store Credit discount not reflected in PayPal Payments checkout total when "after tax and shipping" apply mode is used
-* Bug Fix: Store Credits balance calculation ignores cache, doubling DB queries on Cart/Checkout
-* Bug Fix: Store credit minimum order total subtracts the minimum from the requested amount, not from the cart total
-* Bug Fix: URL Coupon success message can be cached and leaked to anonymous visitors on cart-aware page caches (Kinsta, etc.)
-* Bug Fix: Wholesale sale price ignored on classic cart page when BOGO module is active (no coupon required)
-* Improvement: Allow Store Credit “Total Paid Deduction” Setting to Apply to Processing Orders
-
-= 4.7.4 =
-* Bug Fix: BOGO "eligible to redeem deals" notice persists on classic cart after cart condition is no longer met
-* Bug Fix: BOGO additional settings: help-tip (?) icon wraps below the radio instead of staying inline with the label
-* Bug Fix: Error notice disappears on cart block after product quantity is changed
-* Bug Fix: Subscription product added twice when using coupon URL with add-to-cart parameter
-* Bug Fix: Two simultaneous auto-apply BOGO coupons: second BOGO free product not added to cart
-* Bug Fix: Vite_App::register() leaks modulepreload hints globally via wp_head
-* Bug Fix: WP 7.0: Missing wc-blocks-checkout script dependency in checkout block integration
-* Bug Fix: WP 7.0: acfwf-wc-cart-block-integration-css stylesheet injected into block editor iframe incorrectly
-* Bug Fix: Cart condition notice renders raw HTML entities on WC 9.4+ with classic cart/checkout
-* Bug Fix: json_decode() TypeError in Elementor integration when _elementor_data returns array on PHP 8.2
-* Feature: Add WordPress Abilities API support (8 abilities) — Advanced Coupons (Free)
-* Feature: Recommended sister plugin notice
-* Improvement: Option to remove the BOGO free/deal item from the cart when the deal no longer qualifies (instead of reverting it to full price)
 
 View changelog.txt for previous versions.
 

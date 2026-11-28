@@ -22,6 +22,10 @@ class Tracks extends SimpleWorker {
     $this->analytics = $analytics;
   }
 
+  public function checkProcessingRequirements() {
+    return $this->analytics->isEnabled();
+  }
+
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     return $this->maybeReportAnalyticsToTracks();
   }

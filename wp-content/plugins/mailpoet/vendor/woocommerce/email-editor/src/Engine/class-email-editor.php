@@ -11,6 +11,7 @@ use WP_REST_Request;
 use WP_Theme_JSON;
 class Email_Editor {
 public const WOOCOMMERCE_EMAIL_META_THEME_TYPE = 'woocommerce_email_theme';
+public const ENTITY_ACTIONS_SCRIPT_MODULE_ID = '@woocommerce/email-editor/entity-actions';
 private Email_Api_Controller $email_api_controller;
 private Templates $templates;
 private Patterns $patterns;
@@ -44,6 +45,7 @@ $this->register_email_post_types();
 $this->register_block_templates();
 $this->register_email_post_sent_status();
 $this->register_personalization_tags();
+$this->register_entity_actions_script_module();
 $is_editor_page = apply_filters( 'woocommerce_is_email_editor_page', false );
 if ( $is_editor_page ) {
 $this->extend_email_post_api();
@@ -73,6 +75,45 @@ foreach ( self::get_post_types() as $post_type ) {
 register_post_type(
 $post_type['name'],
 array_merge( $this->get_default_email_post_args(), $post_type['args'] )
+);
+}
+}
+private function register_entity_actions_script_module(): void {
+if ( ! function_exists( 'wp_register_entity_actions' ) ) {
+return;
+}
+$version = filemtime( __DIR__ . '/entity-actions.js' );
+wp_register_script_module(
+self::ENTITY_ACTIONS_SCRIPT_MODULE_ID,
+plugins_url( 'entity-actions.js', __FILE__ ),
+array(),
+false === $version ? false : (string) $version
+);
+add_action( 'wp_entity_actions_api_init', array( $this, 'register_entity_actions' ) );
+}
+public function register_entity_actions(): void {
+if ( ! function_exists( 'wp_register_entity_actions' ) || ! function_exists( 'wp_unregister_entity_actions' ) ) {
+return;
+}
+foreach ( self::get_post_types() as $post_type ) {
+if ( true !== apply_filters( 'woocommerce_email_editor_replace_trash_action', false, $post_type['name'] ) ) {
+continue;
+}
+wp_unregister_entity_actions( 'postType', $post_type['name'], array( 'move-to-trash' ) );
+wp_register_entity_actions(
+'woocommerce',
+'postType',
+$post_type['name'],
+array(
+array(
+'id' => 'trash-email-post',
+'label' => __( 'Move to trash', 'woocommerce' ),
+'supportsBulk' => true,
+'hideModalHeader' => true,
+'modalFocusOnMount' => 'firstContentElement',
+),
+),
+self::ENTITY_ACTIONS_SCRIPT_MODULE_ID
 );
 }
 }

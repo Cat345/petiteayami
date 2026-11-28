@@ -256,6 +256,7 @@ class Admin implements Model_Interface, Initializable_Interface, Activatable_Int
      *
      * @since 4.3.3
      * @since 4.5.1 Apply precision functions to the discount value calculation.
+     * @since 4.7.7 Recognise the HPOS edit order screen as well as the legacy one.
      * @access public
      *
      * @param string        $value      Discount value.
@@ -263,7 +264,7 @@ class Admin implements Model_Interface, Initializable_Interface, Activatable_Int
      * @return string
      */
     public function append_bogo_discount_to_edit_order_coupon_value( $value, $order_item ) {
-        if ( is_admin() && isset( $_GET['post'] ) && $order_item instanceof \WC_Order_Item_Coupon ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if ( is_admin() && $this->_is_edit_order_screen() && $order_item instanceof \WC_Order_Item_Coupon ) {
             $discount      = wc_add_number_precision( (float) $value );
             $bogo_discount = wc_add_number_precision( (float) $order_item->get_meta( Plugin_Constants::ORDER_COUPON_BOGO_DISCOUNT ) );
 
@@ -271,6 +272,34 @@ class Admin implements Model_Interface, Initializable_Interface, Activatable_Int
         }
 
         return $value;
+    }
+
+    /**
+     * Check if the current request is an edit order screen.
+     *
+     * Covers the legacy post based screen (`post.php?post=<id>&action=edit`) and the HPOS one
+     * (`admin.php?page=wc-orders&action=edit&id=<id>`). The HPOS URL carries no `post` query var,
+     * so checking for that alone left the BOGO discount out of the coupon value popup on every
+     * store running HPOS.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @return bool
+     */
+    private function _is_edit_order_screen() {
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
+        if ( isset( $_GET['post'] ) ) {
+            return true;
+        }
+
+        if ( ! isset( $_GET['page'], $_GET['action'], $_GET['id'] ) ) {
+            return false;
+        }
+
+        return 'wc-orders' === sanitize_key( wp_unslash( $_GET['page'] ) )
+            && 'edit' === sanitize_key( wp_unslash( $_GET['action'] ) );
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
     }
 
     /*

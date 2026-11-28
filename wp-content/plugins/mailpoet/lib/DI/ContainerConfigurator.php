@@ -33,9 +33,18 @@ class ContainerConfigurator implements IContainerConfigurator {
         'getInstance',
       ]);
     // Abilities
-    $container->autowire(\MailPoet\Abilities\AbilitiesRegistrar::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\AbilitiesRegistrar::class)
+      ->setPublic(true)
+      ->setArgument('$container', new Reference(ContainerWrapper::class));
+    $container->autowire(\MailPoet\Abilities\CreateNewsletterDraftAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\GetNewsletterDraftAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\NewsletterDraftBlocks::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\NewsletterDraftOptionsAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\NewsletterDraftReader::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\NewsletterDrafts::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\RecentNewslettersAbility::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\SendingStatusAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\UpdateNewsletterDraftAbility::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\UnsubscribeTrendAbility::class)->setPublic(true);
     // AdminPages
     $container->autowire(\MailPoet\AdminPages\AssetsController::class)->setPublic(true);
@@ -400,6 +409,18 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Cli::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Endpoints\GenerateSubjectSuggestionsEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetPostType::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetPatterns::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetsController::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Api::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Endpoints\EmailPresetsGetEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Endpoints\EmailPresetsPostEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Endpoints\EmailPresetPutEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Endpoints\EmailPresetDeleteEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Endpoints\EmailPresetDuplicateEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Endpoints\EmailPresetTrashEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Endpoints\EmailPresetRestoreEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Endpoints\EmailPresetPreviewEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EditorPageRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\MailPoetCssInliner::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailApiController::class)->setPublic(true);

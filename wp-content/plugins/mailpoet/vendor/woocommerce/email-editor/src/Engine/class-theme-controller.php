@@ -2,7 +2,9 @@
 declare(strict_types = 1);
 namespace Automattic\WooCommerce\EmailEditor\Engine;
 if (!defined('ABSPATH')) exit;
+use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Css_Selector_Normalizer;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preset_Variable_Resolver;
+use Automattic\WooCommerce\EmailEditor\Integrations\Utils\Styles_Helper;
 use WP_Block_Template;
 use WP_Post;
 use WP_Theme_JSON;
@@ -86,7 +88,7 @@ $css_presets .= ".has-{$font_family['slug']}-font-family { font-family: {$font_f
 foreach ( $email_theme_settings['typography']['fontSizes']['default'] as $font_size ) {
 $css_presets .= ".has-{$font_size['slug']}-font-size { font-size: {$font_size['size']}; } \n";
 }
-$color_definitions = array_merge( $email_theme_settings['color']['palette']['theme'] ?? array(), $email_theme_settings['color']['palette']['default'] ?? array() );
+$color_definitions = Styles_Helper::palette_definitions( $email_theme_settings );
 foreach ( $color_definitions as $color ) {
 $css_presets .= ".has-{$color['slug']}-color { color: {$color['color']}; } \n";
 $css_presets .= ".has-{$color['slug']}-background-color { background-color: {$color['color']}; } \n";
@@ -97,7 +99,7 @@ $blocks = $this->get_theme()->get_styles_block_nodes();
 foreach ( $blocks as $block_metadata ) {
 $css_blocks .= $this->get_theme()->get_styles_for_block( $block_metadata );
 }
-$css_blocks = preg_replace( '/:root\s:where\((.*?)\)/', '$1', $css_blocks );
+$css_blocks = Css_Selector_Normalizer::normalize( $css_blocks );
 $elements_styles = $this->get_theme()->get_raw_data()['styles']['elements'] ?? array();
 if ( $template && $template->wp_id ) {
 $template_theme = (array) get_post_meta( $template->wp_id, Email_Editor::WOOCOMMERCE_EMAIL_META_THEME_TYPE, true );
@@ -127,6 +129,9 @@ break;
 case 'link':
 $selector = 'a:not(.button-link)';
 break;
+case 'caption':
+$selector = '.wp-element-caption';
+break;
 }
 $css_elements .= wp_style_engine_get_styles( $elements_style, array( 'selector' => $selector ) )['css'] ?? '';
 }
@@ -145,14 +150,7 @@ return $font_size_definition['size'];
 return $font_size;
 }
 public function translate_slug_to_color( string $color_slug ): string {
-$settings = $this->get_settings();
-$color_definitions = array_merge( $settings['color']['palette']['theme'] ?? array(), $settings['color']['palette']['default'] ?? array() );
-foreach ( $color_definitions as $color_definition ) {
-if ( $color_definition['slug'] === $color_slug ) {
-return strtolower( $color_definition['color'] );
-}
-}
-return $color_slug;
+return Styles_Helper::resolve_color_from_palette( $this->get_settings(), $color_slug );
 }
 public function get_variables_values_map(): array {
 $variables_css = $this->get_theme()->get_stylesheet( array( 'variables' ) );

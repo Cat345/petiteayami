@@ -70,7 +70,7 @@ $complete_content = $table_content_with_styles;
 if ( ! empty( $caption ) ) {
 $sanitized_caption = Html_Processing_Helper::sanitize_caption_html( $caption );
 $caption_styles = $this->extract_typography_styles_for_caption( $table_styles['css'] );
-$complete_content .= '<div style="text-align: center; margin-top: 8px; ' . $caption_styles . '">' . $sanitized_caption . '</div>';
+$complete_content .= '<div class="wp-element-caption" style="text-align: center; margin-top: 8px; ' . $caption_styles . '">' . $sanitized_caption . '</div>';
 }
 $table_attrs = array(
 'style' => 'border-collapse: separate;',
@@ -146,6 +146,9 @@ private function get_custom_border_color( array $parsed_block, Rendering_Context
 $block_attributes = $parsed_block['attrs'] ?? array();
 if ( ! empty( $block_attributes['borderColor'] ) ) {
 $border_color = $rendering_context->translate_slug_to_color( $block_attributes['borderColor'] );
+if ( '' === $border_color ) {
+return null;
+}
 return Html_Processing_Helper::sanitize_color( $border_color );
 }
 return null;

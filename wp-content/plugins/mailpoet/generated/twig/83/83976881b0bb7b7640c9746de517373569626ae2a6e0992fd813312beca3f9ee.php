@@ -106,6 +106,6 @@ class __TwigTemplate_b67c32b7be3df4a420334077f7e14c432f62c4aab97a732513f3dcffc5d
 
     public function getSourceContext()
     {
-        return new Source("", "upgrade/upgrade_button.html", "/home/circleci/mailpoet/mailpoet/views/upgrade/upgrade_button.html");
+        return new Source("", "upgrade/upgrade_button.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/upgrade/upgrade_button.html");
     }
 }

@@ -157,6 +157,6 @@ Parsley.setLocale(\x27mailpoet\x27);
 
     public function getSourceContext()
     {
-        return new Source("", "parsley-translations.html", "/home/circleci/mailpoet/mailpoet/views/parsley-translations.html");
+        return new Source("", "parsley-translations.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/parsley-translations.html");
     }
 }

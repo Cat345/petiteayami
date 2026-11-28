@@ -56,7 +56,7 @@ $table_attrs = array(
 'style' => 'width:' . ( $block_attributes['width'] ? '100%' : 'auto' ) . ';',
 );
 $cell_attrs = array(
-'class' => $wrapper_styles['classnames'] . ' ' . $block_classname,
+'class' => trim( $wrapper_styles['classnames'] . ' ' . $block_classname ),
 'style' => $wrapper_styles['css'],
 'align' => $block_attributes['textAlign'],
 'valign' => 'middle',

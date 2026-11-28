@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace Automattic\WooCommerce\EmailEditor\Engine;
 if (!defined('ABSPATH')) exit;
+use Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger;
 use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor;
 use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
 use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
@@ -14,9 +15,27 @@ public const RENDERING_CONTEXT_KEY = 'rendering_context';
 private Personalization_Tags_Registry $tags_registry;
 private array $context;
 private $value_interceptor = null;
-public function __construct( Personalization_Tags_Registry $tags_registry ) {
+private ?Email_Editor_Logger $logger;
+public function __construct( Personalization_Tags_Registry $tags_registry, ?Email_Editor_Logger $logger = null ) {
 $this->tags_registry = $tags_registry;
+$this->logger = $logger;
 $this->context = array();
+}
+private function get_tag_value( Personalization_Tag $tag, string $rendering_context, array $arguments ): string {
+try {
+return $tag->execute_callback( $this->get_callback_context( $rendering_context ), $arguments );
+} catch ( \Throwable $e ) {
+if ( $this->logger ) {
+$this->logger->error(
+'Personalization tag callback failed',
+array(
+'token' => $tag->get_token(),
+'error' => $e->getMessage(),
+)
+);
+}
+return '';
+}
 }
 public function set_context( array $context ) {
 $this->context = $context;
@@ -39,6 +58,9 @@ public function personalize_content( string $content, string $rendering_context 
 if ( ! in_array( $rendering_context, array( self::RENDERING_CONTEXT_HTML, self::RENDERING_CONTEXT_TEXT ), true ) ) {
 $rendering_context = self::RENDERING_CONTEXT_HTML;
 }
+if ( self::RENDERING_CONTEXT_TEXT === $rendering_context ) {
+$content = $this->personalize_text_link_targets( $content );
+}
 $content_processor = new HTML_Tag_Processor( $content );
 while ( $content_processor->next_token() ) {
 if ( $content_processor->get_token_type() === '#comment' ) {
@@ -46,9 +68,12 @@ $modifiable_text = $content_processor->get_modifiable_text();
 $token = $this->parse_token( $modifiable_text );
 $tag = $this->tags_registry->get_by_token( $token['token'] );
 if ( ! $tag ) {
+if ( self::RENDERING_CONTEXT_TEXT === $rendering_context && '' !== $token['token'] ) {
+$content_processor->replace_token( '' );
+}
 continue;
 }
-$value = $tag->execute_callback( $this->get_callback_context( $rendering_context ), $token['arguments'] );
+$value = $this->get_tag_value( $tag, $rendering_context, $token['arguments'] );
 if ( self::RENDERING_CONTEXT_HTML === $rendering_context && Personalization_Tag::VALUE_TYPE_TEXT === $tag->get_value_type() ) {
 $value = esc_html( $value );
 }
@@ -65,7 +90,7 @@ $tag = $this->tags_registry->get_by_token( $token['token'] );
 if ( ! $tag ) {
 continue;
 }
-$value = $tag->execute_callback( $this->get_callback_context( self::RENDERING_CONTEXT_HREF ), $token['arguments'] );
+$value = $this->get_tag_value( $tag, self::RENDERING_CONTEXT_HREF, $token['arguments'] );
 $value = $this->replace_link_href( $href, $tag->get_token(), $value );
 $value = $this->intercept_value( $value, $href, self::RENDERING_CONTEXT_HREF );
 if ( '' !== $value ) {
@@ -87,6 +112,19 @@ $content_processor->set_attribute( 'href', $personalized_href );
 $content_processor->flush_updates();
 return $content_processor->get_updated_html();
 }
+private function personalize_text_link_targets( string $content ): string {
+return (string) preg_replace_callback(
+'/\]\((\[[^\]]+\]|(?:[^()\s]++|\([^()\s]*\))++)\)/',
+function ( array $matches ): string {
+$url = $this->personalize_href_tokens( $matches[1] );
+if ( null !== $url ) {
+return '](' . $url . ')';
+}
+return '[' === $matches[1][0] ? ']' : $matches[0];
+},
+$content
+);
+}
 private function personalize_href_tokens( string $href ): ?string {
 $decoded_href = html_entity_decode( urldecode( $href ), ENT_QUOTES, 'UTF-8' );
 if ( ! preg_match_all( '/\[' . self::TAG_NAME_PATTERN . '(?:\s+[^\]]+)?\]/', $decoded_href, $matches ) ) {
@@ -99,7 +137,7 @@ $tag = $this->tags_registry->get_by_token( $token['token'] );
 if ( ! $tag ) {
 continue;
 }
-$value = $tag->execute_callback( $this->get_callback_context( self::RENDERING_CONTEXT_HREF ), $token['arguments'] );
+$value = $this->get_tag_value( $tag, self::RENDERING_CONTEXT_HREF, $token['arguments'] );
 $value = $this->intercept_value( $value, $token_string, self::RENDERING_CONTEXT_HREF );
 if ( '' !== $value ) {
 $replacements[ $token_string ] = $value;

@@ -159,8 +159,8 @@ class URL_Coupons implements Model_Interface {
         $coupon_args = apply_filters(
             'acfw_extract_coupon_endpoint_args',
             array(
-				'code' => $coupon_slug,
-				'id'   => $coupon_id,
+                'code' => $coupon_slug,
+                'id'   => $coupon_id,
             )
         );
         $coupon      = new Advanced_Coupon( $coupon_id );
@@ -540,6 +540,7 @@ class URL_Coupons implements Model_Interface {
      * Main code implementation for applying the coupon via a query string.
      *
      * @since 4.5.6
+     * @since 4.7.7 Resolve the query string value as a coupon code only, and skip coupons that have the coupon URL disabled.
      * @since 4.8   Exclude cart-related query args (add-to-cart, quantity, variation_id, add-to-cart-nonce) and, when add-to-cart is present, attribute_* selections from the "stay on the same page" redirect URL so WooCommerce does not re-add the product to the cart.
      * @access public
      */
@@ -557,10 +558,26 @@ class URL_Coupons implements Model_Interface {
             return;
         }
 
-        $coupon = new Advanced_Coupon( $coupon_code );
+        // Resolve the value as a coupon code and nothing else. Handing it to Advanced_Coupon
+        // directly lets WC_Coupon fall back to reading a numeric value as a coupon ID, which is
+        // enough to apply coupons by guessing IDs. This lookup is limited to published coupons,
+        // so drafted and trashed ones are out of reach through it too.
+        // Cast the result: wc_get_coupon_id_by_code() passes its return through the
+        // woocommerce_get_coupon_id_from_code filter without re-casting it, and a numeric string
+        // coming back from a third party would put WC_Coupon back on its by-ID string branch.
+        $coupon_id = absint( wc_get_coupon_id_by_code( $coupon_code ) );
 
-        // Skip if coupon does not exist.
-        if ( ! $coupon->get_id() ) {
+        // Skip if there is no published coupon with that code.
+        if ( ! $coupon_id ) {
+            return;
+        }
+
+        $coupon = new Advanced_Coupon( $coupon_id );
+
+        // Skip if the coupon is not meant to be handed out through a URL, which is the same check
+        // the coupon endpoint makes. The code URL override is part of that endpoint's own URL, so
+        // it is not compared here.
+        if ( ! $coupon->is_coupon_url_valid( false ) ) {
             return;
         }
 
@@ -733,5 +750,4 @@ class URL_Coupons implements Model_Interface {
         add_action( 'template_redirect', array( $this, 'implement_url_coupon' ) );
         add_action( 'wp', array( $this, 'apply_coupon_from_query_string' ) );
     }
-
 }

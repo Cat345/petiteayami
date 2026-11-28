@@ -1,0 +1,336 @@
+.acfw-ai-mcp {
+  margin-top: 24px;
+  color: #1d2327;
+  font-size: 14px;
+
+  h3,
+  h4 {
+    margin: 0;
+  }
+}
+
+// Hero.
+.acfw-ai-mcp-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: flex-start;
+  padding: 32px;
+  border-radius: 6px;
+  background: #025d6b;
+}
+
+.acfw-ai-mcp-hero-main {
+  flex: 1 1 380px;
+  min-width: 0;
+}
+
+.acfw-ai-mcp-eyebrow {
+  margin-bottom: 12px;
+  color: #c8cf02;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.acfw-ai-mcp .acfw-ai-mcp-heading {
+  margin-bottom: 14px;
+  color: #fff;
+  font-family: Lato, sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.acfw-ai-mcp-intro {
+  max-width: 60ch;
+  margin: 0 0 24px;
+  color: #e8f4f7;
+  font-size: 16px;
+  line-height: 1.6;
+
+  a,
+  a:hover,
+  a:focus {
+    color: #fff;
+    font-weight: 700;
+    text-decoration: underline;
+  }
+}
+
+.acfw-ai-mcp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+}
+
+.acfw-ai-mcp .acfw-ai-mcp-cta,
+.acfw-ai-mcp .acfw-ai-mcp-cta.ant-btn {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  height: auto;
+  padding: 14px 22px;
+  border: 1px solid #a9af00;
+  border-radius: 6px;
+  background: #c8cf02;
+  color: #353535;
+  font-family: Lato, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: normal;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover,
+  &:focus {
+    border-color: #a9af00;
+    background: #c8cf02;
+    color: #353535;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+  }
+}
+
+.acfw-ai-mcp-write {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .ant-switch {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .ant-switch.ant-switch-checked {
+    background: #c8cf02;
+  }
+}
+
+.acfw-ai-mcp-write-label {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.acfw-ai-mcp-write-count {
+  color: #b9dce2;
+  font-size: 12px;
+}
+
+.acfw-ai-mcp-note {
+  margin: 16px 0 0;
+  color: #b9dce2;
+  font-size: 13px;
+}
+
+.acfw-ai-mcp-clients {
+  display: flex;
+  flex: 0 0 190px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.acfw-ai-mcp-client {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.acfw-ai-mcp-client-icon {
+  display: flex;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #fff;
+
+  &.is-dark {
+    background: #14161a;
+  }
+
+  img {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.acfw-ai-mcp-client-name {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.acfw-ai-mcp-client-more {
+  padding-right: 4px;
+  color: #b9dce2;
+  text-align: right;
+}
+
+// Example prompts.
+.acfw-ai-mcp-recipes {
+  margin-top: 32px;
+}
+
+.acfw-ai-mcp-recipes-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+
+  h4 {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  a {
+    color: #025d6b;
+    font-size: 13px;
+    font-weight: 600;
+
+    &:hover {
+      color: #17a1b6;
+    }
+  }
+}
+
+.acfw-ai-mcp .acfw-ai-mcp-recipes-desc {
+  margin: 0 0 16px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.5;
+}
+
+.acfw-ai-mcp-recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+
+.acfw-ai-mcp-recipe {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid #d5d5d5;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.acfw-ai-mcp-recipe-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.acfw-ai-mcp-recipe-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.acfw-ai-mcp-recipe-lock {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 50px;
+  background: #c5cc42;
+  color: #454810;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.acfw-ai-mcp-recipe-prompt {
+  padding: 12px 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e8f4f7 0%, #f9fae5 100%);
+  line-height: 1.5;
+}
+
+.acfw-ai-mcp-recipe-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+
+  code {
+    margin: 0;
+    padding: 2px 6px;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    background: #f5f5f5;
+    color: #025d6b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+  }
+}
+
+// MCP endpoint.
+.acfw-ai-mcp-endpoint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.acfw-ai-mcp-endpoint-title {
+  flex: 0 0 240px;
+  padding-top: 8px;
+  font-weight: 600;
+}
+
+.acfw-ai-mcp-endpoint-main {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.acfw-ai-mcp-endpoint-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+
+  code {
+    margin: 0;
+    padding: 8px 11px;
+    border: 1px solid #d5d5d5;
+    border-radius: 2px;
+    background: #fafafa;
+    color: #1d2327;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    word-break: break-all;
+
+    &.is-disabled {
+      color: #a0a0a0;
+    }
+  }
+}
+
+.acfw-ai-mcp-endpoint-help {
+  margin-top: 8px;
+  color: rgba(0, 0, 0, 0.65);
+}

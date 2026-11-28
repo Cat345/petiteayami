@@ -8,7 +8,7 @@ use Automattic\WooCommerce\EmailEditor\Integrations\Utils\Styles_Helper;
 use Automattic\WooCommerce\EmailEditor\Integrations\Utils\Table_Wrapper_Helper;
 class Text extends Abstract_Block_Renderer {
 protected function render_content( string $block_content, array $parsed_block, Rendering_Context $rendering_context ): string {
-if ( empty( trim( wp_strip_all_tags( $block_content ) ) ) ) {
+if ( empty( trim( wp_strip_all_tags( $block_content ) ) ) && ! $this->has_personalization_tag( $block_content ) ) {
 return '';
 }
 $block_content = $this->adjustStyleAttribute( $block_content );
@@ -44,6 +44,12 @@ if ( empty( $block_styles['declarations']['color'] ) ) {
 $email_styles = $rendering_context->get_theme_styles();
 $additional_styles['color'] = $parsed_block['email_attrs']['color'] ?? $email_styles['color']['text'] ?? '#000000';
 }
+if ( empty( $block_styles['declarations']['font-size'] ) && is_string( $parsed_block['email_attrs']['font-size'] ?? null ) ) {
+$inherited_font_size = Styles_Helper::get_static_font_size( $parsed_block['email_attrs']['font-size'] );
+if ( null !== $inherited_font_size ) {
+$additional_styles['font-size'] = $inherited_font_size;
+}
+}
 $additional_styles['text-align'] = $rendering_context->get_default_text_align();
 if ( ! empty( $parsed_block['attrs']['textAlign'] ) ) {
 $additional_styles['text-align'] = $rendering_context->resolve_text_align( $parsed_block['attrs']['textAlign'] );
@@ -63,6 +69,15 @@ $cell_attrs = array(
 'align' => $additional_styles['text-align'],
 );
 return Table_Wrapper_Helper::render_table_wrapper( $block_content, $table_attrs, $cell_attrs );
+}
+private function has_personalization_tag( string $block_content ): bool {
+$html = new \WP_HTML_Tag_Processor( $block_content );
+while ( $html->next_token() ) {
+if ( '#comment' === $html->get_token_type() && preg_match( '/^\[[a-zA-Z0-9\-\/]+(?:\s+.*)?\]$/s', trim( $html->get_modifiable_text() ) ) ) {
+return true;
+}
+}
+return false;
 }
 private function adjustStyleAttribute( string $block_content ): string {
 $html = new \WP_HTML_Tag_Processor( $block_content );

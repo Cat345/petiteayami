@@ -71,6 +71,6 @@ class __TwigTemplate_ef144945da24072956cf965a52a49e213b9cecc6662a1aecc7f22c91630
 
     public function getSourceContext()
     {
-        return new Source("", "premium_key_validation_strings.html", "/home/circleci/mailpoet/mailpoet/views/premium_key_validation_strings.html");
+        return new Source("", "premium_key_validation_strings.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/premium_key_validation_strings.html");
     }
 }

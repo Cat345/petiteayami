@@ -1,45 +1,65 @@
 {
-  "_NoticesPlugin-legacy.36949342.js": {
-    "file": "common/NoticesPlugin-legacy.36949342.js",
+  "_NoticesPlugin-legacy.06d79dd4.js": {
+    "file": "common/NoticesPlugin-legacy.06d79dd4.js",
     "imports": [
-      "_sanitize-legacy.0ff67325.js"
+      "_StoreAPI-legacy.456b2e5f.js",
+      "packages/shared/helpers/sanitize-legacy.ts"
     ]
   },
-  "_NoticesPlugin.39a23215.js": {
-    "file": "common/NoticesPlugin.39a23215.js",
+  "_NoticesPlugin.b85caaae.js": {
+    "file": "common/NoticesPlugin.b85caaae.js",
     "imports": [
-      "_sanitize.e37d93cf.js"
+      "_StoreAPI.f8e79e20.js",
+      "packages/shared/helpers/sanitize.ts"
     ]
   },
-  "_antd-legacy.f74b5d13.js": {
-    "file": "common/antd-legacy.f74b5d13.js",
+  "_StoreAPI-legacy.456b2e5f.js": {
+    "file": "common/StoreAPI-legacy.456b2e5f.js"
+  },
+  "_StoreAPI.f8e79e20.js": {
+    "file": "common/StoreAPI.f8e79e20.js"
+  },
+  "_antd-legacy.790e5966.js": {
+    "file": "common/antd-legacy.790e5966.js",
     "imports": [
       "_reactLib-legacy.2e2fbc09.js",
-      "_redux-legacy.36c5943a.js"
+      "_redux-legacy.e97ddf7d.js"
     ]
   },
-  "_antd.ff29c11b.js": {
-    "file": "common/antd.ff29c11b.js",
+  "_antd.971b8f91.js": {
+    "file": "common/antd.971b8f91.js",
     "imports": [
       "_reactLib.e6c3163a.js",
-      "_redux.bd614934.js"
+      "_redux.d975b7bc.js"
     ]
   },
-  "_antdIcons-legacy.f50d2943.js": {
-    "file": "common/antdIcons-legacy.f50d2943.js",
+  "_antdIcons-legacy.3ba68c67.js": {
+    "file": "common/antdIcons-legacy.3ba68c67.js",
     "imports": [
-      "_antd-legacy.f74b5d13.js",
-      "_redux-legacy.36c5943a.js",
+      "_antd-legacy.790e5966.js",
+      "_redux-legacy.e97ddf7d.js",
       "_reactLib-legacy.2e2fbc09.js"
     ]
   },
-  "_antdIcons.de73a013.js": {
-    "file": "common/antdIcons.de73a013.js",
+  "_antdIcons.55580c83.js": {
+    "file": "common/antdIcons.55580c83.js",
     "imports": [
-      "_antd.ff29c11b.js",
-      "_redux.bd614934.js",
+      "_antd.971b8f91.js",
+      "_redux.d975b7bc.js",
       "_reactLib.e6c3163a.js"
     ]
+  },
+  "_cartConditionNotice-legacy.500c95eb.js": {
+    "dynamicImports": [
+      "packages/shared/helpers/sanitize-legacy.ts"
+    ],
+    "file": "common/cartConditionNotice-legacy.500c95eb.js"
+  },
+  "_cartConditionNotice.dc273c18.js": {
+    "dynamicImports": [
+      "packages/shared/helpers/sanitize.ts"
+    ],
+    "file": "common/cartConditionNotice.dc273c18.js"
   },
   "_index-legacy.6e3fc819.js": {
     "file": "common/index-legacy.6e3fc819.js"
@@ -50,55 +70,51 @@
   "_reactLib.e6c3163a.js": {
     "file": "common/reactLib.e6c3163a.js"
   },
-  "_redux-legacy.36c5943a.js": {
-    "file": "common/redux-legacy.36c5943a.js",
+  "_redux-legacy.e97ddf7d.js": {
+    "file": "common/redux-legacy.e97ddf7d.js",
     "imports": [
       "_reactLib-legacy.2e2fbc09.js"
     ]
   },
-  "_redux.bd614934.js": {
-    "file": "common/redux.bd614934.js",
+  "_redux.d975b7bc.js": {
+    "file": "common/redux.d975b7bc.js",
     "imports": [
       "_reactLib.e6c3163a.js"
     ]
-  },
-  "_sanitize-legacy.0ff67325.js": {
-    "file": "common/sanitize-legacy.0ff67325.js"
-  },
-  "_sanitize.e37d93cf.js": {
-    "file": "common/sanitize.e37d93cf.js"
   },
   "index.css": {
     "file": "assets/index-467dde24.css",
     "src": "index.css"
   },
   "packages/acfwf-admin-app/index-legacy.tsx": {
-    "file": "packages/acfwf-admin-app/index-legacy.86750e31.js",
+    "file": "packages/acfwf-admin-app/index-legacy.3c58aa76.js",
     "imports": [
       "_reactLib-legacy.2e2fbc09.js",
-      "_redux-legacy.36c5943a.js",
-      "_antd-legacy.f74b5d13.js",
-      "_antdIcons-legacy.f50d2943.js",
-      "_sanitize-legacy.0ff67325.js"
+      "_redux-legacy.e97ddf7d.js",
+      "_antd-legacy.790e5966.js",
+      "_antdIcons-legacy.3ba68c67.js",
+      "_StoreAPI-legacy.456b2e5f.js",
+      "packages/shared/helpers/sanitize-legacy.ts"
     ],
     "isEntry": true,
     "src": "packages/acfwf-admin-app/index-legacy.tsx"
   },
   "packages/acfwf-admin-app/index.css": {
-    "file": "assets/index-23dfc996.css",
+    "file": "assets/index-7f88c326.css",
     "src": "packages/acfwf-admin-app/index.css"
   },
   "packages/acfwf-admin-app/index.tsx": {
     "css": [
-      "assets/index-23dfc996.css"
+      "assets/index-7f88c326.css"
     ],
-    "file": "packages/acfwf-admin-app/index.3b0abff2.js",
+    "file": "packages/acfwf-admin-app/index.5ae94b12.js",
     "imports": [
       "_reactLib.e6c3163a.js",
-      "_redux.bd614934.js",
-      "_antd.ff29c11b.js",
-      "_antdIcons.de73a013.js",
-      "_sanitize.e37d93cf.js"
+      "_redux.d975b7bc.js",
+      "_antd.971b8f91.js",
+      "_antdIcons.55580c83.js",
+      "_StoreAPI.f8e79e20.js",
+      "packages/shared/helpers/sanitize.ts"
     ],
     "isEntry": true,
     "src": "packages/acfwf-admin-app/index.tsx"
@@ -114,9 +130,10 @@
     "src": "packages/acfwf-admin/index.ts"
   },
   "packages/acfwf-blocks/index-legacy.tsx": {
-    "file": "packages/acfwf-blocks/index-legacy.eb5b01a6.js",
+    "file": "packages/acfwf-blocks/index-legacy.a53d40a3.js",
     "imports": [
-      "_sanitize-legacy.0ff67325.js"
+      "_StoreAPI-legacy.456b2e5f.js",
+      "packages/shared/helpers/sanitize-legacy.ts"
     ],
     "isEntry": true,
     "src": "packages/acfwf-blocks/index-legacy.tsx"
@@ -129,19 +146,21 @@
     "css": [
       "assets/index-1b3b9b3f.css"
     ],
-    "file": "packages/acfwf-blocks/index.da2557a5.js",
+    "file": "packages/acfwf-blocks/index.21230b5f.js",
     "imports": [
-      "_sanitize.e37d93cf.js"
+      "_StoreAPI.f8e79e20.js",
+      "packages/shared/helpers/sanitize.ts"
     ],
     "isEntry": true,
     "src": "packages/acfwf-blocks/index.tsx"
   },
   "packages/acfwf-cart-block/index-legacy.tsx": {
-    "file": "packages/acfwf-cart-block/index-legacy.26b608af.js",
+    "file": "packages/acfwf-cart-block/index-legacy.9e8f2712.js",
     "imports": [
-      "_NoticesPlugin-legacy.36949342.js",
-      "_sanitize-legacy.0ff67325.js",
-      "_index-legacy.6e3fc819.js"
+      "_NoticesPlugin-legacy.06d79dd4.js",
+      "_StoreAPI-legacy.456b2e5f.js",
+      "_index-legacy.6e3fc819.js",
+      "packages/shared/helpers/sanitize-legacy.ts"
     ],
     "isEntry": true,
     "src": "packages/acfwf-cart-block/index-legacy.tsx"
@@ -150,29 +169,37 @@
     "css": [
       "assets/index-467dde24.css"
     ],
-    "file": "packages/acfwf-cart-block/index.d53b865e.js",
+    "file": "packages/acfwf-cart-block/index.3a222af5.js",
     "imports": [
-      "_NoticesPlugin.39a23215.js",
-      "_sanitize.e37d93cf.js"
+      "_NoticesPlugin.b85caaae.js",
+      "_StoreAPI.f8e79e20.js",
+      "packages/shared/helpers/sanitize.ts"
     ],
     "isEntry": true,
     "src": "packages/acfwf-cart-block/index.tsx"
   },
   "packages/acfwf-cart/index-legacy.ts": {
-    "file": "packages/acfwf-cart/index-legacy.63bd1920.js",
+    "file": "packages/acfwf-cart/index-legacy.4ef6ea1d.js",
+    "imports": [
+      "_cartConditionNotice-legacy.500c95eb.js"
+    ],
     "isEntry": true,
     "src": "packages/acfwf-cart/index-legacy.ts"
   },
   "packages/acfwf-cart/index.ts": {
-    "file": "packages/acfwf-cart/index.1b42fd3f.js",
+    "file": "packages/acfwf-cart/index.4cdc70d0.js",
+    "imports": [
+      "_cartConditionNotice.dc273c18.js"
+    ],
     "isEntry": true,
     "src": "packages/acfwf-cart/index.ts"
   },
   "packages/acfwf-checkout-block/index-legacy.tsx": {
-    "file": "packages/acfwf-checkout-block/index-legacy.1d94a032.js",
+    "file": "packages/acfwf-checkout-block/index-legacy.1e3f08e5.js",
     "imports": [
-      "_NoticesPlugin-legacy.36949342.js",
-      "_sanitize-legacy.0ff67325.js",
+      "_NoticesPlugin-legacy.06d79dd4.js",
+      "_StoreAPI-legacy.456b2e5f.js",
+      "packages/shared/helpers/sanitize-legacy.ts",
       "_index-legacy.6e3fc819.js"
     ],
     "isEntry": true,
@@ -187,17 +214,19 @@
       "assets/index-2a7d8588.css",
       "assets/index-467dde24.css"
     ],
-    "file": "packages/acfwf-checkout-block/index.c2570705.js",
+    "file": "packages/acfwf-checkout-block/index.4c1c1a54.js",
     "imports": [
-      "_NoticesPlugin.39a23215.js",
-      "_sanitize.e37d93cf.js"
+      "_NoticesPlugin.b85caaae.js",
+      "_StoreAPI.f8e79e20.js",
+      "packages/shared/helpers/sanitize.ts"
     ],
     "isEntry": true,
     "src": "packages/acfwf-checkout-block/index.tsx"
   },
   "packages/acfwf-checkout/index-legacy.ts": {
-    "file": "packages/acfwf-checkout/index-legacy.ee19512e.js",
+    "file": "packages/acfwf-checkout/index-legacy.9ea3ca60.js",
     "imports": [
+      "_cartConditionNotice-legacy.500c95eb.js",
       "_index-legacy.6e3fc819.js"
     ],
     "isEntry": true,
@@ -212,12 +241,15 @@
       "assets/index-cc433ba4.css",
       "assets/index-467dde24.css"
     ],
-    "file": "packages/acfwf-checkout/index.053cc843.js",
+    "file": "packages/acfwf-checkout/index.31916305.js",
+    "imports": [
+      "_cartConditionNotice.dc273c18.js"
+    ],
     "isEntry": true,
     "src": "packages/acfwf-checkout/index.ts"
   },
   "packages/acfwf-edit-advanced-coupon/index-legacy.ts": {
-    "file": "packages/acfwf-edit-advanced-coupon/index-legacy.e9108935.js",
+    "file": "packages/acfwf-edit-advanced-coupon/index-legacy.339bd3fe.js",
     "isEntry": true,
     "src": "packages/acfwf-edit-advanced-coupon/index-legacy.ts"
   },
@@ -229,7 +261,7 @@
     "css": [
       "assets/index-80362569.css"
     ],
-    "file": "packages/acfwf-edit-advanced-coupon/index.ee02e23c.js",
+    "file": "packages/acfwf-edit-advanced-coupon/index.a49c22c6.js",
     "isEntry": true,
     "src": "packages/acfwf-edit-advanced-coupon/index.ts"
   },
@@ -261,12 +293,12 @@
     "src": "packages/acfwf-notices/index.ts"
   },
   "packages/acfwf-store-credits-frontend/index-legacy.tsx": {
-    "file": "packages/acfwf-store-credits-frontend/index-legacy.1ecd028b.js",
+    "file": "packages/acfwf-store-credits-frontend/index-legacy.7a5363f5.js",
     "imports": [
       "_reactLib-legacy.2e2fbc09.js",
-      "_antd-legacy.f74b5d13.js",
-      "_antdIcons-legacy.f50d2943.js",
-      "_redux-legacy.36c5943a.js"
+      "_antd-legacy.790e5966.js",
+      "_antdIcons-legacy.3ba68c67.js",
+      "_redux-legacy.e97ddf7d.js"
     ],
     "isEntry": true,
     "src": "packages/acfwf-store-credits-frontend/index-legacy.tsx"
@@ -279,20 +311,21 @@
     "css": [
       "assets/index-0c47e64a.css"
     ],
-    "file": "packages/acfwf-store-credits-frontend/index.24ad8b1c.js",
+    "file": "packages/acfwf-store-credits-frontend/index.4da993a8.js",
     "imports": [
       "_reactLib.e6c3163a.js",
-      "_antd.ff29c11b.js",
-      "_antdIcons.de73a013.js",
-      "_redux.bd614934.js"
+      "_antd.971b8f91.js",
+      "_antdIcons.55580c83.js",
+      "_redux.d975b7bc.js"
     ],
     "isEntry": true,
     "src": "packages/acfwf-store-credits-frontend/index.tsx"
   },
   "packages/acfwf-wc-admin/index-legacy.tsx": {
-    "file": "packages/acfwf-wc-admin/index-legacy.0d1b8e83.js",
+    "file": "packages/acfwf-wc-admin/index-legacy.da77fabb.js",
     "imports": [
-      "_sanitize-legacy.0ff67325.js"
+      "_StoreAPI-legacy.456b2e5f.js",
+      "packages/shared/helpers/sanitize-legacy.ts"
     ],
     "isEntry": true,
     "src": "packages/acfwf-wc-admin/index-legacy.tsx"
@@ -305,15 +338,26 @@
     "css": [
       "assets/index-f284c751.css"
     ],
-    "file": "packages/acfwf-wc-admin/index.0f345f8c.js",
+    "file": "packages/acfwf-wc-admin/index.9634a794.js",
     "imports": [
-      "_sanitize.e37d93cf.js"
+      "_StoreAPI.f8e79e20.js",
+      "packages/shared/helpers/sanitize.ts"
     ],
     "isEntry": true,
     "src": "packages/acfwf-wc-admin/index.tsx"
   },
+  "packages/shared/helpers/sanitize-legacy.ts": {
+    "file": "shared/helpers/sanitize-legacy.e2b43e57.js",
+    "isDynamicEntry": true,
+    "src": "packages/shared/helpers/sanitize-legacy.ts"
+  },
+  "packages/shared/helpers/sanitize.ts": {
+    "file": "shared/helpers/sanitize.e35c5bf1.js",
+    "isDynamicEntry": true,
+    "src": "packages/shared/helpers/sanitize.ts"
+  },
   "vite/legacy-polyfills-legacy": {
-    "file": "polyfills-legacy.a9ee5988.js",
+    "file": "polyfills-legacy.52882694.js",
     "isEntry": true,
     "src": "vite/legacy-polyfills-legacy"
   }

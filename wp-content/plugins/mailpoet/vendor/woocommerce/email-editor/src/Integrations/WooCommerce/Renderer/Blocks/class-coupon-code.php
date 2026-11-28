@@ -17,7 +17,8 @@ $coupon_code = apply_filters(
 $attrs,
 $rendering_context
 );
-if ( empty( $coupon_code ) ) {
+$coupon_code = is_scalar( $coupon_code ) ? (string) $coupon_code : '';
+if ( '' === $coupon_code || '0' === $coupon_code ) {
 return '';
 }
 $block_content = str_replace(

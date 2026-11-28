@@ -86,11 +86,13 @@ export default function () {
 
   const { apply_type, notice_store_credits_text } = store_credits;
 
-  // Get data from Store API.
+  // Get data from Store API. The extension payload is absent on the first render, before the
+  // cart data resolves, so every hop is optional — dereferencing it eagerly throws and React's
+  // PluginErrorBoundary then swallows the whole notices plugin for the rest of the page load.
   const { acfwf_block } = store.getCartData().extensions;
 
   // If there's a store credit applied and have notice error
-  if ('coupon' !== apply_type && getHasCalculatedShipping && acfwf_block.store_credits.notice) {
+  if ('coupon' !== apply_type && getHasCalculatedShipping && acfwf_block?.store_credits?.notice) {
     showStoreCreditNotice(notice_store_credits_text);
   }
 }

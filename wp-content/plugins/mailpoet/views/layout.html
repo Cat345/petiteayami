@@ -38,6 +38,7 @@
   var mailpoet_date_format = "<%= wp_date_format()|escape('js') %>";
   var mailpoet_time_format = "<%= wp_time_format()|escape('js') %>";
   var mailpoet_date_offset = <%= json_encode(get_option('gmt_offset')) %>;
+  var mailpoet_date_timezone = <%= json_encode(get_option('timezone_string')) %>;
   var mailpoet_version = "<%= mailpoet_version() %>";
   var mailpoet_locale = "<%= mailpoet_locale() %>";
   var mailpoet_wp_week_starts_on = "<%= wp_start_of_week() %>";
@@ -176,6 +177,8 @@
   <chat-widget
     id="chat"
     bot="<%= chatbot_bot_id %>"
+    product="<%= chatbot_product %>"
+    ai-disclosure="<%= chatbot_ai_disclosure %>"
     avatar="<%= cdn_url('chat-avatar.png') %>"
     title="<%= __('MailPoet support', 'mailpoet') %>"
     subtitle="<%= __('Chat with our AI assistant', 'mailpoet') %>"

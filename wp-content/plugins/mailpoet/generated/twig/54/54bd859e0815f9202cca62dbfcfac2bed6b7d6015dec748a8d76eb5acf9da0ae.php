@@ -93,6 +93,6 @@ class __TwigTemplate_d131d34701be336e2feda24d750b43dc37de9c2eb978ff2f645f1f71129
 
     public function getSourceContext()
     {
-        return new Source("", "subscribers/tags.html", "/home/circleci/mailpoet/mailpoet/views/subscribers/tags.html");
+        return new Source("", "subscribers/tags.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/subscribers/tags.html");
     }
 }

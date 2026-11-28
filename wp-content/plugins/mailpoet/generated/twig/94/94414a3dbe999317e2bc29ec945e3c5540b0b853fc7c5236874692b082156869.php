@@ -127,6 +127,6 @@ class __TwigTemplate_52b5c9ea631c938881f989f0726722fe169a98767c0b2a4158d04455a1e
 
     public function getSourceContext()
     {
-        return new Source("", "deactivationPoll/embedded-poll.html", "/home/circleci/mailpoet/mailpoet/views/deactivationPoll/embedded-poll.html");
+        return new Source("", "deactivationPoll/embedded-poll.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/deactivationPoll/embedded-poll.html");
     }
 }

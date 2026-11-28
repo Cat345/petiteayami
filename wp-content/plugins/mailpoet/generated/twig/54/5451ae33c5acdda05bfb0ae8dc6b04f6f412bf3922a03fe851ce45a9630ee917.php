@@ -111,6 +111,6 @@ class __TwigTemplate_1a503b1b477150cebe094ddd70d8a9f0f9df76c4d7e651ce72ce81dad2c
 
     public function getSourceContext()
     {
-        return new Source("", "emails/newSubscriberNotification.html", "/home/circleci/mailpoet/mailpoet/views/emails/newSubscriberNotification.html");
+        return new Source("", "emails/newSubscriberNotification.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/emails/newSubscriberNotification.html");
     }
 }

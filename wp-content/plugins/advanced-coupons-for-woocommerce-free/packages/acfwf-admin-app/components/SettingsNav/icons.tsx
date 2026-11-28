@@ -16,7 +16,12 @@ import {
   GiftOutlined,
   CreditCardOutlined,
   ThunderboltOutlined,
+  FileTextOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons';
+
+// Components
+import AIIcon from '../AIIcon';
 
 // #endregion [Imports]
 
@@ -61,6 +66,12 @@ const MenuIcon = (props: IProps) => {
     case 'advanced_section':
       return <ThunderboltOutlined />;
 
+    case 'ai_mcp_section':
+      return <AIIcon className="anticon acfw-ai-mcp-nav-icon" />;
+
+    case 'coupon_templates':
+      return <FileTextOutlined />;
+
     case 'help_page':
       return <MedicineBoxOutlined />;
 
@@ -76,6 +87,9 @@ const MenuIcon = (props: IProps) => {
 
     case 'advanced_gift_cards':
       return <GiftOutlined />;
+
+    case 'advanced_promo_kit':
+      return <AppstoreOutlined />;
   }
 
   return null;

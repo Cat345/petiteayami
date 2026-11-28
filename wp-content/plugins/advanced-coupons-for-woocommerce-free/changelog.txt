@@ -1,3 +1,61 @@
+= 4.7.7 =
+* Improvement: Prevent coupon from applying if BOGO trigger is not met
+* Improvement: Show admin notices when the stored ACFWP licence key is cracked or not valid
+* Improvement: Show store credits info on checkout page for guest users that it should be available for logged-in users
+* Improvement: Update bundled third-party libraries
+* Integration: AI / MCP settings section that promotes StoreAgent and controls MCP write access
+* Bug Fix: BOGO "Remove the free item from the cart" doesn't remove deal items when an auto-applied coupon's cart condition fails
+* Bug Fix: BOGO deal notice always renders as "Info" on the cart and checkout blocks, ignoring the per-coupon notice type
+* Bug Fix: BOGO: priced-individually bundles get no discount breakdown row and empty order BOGO meta
+* Bug Fix: Cart conditions non-qualifying notice button renders as plain text on classic cart and checkout
+* Bug Fix: Cart conditions non-qualifying notice fires for unrelated coupon invalidity reasons (scheduler, role restrictions)
+* Bug Fix: Coupon templates and Advanced Promo Kit settings menu items have no icons
+* Bug Fix: Saved coupon settings silently don't apply: duplicate _acfw_* meta rows when rest_api_init fires before a coupon save
+* Bug Fix: Scheduler shifts coupon start/expiry date by one minute when the other date is set
+* Bug Fix: Security: data validation hardening
+* Bug Fix: Store credits page returns 404 for all customers when "Hide store credits on My Account if zero balance" is on and rewrite rules are rebuilt by a user with no store credit
+* Bug Fix: Store credit returned on cancel can be re-applied or refunded again from the order screen without deducting the customer's balance
+* Bug Fix: WooCommerce 11: BOGO deal notice markup is stripped on cart and checkout blocks
+
+= 4.7.6 =
+* Bug Fix: Coupon Expiry Date column shows blank for any non-expired coupon, even when Scheduler was never used
+* Bug Fix: Dashboard License Activation Status shows Inactive while License page shows Active
+* Bug Fix: Dashboard reports endpoint exhausts PHP memory and fatals on high-volume stores
+* Bug Fix: Non-Qualifying auto-apply notice ignores coupon Scheduler start/expiry dates
+* Bug Fix: One-BOGO restriction blocks a replacement BOGO coupon within the same request (stale Calculation cache)
+* Bug Fix: Scheduler misclassifies coupons with a native WooCommerce expiry date as Scheduler-enabled
+* Bug Fix: Store Credit discount not reflected in PayPal Payments checkout total when "after tax and shipping" apply mode is used
+* Bug Fix: Store Credits balance calculation ignores cache, doubling DB queries on Cart/Checkout
+* Bug Fix: Store credit minimum order total subtracts the minimum from the requested amount, not from the cart total
+* Bug Fix: URL Coupon success message can be cached and leaked to anonymous visitors on cart-aware page caches (Kinsta, etc.)
+* Bug Fix: Wholesale sale price ignored on classic cart page when BOGO module is active (no coupon required)
+* Improvement: Allow Store Credit “Total Paid Deduction” Setting to Apply to Processing Orders
+
+= 4.7.5 =
+* Bug Fix: Integration: WPML compatibility (URL coupon notice)
+* Bug Fix: Product added twice when using coupon URL with add-to-cart query
+* Bug Fix: Store credits refund not respecting currency conversion rates
+* Bug Fix: URL coupon redirect can enter an endless redirect loop due to unbounded query string accumulation
+* Feature: Set store credit expiry of less than a year e.g. 30 days, 60 days, etc.
+* Improvement: Add "Discount application mode" setting for BOGO deals (price modification vs coupon amount)
+* Improvement: Add a setting to extend valid product types returned in product search
+* Improvement: Move the HTML tags outside of the translatable strings
+
+= 4.7.4 =
+* Bug Fix: BOGO "eligible to redeem deals" notice persists on classic cart after cart condition is no longer met
+* Bug Fix: BOGO additional settings: help-tip (?) icon wraps below the radio instead of staying inline with the label
+* Bug Fix: Error notice disappears on cart block after product quantity is changed
+* Bug Fix: Subscription product added twice when using coupon URL with add-to-cart parameter
+* Bug Fix: Two simultaneous auto-apply BOGO coupons: second BOGO free product not added to cart
+* Bug Fix: Vite_App::register() leaks modulepreload hints globally via wp_head
+* Bug Fix: WP 7.0: Missing wc-blocks-checkout script dependency in checkout block integration
+* Bug Fix: WP 7.0: acfwf-wc-cart-block-integration-css stylesheet injected into block editor iframe incorrectly
+* Bug Fix: Cart condition notice renders raw HTML entities on WC 9.4+ with classic cart/checkout
+* Bug Fix: json_decode() TypeError in Elementor integration when _elementor_data returns array on PHP 8.2
+* Feature: Add WordPress Abilities API support (8 abilities) — Advanced Coupons (Free)
+* Feature: Recommended sister plugin notice
+* Improvement: Option to remove the BOGO free/deal item from the cart when the deal no longer qualifies (instead of reverting it to full price)
+
 = 4.7.3 =
 * Bug Fix: Bug: BOGO coupon discount not shown in Block Cart until page refresh when coupon auto-adds free item (Same Product & Specific Products with auto-add)
 * Bug Fix: Bug: Gutenberg blocks registered with deprecated Block API version (v1), causing warnings in WP 6.9 and editor breakage in WP 7.0

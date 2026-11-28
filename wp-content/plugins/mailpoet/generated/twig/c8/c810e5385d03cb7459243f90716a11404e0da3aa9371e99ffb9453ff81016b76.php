@@ -162,6 +162,6 @@ class __TwigTemplate_71b036b7f22592892987288406b287adc5134f8454b897deb37074c64d7
 
     public function getSourceContext()
     {
-        return new Source("", "subscribers/importExport/import.html", "/home/circleci/mailpoet/mailpoet/views/subscribers/importExport/import.html");
+        return new Source("", "subscribers/importExport/import.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/subscribers/importExport/import.html");
     }
 }

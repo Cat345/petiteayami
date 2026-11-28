@@ -32,6 +32,21 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
     private $_notice_display = array();
 
     /**
+     * Coupon codes that this module rejected on the current request, keyed by coupon code.
+     *
+     * The auto apply routine fires "acfw_auto_apply_coupon_invalid" for every failed coupon
+     * validation, whatever the cause, and the error it passes carries the same "invalid_coupon"
+     * code for all of them. Record the rejections this module makes so the non-qualifying notice
+     * can tell its own failures apart from a schedule, a role restriction, a usage limit, or any
+     * other check that rejected the coupon first.
+     *
+     * @since 4.8
+     * @access private
+     * @var array
+     */
+    private $_cart_condition_failed = array();
+
+    /**
      * Property that houses all of the condition field options.
      *
      * @since 1.5
@@ -474,6 +489,8 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
      * @since 1.0
      * @since 3.0.1 Make sure the cart conditions implementation will only run when WC_Cart instance is available.
      * @since 4.7.4 Clear stale BOGO session data when a BOGO coupon fails its cart conditions.
+     * @since 4.8 Record the rejection so only this module's own failures show the non-qualifying notice.
+     * @since 4.8 Keep the BOGO matched entries in the session when a BOGO coupon fails (issue #1640).
      * @access public
      *
      * @param bool      $value Filter return value.
@@ -482,6 +499,14 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
      * @throws \Exception Error message.
      */
     public function implement_cart_conditions( $value, $coupon ) {
+        // Read the code before the object is replaced below, so both the reset here and the
+        // rejection record further down key on the same value.
+        $code = $coupon->get_code();
+
+        // Start every evaluation from a clean slate. WooCommerce validates the same coupon
+        // several times per request, so a later pass must never inherit an earlier verdict.
+        unset( $this->_cart_condition_failed[ $code ] );
+
         if ( function_exists( 'WC' ) && \WC()->cart instanceof \WC_Cart ) {
 
             $coupon          = new Advanced_Coupon( $coupon );
@@ -516,9 +541,15 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
                     \ACFWF()->BOGO_Frontend->reset_bogo_deals_prices();
 
                     // Clear stale BOGO session data so the "eligible to redeem deals" notice
-                    // does not persist on classic cart pages after cart conditions fail.
-                    Calculation::clear_session_data();
+                    // does not persist on classic cart pages after cart conditions fail. Keep the
+                    // matched entries, so the deal items can still be removed when the coupon is
+                    // set to "Remove the free item from the cart" (issue #1640).
+                    Calculation::invalidate_session_data();
                 }
+
+                // Mark this coupon as rejected by cart conditions, so the auto apply notice
+                // handler knows the failure came from here and not from another check.
+                $this->_cart_condition_failed[ $code ] = true;
 
                 throw new \Exception( wp_kses_post( $this->_get_cart_condition_notice( $coupon ) ) );
             }
@@ -532,6 +563,7 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
      *
      * @since 1.0
      * @since 4.7.4 Scope htmlentities2 encoding to block cart/checkout only; add acfw_encode_cart_condition_notice filter.
+     * @since 4.7.7 Wrap a notice with markup in span.acfw-cart-condition-notice, so the classic cart/checkout scripts can restore the button link.
      * @access private
      *
      * @param Advanced_Coupon $coupon Advanced coupon object.
@@ -549,7 +581,15 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
 
         $button = $btn_text && $btn_url ? sprintf( '<a class="button" href="%s">%s</a>', esc_url( $btn_url ), $btn_text ) : '';
 
-        $notice = sprintf( '%s %s', $message, $button );
+        $notice = trim( sprintf( '%s %s', $message, $button ) );
+
+        // WooCommerce shows the classic apply_coupon AJAX error as plain text, which removes the button link.
+        // Wrap a notice that has markup, so the classic cart/checkout scripts can find it and restore the markup.
+        // A plain text notice is not wrapped, so the block cart/checkout keeps it as the inline coupon error.
+        // The wrapper class must match NOTICE_CLASS in packages/shared/utils/cartConditionNotice.ts.
+        if ( wp_strip_all_tags( $notice ) !== $notice ) {
+            $notice = sprintf( '<span class="acfw-cart-condition-notice">%s</span>', $notice );
+        }
 
         // Because the response message in the WooCommerce block is stripped, it needs to be encoded.
         // Only encode for block cart/checkout (REST request or block page); classic cart/checkout renders raw HTML directly.
@@ -591,14 +631,23 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
      * @since 1.0
      * @since 4.3.4 Display notice via wc_add_notice. Don't run when loading checkout page (non-ajax). Display notice on checkout via fragments ajax. Make notice type value filterable.
      * @since 4.7.6 Skip the notice when the coupon is outside its scheduled window.
+     * @since 4.8 Only show the notice when cart conditions rejected the coupon.
      * @access public
      *
      * @param Advanced_Coupon $coupon Coupon object.
      */
     public function display_cart_condition_notice( $coupon ) {
+        // Read the verdict once and clear it, so this rejection is reported a single time.
+        // The next validation pass sets the flag again if the conditions still fail.
+        $code                  = $coupon->get_code();
+        $failed_cart_condition = ! empty( $this->_cart_condition_failed[ $code ] );
+        unset( $this->_cart_condition_failed[ $code ] );
+
         if (
-            $coupon->get_advanced_prop( 'cart_condition_display_notice_auto_apply' ) !== 'yes'
-            || in_array( $coupon->get_code(), $this->_notice_display, true )
+            // the coupon failed another check, such as its schedule or a role restriction.
+            ! $failed_cart_condition
+            || $coupon->get_advanced_prop( 'cart_condition_display_notice_auto_apply' ) !== 'yes'
+            || in_array( $code, $this->_notice_display, true )
             // only display notice on either classic cart & checkout pages or cart & checkout block pages.
             || ( ! is_cart() && ! is_checkout() && ! $this->_helper_functions->is_current_page_using_cart_checkout_block() )
             // only display notice on checkout when it's loaded via AJAX.
@@ -619,7 +668,7 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
         // display notice.
         $test = wc_add_notice( $message, $notice_type, array( 'acfw-cart-conditions' => $coupon->get_code() ) );
 
-        $this->_notice_display[] = $coupon->get_code();
+        $this->_notice_display[] = $code;
     }
 
     /*

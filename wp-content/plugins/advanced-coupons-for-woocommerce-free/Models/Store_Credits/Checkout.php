@@ -38,6 +38,26 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
     const REAPPLY_DISCOUNT_LINK_HOOK = 'acfw-reapply-sc-discount';
 
     /**
+     * Meta flag marking an order whose store credits discount was reconciled against the ledger.
+     *
+     * Set once the discount has been charged for, so a later status change cannot charge again.
+     *
+     * @since 4.7.7
+     * @var string
+     */
+    const STORE_CREDITS_RECONCILED_META = '_acfw_sc_reconciled';
+
+    /**
+     * Meta flag marking an order whose residual unpaid amount has already been noted.
+     *
+     * Set once the note is written, so a later recalculation does not write it again.
+     *
+     * @since 4.7.7
+     * @var string
+     */
+    const STORE_CREDITS_RESIDUAL_NOTED_META = '_acfw_sc_residual_noted';
+
+    /**
      * Property that houses the model name to be used when calling publicly.
      *
      * @since 4.0
@@ -135,6 +155,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * @since 4.2.1 Wrap redeem amount with NumberUtil::round function to make sure its precise before comparing it with user's balance.
      * @since 4.5.1 Make method public.
      * @since 4.7.6 Cap the redeemed amount against the cart total when the minimum order total allowed setting applies.
+     * @since 4.7.7 Clear the store credits discount from the Store API draft order when the credit is removed.
      * @access public
      *
      * @param int   $user_id User ID.
@@ -230,6 +251,10 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         if ( 0 >= $amount ) {
             \WC()->cart->remove_coupon( $this->get_store_credit_coupon_code() );
             $this->clear_store_credit_session();
+
+            // The block checkout may already hold a draft order carrying this discount, so clear
+            // that too — otherwise removing the credit leaves the next checkout still discounted.
+            $this->_clear_store_credits_discount_from_store_api_draft_order();
         } else {
             \WC()->session->set(
                 $this->get_store_credit_session_name(),
@@ -475,12 +500,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
             return;
         }
 
-        $coupon_discount = (float) $coupon_item->get_discount();
-
-        // Include the discount tax to the store credit coupon discount amount when prices include tax.
-        if ( wc_prices_include_tax() && apply_filters( 'acfw_store_credits_coupon_discount_include_tax', true, $coupon_discount, $coupon_item, $sc_data ) ) {
-            $coupon_discount += $coupon_item->get_discount_tax();
-        }
+        $coupon_discount = $this->get_store_credit_coupon_item_credit_amount( $coupon_item, $sc_data );
 
         $sc_data['amount'] = min( (float) $sc_data['amount'], $coupon_discount );
         $amount            = apply_filters( 'acfw_filter_amount', $sc_data['amount'], true );
@@ -500,6 +520,45 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         $this->clear_store_credit_session();
 
         do_action( 'acfw_after_order_with_store_credit_coupon', $amount, $new_balance, $order, $store_credit_entry );
+    }
+
+    /**
+     * Get the credit a store credit coupon item spends, in the order currency.
+     *
+     * On a store that enters prices with tax the customer spends the coupon's discount plus the tax
+     * waived along with it, so the two are added together unless a filter says otherwise. Both
+     * routes that charge for a coupon-type discount at checkout measure it this way: charging the
+     * discount alone on one of them would take less than the order was actually given, and the two
+     * drifting apart would charge different amounts for the same order.
+     *
+     * The order screen's own rollback in `Admin_Apply_Store_Credits` is deliberately not one of
+     * them. It reconstructs what `WC_Order::recalculate_coupons()` would put back, so it reads the
+     * order's stored `prices_include_tax` rather than the store's current setting and applies no
+     * filter.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param \WC_Order_Item_Coupon $coupon_item Store credit coupon item on the order.
+     * @param mixed                 $sc_data     Store credits data the caller is working from,
+     *                                           passed to the filter so a callback can tell the
+     *                                           routes apart. Shapes differ by route and it is
+     *                                           never read here.
+     * @return float Credit the coupon item spends, in the order currency.
+     */
+    public function get_store_credit_coupon_item_credit_amount( $coupon_item, $sc_data = null ) {
+
+        if ( ! $coupon_item instanceof \WC_Order_Item_Coupon ) {
+            return 0.0;
+        }
+
+        $discount = (float) $coupon_item->get_discount();
+
+        if ( wc_prices_include_tax() && apply_filters( 'acfw_store_credits_coupon_discount_include_tax', true, $discount, $coupon_item, $sc_data ) ) {
+            $discount += (float) $coupon_item->get_discount_tax();
+        }
+
+        return $discount;
     }
 
     /**
@@ -786,6 +845,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * @since 4.0
      * @since 4.2 Add hook to trigger actions based on user's new balance after an order was paid with store credits.
      * @since 4.7.7 Reset a resumed failed order to pending so the store credit is deducted again.
+     * @since 4.7.7 Reconcile a discount the ledger does not back instead of returning on an empty session.
      * @access public
      *
      * @param int       $order_id    Order ID.
@@ -795,8 +855,10 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
     public function deduct_store_credits_discount_from_balance( $order_id, $posted_data, $order ) {
         $sc_data = \WC()->session->get( Plugin_Constants::STORE_CREDITS_SESSION, null );
 
-        // don't proceed when store credit session data is not available.
+        // don't proceed when store credit session data is not available, but never let the order
+        // keep a store credits discount that no ledger entry pays for.
         if ( ! $sc_data ) {
+            $this->_reconcile_unbacked_store_credits_discount( $order );
             return;
         }
 
@@ -893,6 +955,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * later to deduct from the customer balance and clear session state.
      *
      * @since 4.7.3
+     * @since 4.7.7 Mirror the session: rewrite the meta when it no longer matches, and delete it when the credit is gone.
      * @access public
      *
      * @param \WC_Order $order Order object.
@@ -903,17 +966,41 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         }
 
         $sc_data = \WC()->session ? \WC()->session->get( Plugin_Constants::STORE_CREDITS_SESSION, null ) : null;
+
+        /*
+         * This handler owns the after-tax discount only. In coupon mode the credit is carried by a
+         * store credit coupon item and `redeem_store_credits()` writes a different session key, so
+         * the session read would usually come back empty and the deletion arm would run on every
+         * request against a discount this handler never wrote.
+         *
+         * The apply type alone is not the test, though: Pro's `WC_Subscriptions::maybe_apply_store_credit()`
+         * rebuilds this very session from the parent order's after-tax meta whatever the current
+         * mode is, so an early renewal of a subscription taken out before the store moved to coupon
+         * mode still carries a real after-tax session. Bailing on the option would leave that
+         * renewal's draft order without the meta, its total at full price, and block checkout
+         * stuck on "No payment method provided" — the case 4.7.3 fixed. With neither a session nor
+         * stored meta there is nothing here to write or to take away, which is the case the option
+         * check is really for.
+         */
+        if ( 'coupon' === get_option( Plugin_Constants::STORE_CREDIT_APPLY_TYPE, 'coupon' )
+            && ! $sc_data
+            && ! $order->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_PAID, true ) ) {
+            return;
+        }
+
+        /*
+         * The session is what the customer currently means to spend, so the meta has to mirror it
+         * rather than outlive it. An empty session means the credit was never applied or has since
+         * been removed, and a draft order kept from an earlier attempt must not go on discounting
+         * the next one. Returning here instead — as this did before — is what let a checkout that
+         * failed validation leave its discount behind to be spent again.
+         */
         if ( ! $sc_data || ! isset( $sc_data['amount'], $sc_data['cart_total'] ) ) {
+            $this->_remove_store_credits_discount_from_draft_order( $order );
             return;
         }
 
         if ( $order->has_status( array( 'failed', 'cancelled' ) ) ) {
-            return;
-        }
-
-        // Skip if meta already saved (e.g. Store API called multiple times during the same request).
-        $existing = $order->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_PAID, true );
-        if ( is_array( $existing ) && ! empty( $existing ) ) {
             return;
         }
 
@@ -924,12 +1011,170 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
             'currency'   => $order->get_currency(),
         );
 
+        /*
+         * Rewrite whenever the stored figures no longer match the session, and skip only when they
+         * are identical — the Store API can reach this more than once for one draft order. The
+         * whole tuple is compared rather than the amount alone: this function has no currency guard
+         * of its own, so switching the active currency leaves `amount` untouched while `raw_amount`
+         * and `currency` go stale.
+         */
+        $existing = $order->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_PAID, true );
+        if ( is_array( $existing ) && $this->_is_matching_store_credits_order_meta( $existing, $meta_data ) ) {
+            return;
+        }
+
         $order->update_meta_data( Plugin_Constants::STORE_CREDITS_ORDER_PAID, $meta_data );
         $order->save_meta_data();
 
         // Recalculate so `deduct_store_credits_discount_from_order_total` can bring the order
         // total down to its real post-SC value before payment validation runs.
         $order->calculate_totals( true );
+    }
+
+    /**
+     * Check whether the store credits meta an order already carries matches what the session yields.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @param array $existing  Store credits meta currently on the order.
+     * @param array $meta_data Store credits meta built from the session.
+     * @return bool True when the two describe the same discount.
+     */
+    private function _is_matching_store_credits_order_meta( $existing, $meta_data ) {
+
+        if ( ! isset( $existing['cart_total'], $existing['amount'], $existing['raw_amount'], $existing['currency'] ) ) {
+            return false;
+        }
+
+        if ( $existing['currency'] !== $meta_data['currency'] ) {
+            return false;
+        }
+
+        if ( 0 !== (int) ( wc_add_number_precision( (float) $existing['cart_total'] ) - wc_add_number_precision( (float) $meta_data['cart_total'] ) ) ) {
+            return false;
+        }
+
+        $amount_diff = (int) ( wc_add_number_precision( (float) $existing['amount'] ) - wc_add_number_precision( (float) $meta_data['amount'] ) );
+
+        if ( 0 === $amount_diff ) {
+            return 0 === (int) ( wc_add_number_precision( (float) $existing['raw_amount'] ) - wc_add_number_precision( (float) $meta_data['raw_amount'] ) );
+        }
+
+        /*
+         * A stored amount above the session's is this plugin's own doing, not a stale value.
+         * `deduct_store_credits_discount_from_order_total()` raises it on a full-cover cart when a
+         * dynamic tax plugin recalculates tax at the order level. Rewriting it back would undo that
+         * adjustment, and since the hook raises it again on the recalculation that follows, every
+         * Store API request would rewrite and re-save the order for no gain.
+         */
+        $is_full_cover = 0 === (int) ( wc_add_number_precision( (float) $existing['cart_total'] ) - wc_add_number_precision( (float) $meta_data['amount'] ) );
+
+        return $is_full_cover && $amount_diff > 0;
+    }
+
+    /**
+     * Take the store credits discount off a Store API draft order.
+     *
+     * Only a `checkout-draft` order is touched. `DraftOrderTrait::is_valid_draft_order()` also hands
+     * back a pending or failed order whose cart hash still matches, and such an order has already
+     * been through `order_processed`: its discount is backed by a ledger entry the customer was
+     * charged for, so deleting the meta there would lose that credit without returning it.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @param \WC_Order $order Order object.
+     * @return bool True when a discount was removed.
+     */
+    private function _remove_store_credits_discount_from_draft_order( $order ) {
+
+        if ( ! $order instanceof \WC_Order || ! $order->has_status( 'checkout-draft' ) ) {
+            return false;
+        }
+
+        $sc_data = $order->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_PAID, true );
+
+        if ( ! is_array( $sc_data ) || empty( $sc_data ) ) {
+            return false;
+        }
+
+        /*
+         * Never drop a discount the ledger has already charged for. A draft order is not always an
+         * uncharged one: the order screen lists `checkout-draft` among the statuses store credits
+         * can be applied to by hand (`acfwf_apply_store_credits_order_allowed_statuses`), and that
+         * path writes its ledger entry before the meta. Deleting here would leave the customer
+         * charged with nothing to show for it, and unlike `remove_store_credits_discount_from_order()`
+         * this path writes no returning entry.
+         *
+         * The test is the stored figure, not zero. `save_store_credits_order_meta_via_store_api()`
+         * rewrites the meta on a draft order the Store API hands back, so an entry written for an
+         * earlier, smaller attempt would otherwise read as backing for the larger figure now on the
+         * order — the same mismatch `_reconcile_unbacked_store_credits_discount()` guards against.
+         */
+        $applied    = (float) \ACFWF()->Store_Credits_Calculate->get_applied_store_credits_discount_for_order( $order->get_id() );
+        $raw_amount = isset( $sc_data['raw_amount'] ) ? (float) $sc_data['raw_amount'] : 0.0;
+
+        /*
+         * Measure the two in the same units. The ledger sum comes back rounded to the price
+         * decimals, while the stored figure carries whatever precision `acfw_filter_amount`
+         * returned - a currency converter hands back more than the ledger can hold - so an order
+         * charged in full would otherwise read as backed in part by a fraction of a cent and take
+         * the partial-backing arm below.
+         */
+        $raw_amount = (float) NumberUtil::round( $raw_amount, wc_get_price_decimals() );
+
+        if ( 0 < wc_add_number_precision( $applied ) ) {
+
+            if ( wc_add_number_precision( $applied ) >= wc_add_number_precision( $raw_amount ) ) {
+                return false;
+            }
+
+            /*
+             * Backed in part only. The stale discount still has to come off, but the credit the
+             * ledger did charge for belongs back with the customer, so this goes through the
+             * removal that writes the returning entry rather than deleting the meta outright.
+             */
+            $order->delete_meta_data( self::STORE_CREDITS_RESIDUAL_NOTED_META );
+
+            return $this->remove_store_credits_discount_from_order(
+                $order,
+                __( 'Store credits discount removed: the store credit was taken off the checkout, and the balance had been charged for less than the order was holding.', 'advanced-coupons-for-woocommerce-free' )
+            );
+        }
+
+        $order->delete_meta_data( Plugin_Constants::STORE_CREDITS_ORDER_PAID );
+        $order->delete_meta_data( self::STORE_CREDITS_RESIDUAL_NOTED_META );
+        $order->save_meta_data();
+
+        // Recalculate so the order total goes back up now that the discount is gone.
+        $order->calculate_totals( true );
+
+        return true;
+    }
+
+    /**
+     * Take the store credits discount off the Store API draft order held in the session.
+     *
+     * Called when the customer removes their credit at the checkout. `clear_store_credit_session()`
+     * is deliberately not the place for this: it also runs straight after a successful payment,
+     * where stripping the meta would take the discount off the order that was just paid.
+     *
+     * @since 4.7.7
+     * @access private
+     */
+    private function _clear_store_credits_discount_from_store_api_draft_order() {
+
+        if ( ! \WC()->session ) {
+            return;
+        }
+
+        $draft_order_id = (int) \WC()->session->get( 'store_api_draft_order', 0 );
+        $draft_order    = $draft_order_id ? \wc_get_order( $draft_order_id ) : false;
+
+        if ( $draft_order instanceof \WC_Order ) {
+            $this->_remove_store_credits_discount_from_draft_order( $draft_order );
+        }
     }
 
     /**
@@ -1188,7 +1433,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
             // recalculations and we only want to log once per order.
             $residual_precision = wc_add_number_precision( $order_total ) - wc_add_number_precision( $sc_amount );
 
-            if ( $residual_precision > 0 && ! $order->get_meta( '_acfw_sc_residual_noted', true ) ) {
+            if ( $residual_precision > 0 && ! $order->get_meta( self::STORE_CREDITS_RESIDUAL_NOTED_META, true ) ) {
                 $residual = (float) wc_remove_number_precision( $residual_precision );
 
                 $order->add_order_note(
@@ -1200,7 +1445,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
                         wc_price( $order_total, array( 'currency' => $order->get_currency() ) )
                     )
                 );
-                $order->update_meta_data( '_acfw_sc_residual_noted', '1' );
+                $order->update_meta_data( self::STORE_CREDITS_RESIDUAL_NOTED_META, '1' );
             }
         }
 
@@ -1213,6 +1458,280 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         // save plugin version of store credits when order is recalculated.
         $order->add_meta_data( Plugin_Constants::STORE_CREDITS_VERSION, Plugin_Constants::VERSION, true );
         $order->save_meta_data();
+    }
+
+    /**
+     * Make sure an order leaving the Store API's draft state pays for the store credits it is discounted by.
+     *
+     * A draft order can leave that state without passing through a checkout at all. The Store API
+     * hands its ID and key to the client, and on WooCommerce before 11.3 the order pay page would
+     * settle it; 11.3 closed that route by rejecting a `checkout-draft` order outright
+     * (`WC_Shortcode_Checkout::order_pay()`), but a shop manager moving the order on from wp-admin
+     * or through `wc/v3/orders` reaches the same place on every version. Neither
+     * `woocommerce_checkout_order_processed` nor its Store API counterpart fires on any of those,
+     * so without this the order would go on to completion carrying a store credits discount the
+     * balance was never charged for.
+     *
+     * Charging on an admin status change is the intended rule, not a side effect: the customer has
+     * an order discounted by credit they still hold, and the two only line up again once the
+     * balance gives up what the order was given. Where it no longer can, the discount comes off
+     * instead and the total goes back up. Either way the admin sees an order note saying which
+     * happened.
+     *
+     * Every checkout route writes its ledger entry before the status changes, so an order that came
+     * through one of them already reconciles and is left untouched.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param int       $order_id    Order ID.
+     * @param string    $prev_status Previous status.
+     * @param string    $new_status  New status.
+     * @param \WC_Order $order       Order object.
+     */
+    public function reconcile_store_credits_discount_on_submitted_order( $order_id, $prev_status, $new_status, $order ) {
+
+        if ( 'checkout-draft' !== $prev_status ) {
+            return;
+        }
+
+        // A cancelled or failed order is handled by `readd_customer_store_credits_for_failed_orders`.
+        if ( in_array( $new_status, array( 'checkout-draft', 'cancelled', 'failed' ), true ) ) {
+            return;
+        }
+
+        /*
+         * Leave the Store API's own checkout alone. It moves the order to `pending` *before* it
+         * fires `woocommerce_store_api_checkout_order_processed` (see `process_order()` in
+         * `StoreApi/Routes/V1/Checkout.php`), so this handler would otherwise run first, find no
+         * ledger entry yet, and charge the customer — and the deduction that follows moments later
+         * in the same request would charge them a second time for the one discount.
+         *
+         * The first test is request state rather than the request's address, because the address
+         * is not dependable: `WC::is_store_api_request()` reads only `REQUEST_URI` and
+         * `$_GET['rest_route']`, so a checkout dispatched in-process through `rest_do_request()`
+         * looks like an ordinary request to it, and the method does not exist at all on the older
+         * WooCommerce releases this plugin still supports. `create_or_update_draft_order()` fires
+         * `woocommerce_store_api_checkout_update_order_meta` (`StoreApi/Routes/V1/Checkout.php`)
+         * before `process_order()` reaches its `update_status( 'pending' )`, so by the time this
+         * handler could run the action has always been dispatched. The URI test is kept behind it
+         * as a second line for any Store API route that might reach a status change another way.
+         *
+         * The routes this handler exists for — the order pay page, and an admin or `wc/v3/orders`
+         * status change — satisfy neither test and are unaffected.
+         */
+        if ( did_action( 'woocommerce_store_api_checkout_update_order_meta' )
+            || ( method_exists( \WC(), 'is_store_api_request' ) && \WC()->is_store_api_request() ) ) {
+            return;
+        }
+
+        $this->_reconcile_unbacked_store_credits_discount( $order );
+    }
+
+    /**
+     * Charge, or else remove, a store credits discount that no ledger entry backs.
+     *
+     * The invariant is that an order never holds a store credits discount the customer's balance
+     * was not charged for. Where the customer still has the credit the order claims, the honest
+     * repair is to charge it, since they did mean to spend it. Only when the balance can no longer
+     * cover it does the discount come off, because then the order is asking for credit that is not
+     * there.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @param \WC_Order $order Order object.
+     * @return bool True when the order was reconciled.
+     */
+    private function _reconcile_unbacked_store_credits_discount( $order ) {
+
+        if ( ! $order instanceof \WC_Order ) {
+            return false;
+        }
+
+        /*
+         * Read the discount off the order rather than off the after-tax meta alone, so the coupon
+         * apply type is covered too. That type carries its discount on a store credit coupon item
+         * and is the default on a fresh install, so checking only the meta would leave the commoner
+         * configuration exposed on exactly the route this guards.
+         */
+        $amount = (float) $this->get_store_credits_discount_amount_on_order( $order );
+
+        if ( 0 >= wc_add_number_precision( $amount ) ) {
+            return false;
+        }
+
+        // Once reconciled, stay reconciled: this can be reached again on a later status change.
+        if ( $order->get_meta( self::STORE_CREDITS_RECONCILED_META, true ) ) {
+            return false;
+        }
+
+        $customer_id  = $order->get_customer_id();
+        $sc_data      = $order->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_PAID, true );
+        $coupon_item  = $this->_helper_functions->get_order_applied_coupon_item_by_code( $this->get_store_credit_coupon_code(), $order );
+        $is_after_tax = is_array( $sc_data ) && isset( $sc_data['raw_amount'] );
+
+        /*
+         * The two figures are a pair: `$raw_amount` is the credit in the site currency, the one the
+         * ledger is kept in and the charge is taken in, and `$credit` is the same credit in the
+         * order's. The order's own discount is that pair for an after-tax discount and for the
+         * pre-4.2.1 fallback, which is why it is the starting value; only the coupon branches
+         * re-set it, because the credit a coupon spends also covers the tax waived with the
+         * discount. Keeping the two together lets the order note report the charge in the order's
+         * own currency without converting the site-currency figure back.
+         */
+        $credit = $amount;
+
+        if ( $is_after_tax ) {
+            $raw_amount = (float) $sc_data['raw_amount'];
+        } elseif ( ! $coupon_item instanceof \WC_Order_Item_Coupon ) {
+            /*
+             * Neither a site-currency figure nor a coupon item to read one from, which is what an
+             * after-tax meta written before 4.2.1 looks like. The order currency amount is all
+             * there is, so convert that rather than read the discount as unbacked by nothing and
+             * leave it standing.
+             */
+            $raw_amount = (float) apply_filters( 'acfw_filter_amount', $amount, true );
+        } else {
+            /*
+             * Prefer the coupon item's own record of the charge. `process_order_with_store_credit_coupon()`
+             * charges the smaller of the redeemed amount and the coupon's credit, and on a store
+             * entering prices inclusive of tax those two differ, so recomputing from the item would
+             * read an order the checkout had already settled as under-charged and take the
+             * difference a second time. That record is also what
+             * `get_store_credits_returned_on_removal()` reads, so both halves agree on the figure.
+             */
+            $coupon_data = $coupon_item->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_COUPON_META, true );
+
+            if ( is_array( $coupon_data ) && isset( $coupon_data['raw_amount'], $coupon_data['amount'] ) ) {
+                // Both halves of the record, so the pair comes from one source. Every writer of
+                // this meta sets the two together, so a record holding one without the other is
+                // half written, and recomputing below is better than pairing it with a guess.
+                $raw_amount = (float) $coupon_data['raw_amount'];
+                $credit     = (float) $coupon_data['amount'];
+            } else {
+                // No record of a charge, which is what this reconciliation is for. The ledger is
+                // kept in site currency; the coupon item's credit is in the order's.
+                $credit     = (float) $this->get_store_credit_coupon_item_credit_amount( $coupon_item, $sc_data );
+                $raw_amount = (float) apply_filters( 'acfw_filter_amount', $credit, true );
+            }
+        }
+
+        /*
+         * Measure the ledger against what the order is discounted by, not against zero. An order
+         * can hold a stale entry that pays for less than the discount it now carries: the Store API
+         * rewrites a reused draft order's meta on each attempt, so an abandoned attempt that was
+         * charged for a smaller amount leaves an entry behind which a `0 < $applied` test would
+         * read as full backing — letting the order keep the larger discount for the smaller charge.
+         * Only the part the ledger does not cover is charged for, so each route is charged once and
+         * the order never ends up discounted by more than the balance gave up.
+         */
+        $applied = (float) \ACFWF()->Store_Credits_Calculate->get_applied_store_credits_discount_for_order( $order->get_id() );
+
+        /*
+         * Bring the stored figure to the ledger's own scale before taking the difference.
+         * `get_applied_store_credits_discount_for_order()` sums the entries as
+         * `DECIMAL(n, wc_get_price_decimals())` and rounds the result again, but every branch above
+         * leaves `$raw_amount` at whatever `acfw_filter_amount` returned, and a currency converter
+         * hands back more decimals than that. Unscaled, an order the checkout charged in full reads
+         * as short by a fraction of a cent, which would write a second ledger entry for it.
+         */
+        $raw_amount = (float) NumberUtil::round( $raw_amount, wc_get_price_decimals() );
+
+        $shortfall = (float) wc_remove_number_precision( wc_add_number_precision( $raw_amount ) - wc_add_number_precision( $applied ) );
+
+        if ( 0 >= wc_add_number_precision( $shortfall ) ) {
+            return false;
+        }
+
+        $balance = $customer_id ? (float) \ACFWF()->Store_Credits_Calculate->get_customer_balance( $customer_id ) : 0;
+
+        if ( wc_add_number_precision( $shortfall ) <= wc_add_number_precision( $balance ) ) {
+
+            $order->update_meta_data( self::STORE_CREDITS_RECONCILED_META, '1' );
+            $order->save_meta_data();
+
+            $store_credit_entry = $this->create_discount_store_credit_entry( $shortfall, $order );
+
+            // refresh the cached balance so the customer sees the charge straight away.
+            $new_balance = \ACFWF()->Store_Credits_Calculate->get_customer_balance( $customer_id, true );
+
+            /*
+             * Scale the order-currency credit by the share of it being charged, rather than
+             * converting the site-currency figure back. The two-argument `acfw_filter_amount`
+             * converts into whichever currency is selected for the request, which on an admin
+             * status change or a `wc/v3/orders` call is the shop's, not the order's - the note
+             * would then carry one currency's number under another's symbol.
+             *
+             * What gets scaled is `$credit`, the order-currency half of the pair `$raw_amount`
+             * belongs to, so the note and the charge measure the same thing. Where that pair comes
+             * from a coupon, it is the credit the coupon spends rather than the discount it shows:
+             * `$amount` holds the discount alone, and on a store entering prices with tax it would
+             * put $45.45 in the note under a $50.00 charge.
+             *
+             * `$raw_amount` is above zero by the time this runs - the shortfall test above returned
+             * on anything else, and `get_applied_store_credits_discount_for_order()` never returns
+             * a negative - so the division needs no guard of its own.
+             */
+            $charged_display = $credit * ( $shortfall / $raw_amount );
+
+            $order->add_order_note(
+                sprintf(
+                    /* Translators: %s: store credits amount charged to the customer's balance. */
+                    __( 'Charged %s of store credits for a discount the ledger did not fully cover.', 'advanced-coupons-for-woocommerce-free' ),
+                    wc_price( $charged_display, array( 'currency' => $order->get_currency() ) )
+                )
+            );
+
+            if ( ! $is_after_tax && $coupon_item instanceof \WC_Order_Item_Coupon ) {
+                /*
+                 * Finish the way the coupon checkout route does. The coupon item's own copy of the
+                 * charge is what `remove_store_credits_discount_from_order()` reads to work out the
+                 * credit to give back, so without it a later cancellation of this order would
+                 * return nothing; and integrations listening for a coupon-type payment expect the
+                 * coupon action, not the after-tax one.
+                 */
+                $coupon_item->update_meta_data(
+                    Plugin_Constants::STORE_CREDITS_ORDER_COUPON_META,
+                    array(
+                        // Both halves measure the same thing, as the coupon checkout route's pair
+                        // does: the credit the coupon spends, in the order currency and in the
+                        // site currency. `$amount` alone would leave out the waived discount tax
+                        // that `$raw_amount` carries, and `override_store_credit_coupon_data()`
+                        // would rebuild the coupon a little low on a tax-inclusive store.
+                        'amount'     => $credit,
+                        'raw_amount' => $raw_amount,
+                    )
+                );
+                $coupon_item->save_meta_data();
+
+                do_action( 'acfw_after_order_with_store_credit_coupon', $shortfall, $new_balance, $order, $store_credit_entry );
+
+                return true;
+            }
+
+            // Keep the same tail as a checkout deduction, so integrations listening for a store
+            // credits payment still hear about this one.
+            do_action( 'acfw_after_order_paid_with_store_credits', $shortfall, $new_balance, $order, $store_credit_entry );
+
+            return true;
+        }
+
+        $order->delete_meta_data( self::STORE_CREDITS_RESIDUAL_NOTED_META );
+        $order->save_meta_data();
+
+        $order->add_order_note(
+            sprintf(
+                /* Translators: %s: store credits discount that was removed from the order. */
+                __( 'Removed the %s store credits discount: the balance does not cover what the order was discounted by but never charged for, so the order total has gone back up. Any credit the order was charged has been returned.', 'advanced-coupons-for-woocommerce-free' ),
+                wc_price( $amount, array( 'currency' => $order->get_currency() ) )
+            )
+        );
+
+        return $this->remove_store_credits_discount_from_order(
+            $order,
+            __( 'Store credits discount removed: the balance does not cover what the order was discounted by but never charged for.', 'advanced-coupons-for-woocommerce-free' )
+        );
     }
 
     /**
@@ -1232,6 +1751,34 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         if ( ! in_array( $new_status, array( 'failed', 'cancelled' ), true ) ) {
             return;
         }
+
+        // skip if nothing was updated.
+        if ( ! $this->remove_store_credits_discount_from_order( $order ) ) {
+            return;
+        }
+
+        // update users cached balance value.
+        \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id(), true );
+    }
+
+    /**
+     * Take the store credits discount off an order and give back what it still holds.
+     *
+     * Strips the after-tax payment meta and the store credit coupon item, recalculates the order,
+     * and writes the `cancelled_order` entry that returns the credit the order has not already
+     * given back. This is what a cancelled or failed order does, and it is also the only safe way
+     * to clear a discount whose credit was refunded: the refund settled part of the ledger
+     * already, so the discount entry itself must never be rewritten or deleted.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param \WC_Order $order Order object.
+     * @param string    $note  Note to store on the returned credit entry. Defaults to none, which
+     *                         leaves the entry reading as the cancellation it usually is.
+     * @return bool True when the order carried a store credits discount and it was removed.
+     */
+    public function remove_store_credits_discount_from_order( \WC_Order $order, $note = '' ) {
 
         $sc_paid     = $order->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_PAID, true );
         $coupon_item = $this->_helper_functions->get_order_applied_coupon_item_by_code( $this->get_store_credit_coupon_code(), $order );
@@ -1254,9 +1801,8 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
             $is_updated = true;
         }
 
-        // skip if nothing was updated.
         if ( ! $is_updated ) {
-            return;
+            return false;
         }
 
         // save order and metadata.
@@ -1265,10 +1811,120 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         $order->calculate_totals( true );
 
         // create order cancelled store credit entry.
-        $this->_create_order_cancelled_store_credit_entry( $order, $sc_paid );
+        $this->_create_order_cancelled_store_credit_entry( $order, $sc_paid, $note );
 
-        // update users cached balance value.
-        \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id(), true );
+        return true;
+    }
+
+    /**
+     * Get the credit removing the store credits discount would return to the customer.
+     *
+     * The same figure `_create_order_cancelled_store_credit_entry()` writes: the amount this
+     * attempt charged, capped at the credit the order still owes. Exposed so a caller can decide
+     * whether an amount fits *before* the removal runs, measured against the room the removal is
+     * actually going to free rather than an estimate of it.
+     *
+     * The charged amount is read from the plugin's own copy of it - the after-tax payment meta, or
+     * the store credit coupon item's meta - and falls back to the ledger when the order carries
+     * neither, which is what an order written by an older version looks like.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param \WC_Order  $order   Order object.
+     * @param mixed      $sc_paid Store credits data read before the discount was taken off the
+     *                            order. Any falsy or incomplete value - the default false, or what
+     *                            a deleted meta reads back as - makes it read the order instead.
+     * @param float|null $net     Net discount the caller has already worked out, so the ledger is
+     *                            not summed twice in one request. Null reads it.
+     * @return float Credit the removal returns, in the site currency.
+     */
+    public function get_store_credits_returned_on_removal( \WC_Order $order, $sc_paid = false, $net = null ) {
+
+        if ( ! is_array( $sc_paid ) || ! isset( $sc_paid['raw_amount'] ) ) {
+            $sc_paid = $order->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_PAID, true );
+        }
+
+        if ( ! is_array( $sc_paid ) || ! isset( $sc_paid['raw_amount'] ) ) {
+            $coupon_item = $this->_helper_functions->get_order_applied_coupon_item_by_code( $this->get_store_credit_coupon_code(), $order );
+            $sc_paid     = $coupon_item instanceof \WC_Order_Item_Coupon
+                ? $coupon_item->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_COUPON_META, true )
+                : false;
+        }
+
+        $raw = is_array( $sc_paid ) && isset( $sc_paid['raw_amount'] ) ? (float) $sc_paid['raw_amount'] : null;
+
+        // Give back only what the order still holds, net of earlier cancellations and refunds.
+        //
+        // The order's own raw_amount covers the current attempt alone, while a refund sum covers
+        // every attempt the order ever had, so subtracting one from the other robs a re-applied
+        // credit of a refund that was already settled against an earlier one. Capping at the net
+        // keeps both halves honest: it never returns more than this attempt put in, and never
+        // more than the order still owes.
+        if ( is_null( $net ) ) {
+            $net = (float) \ACFWF()->Store_Credits_Calculate->get_net_store_credits_discount_for_order( $order );
+        }
+
+        // With no figure of its own to go on, the net is already the answer: it is the ledger's
+        // own discount sum less what came back, so it can never exceed what the order was charged.
+        return is_null( $raw ) ? (float) $net : min( $raw, (float) $net );
+    }
+
+    /**
+     * Get the store credits discount the order currently shows.
+     *
+     * The amount the discount itself carries: the after-tax payment meta amount, or the store
+     * credit coupon item's discount. This is what the order screen shows and what a rewrite of the
+     * discount has to put back, which is not the same as the credit the ledger still owes the
+     * customer - a refund lowers the latter and leaves the former alone. Nor is it the room the
+     * order total gets back when the discount comes off: a coupon also gives back its discount
+     * tax, which `get_order_total_without_store_credits_discount()` accounts for.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param \WC_Order $order Order object.
+     * @return float Store credits discount on the order, in the order currency.
+     */
+    public function get_store_credits_discount_amount_on_order( \WC_Order $order ) {
+
+        $sc_paid = $order->get_meta( Plugin_Constants::STORE_CREDITS_ORDER_PAID, true );
+
+        if ( is_array( $sc_paid ) && isset( $sc_paid['amount'] ) ) {
+            return (float) $sc_paid['amount'];
+        }
+
+        $coupon_item = $this->_helper_functions->get_order_applied_coupon_item_by_code( $this->get_store_credit_coupon_code(), $order );
+
+        return $coupon_item instanceof \WC_Order_Item_Coupon ? (float) $coupon_item->get_discount() : 0.0;
+    }
+
+    /**
+     * Get what the order total would be once the store credits discount came off it.
+     *
+     * The after-tax type takes its amount straight off the total, so the total gets back exactly
+     * that amount. A coupon instead discounts the line items, so removing it gives back the
+     * discount and the tax that was waived with it; counting only the discount would under-state
+     * the total a re-charge is measured against, and let an amount through that the re-charge then
+     * refuses - after the discount has already been taken off.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param \WC_Order $order Order object.
+     * @return float Order total with the store credits discount added back, in the order currency.
+     */
+    public function get_order_total_without_store_credits_discount( \WC_Order $order ) {
+
+        $total = (float) $order->get_total( 'edit' ) + $this->get_store_credits_discount_amount_on_order( $order );
+
+        $coupon_item = $this->_helper_functions->get_order_applied_coupon_item_by_code( $this->get_store_credit_coupon_code(), $order );
+
+        if ( $coupon_item instanceof \WC_Order_Item_Coupon ) {
+            $total += (float) $coupon_item->get_discount_tax();
+        }
+
+        return $total;
     }
 
     /**
@@ -1448,6 +2104,144 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
     }
 
     /**
+     * Display the guest store credits notice on the checkout page.
+     *
+     * Tells a logged out customer that store credits are available once they log in. The
+     * redeem form itself stays hidden for guests.
+     *
+     * @since 4.7.7
+     * @access public
+     */
+    public function display_guest_store_credits_notice() {
+        if ( ! $this->is_show_guest_store_credits_notice() ) {
+            return;
+        }
+
+        $notice_text = $this->get_guest_store_credits_notice_text();
+
+        // The text filter can return an empty string. Do not render an empty notice box.
+        if ( '' === $notice_text ) {
+            return;
+        }
+
+        $this->_helper_functions->load_template(
+            'acfw-store-credits/guest-notice.php',
+            array( 'notice_text' => $notice_text )
+        );
+    }
+
+    /**
+     * Check if the guest store credits notice must be shown on checkout.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @return bool True if the notice must be shown, false otherwise.
+     */
+    public function is_show_guest_store_credits_notice() {
+        // Only guests see the notice. A logged in customer gets the redeem form instead.
+        // This is first because it removes every logged in request at no cost.
+        if ( is_user_logged_in() ) {
+            return false;
+        }
+
+        // The notice is off by default. The store owner must turn it on.
+        if ( 'yes' !== get_option( Plugin_Constants::SHOW_STORE_CREDITS_GUEST_NOTICE, 'no' ) ) {
+            return false;
+        }
+
+        // Do not advertise a redeem form that the store hides from every customer.
+        if ( 'yes' !== get_option( Plugin_Constants::DISPLAY_STORE_CREDITS_REDEEM_FORM, 'yes' ) ) {
+            return false;
+        }
+
+        // The block integration calls this directly, so re-check the module here. The
+        // classic hook in run() is already module gated.
+        if ( ! $this->_helper_functions->is_module( Plugin_Constants::STORE_CREDITS_MODULE ) ) {
+            return false;
+        }
+
+        // Do not invite a guest to log in when WooCommerce offers no way to do it on checkout.
+        // This matches the check in checkout/form-login.php: the login reminder option, or
+        // WC_Checkout::is_registration_enabled(), which filters the signup option.
+        // Do not call \WC_Checkout::instance(): it fires woocommerce_checkout_init, which
+        // must not happen on the block checkout, where WC_Checkout is otherwise never built.
+        if ( 'yes' !== get_option( 'woocommerce_enable_checkout_login_reminder', 'no' )
+            && ! apply_filters( 'woocommerce_checkout_registration_enabled', 'yes' === get_option( 'woocommerce_enable_signup_and_login_from_checkout', 'no' ) ) ) {
+            return false;
+        }
+
+        // Do not promise store credits that the cart cannot accept anyway. A gift card in the
+        // cart blocks store credits for logged in customers too, so the notice would lie.
+        if ( $this->_has_gift_card_product_in_cart() ) {
+            return false;
+        }
+
+        /**
+         * Filter whether the guest store credits notice is shown on the checkout page.
+         *
+         * The filter runs last and only ever receives true, so it can hide the notice but
+         * cannot override a gate that already failed.
+         *
+         * @since 4.7.7
+         *
+         * @param bool $show True to show the notice, false to hide it.
+         */
+        return (bool) apply_filters( 'acfw_show_store_credits_guest_notice', true );
+    }
+
+    /**
+     * Get the guest store credits notice text.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @return string Notice text.
+     */
+    public function get_guest_store_credits_notice_text() {
+        /**
+         * Filter the guest store credits notice text shown on the checkout page.
+         *
+         * The return value is plain text. Tags are stripped, because the classic checkout
+         * and the block checkout escape the string differently.
+         *
+         * @since 4.7.7
+         *
+         * @param string $text Notice text.
+         */
+        $text = (string) apply_filters(
+            'acfw_store_credits_guest_notice_text',
+            __( 'Log in or create an account to pay for your order with store credits.', 'advanced-coupons-for-woocommerce-free' )
+        );
+
+        // The classic path escapes this and the block path hands it to a sanitised block
+        // notice. Strip tags here so both paths render the same plain text.
+        return wp_strip_all_tags( $text );
+    }
+
+    /**
+     * Check if an advanced gift card product is present in the cart.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @return bool True if a gift card product is in the cart, false otherwise.
+     */
+    private function _has_gift_card_product_in_cart() {
+        if ( ! \WC()->cart instanceof \WC_Cart ) {
+            return false;
+        }
+
+        foreach ( \WC()->cart->get_cart_contents() as $cart_item ) {
+            if ( isset( $cart_item['agcfw_data'] ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Check if store credits is allowed on checkout.
      *
      * @since 4.0
@@ -1475,17 +2269,8 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
             return $is_allowed;
         }
 
-        // Check if advanced gift card product is present in cart.
-        $agc_product_exist = false;
-        foreach ( \WC()->cart->get_cart_contents() as $cart_item ) {
-            if ( isset( $cart_item['agcfw_data'] ) ) {
-                $agc_product_exist = true;
-                break;
-            }
-        }
-
         // disallow store credits when advanced gift card product is present in cart.
-        $is_allowed = $agc_product_exist ? false : true;
+        $is_allowed = ! $this->_has_gift_card_product_in_cart();
 
         return apply_filters( 'acfw_is_allow_store_credits', $is_allowed );
     }
@@ -1520,21 +2305,25 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      *
      * @since 4.5.2
      * @since 4.7.3 Use raw_amount from order meta instead of summing all ledger entries to prevent over-refund after apply/remove cycles.
+     * @since 4.7.7 Return only the credit that has not already been refunded, and write no entry when nothing remains.
      * @access private
      *
      * @param \WC_Order   $order   Order object.
      * @param array|false $sc_paid Store credits order paid meta data.
-     * @return Store_Credit_Entry Store credit entry object.
+     * @param string      $note    Note to store on the entry, so a row written for a still-open
+     *                             order does not read as a cancellation.
+     * @return Store_Credit_Entry|null Store credit entry object, or null when there is nothing to return.
      */
-    private function _create_order_cancelled_store_credit_entry( \WC_Order $order, $sc_paid = false ) {
+    private function _create_order_cancelled_store_credit_entry( \WC_Order $order, $sc_paid = false, $note = '' ) {
         $store_credit_entry = new Store_Credit_Entry();
 
-        // Use the raw_amount from order meta (current/last applied amount) to avoid over-counting
-        // from multiple apply/remove cycles in the ledger.
-        if ( is_array( $sc_paid ) && isset( $sc_paid['raw_amount'] ) ) {
-            $amount = floatval( $sc_paid['raw_amount'] );
-        } else {
-            $amount = \ACFWF()->Store_Credits_Calculate->get_total_store_credits_discount_for_order( $order->get_id() );
+        // The removal was already told what the order held, so hand that straight over: by now the
+        // meta and the coupon item are gone, and the helper's own lookups would find nothing.
+        $amount = $this->get_store_credits_returned_on_removal( $order, $sc_paid );
+
+        // Nothing left to return, so write no entry rather than a zero one.
+        if ( 0 >= wc_add_number_precision( $amount ) ) {
+            return null;
         }
 
         $store_credit_entry->set_prop( 'amount', $amount );
@@ -1542,6 +2331,10 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         $store_credit_entry->set_prop( 'object_id', $order->get_id() );
         $store_credit_entry->set_prop( 'type', 'increase' );
         $store_credit_entry->set_prop( 'action', 'cancelled_order' );
+
+        if ( $note ) {
+            $store_credit_entry->set_prop( 'note', $note );
+        }
 
         // save store credit entry to db.
         $store_credit_entry->save();
@@ -1653,6 +2446,10 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         // Misc tasks.
         add_action( 'woocommerce_after_register_post_type', array( $this, 'recalculate_order_totals_after_checkout_complete' ) );
         add_action( 'woocommerce_order_status_changed', array( $this, 'readd_customer_store_credits_for_failed_orders' ), 10, 4 );
+        add_action( 'woocommerce_order_status_changed', array( $this, 'reconcile_store_credits_discount_on_submitted_order' ), 10, 4 );
+
+        // Guest store credits notice on checkout.
+        add_action( 'woocommerce_before_checkout_form', array( $this, 'display_guest_store_credits_notice' ), 9 );
 
         // Checkout blocks support.
         add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'save_store_credits_order_meta_via_store_api' ), 10, 1 );

@@ -101,6 +101,6 @@ class __TwigTemplate_da42454b8f529dd67656623f0f763c454a6d16d8f4457a7fb4876b121da
 
     public function getSourceContext()
     {
-        return new Source("", "subscribers/custom_fields.html", "/home/circleci/mailpoet/mailpoet/views/subscribers/custom_fields.html");
+        return new Source("", "subscribers/custom_fields.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/subscribers/custom_fields.html");
     }
 }

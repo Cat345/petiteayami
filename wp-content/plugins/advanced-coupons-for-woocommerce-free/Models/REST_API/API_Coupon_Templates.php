@@ -225,8 +225,13 @@ class API_Coupon_Templates extends Base_Model implements Model_Interface {
     public function create_coupon_from_template( $request ) {
         $id        = absint( $request->get_param( 'id' ) );
         $is_review = $request->get_param( 'is_review' ) ?? false;
-        $fields    = $this->_sanitize_coupon_template_fields_data( $request->get_param( 'fields' ) );
-        $coupon    = $this->_create_coupon_from_template( $fields, $id );
+
+        // The coupon template form always sends `is_ai`. Only when a request leaves it out, ID 0 means AI:
+        // library templates always have a positive integer ID, and AI templates send no ID (or a non-numeric one).
+        $is_ai = $request->has_param( 'is_ai' ) ? rest_sanitize_boolean( $request->get_param( 'is_ai' ) ) : 0 === $id;
+
+        $fields = $this->_sanitize_coupon_template_fields_data( $request->get_param( 'fields' ) );
+        $coupon = $this->_create_coupon_from_template( $fields, $id, $is_ai );
 
         if ( is_wp_error( $coupon ) ) {
             return $coupon;
@@ -262,7 +267,10 @@ class API_Coupon_Templates extends Base_Model implements Model_Interface {
         }
 
         // Append template data to the recent templates list.
-        $this->_set_coupon_template_as_recent( $id, $is_review );
+        // AI templates are not in the template library, so they are not added to the recent list. ID 0 is not a library template.
+        if ( ! $is_ai && 0 < $id ) {
+            $this->_set_coupon_template_as_recent( $id, $is_review );
+        }
 
         return rest_ensure_response(
             array(
@@ -609,13 +617,15 @@ class API_Coupon_Templates extends Base_Model implements Model_Interface {
      * Create a coupon post based on a given coupon template.
      *
      * @since 4.6.0
+     * @since 4.7.7 Add the $is_ai parameter.
      * @access private
      *
-     * @param array $fields Coupon template fields.
+     * @param array $fields      Coupon template fields.
      * @param int   $template_id Coupon template ID.
+     * @param bool  $is_ai       True if the coupon template is AI-generated.
      * @return Advanced_Coupon|\WP_Error Advanced Coupon object or WP_Error object.
      */
-    private function _create_coupon_from_template( $fields, $template_id ) {
+    private function _create_coupon_from_template( $fields, $template_id, $is_ai ) {
         $coupon               = new \WC_Coupon();
         $global_cache_options = array();
 
@@ -644,6 +654,11 @@ class API_Coupon_Templates extends Base_Model implements Model_Interface {
 
         // Save a meta key that points back to the coupon template ID whenever a coupon is created via a template.
         $coupon->add_meta_data( '_acfw_coupon_from_template_ID', $template_id, true );
+
+        // Flag coupons created from an AI-generated template, so usage tracking can count them separately.
+        if ( $is_ai ) {
+            $coupon->add_meta_data( Plugin_Constants::COUPON_FROM_AI_TEMPLATE_META, 'yes', true );
+        }
 
         $coupon->save_meta_data();
 
@@ -703,17 +718,12 @@ class API_Coupon_Templates extends Base_Model implements Model_Interface {
      * @param mixed      $value  Meta data value.
      */
     private function _add_coupon_meta_data( $coupon, $key, $value ) {
-        $not_unique_keys = apply_filters(
-            'acfw_coupon_meta_data_not_unique_keys',
-            array(
-                '_acfw_allowed_customers',
-            )
-        );
+        $not_unique_keys = $this->_helper_functions->get_coupon_meta_not_unique_keys();
 
         $value = $this->_maybe_cleanup_meta_data_array_value( $value );
 
         if ( in_array( $key, $not_unique_keys, true ) ) {
-            foreach ( $value as $item_value ) {
+            foreach ( (array) $value as $item_value ) {
                 $coupon->add_meta_data( $key, $item_value, false );
             }
         } else {

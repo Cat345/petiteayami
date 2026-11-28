@@ -682,6 +682,12 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
     /**
      * Get the total store credits discount for a given order.
      *
+     * Raw total of the order's `discount` entries, which does not account for credit a
+     * cancellation or a refund has given back. Kept as a public method for anything outside this
+     * plugin that already calls it; use get_applied_store_credits_discount_for_order() for what an
+     * order currently carries, or get_net_store_credits_discount_for_order() for what it can still
+     * be charged or refunded for.
+     *
      * @since 4.5.2
      * @access public
      *
@@ -696,6 +702,77 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
                 'action'    => 'discount',
             )
         );
+    }
+
+    /**
+     * Get the store credits discount currently applied to a given order.
+     *
+     * Sums the order's `discount` entries and takes off the `cancelled_order` entries that gave
+     * them back, so an order whose credit was returned by a cancellation - or removed and
+     * re-applied on the order pay page - reports what it carries now instead of the total of
+     * every attempt ever made on it.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param int $order_id Order ID.
+     * @return float Store credits discount currently applied to the order.
+     */
+    public function get_applied_store_credits_discount_for_order( int $order_id ) {
+
+        // _get_entries_sum() drops a falsy filter, so an empty order ID would sum the whole ledger.
+        if ( ! $order_id ) {
+            return 0.0;
+        }
+
+        $discount = $this->_get_entries_sum(
+            array(
+                'object_id' => $order_id,
+                'type'      => 'decrease',
+                'action'    => 'discount',
+            )
+        );
+
+        $returned = $this->_get_entries_sum(
+            array(
+                'object_id' => $order_id,
+                'type'      => 'increase',
+                'action'    => 'cancelled_order',
+            )
+        );
+
+        return NumberUtil::round( max( 0, $discount - $returned ), wc_get_price_decimals() );
+    }
+
+    /**
+     * Get the store credits discount a given order can still be charged or refunded for.
+     *
+     * The applied amount less the credit already handed back through the order screen's refund
+     * action. The refunded figure comes from the order's own entry list and not from a sum of the
+     * ledger's `refund` entries: a refund issued from the WooCommerce refund panel also writes an
+     * `increase`/`refund` entry against the order, but that one pays a cash purchase back as
+     * credit rather than returning credit the customer spent.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param \WC_Order  $order    Order object.
+     * @param float|null $refunded Refunded discount the caller has already summed, so the same sum
+     *                             is not run twice in one request. Null reads it.
+     * @return float Net store credits discount for the order.
+     */
+    public function get_net_store_credits_discount_for_order( $order, $refunded = null ) {
+
+        if ( ! $order instanceof \WC_Order ) {
+            return 0.0;
+        }
+
+        $applied  = $this->get_applied_store_credits_discount_for_order( $order->get_id() );
+        $refunded = is_null( $refunded )
+            ? $this->get_total_refunded_store_credits_discount_for_order( $order )
+            : (float) $refunded;
+
+        return NumberUtil::round( max( 0, $applied - $refunded ), wc_get_price_decimals() );
     }
 
     /**

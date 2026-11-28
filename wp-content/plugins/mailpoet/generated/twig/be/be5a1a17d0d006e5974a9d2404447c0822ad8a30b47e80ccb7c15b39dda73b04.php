@@ -122,6 +122,6 @@ class __TwigTemplate_c96deca159bff652d060c28604f142c91e89f1bcbd66cfad37714d1bb44
 
     public function getSourceContext()
     {
-        return new Source("", "woocommerce/settings_overlay.html", "/home/circleci/mailpoet/mailpoet/views/woocommerce/settings_overlay.html");
+        return new Source("", "woocommerce/settings_overlay.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/woocommerce/settings_overlay.html");
     }
 }

@@ -31,6 +31,46 @@ class Bootstrap extends Base_Model implements Model_Interface {
      */
 
     /**
+     * Option name that flags the duplicate advanced coupon meta migration as done.
+     *
+     * @since 4.7.7
+     * @var string
+     */
+    const COUPON_META_DEDUPE_OPTION = 'acfwf_coupon_meta_dedupe_done';
+
+    /**
+     * Option name that locks the duplicate advanced coupon meta migration while it runs.
+     *
+     * @since 4.7.7
+     * @var string
+     */
+    const COUPON_META_DEDUPE_LOCK = 'acfwf_coupon_meta_dedupe_lock';
+
+    /**
+     * Number of seconds after which a lock of the duplicate advanced coupon meta migration is stale.
+     *
+     * @since 4.7.7
+     * @var int
+     */
+    const COUPON_META_DEDUPE_LOCK_TIMEOUT = 300;
+
+    /**
+     * Number of duplicate advanced coupon meta rows that the migration deletes in one batch.
+     *
+     * @since 4.7.7
+     * @var int
+     */
+    const COUPON_META_DEDUPE_BATCH_SIZE = 500;
+
+    /**
+     * Number of seconds that one request can use for the duplicate advanced coupon meta migration.
+     *
+     * @since 4.7.7
+     * @var int
+     */
+    const COUPON_META_DEDUPE_TIME_LIMIT = 10;
+
+    /**
      * Array of models implementing the ACFWF\Interfaces\Activatable_Interface.
      *
      * @since 1.0
@@ -219,6 +259,247 @@ class Bootstrap extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Remove duplicate advanced coupon meta rows.
+     *
+     * Before 4.7.7, a coupon save that ran after `rest_api_init` could not see its own empty `_acfw_*` meta rows,
+     * so it added a second row for the same key. This keeps one row of each duplicated key: the last row that is not
+     * empty (the value the merchant last saved), or the last row when all rows are empty. Advanced_Coupon reads the
+     * same row while duplicates exist, so the coupon editor and the advanced coupon props show the value that is kept.
+     *
+     * Only duplicate groups that have an empty value are changed, because that is the signature of the bug. Keys
+     * that store one row per value on purpose (e.g. allowed customers) are skipped. Idempotent. The rows are deleted
+     * in batches. The run stops when the time limit is used, so a large table does not time out. Each run deletes at
+     * least one row, and the delete time limit starts after the first scan, so a slow scan cannot stall the cleanup.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @global wpdb $wpdb Object that contains a set of functions used to interact with a database.
+     *
+     * @return bool True when no duplicate rows are left, false when the run stopped early or a query failed.
+     */
+    private function _remove_duplicate_advanced_coupon_meta() {
+        global $wpdb;
+
+        $not_unique_keys = $this->_helper_functions->get_coupon_meta_not_unique_keys();
+        $exclude_sql     = $not_unique_keys ? ' AND pm.meta_key NOT IN (' . implode( ',', array_fill( 0, count( $not_unique_keys ), '%s' ) ) . ')' : '';
+        $query_args      = array_merge(
+            array( $wpdb->esc_like( Plugin_Constants::META_PREFIX ) . '%' ),
+            $not_unique_keys,
+            array( self::COUPON_META_DEDUPE_BATCH_SIZE )
+        );
+        $start_time      = time();
+        $delete_start    = 0;
+        $deleted         = 0;
+
+        while ( true ) {
+            // Do not start another scan when the time limit is used. A later request deletes the rows that are left.
+            if ( $deleted > 0 && time() - $start_time >= self::COUPON_META_DEDUPE_TIME_LIMIT ) {
+                return false;
+            }
+
+            // Get the meta_id of every row other than the kept row of each duplicated group, in one query.
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
+            $meta_ids = $wpdb->get_col(
+                $wpdb->prepare(
+                    "SELECT old.meta_id
+                    FROM {$wpdb->postmeta} AS old
+                    INNER JOIN (
+                        SELECT pm.post_id, pm.meta_key,
+                            COALESCE(
+                                MAX( CASE WHEN pm.meta_value NOT IN ( '', 'a:0:{}' ) THEN pm.meta_id END ),
+                                MAX( pm.meta_id )
+                            ) AS keep_id
+                        FROM {$wpdb->postmeta} AS pm
+                        INNER JOIN {$wpdb->posts} AS p ON p.ID = pm.post_id
+                        WHERE p.post_type = 'shop_coupon'
+                        AND pm.meta_key LIKE %s
+                        {$exclude_sql}
+                        GROUP BY pm.post_id, pm.meta_key
+                        HAVING COUNT( pm.meta_id ) > 1
+                        AND SUM( pm.meta_value = '' OR pm.meta_value = 'a:0:{}' ) > 0
+                    ) AS dup ON dup.post_id = old.post_id AND dup.meta_key = old.meta_key AND old.meta_id <> dup.keep_id
+                    LIMIT %d",
+                    $query_args
+                )
+            );
+            // phpcs:enable
+
+            // A failed query also returns an empty list, so check the error before the site is marked as done.
+            if ( '' !== $wpdb->last_error ) {
+                return false;
+            }
+
+            /**
+             * The delete time limit starts when the first scan returns. A slow scan on a large table then cannot use
+             * the full time limit before the first delete, and each run removes rows.
+             */
+            if ( ! $delete_start ) {
+                $delete_start = time();
+            }
+
+            /**
+             * Delete through the metadata API so the WordPress and WooCommerce object caches of the coupon are
+             * flushed (`deleted_post_meta`), including persistent object caches.
+             */
+            foreach ( $meta_ids as $meta_id ) {
+                // Stop when the time limit is used, after at least one delete. A later request deletes the rows that are left.
+                if ( $deleted > 0 && time() - $delete_start >= self::COUPON_META_DEDUPE_TIME_LIMIT ) {
+                    return false;
+                }
+
+                if ( ! delete_metadata_by_mid( 'post', (int) $meta_id ) ) {
+                    return false;
+                }
+
+                ++$deleted;
+            }
+
+            if ( count( $meta_ids ) < self::COUPON_META_DEDUPE_BATCH_SIZE ) {
+                return true;
+            }
+        }
+    }
+
+    /**
+     * Run the duplicate advanced coupon meta cleanup on the current site until it is done.
+     *
+     * The done flag is autoloaded, so the check adds no query after the cleanup. A lock stops two requests from
+     * running the cleanup at the same time. The flag is set only when the cleanup removed every duplicate row
+     * without an error, so a later request continues a run that stopped early, failed or timed out.
+     *
+     * @since 4.7.7
+     * @access private
+     */
+    private function _maybe_remove_duplicate_advanced_coupon_meta() {
+        if ( 'yes' === get_option( self::COUPON_META_DEDUPE_OPTION ) || ! $this->_create_coupon_meta_dedupe_lock() ) {
+            return;
+        }
+
+        if ( $this->_remove_duplicate_advanced_coupon_meta() ) {
+            update_option( self::COUPON_META_DEDUPE_OPTION, 'yes', true );
+        }
+
+        delete_option( self::COUPON_META_DEDUPE_LOCK );
+    }
+
+    /**
+     * Create the lock of the duplicate advanced coupon meta cleanup.
+     *
+     * The same pattern as WP_Upgrader::create_lock(): `INSERT IGNORE` is atomic, so only one request gets the lock.
+     * A lock older than COUPON_META_DEDUPE_LOCK_TIMEOUT is from a request that ended early, so it is replaced once.
+     *
+     * @since 4.7.7
+     * @access private
+     *
+     * @global wpdb $wpdb Object that contains a set of functions used to interact with a database.
+     *
+     * @return bool True when this request has the lock.
+     */
+    private function _create_coupon_meta_dedupe_lock() {
+        global $wpdb;
+
+        for ( $attempt = 0; $attempt < 2; $attempt++ ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $created = $wpdb->query(
+                $wpdb->prepare(
+                    "INSERT IGNORE INTO `{$wpdb->options}` ( `option_name`, `option_value`, `autoload` ) VALUES ( %s, %s, 'no' )",
+                    self::COUPON_META_DEDUPE_LOCK,
+                    time()
+                )
+            );
+
+            if ( $created ) {
+                return true;
+            }
+
+            // Read the lock from the database, not from the option cache, which can be stale.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $locked_at = (int) $wpdb->get_var(
+                $wpdb->prepare( "SELECT `option_value` FROM `{$wpdb->options}` WHERE `option_name` = %s", self::COUPON_META_DEDUPE_LOCK )
+            );
+
+            if ( $locked_at > time() - self::COUPON_META_DEDUPE_LOCK_TIMEOUT ) {
+                return false;
+            }
+
+            // The lock is stale, or it was released after the insert. Remove it and try again.
+            delete_option( self::COUPON_META_DEDUPE_LOCK );
+        }
+
+        return false;
+    }
+
+    /**
+     * Put the kept row of each duplicated advanced coupon meta key first in the meta rows of a coupon.
+     *
+     * WC_Coupon::get_meta( $key, true ) returns the first row of a key. Before the duplicate meta cleanup ends, the
+     * first row can be the empty duplicate, so code that reads the meta directly (e.g. the premium plugin) sees a
+     * different value than Advanced_Coupon. This moves the row that the cleanup keeps to the place of the first row of
+     * its key. No row is removed, so a save still sees every row and replaces the duplicates. Like the cleanup, it
+     * changes only a key that has an empty row.
+     *
+     * @since 4.7.7
+     * @access public
+     *
+     * @param array  $meta_data Raw meta rows (stdClass with meta_id, meta_key and meta_value), from the database or
+     *                          from the WooCommerce meta cache (already in the order that this filter returned).
+     * @param object $data      WooCommerce data object that the meta rows are read for.
+     * @return array Meta rows.
+     */
+    public function put_kept_coupon_meta_rows_first( $meta_data, $data ) {
+        if ( ! $data instanceof \WC_Coupon || ! is_array( $meta_data ) ) {
+            return $meta_data;
+        }
+
+        $not_unique_keys = $this->_helper_functions->get_coupon_meta_not_unique_keys();
+        $groups          = array();
+
+        foreach ( $meta_data as $index => $meta ) {
+            if ( isset( $meta->meta_id, $meta->meta_key, $meta->meta_value ) && str_starts_with( $meta->meta_key, Plugin_Constants::META_PREFIX )
+                && ! in_array( $meta->meta_key, $not_unique_keys, true ) ) {
+                $groups[ $meta->meta_key ][ (int) $meta->meta_id ] = $index;
+            }
+        }
+
+        foreach ( $groups as $indexes ) {
+            if ( count( $indexes ) < 2 ) {
+                continue;
+            }
+
+            /**
+             * WooCommerce caches the rows that this filter returns and runs the filter again on a cache hit. Pick the
+             * kept row by meta ID, not by its place in the list, so every pass gives the same order.
+             */
+            ksort( $indexes );
+
+            $values = array();
+            foreach ( $indexes as $meta_id => $index ) {
+                $values[ $meta_id ] = $meta_data[ $index ]->meta_value;
+            }
+
+            // The cleanup skips a group that has no empty row, so do not change the order of that group.
+            if ( ! array_intersect( $values, array( '', 'a:0:{}' ) ) ) {
+                continue;
+            }
+
+            $kept_id     = array_search( $this->_helper_functions->get_kept_coupon_meta_value( $values ), array_reverse( $values, true ), true );
+            $first_index = min( $indexes );
+
+            if ( false === $kept_id || $indexes[ $kept_id ] === $first_index ) {
+                continue;
+            }
+
+            $kept_index                = $indexes[ $kept_id ];
+            $first_row                 = $meta_data[ $first_index ];
+            $meta_data[ $first_index ] = $meta_data[ $kept_index ];
+            $meta_data[ $kept_index ]  = $first_row;
+        }
+
+        return $meta_data;
+    }
+
+    /**
      * Actual function that houses the code to execute on plugin activation.
      *
      * @since 1.0
@@ -311,6 +592,8 @@ class Bootstrap extends Base_Model implements Model_Interface {
             Plugin_Constants::USAGE_LAST_CHECKIN,
             Plugin_Constants::TOTAL_CREATED_WITH_COUPON_TEMPLATES,
             Plugin_Constants::MOST_POPULAR_TEMPLATES,
+            Plugin_Constants::TOTAL_CREATED_WITH_AI_TEMPLATES,
+            Plugin_Constants::TOTAL_SAVED_AI_TEMPLATES,
             Plugin_Constants::ALLOW_FETCH_CONTENT_REMOTE,
             Plugin_Constants::DEFAULT_COUPON_CATEGORY,
             Plugin_Constants::STORE_CREDITS_EXPIRY_CHECK_DATE,
@@ -434,6 +717,11 @@ class Bootstrap extends Base_Model implements Model_Interface {
 
         }
 
+        // Collapse duplicate advanced coupon meta rows left by the bug fixed in 4.7.7. Checked on every site, outside
+        // the version gate, because on multisite the version gate only fires on the first site that loads. It runs
+        // before the initializables, so the upgrade request cleans the rows before the coupons are read.
+        $this->_maybe_remove_duplicate_advanced_coupon_meta();
+
         // Execute 'initialize' contract of models implementing ACFWF\Interfaces\Initializable_Interface.
         foreach ( $this->_initializables as $initializable ) {
             if ( $initializable instanceof Initializable_Interface ) {
@@ -545,5 +833,10 @@ class Bootstrap extends Base_Model implements Model_Interface {
 
         // Add filter to force enable WooCommerce coupons.
         add_filter( 'pre_option_woocommerce_enable_coupons', array( $this, 'woocommerce_enable_coupons_pre_filter_option' ) );
+
+        // Until the duplicate coupon meta cleanup ends, make WC_Coupon::get_meta() read the row that the cleanup keeps.
+        if ( 'yes' !== get_option( self::COUPON_META_DEDUPE_OPTION ) ) {
+            add_filter( 'woocommerce_data_store_wp_post_read_meta', array( $this, 'put_kept_coupon_meta_rows_first' ), 10, 2 );
+        }
     }
 }

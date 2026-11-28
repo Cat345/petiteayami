@@ -35,7 +35,7 @@ class TemplatesController {
       $newsletter->getTitle(),
       $newsletter->getDescription(),
       $newsletter->getContent(),
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      EmailEditor::EDITOR_POST_TYPES
     );
     $templatesRegistry->register($template);
 

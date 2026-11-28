@@ -41,9 +41,18 @@ $this->logger = $logger;
 $this->block_type_registry = WP_Block_Type_Registry::get_instance();
 $this->fallback_renderer = new Fallback();
 }
+private const TYPOGRAPHY_SUPPORT_CALLBACKS = array( 'wp_render_typography_support', 'gutenberg_render_typography_support' );
+private array $removed_typography_support = array();
 private function initialize() {
 add_filter( 'render_block', array( $this, 'render_block' ), 10, 2 );
 add_filter( 'block_parser_class', array( $this, 'block_parser' ) );
+foreach ( self::TYPOGRAPHY_SUPPORT_CALLBACKS as $callback ) {
+$priority = has_filter( 'render_block', $callback );
+if ( false !== $priority ) {
+remove_filter( 'render_block', $callback, $priority );
+$this->removed_typography_support[ $callback ] = $priority;
+}
+}
 add_filter( 'woocommerce_email_blocks_renderer_parsed_blocks', array( $this, 'preprocess_parsed_blocks' ) );
 $post_content_type = $this->block_type_registry->get_registered( 'core/post-content' );
 if ( $post_content_type ) {
@@ -251,6 +260,12 @@ $post = $email_post;
 private function reset(): void {
 remove_filter( 'render_block', array( $this, 'render_block' ) );
 remove_filter( 'block_parser_class', array( $this, 'block_parser' ) );
+foreach ( $this->removed_typography_support as $callback => $priority ) {
+if ( is_callable( $callback ) ) {
+add_filter( 'render_block', $callback, $priority, 2 );
+}
+}
+$this->removed_typography_support = array();
 remove_filter( 'woocommerce_email_blocks_renderer_parsed_blocks', array( $this, 'preprocess_parsed_blocks' ) );
 $this->post_content_width = null;
 $this->container_padding = array();
@@ -311,6 +326,7 @@ $block_support_styles = preg_replace(
 $block_support_styles
 );
 $styles .= $block_support_styles;
-return wp_strip_all_tags( (string) apply_filters( 'woocommerce_email_content_renderer_styles', $styles, $post ) );
+$styles = wp_strip_all_tags( (string) apply_filters( 'woocommerce_email_content_renderer_styles', $styles, $post ) );
+return Css_Selector_Normalizer::normalize( $styles );
 }
 }

@@ -7,7 +7,14 @@ use Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\Blocks\
 class Coupon_Code_Generator {
 const MAX_CODE_RETRIES = 5;
 public function init(): void {
-add_filter( 'woocommerce_coupon_code_block_auto_generate', array( $this, 'generate_coupon' ), 10, 3 );
+add_filter( 'woocommerce_coupon_code_block_auto_generate', array( $this, 'filter_coupon_code' ), 10, 3 );
+}
+public function filter_coupon_code( $coupon_code, $attrs, $rendering_context ): string {
+$coupon_code = is_scalar( $coupon_code ) ? (string) $coupon_code : '';
+if ( ! $rendering_context instanceof Rendering_Context ) {
+return $coupon_code;
+}
+return $this->generate_coupon( $coupon_code, is_array( $attrs ) ? $attrs : array(), $rendering_context );
 }
 public function generate_coupon( string $coupon_code, array $attrs, Rendering_Context $rendering_context ): string {
 if ( ! empty( $coupon_code ) ) {

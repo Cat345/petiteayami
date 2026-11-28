@@ -84,6 +84,6 @@ class __TwigTemplate_be729e36b2f10a697a42c709d5cb98141fdb4921ae8c74bd2bb09c70675
 
     public function getSourceContext()
     {
-        return new Source("", "blank.html", "/home/circleci/mailpoet/mailpoet/views/blank.html");
+        return new Source("", "blank.html", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/blank.html");
     }
 }

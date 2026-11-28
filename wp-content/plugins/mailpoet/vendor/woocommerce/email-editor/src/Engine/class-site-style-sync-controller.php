@@ -197,28 +197,44 @@ $font_map = array(
 'times' => $email_safe_fonts['georgia'],
 'courier' => $email_safe_fonts['courier-new'],
 'trebuchet' => $email_safe_fonts['trebuchet-ms'],
+'serif' => $email_safe_fonts['georgia'],
+'ui-serif' => $email_safe_fonts['georgia'],
+'monospace' => $email_safe_fonts['courier-new'],
+'ui-monospace' => $email_safe_fonts['courier-new'],
+'cursive' => $email_safe_fonts['comic-sans-ms'],
+'sans-serif' => $email_safe_fonts['arial'],
+'ui-sans-serif' => $email_safe_fonts['arial'],
+'system-ui' => $email_safe_fonts['arial'],
 );
 $email_safe_fonts = array_merge( $email_safe_fonts, $font_map );
 $get_font_family = function ( $font_name ) use ( $email_safe_fonts ) {
-$font_name_lower = strtolower( $font_name );
-if ( isset( $email_safe_fonts[ $font_name_lower ] ) ) {
-return $email_safe_fonts[ $font_name_lower ];
+if ( isset( $email_safe_fonts[ $font_name ] ) ) {
+return $email_safe_fonts[ $font_name ];
 }
-foreach ( $email_safe_fonts as $safe_font_slug => $safe_font ) {
-if ( stripos( $safe_font, $font_name_lower ) !== false ) {
+foreach ( $email_safe_fonts as $safe_font ) {
+if ( in_array( $font_name, $this->get_font_names( $safe_font ), true ) ) {
 return $safe_font;
 }
 }
 return null;
 };
-$font_family_array = explode( ',', $font_family );
-$first_font = trim( $font_family_array[0] );
-$first_font = trim( $first_font, "\"'" );
-$safe_font_family = $get_font_family( $first_font );
+foreach ( $this->get_font_names( $font_family ) as $font_name ) {
+$safe_font_family = $get_font_family( $font_name );
 if ( $safe_font_family ) {
 return $safe_font_family;
 }
+}
 return $email_safe_fonts['arial'];
+}
+private function get_font_names( string $font_family ): array {
+$names = array();
+foreach ( explode( ',', $font_family ) as $name ) {
+$name = strtolower( trim( trim( $name ), "\"'" ) );
+if ( '' !== $name ) {
+$names[] = $name;
+}
+}
+return $names;
 }
 private function convert_to_px_size( string $size, ?string $fallback = null ): string {
 $converted = null;

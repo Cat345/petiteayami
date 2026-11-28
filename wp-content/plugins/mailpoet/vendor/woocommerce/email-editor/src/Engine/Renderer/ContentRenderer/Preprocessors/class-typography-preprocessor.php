@@ -39,7 +39,10 @@ if ( isset( $block['attrs']['style']['color']['text'] ) ) {
 $email_attrs['color'] = $block['attrs']['style']['color']['text'];
 }
 if ( isset( $block['attrs']['textColor'] ) && is_string( $block['attrs']['textColor'] ) && ! isset( $email_attrs['color'] ) ) {
-$email_attrs['color'] = $this->settings_controller->translate_slug_to_color( $block['attrs']['textColor'] );
+$text_color = $this->settings_controller->translate_slug_to_color( $block['attrs']['textColor'] );
+if ( '' !== $text_color ) {
+$email_attrs['color'] = $text_color;
+}
 }
 if ( isset( $block['attrs']['fontSize'] ) && is_string( $block['attrs']['fontSize'] ) ) {
 $block['attrs']['style']['typography']['fontSize'] = $this->settings_controller->translate_slug_to_font_size( $block['attrs']['fontSize'] );

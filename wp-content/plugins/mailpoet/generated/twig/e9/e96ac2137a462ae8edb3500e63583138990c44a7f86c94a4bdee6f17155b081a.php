@@ -123,6 +123,6 @@ class __TwigTemplate_0a0464bc24c6a5361dc783179cf979fb047f07bd9a3c1073790aa4402d2
 
     public function getSourceContext()
     {
-        return new Source("", "emails/subscriberLimitThresholdNotification.txt", "/home/circleci/mailpoet/mailpoet/views/emails/subscriberLimitThresholdNotification.txt");
+        return new Source("", "emails/subscriberLimitThresholdNotification.txt", "/home/runner/work/mailpoet/mailpoet/mailpoet/views/emails/subscriberLimitThresholdNotification.txt");
     }
 }

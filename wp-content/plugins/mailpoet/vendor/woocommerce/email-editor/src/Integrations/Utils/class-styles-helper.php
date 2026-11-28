@@ -32,6 +32,45 @@ $parsed_styles[ trim( $style[0] ) ] = trim( $style[1] );
 }
 return $parsed_styles;
 }
+public static function is_color_literal( string $value ): bool {
+$value = strtolower( trim( $value ) );
+if ( 1 === preg_match( '/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/', $value ) ) {
+return true;
+}
+return 1 === preg_match( '/^[a-z][a-z0-9-]*\(.*\)$/', $value );
+}
+public static function palette_definitions( array $settings ): array {
+$palette = $settings['color']['palette'] ?? array();
+$definitions = array();
+foreach ( array( 'custom', 'theme', 'blocks', 'default' ) as $origin ) {
+if ( isset( $palette[ $origin ] ) && is_array( $palette[ $origin ] ) ) {
+$definitions = array_merge( $definitions, $palette[ $origin ] );
+}
+}
+$by_slug = array();
+foreach ( $definitions as $definition ) {
+if ( ! is_array( $definition ) ) {
+continue;
+}
+$slug = $definition['slug'] ?? null;
+$color = $definition['color'] ?? null;
+if ( ! is_string( $slug ) || '' === $slug || ! is_string( $color ) || '' === trim( $color ) ) {
+continue;
+}
+if ( ! array_key_exists( $slug, $by_slug ) ) {
+$by_slug[ $slug ] = $definition;
+}
+}
+return array_values( $by_slug );
+}
+public static function resolve_color_from_palette( array $settings, string $color_slug ): string {
+foreach ( self::palette_definitions( $settings ) as $color_definition ) {
+if ( $color_definition['slug'] === $color_slug ) {
+return strtolower( (string) $color_definition['color'] );
+}
+}
+return self::is_color_literal( $color_slug ) ? trim( $color_slug ) : '';
+}
 public static function get_normalized_block_styles( array $block_attributes, Rendering_Context $rendering_context ): array {
 $normalized_colors = array_filter(
 array(
@@ -174,6 +213,10 @@ if ( is_numeric( $input ) ) {
 return $input . 'px';
 }
 return $fallback;
+}
+public static function get_static_font_size( string $font_size ): ?string {
+$px = self::convert_to_px( (string) self::clamp_to_static_px( $font_size ), false );
+return null !== $px && preg_match( '/^\d+(\.\d+)?px$/', $px ) ? $px : null;
 }
 public static function remove_css_unit( string $input ): string {
 $units = array( 'px', 'pt', 'pc', 'rem', 'em', 'vmin', 'vmax', '%', 'vh', 'vw', 'ex', 'ch', 'fr' );

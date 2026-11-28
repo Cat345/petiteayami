@@ -1,5 +1,5 @@
 <?php
-namespace Automattic\Jetpack\Autoloader\jpbd85136368c3501bec76a9a8dd9738ea\al5_0_23;
+namespace Automattic\Jetpack\Autoloader\jp69c96667bff44ad06241ad5575a6f31f\al5_0_23;
 if (!defined('ABSPATH')) exit;
 class Manifest_Reader {
 private $version_selector;

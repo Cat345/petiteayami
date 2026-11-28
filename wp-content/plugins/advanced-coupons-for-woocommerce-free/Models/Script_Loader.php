@@ -415,8 +415,23 @@ class Script_Loader extends Base_Model implements Model_Interface {
                 );
                 $edit_order_vite->enqueue();
 
-                $applied_store_credits_amount   = \ACFWF()->Store_Credits_Calculate->get_total_store_credits_discount_for_order( $order->get_id() );
-                $customer_store_credits_balance = \ACFWF()->Store_Credits_Calculate->get_customer_balance( $order->get_customer_id() );
+                // What the order still holds, and a freshly computed balance, so the prompt cannot
+                // offer back credit a cancellation already returned or quote a stale balance.
+                //
+                // A refunded order is cleared and charged afresh rather than updated, so what the
+                // handler will accept is the credit the removal gives back: the amount the order
+                // was charged, capped at the net. Those are the same figure for an order this
+                // version wrote, but an order whose amount an older build raised stores less than
+                // its net, and quoting the net there would prefill a number the handler refuses.
+                // Both figures are ledger sums, so each one is worked out once here and handed on
+                // rather than read again inside the helpers.
+                $refunded_store_credits_amount = \ACFWF()->Store_Credits_Calculate->get_total_refunded_store_credits_discount_for_order( $order );
+                $net_store_credits_amount      = \ACFWF()->Store_Credits_Calculate->get_net_store_credits_discount_for_order( $order, $refunded_store_credits_amount );
+                $applied_store_credits_amount  = 0 < $refunded_store_credits_amount
+                    ? \ACFWF()->Store_Credits_Checkout->get_store_credits_returned_on_removal( $order, false, $net_store_credits_amount )
+                    : $net_store_credits_amount;
+
+                $customer_store_credits_balance = \ACFWF()->Store_Credits_Calculate->get_customer_balance( $order->get_customer_id(), true );
 
                 wp_localize_script(
                     'acfw-edit-order',
